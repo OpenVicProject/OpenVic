@@ -1,0 +1,38 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "group": "build",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                // enable for debugging with breakpoints
+                //"dev_build=yes",
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "clean",
+            "group": "build",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "--clean"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "rebuild",
+            "group": "build",
+            "type": "shell",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
