@@ -18,7 +18,7 @@ sources = Glob("extension/src/*.cpp")
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "game/bin/openvic2/libopenvic2.{}.{}.framework/libgdsummator.{}.{}".format(
+        "game/bin/openvic2/libopenvic2.{}.{}.framework/libopenvic2.{}.{}".format(
             env["platform"], env["target"], env["platform"], env["target"]
         ),
         source=sources,
