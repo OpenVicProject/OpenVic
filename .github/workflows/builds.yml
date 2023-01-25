@@ -1,0 +1,106 @@
+name: Builds
+
+#on: [pull_request]
+
+concurrency:
+  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on:  ${{matrix.os}}
+    name: ${{matrix.name}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - identifier: windows-debug
+            os: windows-2019
+            name: 🏁 Windows Debug
+            target: template_debug
+            platform: windows
+            arch: x86_64
+          - identifier: windows-release
+            os: windows-2019
+            name: 🏁 Windows Release
+            target: template_release
+            platform: windows
+            arch: x86_64
+          - identifier: macos-debug
+            os: macos-latest
+            name: 🍎 macOS (universal) Debug
+            target: template_debug
+            platform: macos
+            arch: universal
+          - identifier: macos-release
+            os: macos-latest
+            name: 🍎 macOS (universal) Release
+            target: template_release
+            platform: macos
+            arch: universal
+          - identifier: linux-debug
+            os: ubuntu-18.04
+            name: 🐧 Linux Debug
+            runner: ubuntu-20.04
+            target: template_debug
+            platform: linux
+            arch: x86_64
+          - identifier: linux-release
+            os: ubuntu-18.04
+            name: 🐧 Linux Release
+            runner: ubuntu-20.04
+            target: template_release
+            platform: linux
+            arch: x86_64
+
+    steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Set up SCons
+        shell: bash
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -m pip install scons
+          scons --version
+
+      - name: Linux dependencies
+        if: ${{ matrix.platform == 'linux' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qqq build-essential pkg-config
+
+      - name: Setup MinGW for Windows/MinGW build
+        if: ${{ matrix.platform == 'windows' }}
+        uses: egor-tensin/setup-mingw@v2
+
+      - name: Compile godot-cpp
+        shell: sh
+        run: |
+          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
+        working-directory: godot-cpp
+
+      - name: Compile Extension
+        shell: sh
+        run: |
+          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
+
+      - name: Delete compilation files
+        if: ${{ matrix.platform == 'windows' }}
+        run: |
+          Remove-Item game/bin/openvic2/* -Include *.exp,*.lib,*.pdb -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}
+          path: |
+            ${{ github.workspace }}/game/bin/openvic2/*

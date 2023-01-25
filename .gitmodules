@@ -1,0 +1,6 @@
+[submodule "godot-cpp"]
+	path = godot-cpp
+	url = https://github.com/godotengine/godot-cpp
+[submodule "extension/deps/OV2-compiler"]
+	path = extension/deps/OV2-compiler
+	url = https://github.com/OpenVic2Project/OV2-compiler

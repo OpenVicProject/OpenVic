@@ -30,3 +30,27 @@
 *.exe
 *.out
 *.app
+
+# Godot 4+ specific ignores
+.godot/
+game/bin/openvic2/*
+.sconsign*.dblite
+
+# Binaries
+*.o
+*.os
+*.so
+*.obj
+*.bc
+*.pyc
+*.dblite
+*.pdb
+*.lib
+bin
+*.config
+*.creator
+*.creator.user
+*.files
+*.includes
+*.idb
+*.exp
