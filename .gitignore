@@ -31,6 +31,14 @@
 *.out
 *.app
 
+# clangd
+.cache/*
+
+# VSCode
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+
 # Godot 4+ specific ignores
 .godot/
 game/bin/openvic2/*

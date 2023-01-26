@@ -15,6 +15,20 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "dev_build",
+            "group": "build",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                // enable for debugging with breakpoints
+                "dev_build=yes"
+            ],
+            "dependsOn": [
+                "build"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "clean",
             "group": "build",
             "type": "shell",

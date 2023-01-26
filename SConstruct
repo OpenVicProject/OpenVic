@@ -24,8 +24,9 @@ if env["platform"] == "macos":
         source=sources,
     )
 else:
+    suffix = ".{}.{}.{}".format(env["platform"], env["target"], env["arch"])
     library = env.SharedLibrary(
-        "game/bin/openvic2/libopenvic2{}{}".format(env["suffix"], env["SHLIBSUFFIX"]),
+        "game/bin/openvic2/libopenvic2{}{}".format(suffix, env["SHLIBSUFFIX"]),
         source=sources,
     )
 
