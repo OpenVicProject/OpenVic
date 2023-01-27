@@ -54,7 +54,7 @@ game/bin/openvic2/*
 *.dblite
 *.pdb
 *.lib
-bin
+bin/*
 *.config
 *.creator
 *.creator.user
