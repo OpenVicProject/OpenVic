@@ -7,6 +7,7 @@ Main Repo for the OpenVic2 Project
 
 ## Build/Run Instructions
 1. Install [Godot 4 Beta 16](https://downloads.tuxfamily.org/godotengine/4.0/beta16/) and [scons](https://scons.org/) for your system.
+2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Run `scons` in the project root, you should see a libopenvic2 file in `game/bin/openvic2`.
 4. Open with Godot 4 Beta 16, click import and navigate to the `game` directory.
 5. Import and edit.
