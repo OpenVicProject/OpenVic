@@ -7,6 +7,7 @@ from pathlib import Path
 # Neccessary to have our own build options without errors
 SAVED_ARGUMENTS = ARGUMENTS.copy()
 ARGUMENTS.pop('intermediate_delete', True)
+ARGUMENTS.pop('vsproj', True)
 
 env = SConscript("godot-cpp/SConstruct")
 
@@ -23,19 +24,23 @@ if profile:
 opts = Variables(customs, ARGUMENTS)
 
 opts.Add(
+    BoolVariable("vsproj", "Generate a Visual Studio solution", False)
+)
+
+opts.Add(
     BoolVariable("intermediate_delete", "Enables automatically deleting unassociated intermediate binary files.", True)
 )
 
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
 
-def GlobRecursive(pattern, node='.'):
+def GlobRecursive(pattern, node='.', strings=False):
     import SCons
     results = []
-    for f in Glob(str(node) + '/*', source=True):
+    for f in Glob(str(node) + '/*', source=True, strings=strings):
         if type(f) is SCons.Node.FS.Dir:
             results += GlobRecursive(pattern, f)
-    results += Glob(str(node) + '/' + pattern, source=True)
+    results += Glob(str(node) + '/' + pattern, source=True, strings=strings)
     return results
 
 # For the reference:
@@ -82,6 +87,40 @@ else:
     library = env.SharedLibrary(
         "game/bin/openvic2/libopenvic2{}{}".format(suffix, env["SHLIBSUFFIX"]),
         source=sources,
+    )
+
+if env["vsproj"]:
+    env.Tool('msvs')
+    env["CPPPATH"] = [Dir(path) for path in env["CPPPATH"]]
+    includes = GlobRecursive("*.hpp", "extension/src", strings=True)
+    includes.extend(GlobRecursive("*.h", "extension/src", strings=True))
+    includes.extend(Glob('godot-cpp/include/*.hpp', strings=True))
+    includes.extend(Glob('godot-cpp/gen/include/*.hpp', strings=True))
+    includes.extend(Glob('godot-cpp/gdextension/*.h', strings=True))
+
+    VS_PLATFORMS = ["Win32", "x64"]
+    VS_PLATFORM_IDS = ["x86_32", "x86_64"]
+    VS_CONFIGURATIONS = ["editor", "template_release", "template_debug"]
+
+    variant = []
+    variant += [
+        f'{config}|{platform}'
+        for config in VS_CONFIGURATIONS
+        for platform in VS_PLATFORMS
+    ]
+
+    if not env.get("MSVS"):
+        env["MSVS"]["PROJECTSUFFIX"] = ".vcxproj"
+        env["MSVS"]["SOLUTIONSUFFIX"] = ".sln"
+
+    env.MSVSProject(target=['#openvic2' + env['MSVSPROJECTSUFFIX']],
+        srcs=[str(source_file) for source_file in sources],
+        incs=includes,
+        buildtarget=library,
+        variant=variant,
+        cpppaths=env["CPPPATH"],
+        cppdefines=env["CPPDEFINES"],
+        auto_build_solution=1
     )
 
 Default(library)
