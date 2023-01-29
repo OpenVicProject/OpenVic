@@ -62,3 +62,6 @@ bin/*
 *.includes
 *.idb
 *.exp
+
+# Build configuarion.
+/custom.py
