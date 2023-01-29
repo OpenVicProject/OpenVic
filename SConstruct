@@ -113,10 +113,12 @@ if env["vsproj"]:
         env["MSVS"]["PROJECTSUFFIX"] = ".vcxproj"
         env["MSVS"]["SOLUTIONSUFFIX"] = ".sln"
 
+    buildtarget = [s for s in library if str(s).endswith('dll')]
+
     project = env.MSVSProject(target=['#openvic2' + env['MSVSPROJECTSUFFIX']],
         srcs=[str(source_file) for source_file in sources],
         incs=includes,
-        buildtarget=library,
+        buildtarget=buildtarget,
         variant=variant,
         cpppaths=env["CPPPATH"],
         cppdefines=env["CPPDEFINES"],
