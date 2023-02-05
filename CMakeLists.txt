@@ -66,10 +66,10 @@ set_target_properties( ${PROJECT_NAME}
 )
 
 # Warnings
-if(MSVC)
-  target_compile_options(${TARGET_NAME} PRIVATE /W4)
+if( MSVC )
+  target_compile_options( ${PROJECT_NAME} PRIVATE /W4 )
 else()
-  target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+  target_compile_options( ${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic )
 endif()
 
 add_subdirectory( extension/src )
