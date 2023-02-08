@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4pg2y2ivib8f"]
+
+[ext_resource type="Script" path="res://src/MainMenu.gd" id="1_6akq8"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+script = ExtResource("1_6akq8")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_top = 137.0
+offset_right = 1152.0
+offset_bottom = 264.0
+theme_override_font_sizes/font_size = 90
+text = "OpenVic2"
+horizontal_alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_top = 268.0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" node_paths=PackedStringArray("shortcut_context")]
+layout_mode = 2
+focus_neighbor_top = NodePath("../ExitButton")
+shortcut_context = NodePath("")
+text = "New Game"
+
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Continue"
+
+[node name="MultiPlayerButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Multi-Player"
+
+[node name="OptionsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Options"
+
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../NewGameButton")
+text = "Exit"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/MultiPlayerButton" to="." method="_on_multi_player_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]

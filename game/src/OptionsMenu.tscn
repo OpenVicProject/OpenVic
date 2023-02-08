@@ -1,0 +1,141 @@
+[gd_scene load_steps=2 format=3 uid="uid://ch03lp7d7fvw3"]
+
+[ext_resource type="Script" path="res://src/OptionsMenu.gd" id="1_2tajv"]
+
+[node name="OptionsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2tajv")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="VideoTab" type="TabBar" parent="TabContainer"]
+layout_mode = 2
+tooltip_text = "This is my cool and very nice tooltip"
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/VideoTab"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 2
+
+[node name="Label2" type="Label" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+text = "Resolution:"
+
+[node name="ResolutionSelector" type="OptionButton" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "1920x1080"
+popup/item_0/id = 0
+popup/item_1/text = "1366x768"
+popup/item_1/id = 1
+popup/item_2/text = "1280x1024"
+popup/item_2/id = 2
+
+[node name="Label3" type="Label" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+text = "Screen Mode:"
+
+[node name="ScreenModeSelector" type="OptionButton" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "Borderless"
+popup/item_0/id = 0
+popup/item_1/text = "Windowed"
+popup/item_1/id = 1
+popup/item_2/text = "Fullscreen"
+popup/item_2/id = 2
+
+[node name="Label" type="Label" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+text = "Monitor Selection:"
+
+[node name="MonitorDisplaySelector" type="OptionButton" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "Monitor 1"
+popup/item_0/id = 0
+
+[node name="BackButton" type="Button" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+text = "Back to Main Menu"
+
+[node name="SaveSettingsButton" type="Button" parent="TabContainer/VideoTab/GridContainer"]
+layout_mode = 2
+text = "Save Me!"
+
+[node name="SoundTab" type="TabBar" parent="TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/SoundTab"]
+layout_mode = 0
+offset_top = 33.0
+offset_right = 1152.0
+offset_bottom = 648.0
+columns = 2
+
+[node name="Label" type="Label" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+text = "Music Volume"
+horizontal_alignment = 2
+
+[node name="MusicVolume" type="HSlider" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+value = 100.0
+
+[node name="Label3" type="Label" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+text = "SFX Volume"
+horizontal_alignment = 2
+
+[node name="SfxVolume" type="HSlider" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+value = 100.0
+
+[node name="Label2" type="Label" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="EarExploder" type="CheckButton" parent="TabContainer/SoundTab/GridContainer"]
+layout_mode = 2
+text = "Explode Eardrums on Startup?"
+
+[node name="OtherTab" type="TabBar" parent="TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/OtherTab"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="TabContainer/OtherTab/HBoxContainer"]
+layout_mode = 2
+text = "Spinbox Example :)"
+
+[node name="SpinBox" type="SpinBox" parent="TabContainer/OtherTab/HBoxContainer"]
+layout_mode = 2
+
+[connection signal="item_selected" from="TabContainer/VideoTab/GridContainer/ResolutionSelector" to="." method="_on_resolution_selector_item_selected"]
+[connection signal="item_selected" from="TabContainer/VideoTab/GridContainer/ScreenModeSelector" to="." method="_on_screen_mode_selector_item_selected"]
+[connection signal="item_selected" from="TabContainer/VideoTab/GridContainer/MonitorDisplaySelector" to="." method="_on_monitor_display_selector_item_selected"]
+[connection signal="pressed" from="TabContainer/VideoTab/GridContainer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="TabContainer/VideoTab/GridContainer/SaveSettingsButton" to="." method="_on_save_settings_button_pressed"]
+[connection signal="changed" from="TabContainer/SoundTab/GridContainer/MusicVolume" to="." method="_on_music_volume_changed"]
+[connection signal="drag_ended" from="TabContainer/SoundTab/GridContainer/MusicVolume" to="." method="_on_music_volume_drag_ended"]
+[connection signal="value_changed" from="TabContainer/SoundTab/GridContainer/MusicVolume" to="." method="_on_music_volume_value_changed"]
+[connection signal="value_changed" from="TabContainer/SoundTab/GridContainer/SfxVolume" to="." method="_on_sfx_volume_value_changed"]
+[connection signal="toggled" from="TabContainer/SoundTab/GridContainer/EarExploder" to="." method="_on_ear_exploder_toggled"]
+[connection signal="value_changed" from="TabContainer/OtherTab/HBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
