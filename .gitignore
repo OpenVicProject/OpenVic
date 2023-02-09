@@ -76,3 +76,11 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+*.sln
+*.vcxproj
+*.vcxproj.filters
+gen/
+x64/
+openvic2.dir/
+Debug/
+.vs/

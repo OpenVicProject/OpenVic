@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Unlicense
+
+# Get Sources
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS *.c**)
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS *.h**)
 
