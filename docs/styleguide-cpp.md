@@ -2,9 +2,13 @@
 
 ## Table of Contents
  1. [Why Style?](styleguide-cpp.md#why-style)
+
  1.1. [General Principles](styleguide-cpp.md#general-principles)
+
  1.2 [File Formatting](styleguide-cpp.md#file-formatting)
+
  2. [Conventions](styleguide-cpp.md#conventions)
+ 
  2.1. [Naming Conventions](styleguide-cpp.md#-naming-conventions)
 
 ## 1. Why Style?
