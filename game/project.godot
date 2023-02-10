@@ -11,6 +11,28 @@ config_version=5
 [application]
 
 config/name="OpenVic2"
-run/main_scene="res://src/MainMenu.tscn"
+run/main_scene="res://src/GameMenu.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Resolution="*res://src/Autoload/Resolution.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/mode=3
+window/size/resizable=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="ignore"
+
+[internationalization]
+
+locale/translation_remaps={}
+locale/fallback="en_GB"
+locale/locale_filter_mode=0
+locale/country_short_name={
+"United States of America": "USA"
+}
