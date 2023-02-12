@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3 uid="uid://bgnupcshe1m7r"]
+
+[ext_resource type="Script" path="res://src/SampleGame.gd" id="1_eklvp"]
+
+[node name="SampleGame" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_eklvp")
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="CenterContainer/VBoxContainer2"]
+layout_mode = 2
+columns = 2
+
+[node name="ProvenceLabel" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
+layout_mode = 2
+text = "Viewing Province #:"
+horizontal_alignment = 2
+
+[node name="ProvinceNumDisplay" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
+layout_mode = 2
+
+[node name="ProvinceSizeLabel" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
+layout_mode = 2
+text = "Province Size:"
+horizontal_alignment = 2
+
+[node name="ProvinceSizeDisplay" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer2"]
+layout_mode = 2
+
+[node name="PassTimeButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Pass Time"
+
+[node name="NextProvButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "View Next Province"
+
+[node name="PrevProvButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "View Previous Province"
+
+[node name="ToMainMenu" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Exit to Main Menu"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PassTimeButton" to="." method="_on_pass_time_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/NextProvButton" to="." method="_on_next_prov_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PrevProvButton" to="." method="_on_prev_prov_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/ToMainMenu" to="." method="_on_to_main_menu_pressed"]
