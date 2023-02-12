@@ -1,17 +1,11 @@
 extends Control
 
+signal options_button_pressed
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	print("From GDScript")
 	TestSingleton.hello_singleton()
-	$CenterContainer/VBoxContainer/NewGameButton.grab_focus()
-	pass # Replace with function body.
-
-
-## Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+	$VBox/Center/VBox/NewGameButton.grab_focus()
 
 
 func _on_new_game_button_pressed():
@@ -28,7 +22,7 @@ func _on_multi_player_button_pressed():
 
 func _on_options_button_pressed():
 	print("Check out some options!")
-	get_tree().change_scene_to_file("res://src/OptionsMenu.tscn")
+	options_button_pressed.emit()
 
 
 func _on_exit_button_pressed():

@@ -1,58 +1,66 @@
-[gd_scene load_steps=2 format=3 uid="uid://b4pg2y2ivib8f"]
+[gd_scene load_steps=2 format=3 uid="uid://dvoin538iby54"]
 
 [ext_resource type="Script" path="res://src/MainMenu.gd" id="1_6akq8"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 1152.0
-offset_bottom = 648.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_6akq8")
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-offset_top = 137.0
-offset_right = 1152.0
-offset_bottom = 264.0
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 6
+size_flags_stretch_ratio = 1.5
 theme_override_font_sizes/font_size = 90
 text = "OpenVic2"
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-layout_mode = 0
-offset_top = 268.0
-offset_right = 1152.0
-offset_bottom = 648.0
+[node name="Center" type="CenterContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBox" type="VBoxContainer" parent="VBox/Center"]
 layout_mode = 2
 
-[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" node_paths=PackedStringArray("shortcut_context")]
+[node name="NewGameButton" type="Button" parent="VBox/Center/VBox" node_paths=PackedStringArray("shortcut_context")]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ExitButton")
 shortcut_context = NodePath("")
 text = "New Game"
 
-[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="VBox/Center/VBox"]
 layout_mode = 2
 disabled = true
 text = "Continue"
 
-[node name="MultiPlayerButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="MultiplayerButton" type="Button" parent="VBox/Center/VBox"]
 layout_mode = 2
-text = "Multi-Player"
+text = "Multipayer"
 
-[node name="OptionsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="OptionsButton" type="Button" parent="VBox/Center/VBox"]
 layout_mode = 2
 text = "Options"
 
-[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="ExitButton" type="Button" parent="VBox/Center/VBox"]
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../NewGameButton")
 text = "Exit"
 
-[connection signal="pressed" from="CenterContainer/VBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/MultiPlayerButton" to="." method="_on_multi_player_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="VBox/Center/VBox/ExitButton" to="." method="_on_exit_button_pressed"]
