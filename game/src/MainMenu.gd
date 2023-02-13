@@ -10,6 +10,7 @@ func _ready():
 
 func _on_new_game_button_pressed():
 	print("Start a new game!")
+	get_tree().change_scene_to_file("res://src/SampleGame.tscn")
 
 
 func _on_continue_button_pressed():

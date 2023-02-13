@@ -6,7 +6,7 @@
 namespace OpenVic2 {
 	class TestSingleton : public godot::Object
 	{
-		GDCLASS(TestSingleton, godot::Object);
+		GDCLASS(TestSingleton, godot::Object)
 
 		static TestSingleton *singleton;
 
