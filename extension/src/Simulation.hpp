@@ -7,7 +7,7 @@
 
 namespace OpenVic2 {
 	class Simulation : public godot::Object {
-		GDCLASS(Simulation, godot::Object);
+		GDCLASS(Simulation, godot::Object)
 		std::vector<size_t> exampleProvinces;
 
 		//BEGIN BOILERPLATE
