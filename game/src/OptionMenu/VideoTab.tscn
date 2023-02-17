@@ -1,0 +1,73 @@
+[gd_scene load_steps=4 format=3 uid="uid://bq3awxxjn1tuw"]
+
+[ext_resource type="Script" path="res://src/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
+[ext_resource type="Script" path="res://src/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
+[ext_resource type="Script" path="res://src/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
+
+[node name="Video" type="HBoxContainer"]
+tooltip_text = "This is my cool and very nice tooltip"
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="ResolutionLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Resolution"
+
+[node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("1_i8nro")
+section_name = "Video"
+setting_name = "Resolution"
+add_nonstandard_value = true
+
+[node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Screen Mode"
+
+[node name="ScreenModeSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+item_count = 3
+selected = 0
+popup/item_0/text = "Fullscreen"
+popup/item_0/id = 0
+popup/item_1/text = "Borderless"
+popup/item_1/id = 1
+popup/item_2/text = "Windowed"
+popup/item_2/id = 2
+script = ExtResource("2_wa7vw")
+section_name = "Video"
+setting_name = "Mode Selected"
+
+[node name="MonitorSelectionLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Monitor Selection"
+
+[node name="MonitorDisplaySelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+item_count = 1
+selected = 0
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("3_y6lyb")
+section_name = "Video"
+setting_name = "Current Screen"
+
+[connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/GridContainer/ScreenModeSelector" to="VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/GridContainer/MonitorDisplaySelector" to="VBoxContainer/GridContainer/MonitorDisplaySelector" method="_on_item_selected"]

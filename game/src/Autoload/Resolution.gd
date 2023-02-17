@@ -22,7 +22,7 @@ func get_resolution(resolution_name : StringName, default : Vector2i = Vector2i(
 func get_resolution_name_list() -> Array:
 	return _resolutions.keys()
 
-func get_current_resolution() -> Vector2:
+func get_current_resolution() -> Vector2i:
 	var window := get_viewport().get_window()
 	match window.mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
@@ -30,7 +30,7 @@ func get_current_resolution() -> Vector2:
 		_:
 			return window.size
 
-func set_resolution(resolution : Vector2) -> void:
+func set_resolution(resolution : Vector2i) -> void:
 	var window := get_viewport().get_window()
 	match window.mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:

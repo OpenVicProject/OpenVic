@@ -1,27 +1,9 @@
 extends Control
 
-@export
-var user_settings_file_path : String = "settings.cfg"
-
 signal back_button_pressed
-
-signal save_settings(save_file: ConfigFile)
-signal load_settings(load_file: ConfigFile)
-signal reset_settings()
-
-@onready
-var _settings_file_path := "user://" + user_settings_file_path
-var _settings_file := ConfigFile.new()
 
 func _ready():
 	# Prepare options menu before loading user settings
-
-	print("TODO: Load user settings!")
-
-	if FileAccess.file_exists(_settings_file_path):
-		_settings_file.load(_settings_file_path)
-	load_settings.emit(_settings_file)
-
 	var tab_bar : TabBar = $Margin/Tab.get_child(0, true)
 
 	# This ends up easier to manage then trying to manually recreate the TabContainer's behavior
@@ -33,7 +15,7 @@ func _ready():
 
 	var reset_button := Button.new()
 	reset_button.text = "R"
-	reset_button.pressed.connect(func(): reset_settings.emit())
+	reset_button.pressed.connect(Events.Options.try_reset_settings)
 	button_list.add_child(reset_button)
 
 	var back_button := Button.new()
@@ -51,21 +33,11 @@ func _notification(what):
 # Could pass the LocaleButton between the MainMenu and OptionsMenu
 # but that seems a bit excessive
 func toggle_locale_button_visibility(locale_visible : bool):
-	print("Toggling locale button: %s" % locale_visible)
 	$LocaleVBox/LocaleHBox/LocaleButton.visible = locale_visible
 
-func _on_ear_exploder_toggled(button_pressed):
-	print("KABOOM!!!" if button_pressed else "DEFUSED!!!")
-
-
 func _on_back_button_pressed():
-	save_settings.emit(_settings_file)
-	_settings_file.save(_settings_file_path)
+	Events.Options.save_settings_from_file()
 	back_button_pressed.emit()
-
-
-func _on_spin_box_value_changed(value):
-	print("Spinbox: %d" % value)
 
 func _on_window_close_requested() -> void:
 	if visible:

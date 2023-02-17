@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://src/OptionMenu/OptionsMenu.gd" id="1_tlein"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="2_d7wvq"]
-[ext_resource type="Script" path="res://src/OptionMenu/ResolutionSelector.gd" id="2_jk1ey"]
-[ext_resource type="Script" path="res://src/OptionMenu/ScreenModeSelector.gd" id="3_hsicf"]
-[ext_resource type="Script" path="res://src/OptionMenu/MonitorDisplaySelector.gd" id="3_q1cm3"]
-[ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/OptionMenu/VolumeGrid.tscn" id="4_n4oqr"]
+[ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
+[ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/OptionMenu/SoundTab.tscn" id="3_4w35t"]
+[ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="4_vdhjp"]
+[ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/OptionMenu/OtherTab.tscn" id="5_ahefp"]
 
 [node name="OptionsMenu" type="Control"]
 layout_mode = 3
@@ -34,114 +34,18 @@ size_flags_vertical = 3
 tab_alignment = 1
 use_hidden_tabs_for_min_size = true
 
-[node name="Video" type="HBoxContainer" parent="Margin/Tab"]
-layout_mode = 2
-tooltip_text = "This is my cool and very nice tooltip"
-alignment = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Margin/Tab/Video"]
+[node name="Video" parent="Margin/Tab" instance=ExtResource("2_ji8xr")]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="Margin/Tab/Video/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.1
-
-[node name="GridContainer" type="GridContainer" parent="Margin/Tab/Video/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-columns = 2
-
-[node name="ResolutionLabel" type="Label" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-text = "Resolution"
-
-[node name="ResolutionSelector" type="OptionButton" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-item_count = 1
-selected = 0
-popup/item_0/text = "MISSING"
-popup/item_0/id = 0
-script = ExtResource("2_jk1ey")
-section_name = "Video"
-setting_name = "Resolution"
-default_value = -1
-
-[node name="ScreenModeLabel" type="Label" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-text = "Screen Mode"
-
-[node name="ScreenModeSelector" type="OptionButton" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-item_count = 3
-selected = 0
-popup/item_0/text = "Fullscreen"
-popup/item_0/id = 0
-popup/item_1/text = "Borderless"
-popup/item_1/id = 1
-popup/item_2/text = "Windowed"
-popup/item_2/id = 2
-script = ExtResource("3_hsicf")
-section_name = "Video"
-setting_name = "Mode Selected"
-
-[node name="MonitorSelectionLabel" type="Label" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-text = "Monitor Selection"
-
-[node name="MonitorDisplaySelector" type="OptionButton" parent="Margin/Tab/Video/VBoxContainer/GridContainer"]
-layout_mode = 2
-item_count = 1
-selected = 0
-popup/item_0/text = "MISSING"
-popup/item_0/id = 0
-script = ExtResource("3_q1cm3")
-section_name = "Video"
-setting_name = "Current Screen"
-
-[node name="Sound" type="HBoxContainer" parent="Margin/Tab"]
-visible = false
-layout_mode = 2
-alignment = 1
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Margin/Tab/Sound"]
-layout_mode = 2
-
-[node name="Control" type="Control" parent="Margin/Tab/Sound/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.1
-
-[node name="VolumeGrid" parent="Margin/Tab/Sound/VBoxContainer" instance=ExtResource("4_n4oqr")]
-layout_mode = 2
-
-[node name="ButtonGrid" type="GridContainer" parent="Margin/Tab/Sound/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 2
-columns = 2
-
-[node name="Spacer" type="Control" parent="Margin/Tab/Sound/VBoxContainer/ButtonGrid"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="EarExploder" type="CheckButton" parent="Margin/Tab/Sound/VBoxContainer/ButtonGrid"]
-layout_mode = 2
-text = "Explode Eardrums on Startup?"
-
-[node name="Other" type="Control" parent="Margin/Tab"]
+[node name="Sound" parent="Margin/Tab" instance=ExtResource("3_4w35t")]
 visible = false
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Margin/Tab/Other"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Label" type="Label" parent="Margin/Tab/Other/HBoxContainer"]
+[node name="Controls" parent="Margin/Tab" instance=ExtResource("4_vdhjp")]
+visible = false
 layout_mode = 2
-text = "Spinbox Example :)"
 
-[node name="SpinBox" type="SpinBox" parent="Margin/Tab/Other/HBoxContainer"]
+[node name="Other" parent="Margin/Tab" instance=ExtResource("5_ahefp")]
 layout_mode = 2
 
 [node name="LocaleVBox" type="VBoxContainer" parent="."]
@@ -161,21 +65,3 @@ alignment = 2
 
 [node name="LocaleButton" parent="LocaleVBox/LocaleHBox" instance=ExtResource("2_d7wvq")]
 layout_mode = 2
-
-[connection signal="load_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ResolutionSelector" method="load_setting"]
-[connection signal="load_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ScreenModeSelector" method="load_setting"]
-[connection signal="load_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/MonitorDisplaySelector" method="load_setting"]
-[connection signal="load_settings" from="." to="Margin/Tab/Sound/VBoxContainer/VolumeGrid" method="_on_options_menu_load_settings"]
-[connection signal="reset_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ResolutionSelector" method="reset_setting"]
-[connection signal="reset_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ScreenModeSelector" method="reset_setting"]
-[connection signal="reset_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/MonitorDisplaySelector" method="reset_setting"]
-[connection signal="reset_settings" from="." to="Margin/Tab/Sound/VBoxContainer/VolumeGrid" method="_on_options_menu_reset_settings"]
-[connection signal="save_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ResolutionSelector" method="save_setting"]
-[connection signal="save_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/ScreenModeSelector" method="save_setting"]
-[connection signal="save_settings" from="." to="Margin/Tab/Video/VBoxContainer/GridContainer/MonitorDisplaySelector" method="save_setting"]
-[connection signal="save_settings" from="." to="Margin/Tab/Sound/VBoxContainer/VolumeGrid" method="_on_options_menu_save_settings"]
-[connection signal="item_selected" from="Margin/Tab/Video/VBoxContainer/GridContainer/ResolutionSelector" to="Margin/Tab/Video/VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
-[connection signal="item_selected" from="Margin/Tab/Video/VBoxContainer/GridContainer/ScreenModeSelector" to="Margin/Tab/Video/VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]
-[connection signal="item_selected" from="Margin/Tab/Video/VBoxContainer/GridContainer/MonitorDisplaySelector" to="Margin/Tab/Video/VBoxContainer/GridContainer/MonitorDisplaySelector" method="_on_item_selected"]
-[connection signal="toggled" from="Margin/Tab/Sound/VBoxContainer/ButtonGrid/EarExploder" to="." method="_on_ear_exploder_toggled"]
-[connection signal="value_changed" from="Margin/Tab/Other/HBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
