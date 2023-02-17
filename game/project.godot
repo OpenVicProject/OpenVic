@@ -17,7 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
+Keychain="*res://addons/keychain/Keychain.gd"
 
 [display]
 
@@ -27,6 +29,10 @@ window/size/mode=3
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/keychain/plugin.cfg")
 
 [internationalization]
 
@@ -45,3 +51,7 @@ limits/message_queue/max_size_kb=16384
 
 textures/lossless_compression/force_png=true
 textures/default_filters/use_nearest_mipmap_filter=true
+
+[openvic2]
+
+settings/settings_file_path="user://settings.cfg"
