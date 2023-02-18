@@ -36,3 +36,12 @@ locale/locale_filter_mode=0
 locale/country_short_name={
 "United States of America": "USA"
 }
+
+[memory]
+
+limits/message_queue/max_size_kb=16384
+
+[rendering]
+
+textures/lossless_compression/force_png=true
+textures/default_filters/use_nearest_mipmap_filter=true

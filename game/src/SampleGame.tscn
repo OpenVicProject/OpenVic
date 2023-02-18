@@ -1,8 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=3 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/SampleGame.gd" id="1_eklvp"]
+[ext_resource type="PackedScene" uid="uid://b4pg2y2ivib8f" path="res://src/GameMenu.tscn" id="2_r7wq5"]
 
-[node name="SampleGame" type="Control"]
+[node name="SampleGame" type="Control" node_paths=PackedStringArray("_province_num_display", "_province_size_display")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,11 +11,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_eklvp")
+_province_num_display = NodePath("CenterContainer/VBoxContainer2/GridContainer/ProvinceNumDisplay")
+_province_size_display = NodePath("CenterContainer/VBoxContainer2/GridContainer/ProvinceSizeDisplay")
+_main_menu_scene = ExtResource("2_r7wq5")
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
-layout_mode = 0
-offset_right = 1152.0
-offset_bottom = 648.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
 layout_mode = 2

@@ -2,6 +2,15 @@ extends Control
 
 var selectedId = 0
 
+@export
+var _province_num_display : Label
+
+@export
+var _province_size_display : Label
+
+@export
+var _main_menu_scene : PackedScene
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	updateVisibleInfo()
@@ -14,8 +23,8 @@ func _ready():
 
 
 func updateVisibleInfo():
-	$CenterContainer/VBoxContainer2/GridContainer/ProvinceNumDisplay.text = str(selectedId)
-	$CenterContainer/VBoxContainer2/GridContainer/ProvinceSizeDisplay.text = str(Simulation.queryProvinceSize(selectedId))
+	_province_num_display.text = str(selectedId)
+	_province_size_display.text = str(Simulation.queryProvinceSize(selectedId))
 
 
 func _on_pass_time_button_pressed():
@@ -37,4 +46,4 @@ func _on_prev_prov_button_pressed():
 
 
 func _on_to_main_menu_pressed():
-	get_tree().change_scene_to_file("res://src/MainMenu.tscn")
+	get_tree().change_scene_to_packed(_main_menu_scene)
