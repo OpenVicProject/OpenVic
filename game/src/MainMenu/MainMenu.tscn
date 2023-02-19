@@ -12,9 +12,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_6d448")
 script = ExtResource("2_nm1fq")
-_new_game_button = NodePath("VBox/Margin/ButtonList/NewGameButton")
+_new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,15 +23,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"Panel_MainMenu"
 
-[node name="VBox" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="VBox"]
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 size_flags_vertical = 6
 size_flags_stretch_ratio = 1.5
@@ -40,19 +35,19 @@ text = "OpenVic2"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Margin" type="MarginContainer" parent="VBox"]
+[node name="Margin" type="MarginContainer" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_right = 12
 
-[node name="ButtonList" type="HBoxContainer" parent="VBox/Margin"]
+[node name="ButtonList" type="HBoxContainer" parent="Panel/VBox/Margin"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_type_variation = &"HBox_MainMenu_ButtonList"
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
+[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_top = NodePath("../ExitButton")
@@ -61,7 +56,7 @@ theme_type_variation = &"Button_MainMenu"
 text = "New Game"
 clip_text = true
 
-[node name="ContinueButton" type="Button" parent="VBox/Margin/ButtonList"]
+[node name="ContinueButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"Button_MainMenu"
@@ -69,21 +64,21 @@ disabled = true
 text = "Continue"
 clip_text = true
 
-[node name="MultiplayerButton" type="Button" parent="VBox/Margin/ButtonList"]
+[node name="MultiplayerButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"Button_MainMenu"
 text = "Multiplayer"
 clip_text = true
 
-[node name="OptionsButton" type="Button" parent="VBox/Margin/ButtonList"]
+[node name="OptionsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"Button_MainMenu"
 text = "Options"
 clip_text = true
 
-[node name="ExitButton" type="Button" parent="VBox/Margin/ButtonList"]
+[node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_bottom = NodePath("../NewGameButton")
@@ -91,13 +86,13 @@ theme_type_variation = &"Button_MainMenu"
 text = "Exit"
 clip_text = true
 
-[node name="BottomSpace" type="Control" parent="VBox"]
+[node name="BottomSpace" type="Control" parent="Panel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.35
 
-[connection signal="pressed" from="VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
-[connection signal="pressed" from="VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
-[connection signal="pressed" from="VBox/Margin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
-[connection signal="pressed" from="VBox/Margin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="VBox/Margin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]
