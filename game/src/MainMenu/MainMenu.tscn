@@ -88,11 +88,22 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../MultiplayerButton")
-focus_neighbor_right = NodePath("../ExitButton")
-focus_next = NodePath("../ExitButton")
+focus_neighbor_right = NodePath("../CreditsButton")
+focus_next = NodePath("../CreditsButton")
 focus_previous = NodePath("../MultiplayerButton")
 theme_type_variation = &"Button_MainMenu"
 text = "Options"
+clip_text = true
+
+[node name="CreditsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../OptionsButton")
+focus_neighbor_right = NodePath("../ExitButton")
+focus_next = NodePath("../ExitButton")
+focus_previous = NodePath("../OptionsButton")
+theme_type_variation = &"Button_MainMenu"
+text = "Credits"
 clip_text = true
 
 [node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -137,4 +148,5 @@ text = "(0000)"
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/CreditsButton" to="." method="_on_credits_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]

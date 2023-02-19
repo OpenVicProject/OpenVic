@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://4dwpfaaedki"
+
+[deps]
+
+files=["res://common/credits.OpenVic2.translation"]
+
+source_file="res://common/credits.csv"
+dest_files=["res://common/credits.OpenVic2.translation"]
+
+[params]
+
+compress=true
+delimiter=0

@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4pg2y2ivib8f"]
+[gd_scene load_steps=7 format=3 uid="uid://b4pg2y2ivib8f"]
 
 [ext_resource type="Script" path="res://src/GameMenu.gd" id="1_cafwe"]
 [ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu/MainMenu.tscn" id="2_2jbkh"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="3_111lv"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="4_jno35"]
+[ext_resource type="PackedScene" uid="uid://c8knthxkwj1uj" path="res://src/Credits/Credits.tscn" id="4_n0hoo"]
 [ext_resource type="PackedScene" uid="uid://crhkgngfnxf4y" path="res://src/LobbyMenu/LobbyMenu.tscn" id="4_nofk1"]
 
 [node name="GameMenu" type="Control"]
@@ -27,6 +28,10 @@ layout_mode = 1
 visible = false
 layout_mode = 1
 
+[node name="Credits" parent="." instance=ExtResource("4_n0hoo")]
+visible = false
+layout_mode = 1
+
 [node name="HBox" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 3
@@ -43,7 +48,9 @@ alignment = 2
 [node name="LocaleButton" parent="HBox" instance=ExtResource("4_jno35")]
 layout_mode = 2
 
+[connection signal="credits_button_pressed" from="MainMenu" to="." method="_on_main_menu_credits_button_pressed"]
 [connection signal="new_game_button_pressed" from="MainMenu" to="." method="_on_main_menu_new_game_button_pressed"]
 [connection signal="options_button_pressed" from="MainMenu" to="." method="_on_main_menu_options_button_pressed"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="." method="_on_options_menu_back_button_pressed"]
 [connection signal="back_button_pressed" from="LobbyMenu" to="." method="_on_lobby_menu_back_button_pressed"]
+[connection signal="back_button_pressed" from="Credits" to="." method="_on_credits_back_button_pressed"]

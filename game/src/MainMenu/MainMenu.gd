@@ -2,6 +2,7 @@ extends Control
 
 signal options_button_pressed
 signal new_game_button_pressed
+signal credits_button_pressed
 
 @export
 var _new_game_button : BaseButton
@@ -36,6 +37,12 @@ func _on_multi_player_button_pressed():
 func _on_options_button_pressed():
 	print("Check out some options!")
 	options_button_pressed.emit()
+
+# REQUIREMENTS
+# * UI-32
+# * UIFUN-36
+func _on_credits_button_pressed():
+	credits_button_pressed.emit()
 
 
 func _on_exit_button_pressed():
