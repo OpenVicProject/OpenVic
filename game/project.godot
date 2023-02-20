@@ -12,9 +12,9 @@ config_version=5
 
 config/name="OpenVic2"
 run/main_scene="res://src/GameMenu.tscn"
-config/project_settings_override="user://settings.cfg"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
+config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
 
@@ -48,11 +48,11 @@ locale/country_short_name={
 
 limits/message_queue/max_size_kb=16384
 
+[openvic2]
+
+settings/settings_file_path="user://settings.cfg"
+
 [rendering]
 
 textures/lossless_compression/force_png=true
 textures/default_filters/use_nearest_mipmap_filter=true
-
-[openvic2]
-
-settings/settings_file_path="user://settings.cfg"

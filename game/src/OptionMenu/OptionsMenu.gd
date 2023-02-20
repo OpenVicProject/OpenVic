@@ -46,8 +46,10 @@ func _on_window_close_requested() -> void:
 		Events.Options.save_settings_from_file()
 
 func _save_overrides() -> void:
-	var file := ConfigFile.new()
 	var override_path := ProjectSettings.get_setting("application/config/project_settings_override") as String
+	if override_path == null or override_path.is_empty():
+		override_path = ProjectSettings.get_setting("openvic2/settings/settings_file_path") as String
+	var file := ConfigFile.new()
 	file.load(override_path)
 	file.set_value("display", "window/size/mode", get_viewport().get_window().mode)
 	var resolution : Vector2i = Resolution.get_current_resolution()
