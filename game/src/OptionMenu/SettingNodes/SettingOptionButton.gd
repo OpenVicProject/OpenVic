@@ -46,10 +46,12 @@ func _ready():
 	_setup_button()
 
 func load_setting(file : ConfigFile) -> void:
+	if file == null: return
 	_set_value_from_file(file.get_value(section_name, setting_name, _get_value_for_file(default_selected)))
 	item_selected.emit(selected)
 
 func save_setting(file : ConfigFile) -> void:
+	if file == null: return
 	file.set_value(section_name, setting_name, _get_value_for_file(selected))
 
 func reset_setting() -> void:

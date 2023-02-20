@@ -16,9 +16,11 @@ func _ready():
 	Events.Options.reset_settings.connect(reset_setting)
 
 func load_setting(file : ConfigFile):
+	if file == null: return
 	value = file.get_value(section_name, setting_name, default_value)
 
 func save_setting(file : ConfigFile):
+	if file == null: return
 	file.set_value(section_name, setting_name, value)
 
 func reset_setting():
