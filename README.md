@@ -5,6 +5,8 @@ Main Repo for the OpenVic2 Project
 * [Godot 4 RC 2](https://downloads.tuxfamily.org/godotengine/4.0/rc2/)
 * [scons](https://scons.org/)
 
+## [Godot Documentation](https://docs.godotengine.org/en/latest/)
+
 ## Build/Run Instructions
 1. Install [Godot 4 RC 2](https://downloads.tuxfamily.org/godotengine/4.0/rc2/) and [scons](https://scons.org/) for your system.
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
