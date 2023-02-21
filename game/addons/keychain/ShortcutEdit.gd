@@ -254,7 +254,9 @@ func add_event_tree_item(event: InputEvent, action_tree_item: TreeItem) -> void:
 func event_to_str(event: InputEvent) -> String:
 	var output := ""
 	if event is InputEventKey:
-		var scancode: int = event.get_keycode_with_modifiers()
+		var scancode: int = 0
+		if event.keycode != 0:
+			scancode = event.get_keycode_with_modifiers()
 		var physical_str := ""
 		if scancode == 0:
 			scancode = event.get_physical_keycode_with_modifiers()
