@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://b4pg2y2ivib8f"]
 
 [ext_resource type="Script" path="res://src/GameMenu.gd" id="1_cafwe"]
-[ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu.tscn" id="1_y4m2a"]
+[ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu/MainMenu.tscn" id="2_2jbkh"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="3_111lv"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="4_jno35"]
 
@@ -14,8 +14,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cafwe")
 
-[node name="MainMenu" parent="." instance=ExtResource("1_y4m2a")]
+[node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]
 layout_mode = 1
+metadata/_edit_vertical_guides_ = [251.0, 269.0, 504.0, 523.0, 15.0, 759.0, 777.0]
 
 [node name="OptionsMenu" parent="." instance=ExtResource("3_111lv")]
 visible = false
