@@ -24,9 +24,11 @@ func get_window_mode_from_screen_mode(screen_mode : int) -> Window.Mode:
 		_:
 			return Window.MODE_EXCLUSIVE_FULLSCREEN
 
-func _on_item_selected(index : int):
-	print("Selected index: %d" % index)
+func _setup_button():
+	default_selected = get_screen_mode_from_window_mode(get_viewport().get_window().mode)
+	selected = default_selected
 
+func _on_item_selected(index : int):
 	var window := get_viewport().get_window()
 	var current_resolution := Resolution.get_current_resolution()
 	window.mode = get_window_mode_from_screen_mode(index)

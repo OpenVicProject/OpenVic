@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dp2grvybtecqu"]
+
+[node name="Other" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Spinbox Example :)"
+
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer"]
+layout_mode = 2

@@ -14,10 +14,13 @@ config/name="OpenVic2"
 run/main_scene="res://src/GameMenu.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
+config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
 
+Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
+Keychain="*res://addons/keychain/Keychain.gd"
 
 [display]
 
@@ -27,6 +30,10 @@ window/size/mode=3
 window/size/resizable=false
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/keychain/plugin.cfg")
 
 [internationalization]
 
@@ -40,6 +47,10 @@ locale/country_short_name={
 [memory]
 
 limits/message_queue/max_size_kb=16384
+
+[openvic2]
+
+settings/settings_file_path="user://settings.cfg"
 
 [rendering]
 
