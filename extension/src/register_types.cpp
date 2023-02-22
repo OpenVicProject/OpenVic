@@ -39,7 +39,7 @@ void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
 	memdelete(_test_singleton);
 
 	Engine::get_singleton()->unregister_singleton("Simulation");
-	memdelete(_test_singleton);
+	memdelete(_simulation);
 }
 
 extern "C"
