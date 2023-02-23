@@ -1,6 +1,9 @@
 # OpenVic2
 Main Repo for the OpenVic2 Project
 
+## Quickstart Guide
+For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
+
 ## Required
 * [Godot 4 RC 2](https://downloads.tuxfamily.org/godotengine/4.0/rc2/)
 * [scons](https://scons.org/)
