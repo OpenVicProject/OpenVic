@@ -29,7 +29,11 @@ func _setup_button():
 	selected = default_selected
 
 func _on_item_selected(index : int):
-	var window := get_viewport().get_window()
-	var current_resolution := Resolution.get_current_resolution()
-	window.mode = get_window_mode_from_screen_mode(index)
-	Resolution.set_resolution(current_resolution)
+	if _valid_index(index):
+		var window := get_viewport().get_window()
+		var current_resolution := Resolution.get_current_resolution()
+		window.mode = get_window_mode_from_screen_mode(index)
+		Resolution.set_resolution(current_resolution)
+	else:
+		push_error("Invalid ScreenModeSelector index: %d" % index)
+		reset_setting()

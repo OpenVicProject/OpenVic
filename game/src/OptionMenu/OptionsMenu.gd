@@ -38,21 +38,23 @@ func toggle_locale_button_visibility(locale_visible : bool):
 	$LocaleVBox/LocaleHBox/LocaleButton.visible = locale_visible
 
 func _on_back_button_pressed():
-	Events.Options.save_settings_from_file()
+	Events.Options.save_settings_to_file()
 	back_button_pressed.emit()
 
 func _on_window_close_requested() -> void:
 	if visible:
-		Events.Options.save_settings_from_file()
+		Events.Options.save_settings_to_file()
 
 func _save_overrides() -> void:
-	var override_path := ProjectSettings.get_setting("application/config/project_settings_override") as String
-	if override_path == null or override_path.is_empty():
-		override_path = ProjectSettings.get_setting("openvic2/settings/settings_file_path") as String
+	var override_path : String = ProjectSettings.get_setting("application/config/project_settings_override", "")
+	if override_path.is_empty():
+		override_path = ProjectSettings.get_setting(Events.Options.settings_file_path_setting, Events.Options.settings_file_path_default)
 	var file := ConfigFile.new()
-	file.load(override_path)
+	var err_ret := file.load(override_path)
+	if err_ret != OK: push_error("Failed to load overrides from %s" % override_path)
 	file.set_value("display", "window/size/mode", get_viewport().get_window().mode)
 	var resolution : Vector2i = Resolution.get_current_resolution()
 	file.set_value("display", "window/size/viewport_width", resolution.x)
 	file.set_value("display", "window/size/viewport_height", resolution.y)
-	file.save(override_path)
+	err_ret = file.save(override_path)
+	if err_ret != OK: push_error("Failed to save overrides to %s" % override_path)

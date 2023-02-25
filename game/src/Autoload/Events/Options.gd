@@ -7,14 +7,17 @@ signal reset_settings()
 func load_settings_from_file() -> void:
 	load_settings.emit(_settings_file)
 
-func save_settings_from_file() -> void:
+func save_settings_to_file() -> void:
 	save_settings.emit(_settings_file)
 	_settings_file.save(_settings_file_path)
 
 func try_reset_settings() -> void:
 	reset_settings.emit()
 
-var _settings_file_path := ProjectSettings.get_setting("openvic2/settings/settings_file_path", "user://settings.cfg") as String
+const settings_file_path_setting : String = "openvic2/settings/settings_file_path"
+const settings_file_path_default : String = "user://settings.cfg"
+
+var _settings_file_path : String = ProjectSettings.get_setting(settings_file_path_setting, settings_file_path_default)
 var _settings_file := ConfigFile.new()
 
 func _init():
