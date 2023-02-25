@@ -18,17 +18,17 @@ func _on_new_game_button_pressed():
 
 
 func _on_continue_button_pressed():
-	get_node("/root/GameMenu/SFX").play("click")
+	await get_node("/root/GameMenu/SFX").play("click")
 	print("Continue last game!")
 
 
 func _on_multi_player_button_pressed():
-	get_node("/root/GameMenu/SFX").play("click")
+	await get_node("/root/GameMenu/SFX").play("click")
 	print("Have fun with friends!")
 
 
 func _on_options_button_pressed():
-	get_node("/root/GameMenu/SFX").play("click")
+	await get_node("/root/GameMenu/SFX").play("click")
 	print("Check out some options!")
 	options_button_pressed.emit()
 
