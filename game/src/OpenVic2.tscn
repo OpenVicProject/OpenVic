@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://b544j7pe0mlsd"]
+
+[ext_resource type="PackedScene" uid="uid://b1yo8d0toevnu" path="res://src/SFX/SFX.tscn" id="1_hdags"]
+[ext_resource type="PackedScene" uid="uid://b4pg2y2ivib8f" path="res://src/GameMenu.tscn" id="2_phcv3"]
+
+[node name="OpenVic2" type="Node"]
+
+[node name="SFX" parent="." instance=ExtResource("1_hdags")]
+
+[node name="GameMenu" parent="." instance=ExtResource("2_phcv3")]
