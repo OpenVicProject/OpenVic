@@ -34,7 +34,6 @@ popup/item_0/id = 0
 script = ExtResource("1_i8nro")
 section_name = "Video"
 setting_name = "Resolution"
-add_nonstandard_value = true
 
 [node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
