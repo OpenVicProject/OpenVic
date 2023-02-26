@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://1xrgnmmnrnce" path="res://default_theme.theme" id="1_6d448"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_checksum_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,6 +13,7 @@ grow_vertical = 2
 theme = ExtResource("1_6d448")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
+_checksum_label = NodePath("Panel/VBox/Margin2/VersionChecksumBox/ChecksumLabel")
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1

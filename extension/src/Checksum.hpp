@@ -29,8 +29,8 @@ namespace OpenVic2 {
 		}
 		//END BOILERPLATE
 
-		inline uint64_t get_checksum_text() {
-			return 0;
+		inline char* get_checksum_text() {
+			return "1234abcd";
 		}
 	};
 

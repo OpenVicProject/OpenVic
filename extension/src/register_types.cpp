@@ -14,6 +14,7 @@ using namespace OpenVic2;
 
 static TestSingleton* _test_singleton;
 static Simulation* _simulation;
+static Checksum* _checksum;
 
 void initialize_openvic2_types(ModuleInitializationLevel p_level)
 {
