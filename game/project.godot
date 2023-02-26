@@ -20,6 +20,7 @@ config/project_settings_override.template="user://settings.cfg"
 
 Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
+SFX="*res://src/Autoload/SFX.gd"
 Keychain="*res://addons/keychain/Keychain.gd"
 
 [display]
