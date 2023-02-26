@@ -3,6 +3,12 @@ extends Control
 func _ready():
 	Events.Options.load_settings_from_file()
 
+func _on_main_menu_new_game_button_pressed():
+	$OptionsMenu.toggle_locale_button_visibility(false)
+	$LobbyMenu.show()
+	$MainMenu.hide()
+
+
 func _on_main_menu_options_button_pressed():
 	$OptionsMenu.toggle_locale_button_visibility(false)
 	$OptionsMenu.show()
@@ -12,4 +18,10 @@ func _on_main_menu_options_button_pressed():
 func _on_options_menu_back_button_pressed():
 	$MainMenu.show()
 	$OptionsMenu.hide()
+	$OptionsMenu.toggle_locale_button_visibility(true)
+
+
+func _on_lobby_menu_back_button_pressed():
+	$MainMenu.show()
+	$LobbyMenu.hide()
 	$OptionsMenu.toggle_locale_button_visibility(true)

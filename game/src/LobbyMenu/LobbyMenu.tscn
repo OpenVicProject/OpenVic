@@ -1,0 +1,71 @@
+[gd_scene load_steps=2 format=3 uid="uid://crhkgngfnxf4y"]
+
+[ext_resource type="Script" path="res://src/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
+
+[node name="LobbyMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cvwum")
+
+[node name="GameSelectPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 270.0
+offset_bottom = 718.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSelectPanel"]
+layout_mode = 0
+offset_right = 268.0
+offset_bottom = 717.0
+
+[node name="GameSelectList" type="ItemList" parent="GameSelectPanel/VBoxContainer"]
+custom_minimum_size = Vector2(268, 500)
+layout_mode = 2
+item_count = 2
+item_0/text = "1836"
+item_1/text = "1863"
+
+[node name="MarginContainer" type="MarginContainer" parent="GameSelectPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[node name="GameStartPanel" type="Panel" parent="."]
+offset_left = 1010.0
+offset_right = 1280.0
+offset_bottom = 718.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameStartPanel"]
+layout_mode = 0
+offset_right = 268.0
+offset_bottom = 718.0
+
+[node name="TopMarginContainer" type="MarginContainer" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="SelectedCountryNameLabel" type="Label" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "France"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 550)
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="GameStartPanel/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Start Game"
+
+[connection signal="save_game_selected" from="." to="." method="_on_save_game_selected"]
+[connection signal="item_selected" from="GameSelectPanel/VBoxContainer/GameSelectList" to="." method="_on_game_select_list_item_selected"]
+[connection signal="button_down" from="GameSelectPanel/VBoxContainer/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="button_down" from="GameStartPanel/VBoxContainer/StartButton" to="." method="_on_start_button_button_down"]

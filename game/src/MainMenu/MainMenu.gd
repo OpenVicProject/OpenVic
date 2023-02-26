@@ -1,6 +1,7 @@
 extends Control
 
 signal options_button_pressed
+signal new_game_button_pressed
 
 @export
 var _new_game_button : BaseButton
@@ -13,7 +14,7 @@ func _ready():
 
 func _on_new_game_button_pressed():
 	print("Start a new game!")
-	get_tree().change_scene_to_file("res://src/SampleGame.tscn")
+	new_game_button_pressed.emit()
 
 
 func _on_continue_button_pressed():
