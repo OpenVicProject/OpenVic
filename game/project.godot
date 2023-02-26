@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="OpenVic2"
-run/main_scene="res://src/OpenVic2.tscn"
+run/main_scene="res://src/GameMenu.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 config/icon="res://icon.svg"
 config/project_settings_override.template="user://settings.cfg"
@@ -20,6 +20,7 @@ config/project_settings_override.template="user://settings.cfg"
 
 Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
+SFX="*res://src/Autoload/SFX.gd"
 Keychain="*res://addons/keychain/Keychain.gd"
 
 [display]
