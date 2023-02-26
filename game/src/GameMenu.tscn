@@ -38,4 +38,5 @@ alignment = 2
 [node name="LocaleButton" parent="HBox" instance=ExtResource("4_jno35")]
 layout_mode = 2
 
+[connection signal="options_button_pressed" from="MainMenu" to="." method="_on_main_menu_options_button_pressed"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="." method="_on_options_menu_back_button_pressed"]
