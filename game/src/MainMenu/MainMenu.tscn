@@ -50,7 +50,11 @@ alignment = 1
 [node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../ExitButton")
 focus_neighbor_top = NodePath("../ExitButton")
+focus_neighbor_right = NodePath("../ContinueButton")
+focus_next = NodePath("../ContinueButton")
+focus_previous = NodePath("../ExitButton")
 shortcut_context = NodePath("")
 theme_type_variation = &"Button_MainMenu"
 text = "New Game"
@@ -59,6 +63,10 @@ clip_text = true
 [node name="ContinueButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../NewGameButton")
+focus_neighbor_right = NodePath("../MultiplayerButton")
+focus_next = NodePath("../MultiplayerButton")
+focus_previous = NodePath("../NewGameButton")
 theme_type_variation = &"Button_MainMenu"
 disabled = true
 text = "Continue"
@@ -67,6 +75,10 @@ clip_text = true
 [node name="MultiplayerButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../ContinueButton")
+focus_neighbor_right = NodePath("../OptionsButton")
+focus_next = NodePath("../OptionsButton")
+focus_previous = NodePath("../ContinueButton")
 theme_type_variation = &"Button_MainMenu"
 text = "Multiplayer"
 clip_text = true
@@ -74,6 +86,10 @@ clip_text = true
 [node name="OptionsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../MultiplayerButton")
+focus_neighbor_right = NodePath("../ExitButton")
+focus_next = NodePath("../ExitButton")
+focus_previous = NodePath("../MultiplayerButton")
 theme_type_variation = &"Button_MainMenu"
 text = "Options"
 clip_text = true
@@ -81,7 +97,10 @@ clip_text = true
 [node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
-focus_neighbor_bottom = NodePath("../NewGameButton")
+focus_neighbor_left = NodePath("../OptionsButton")
+focus_neighbor_right = NodePath("../NewGameButton")
+focus_next = NodePath("../NewGameButton")
+focus_previous = NodePath("../OptionsButton")
 theme_type_variation = &"Button_MainMenu"
 text = "Exit"
 clip_text = true
@@ -90,6 +109,28 @@ clip_text = true
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.35
+
+[node name="Margin2" type="MarginContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 10
+
+[node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/Margin2"]
+layout_mode = 2
+
+[node name="VersionLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
+layout_mode = 2
+tooltip_text = "OpenVic2 v0.01 \"Primum Mobile\""
+mouse_filter = 1
+text = "v0.01"
+
+[node name="ChecksumLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
+layout_mode = 2
+tooltip_text = "Checksum 00000000"
+mouse_filter = 1
+theme_override_colors/font_color = Color(0.247059, 0.392157, 1, 1)
+text = "(0000)"
 
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]

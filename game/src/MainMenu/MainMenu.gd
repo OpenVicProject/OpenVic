@@ -5,9 +5,14 @@ signal options_button_pressed
 @export
 var _new_game_button : BaseButton
 
+@export
+var _checksum_label : Label
+
 func _ready():
 	print("From GDScript")
 	TestSingleton.hello_singleton()
+	_checksum_label.tooltip_text = "Checksum " + Checksum.get_checksum_text()
+	_checksum_label.text = "(" + Checksum.get_checksum_text().substr(0, 4) + ")"
 	_new_game_button.grab_focus()
 
 
