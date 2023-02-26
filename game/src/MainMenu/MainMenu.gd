@@ -12,6 +12,8 @@ func _ready():
 	_new_game_button.grab_focus()
 
 
+# REQUIREMENTS:
+# * UIFUN-32
 func _on_new_game_button_pressed():
 	print("Start a new game!")
 	new_game_button_pressed.emit()
