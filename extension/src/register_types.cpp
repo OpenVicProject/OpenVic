@@ -7,12 +7,14 @@
 
 #include "TestSingleton.hpp"
 #include "Simulation.hpp"
+#include "Checksum.hpp"
 
 using namespace godot;
 using namespace OpenVic2;
 
 static TestSingleton* _test_singleton;
 static Simulation* _simulation;
+static Checksum* _checksum;
 
 void initialize_openvic2_types(ModuleInitializationLevel p_level)
 {
@@ -28,6 +30,10 @@ void initialize_openvic2_types(ModuleInitializationLevel p_level)
 	_simulation = memnew(Simulation);
 	Engine::get_singleton()->register_singleton("Simulation", Simulation::get_singleton());
 
+	ClassDB::register_class<Checksum>();
+	_checksum = memnew(Checksum);
+	Engine::get_singleton()->register_singleton("Checksum", Checksum::get_singleton());
+
 }
 
 void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
@@ -40,6 +46,9 @@ void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("Simulation");
 	memdelete(_simulation);
+
+	Engine::get_singleton()->unregister_singleton("Checksum");
+	memdelete(_checksum);
 }
 
 extern "C"
