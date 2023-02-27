@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmnqyvl3qfq2e"]
+
+[ext_resource type="Script" path="res://src/MusicConductor/MusicUIController.gd" id="1_u4qbn"]
+
+[node name="MusicUIController" type="Control"]
+layout_mode = 3
+anchor_right = 0.11
+anchor_bottom = 0.165
+offset_right = 0.199997
+offset_bottom = 0.199997
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u4qbn")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MusicNameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "ABC"
+
+[node name="ProgressSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PreviousSongButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Prev"
+
+[node name="PlayPauseButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = ">"
+
+[node name="NextSongButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Next"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousSongButton" to="." method="_on_previous_song_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PlayPauseButton" to="." method="_on_play_pause_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/NextSongButton" to="." method="_on_next_song_button_pressed"]

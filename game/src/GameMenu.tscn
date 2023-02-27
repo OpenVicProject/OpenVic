@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4pg2y2ivib8f"]
+[gd_scene load_steps=7 format=3 uid="uid://b4pg2y2ivib8f"]
 
 [ext_resource type="Script" path="res://src/GameMenu.gd" id="1_cafwe"]
 [ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu/MainMenu.tscn" id="2_2jbkh"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="3_111lv"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="4_jno35"]
 [ext_resource type="PackedScene" uid="uid://crhkgngfnxf4y" path="res://src/LobbyMenu/LobbyMenu.tscn" id="4_nofk1"]
+[ext_resource type="PackedScene" uid="uid://dmnqyvl3qfq2e" path="res://src/MusicConductor/MusicUIController.tscn" id="6_lts1m"]
 
 [node name="GameMenu" type="Control"]
 layout_mode = 3
@@ -18,6 +19,14 @@ script = ExtResource("1_cafwe")
 [node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]
 layout_mode = 1
 metadata/_edit_vertical_guides_ = [251.0, 269.0, 504.0, 523.0, 15.0, 759.0, 777.0]
+
+[node name="MusicUIController" parent="." instance=ExtResource("6_lts1m")]
+layout_mode = 1
+anchor_left = 0.843
+anchor_right = 0.953
+offset_left = -0.0400391
+offset_right = 0.159912
+metadata/_edit_use_anchors_ = true
 
 [node name="OptionsMenu" parent="." instance=ExtResource("3_111lv")]
 visible = false

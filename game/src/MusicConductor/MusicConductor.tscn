@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://b1h31mnn8n2nu"]
+
+[ext_resource type="Script" path="res://src/MusicConductor/MusicConductor.gd" id="1_56t1b"]
+
+[node name="MusicConductor" type="Node"]
+script = ExtResource("1_56t1b")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+bus = &"Music"
+
+[connection signal="finished" from="AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
