@@ -29,8 +29,8 @@ namespace OpenVic2 {
 		}
 		//END BOILERPLATE
 
-		inline char* get_checksum_text() {
-			return "1234abcd";
+		inline godot::String get_checksum_text() {
+			return godot::String("1234abcd");
 		}
 	};
 
