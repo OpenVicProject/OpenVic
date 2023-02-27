@@ -10,7 +10,7 @@ func _ready():
 	var dir = DirAccess.open(_audio_directory_path)
 	for fname in dir.get_files():
 		match fname.get_extension():
-			"ogg", "wav", "mp3:
+			"ogg", "wav", "mp3":
 				_loaded_sound[fname.get_basename()] = load(_audio_directory_path.path_join(fname)) # SND-10
 
 func play_stream(sound : AudioStream, bus_type : String) -> void:
