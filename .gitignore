@@ -65,3 +65,6 @@ bin/*
 
 # Build configuarion.
 /custom.py
+
+# MacOS stuff
+.DS_Store
