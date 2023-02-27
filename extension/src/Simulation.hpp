@@ -8,7 +8,7 @@
 namespace OpenVic2 {
 	class Simulation : public godot::Object {
 		GDCLASS(Simulation, godot::Object)
-		std::vector<size_t> exampleProvinces;
+		std::vector<uint64_t> exampleProvinces;
 
 		//BEGIN BOILERPLATE
 		static Simulation* _simulation;
@@ -35,12 +35,12 @@ namespace OpenVic2 {
 		//END BOILERPLATE
 
 		inline void conductSimulationStep() {
-			for (size_t x = 0; x < exampleProvinces.size(); x++) {
+			for (uint64_t x = 0; x < exampleProvinces.size(); x++) {
 				exampleProvinces[x] += (x + 1);
 			}
 		}
 
-		inline size_t queryProvinceSize(size_t provinceID) {
+		inline uint64_t queryProvinceSize(uint64_t provinceID) {
 			if (provinceID >= exampleProvinces.size()) {
 				return 0;
 			}

@@ -21,28 +21,23 @@ func _ready():
 # REQUIREMENTS:
 # * UIFUN-32
 func _on_new_game_button_pressed():
-	SFX.play("click")
 	print("Start a new game!")
 	new_game_button_pressed.emit()
 
 
 func _on_continue_button_pressed():
-	SFX.play("click")
 	print("Continue last game!")
 
 
 func _on_multi_player_button_pressed():
-	SFX.play("click")
 	print("Have fun with friends!")
 
 
 func _on_options_button_pressed():
-	SFX.play("click")
 	print("Check out some options!")
 	options_button_pressed.emit()
 
 
 func _on_exit_button_pressed():
-	await SFX.play("click")
 	print("See you later!")
 	get_tree().quit()
