@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dvoin538iby54"]
 
-[ext_resource type="Theme" uid="uid://1xrgnmmnrnce" path="res://default_theme.theme" id="1_6d448"]
+[ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="1_dfm41"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 
 [node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_checksum_label")]
@@ -10,7 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_6d448")
+theme = ExtResource("1_dfm41")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
 _checksum_label = NodePath("Panel/VBox/Margin2/VersionChecksumBox/ChecksumLabel")
@@ -130,7 +130,7 @@ text = "v0.01"
 layout_mode = 2
 tooltip_text = "Checksum 00000000"
 mouse_filter = 1
-theme_override_colors/font_color = Color(0.247059, 0.392157, 1, 1)
+theme_type_variation = &"Label_Checksum"
 text = "(0000)"
 
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
