@@ -1,9 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://c8knthxkwj1uj"]
+[gd_scene load_steps=2 format=3 uid="uid://c8knthxkwj1uj"]
 
 [ext_resource type="Script" path="res://src/Credits/Credits.gd" id="1_csd7i"]
-[ext_resource type="LabelSettings" uid="uid://biqo8cmnvubow" path="res://src/Credits/ProjectLabelSettings.tres" id="2_u7onr"]
-[ext_resource type="LabelSettings" uid="uid://dm4km45avs13l" path="res://src/Credits/RoleLabelSettings.tres" id="3_y8oin"]
-[ext_resource type="LabelSettings" uid="uid://bwmyvoa3q0ve5" path="res://src/Credits/PersonLabelSettings.tres" id="4_004ma"]
 
 [node name="Credits" type="Control" node_paths=PackedStringArray("credits_list")]
 editor_description = "UI-34"
@@ -15,9 +12,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_csd7i")
 core_credits_path = "res://common/credits.csv"
-label_settings_project = ExtResource("2_u7onr")
-label_settings_role = ExtResource("3_y8oin")
-label_settings_personel = ExtResource("4_004ma")
+label_variants_project = &"Label_ProjectCredits"
+label_variants_role = &"Label_RoleCredits"
+label_variants_person = &"Label_PersonCredits"
 credits_list = NodePath("Scroll/CreditsList")
 
 [node name="ControlMargin" type="MarginContainer" parent="."]
