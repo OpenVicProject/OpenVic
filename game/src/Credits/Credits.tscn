@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8knthxkwj1uj"]
+
+[ext_resource type="Script" path="res://src/Credits/Credits.gd" id="1_csd7i"]
+[ext_resource type="LabelSettings" uid="uid://biqo8cmnvubow" path="res://src/Credits/ProjectLabelSettings.tres" id="2_u7onr"]
+[ext_resource type="LabelSettings" uid="uid://dm4km45avs13l" path="res://src/Credits/RoleLabelSettings.tres" id="3_y8oin"]
+[ext_resource type="LabelSettings" uid="uid://bwmyvoa3q0ve5" path="res://src/Credits/PersonLabelSettings.tres" id="4_004ma"]
+
+[node name="Credits" type="Control" node_paths=PackedStringArray("credits_list")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_csd7i")
+core_credits_path = "res://common/credits.csv"
+label_settings_project = ExtResource("2_u7onr")
+label_settings_role = ExtResource("3_y8oin")
+label_settings_personel = ExtResource("4_004ma")
+credits_list = NodePath("Scroll/CreditsList")
+
+[node name="ControlMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+anchor_right = 1.0
+anchor_bottom = 0.071
+offset_bottom = -0.120003
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="BackButton" type="Button" parent="ControlMargin"]
+layout_mode = 2
+text = "Back to Main Menu"
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+anchor_top = 0.071
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -0.120003
+offset_bottom = -6.0
+
+[node name="CreditsList" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="pressed" from="ControlMargin/BackButton" to="." method="_on_back_button_pressed"]

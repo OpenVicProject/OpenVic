@@ -68,3 +68,5 @@ bin/*
 
 # MacOS stuff
 .DS_Store
+
+*.translation
