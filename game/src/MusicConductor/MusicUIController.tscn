@@ -17,15 +17,15 @@ layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="MusicNameLabel" type="Label" parent="VBoxContainer"]
+[node name="SongSelectorButton" type="OptionButton" parent="VBoxContainer"]
 layout_mode = 2
-text = "ABC"
 
 [node name="ProgressSlider" type="HSlider" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="PreviousSongButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -40,6 +40,16 @@ text = ">"
 layout_mode = 2
 text = "Next"
 
+[node name="MusicUIVisibilityButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+text = "Hide Player"
+
+[connection signal="item_selected" from="VBoxContainer/SongSelectorButton" to="." method="_on_option_button_item_selected"]
+[connection signal="drag_ended" from="VBoxContainer/ProgressSlider" to="." method="_on_progress_slider_drag_ended"]
+[connection signal="drag_started" from="VBoxContainer/ProgressSlider" to="." method="_on_progress_slider_drag_started"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousSongButton" to="." method="_on_previous_song_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/PlayPauseButton" to="." method="_on_play_pause_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/NextSongButton" to="." method="_on_next_song_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MusicUIVisibilityButton" to="." method="_on_music_ui_visibility_button_pressed"]
