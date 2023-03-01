@@ -23,6 +23,11 @@ func _ready():
 
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
+	
+func _notification(what):
+	match what:
+		NOTIFICATION_TRANSLATION_CHANGED:
+			_select_locale_by_string(TranslationServer.get_locale())
 
 func _valid_index(index : int) -> bool:
 	return 0 <= index and index < _locales_list.size()
@@ -32,12 +37,18 @@ func load_setting(file : ConfigFile) -> void:
 	var load_value = file.get_value(section_name, setting_name, TranslationServer.get_locale())
 	match typeof(load_value):
 		TYPE_STRING, TYPE_STRING_NAME:
-			var locale_index := _locales_list.find(load_value as String)
-			if locale_index != -1:
-				selected = locale_index
+			if _select_locale_by_string(load_value as String):
+				item_selected.emit(selected)
 				return
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	reset_setting()
+	
+func _select_locale_by_string(locale : String) -> bool:
+	var locale_index := _locales_list.find(locale)
+	if locale_index != -1:
+		selected = locale_index
+		return true
+	return false
 
 # REQUIREMENTS:
 # * UIFUN-74

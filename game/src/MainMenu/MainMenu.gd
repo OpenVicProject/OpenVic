@@ -16,12 +16,10 @@ var _checksum_label : Label
 func _ready():
 	print("From GDScript")
 	TestSingleton.hello_singleton()
-	# UIFUN-97
-	var checksum := Checksum.get_checksum_text()
-	_checksum_label.tooltip_text = "Checksum " + checksum
-	_checksum_label.text = "(" + checksum.substr(0, 4) + ")"
-	_new_game_button.grab_focus()
-
+	# UI-111
+	_checksum_label.tooltip_text = "Checksum " + Checksum.get_checksum_text()
+	_checksum_label.text = "(" + Checksum.get_checksum_text().substr(0, 4) + ")"
+	_on_new_game_button_visibility_changed()
 
 # REQUIREMENTS:
 # * SS-14
@@ -55,3 +53,7 @@ func _on_credits_button_pressed():
 func _on_exit_button_pressed():
 	print("See you later!")
 	get_tree().quit()
+
+func _on_new_game_button_visibility_changed():
+	if visible:
+		_new_game_button.grab_focus.call_deferred()

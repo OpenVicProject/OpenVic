@@ -1,12 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://bq3awxxjn1tuw"]
+[gd_scene load_steps=7 format=3 uid="uid://bq3awxxjn1tuw"]
 
 [ext_resource type="Script" path="res://src/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
+[ext_resource type="Script" path="res://src/OptionMenu/VideoTab.gd" id="1_jvv62"]
 [ext_resource type="Script" path="res://src/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
 [ext_resource type="Script" path="res://src/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
+[ext_resource type="Script" path="res://src/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
+[ext_resource type="Script" path="res://src/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
 
-[node name="Video" type="HBoxContainer"]
+[node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
+editor_description = "UI-46"
 tooltip_text = "This is my cool and very nice tooltip"
 alignment = 1
+script = ExtResource("1_jvv62")
+initial_focus = NodePath("VBoxContainer/GridContainer/ResolutionSelector")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -28,6 +34,7 @@ text = "Resolution"
 [node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-19"
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../ScreenModeSelector")
 item_count = 1
 selected = 0
 popup/item_0/text = "MISSING"
@@ -43,6 +50,8 @@ text = "Screen Mode"
 
 [node name="ScreenModeSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../ResolutionSelector")
+focus_neighbor_bottom = NodePath("../MonitorDisplaySelector")
 item_count = 3
 selected = 0
 popup/item_0/text = "Fullscreen"
@@ -61,6 +70,8 @@ text = "Monitor Selection"
 
 [node name="MonitorDisplaySelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
+focus_neighbor_top = NodePath("../ScreenModeSelector")
+focus_neighbor_bottom = NodePath("../RefreshRateSelector")
 item_count = 1
 selected = 0
 popup/item_0/text = "MISSING"
@@ -68,6 +79,64 @@ popup/item_0/id = 0
 script = ExtResource("3_y6lyb")
 section_name = "Video"
 setting_name = "Current Screen"
+
+[node name="RefreshRateLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Refresh Rate"
+
+[node name="RefreshRateSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+editor_description = "UI-18"
+layout_mode = 2
+tooltip_text = "Only change from VSYNC if you are having issues with screen tearing."
+focus_neighbor_top = NodePath("../MonitorDisplaySelector")
+focus_neighbor_bottom = NodePath("../QualityPresetSelector")
+item_count = 8
+selected = 0
+popup/item_0/text = "VSYNC"
+popup/item_0/id = 0
+popup/item_1/text = "30hz"
+popup/item_1/id = 1
+popup/item_2/text = "60hz"
+popup/item_2/id = 2
+popup/item_3/text = "90hz"
+popup/item_3/id = 3
+popup/item_4/text = "120hz"
+popup/item_4/id = 4
+popup/item_5/text = "144hz"
+popup/item_5/id = 5
+popup/item_6/text = "365hz"
+popup/item_6/id = 6
+popup/item_7/text = "Unlimited"
+popup/item_7/id = 7
+script = ExtResource("4_381mg")
+section_name = "Video"
+setting_name = "Refresh Rate"
+default_selected = 0
+
+[node name="QualityPresetLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "Quality Preset"
+
+[node name="QualityPresetSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+editor_description = "UI-21"
+layout_mode = 2
+focus_neighbor_top = NodePath("../RefreshRateSelector")
+item_count = 5
+selected = 1
+popup/item_0/text = "Low"
+popup/item_0/id = 0
+popup/item_1/text = "Medium"
+popup/item_1/id = 1
+popup/item_2/text = "High"
+popup/item_2/id = 2
+popup/item_3/text = "Ultra"
+popup/item_3/id = 3
+popup/item_4/text = "Custom"
+popup/item_4/id = 4
+script = ExtResource("5_srg4v")
+section_name = "Video"
+setting_name = "Quality Preset"
+default_selected = 1
 
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ScreenModeSelector" to="VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]

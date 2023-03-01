@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://o4u142w4qkln"]
+[gd_scene load_steps=8 format=3 uid="uid://o4u142w4qkln"]
 
 [ext_resource type="Script" path="res://src/GameMenu.gd" id="1_cafwe"]
 [ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="1_q3b4c"]
 [ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu/MainMenu.tscn" id="2_2jbkh"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="3_111lv"]
-[ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="4_jno35"]
 [ext_resource type="PackedScene" uid="uid://c8knthxkwj1uj" path="res://src/Credits/Credits.tscn" id="4_n0hoo"]
 [ext_resource type="PackedScene" uid="uid://crhkgngfnxf4y" path="res://src/LobbyMenu/LobbyMenu.tscn" id="4_nofk1"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/MusicConductor/MusicPlayer.tscn" id="6_lts1m"]
@@ -34,22 +33,6 @@ layout_mode = 1
 [node name="Credits" parent="." instance=ExtResource("4_n0hoo")]
 visible = false
 layout_mode = 1
-
-[node name="HBox" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -20.0
-grow_horizontal = 0
-grow_vertical = 0
-alignment = 2
-
-[node name="LocaleButton" parent="HBox" instance=ExtResource("4_jno35")]
-layout_mode = 2
 
 [node name="MusicPlayer" parent="." instance=ExtResource("6_lts1m")]
 layout_mode = 1

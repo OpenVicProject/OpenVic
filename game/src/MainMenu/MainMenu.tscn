@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dvoin538iby54"]
+[gd_scene load_steps=4 format=3 uid="uid://dvoin538iby54"]
 
 [ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="1_dfm41"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
+[ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
 
 [node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_checksum_label")]
 editor_description = "UI-13"
@@ -152,7 +153,14 @@ mouse_filter = 1
 theme_type_variation = &"Label_Checksum"
 text = "(0000)"
 
+[node name="LocaleButton" parent="Panel/VBox/Margin2" instance=ExtResource("3_amonp")]
+layout_mode = 2
+size_flags_horizontal = 8
+alignment = 0
+text_overrun_behavior = 4
+
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="visibility_changed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_visibility_changed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
 [connection signal="pressed" from="Panel/VBox/Margin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
