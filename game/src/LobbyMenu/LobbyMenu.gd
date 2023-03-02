@@ -1,4 +1,4 @@
-extends Control
+extends HBoxContainer
 
 # REQUIREMENTS:
 # * 1.4 Game Lobby Menu

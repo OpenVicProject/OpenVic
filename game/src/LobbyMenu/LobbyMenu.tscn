@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" path="res://src/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
 
-[node name="LobbyMenu" type="Control" node_paths=PackedStringArray("start_button")]
-layout_mode = 3
+[node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("start_button")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,60 +11,68 @@ grow_vertical = 2
 script = ExtResource("1_cvwum")
 start_button = NodePath("GameStartPanel/VBoxContainer/StartButton")
 
-[node name="GameSelectPanel" type="Panel" parent="."]
-layout_mode = 0
-offset_right = 270.0
-offset_bottom = 718.0
+[node name="GameSelectPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameSelectPanel"]
-layout_mode = 0
-offset_right = 268.0
-offset_bottom = 717.0
+layout_mode = 2
 
 [node name="GameSelectList" type="ItemList" parent="GameSelectPanel/VBoxContainer"]
-custom_minimum_size = Vector2(268, 500)
 layout_mode = 2
+size_flags_vertical = 3
 item_count = 2
 item_0/text = "1836"
 item_1/text = "1863"
 
-[node name="MarginContainer" type="MarginContainer" parent="GameSelectPanel/VBoxContainer"]
+[node name="Spacer" type="Control" parent="GameSelectPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
 layout_mode = 2
 text = "Back"
 
-[node name="GameStartPanel" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 1010.0
-offset_right = 1280.0
-offset_bottom = 718.0
+[node name="Spacer2" type="Control" parent="GameSelectPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.75
+mouse_filter = 2
+
+[node name="GameStartPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="GameStartPanel"]
-layout_mode = 0
-offset_right = 268.0
-offset_bottom = 718.0
+layout_mode = 2
 
-[node name="TopMarginContainer" type="MarginContainer" parent="GameStartPanel/VBoxContainer"]
+[node name="Spacer" type="Control" parent="GameStartPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 
 [node name="SelectedCountryNameLabel" type="Label" parent="GameStartPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "France"
 horizontal_alignment = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="GameStartPanel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 550)
+[node name="Spacer2" type="Control" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="StartButton" type="Button" parent="GameStartPanel/VBoxContainer"]
 layout_mode = 2
 disabled = true
 text = "Start Game"
+
+[node name="Spacer3" type="Control" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
 
 [connection signal="save_game_selected" from="." to="." method="_on_save_game_selected"]
 [connection signal="item_selected" from="GameSelectPanel/VBoxContainer/GameSelectList" to="." method="_on_game_select_list_item_selected"]
