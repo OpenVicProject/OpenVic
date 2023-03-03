@@ -141,17 +141,17 @@ fashion to the data files and their exclusion from the export
 
 Asset files should be organized within a relevant category from root/
 ```
-root/art/
-root/music/
-root/sfx/
+root/images/
+root/audio/
+root/models/
 ```
 
 Asset files should be organized in a subdirectory that specifies it's relevancy within the application.
 ```
 root/art/economy/
 root/art/military/
-root/sfx/economy/
-root/sfx/technology/
+root/audio/sfx/
+root/audio/music/
 ```
 
 Asset files should be prefixed by the asset type
