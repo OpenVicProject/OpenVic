@@ -154,19 +154,6 @@ root/audio/sfx/
 root/audio/music/
 ```
 
-Asset files should be prefixed by the asset type
-```
-iconCoal.png
-modelSoldier.obj
-ostTheCrown.mp3
-videoIntro.mp4
-```
-
-The prefix can be removed if the file is within a subdirectory that replaces the asset type
-```
-./iconCoal.png -> ./icon/Coal.png
-./ostTheCrown.png -> ./ost/TheCrown.mp3
-```
 
 #### Naming Convention
 
@@ -181,11 +168,6 @@ TheCrown.mp3
 Coal.png
 ```
 
-Asset files with a prefix should have that prefix be lowercase.
-```
-ostTheCrown.mp3
-iconCoal.png
-```
 
 ### Data File Organization
 
@@ -208,10 +190,9 @@ Data files that are complex data like a bitmap should make use of the standard f
 root/common/map/provinces.bmp
 ```
 
-Data files can be further organized by subdirectory or prefix.
+Data files can be further organized by subdirectory.
 ```
 root/common/economy/goods/Coal.ov2d
-root/common/economy/goodsCoal.ov2d
 ```
 
 #### Naming Convention
@@ -221,12 +202,7 @@ Data file subdirectories should be snake_case.
 root/common/economy/technology/
 ```
 
-Data files should be PascalCase if there is no prefix.
+Data files should be PascalCase.
 ```
-root/common/economy/goods/Coal.ov2d
-```
-
-Data files with a prefix should have that prefix in lowercase.
-```
-root/common/economy/goodsCoal.ov2d
+root/common/economy/goods/Coal.txt
 ```
