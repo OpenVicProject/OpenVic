@@ -124,14 +124,14 @@ root/
 
 #### Naming Convention
 
-Directory names should be snake_case.
+Subdirectories for Godot files should be PascalCase.
 ```
-root/src/game_session/
+root/src/GameSession/
 ```
 
 File names should be PascalCase.
 ```
-root/src/game_session/Map.tscn
+root/src/GameSession/Map.tscn
 ```
 
 ### Asset Organization
@@ -170,7 +170,10 @@ The prefix can be removed if the file is within a subdirectory that replaces the
 
 #### Naming Convention
 
-Directories should be snake_case.
+Asset file subdirectories should be snake_case.
+```
+root/art/icons/goods/
+```
 
 Asset files should be PascalCase for their name.
 ```
@@ -213,9 +216,9 @@ root/common/economy/goodsCoal.ov2d
 
 #### Naming Convention
 
-Directories should be snake_case.
+Data file subdirectories should be snake_case.
 ```
-root/common/economy_technology/
+root/common/economy/technology/
 ```
 
 Data files should be PascalCase if there is no prefix.
