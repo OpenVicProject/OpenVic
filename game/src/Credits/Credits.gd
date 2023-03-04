@@ -32,72 +32,85 @@ var label_settings_personel : LabelSettings
 @export
 var credits_list: VBoxContainer
 
+const title_str : String = "TITLE"
+
 # REQUIREMENTS:
 # * 1.5 Credits Menu
 # * SS-17
 
 # REQUIREMENTS
 # * FS-4
-func load_credit_file(path):
-	var roles = {}
+func _load_credit_file(path : String) -> Dictionary:
+	var roles := {}
 	var core_credits = FileAccess.open(path, FileAccess.READ)
+	if core_credits == null:
+		push_error("Failed to open credits file %s (error code %d)" % [path, FileAccess.get_open_error()])
+		return roles
 
 	while not core_credits.eof_reached():
-		var line = core_credits.get_csv_line()
+		var line := core_credits.get_csv_line()
+		var role := line[0].strip_edges().to_upper()
 
 		# If the line does not have an identifiable role or is empty then skip it
-		if line[0].is_empty():
+		if role.is_empty() or line.size() < 2:
+			if not (role.is_empty() and line.size() < 2):
+				push_warning("Incorrectly formatted credit line %s in %s" % [line, path])
 			continue
 
-		var role := line[0].to_upper()
-		var person : String = line[1] # Cannot infer with := as line[1] does not have a set type
+		var person := line[1].strip_edges()
 
-		if role not in roles.keys():
-			roles[role] = []
-			roles[role].push_back(person)
+		if person.is_empty():
+			push_warning("Incorrectly formatted credit line %s in %s" % [line, path])
+			continue
+		if line.size() > 2:
+			push_warning("Extra entries ignored in credit line %s in %s" % [line, path])
+
+		if role not in roles:
+			roles[role] = [person]
 		else:
-			roles[role].push_back(person)
-
+			if person in roles[role]:
+				push_warning("Duplicate person %s for role %s in %s" % [person, role, path])
+			else:
+				roles[role].push_back(person)
+	if title_str in roles:
+		if roles[title_str].size() > 1:
+			push_warning("More than one %s: %s in %s" % [title_str, roles[title_str], path])
+			roles[title_str] = [roles[title_str][0]]
+	else:
+		push_warning("Credits file %s missing %s" % [path, title_str])
+	for role_list in roles.values():
+		role_list.sort_custom(func(a : String, b : String) -> bool: return a.naturalnocasecmp_to(b) < 0)
 	return roles
+
+func _add_label(node : Node, text : String, settings : LabelSettings) -> void:
+	var label := Label.new()
+	label.name = 'Label' + text
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.label_settings = settings
+	node.add_child(label)
 
 # REQUIREMENTS:
 # * UI-34, UI-35
-func make_project_credits(project):
+func _add_project_credits(project) -> void:
 	var project_credits_list = VBoxContainer.new()
-	var project_credits_label = Label.new()
+	project_credits_list.name = 'Credits'
+	if title_str in project:
+		var title : String = project[title_str][0]
+		project_credits_list.name += title
+		_add_label(project_credits_list, title, label_settings_project)
+		project_credits_list.add_child(HSeparator.new())
 
-
-	# Spartan has some suggestions here but for now its good enough. Refer
-	# to PR 16 resolved comments for further details
-	project_credits_list.name = 'Credits' + project['TITLE'][0]
-	project_credits_label.name = 'Label' + project['TITLE'][0]
-	project_credits_label.text = project['TITLE'][0]
-	project_credits_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	project_credits_label.label_settings = label_settings_project
-
-	for role in project.keys():
-		if role == 'TITLE':
+	for role in project:
+		if role == title_str:
 			continue
 
 		var role_parent = VBoxContainer.new()
-		var role_label = Label.new()
-
-		role_parent.name = 'Role' + role
-		role_label.name = 'Label' + role
-		role_label.text = role
-		role_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		role_label.label_settings = label_settings_role
 
 		for person in project[role]:
-			var person_label = Label.new()
+			_add_label(role_parent, person, label_settings_personel)
 
-			person_label.name = 'Label' + person
-			person_label.text = person
-			person_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			person_label.label_settings = label_settings_personel
-			role_parent.add_child(person_label)
-
-		project_credits_list.add_child(role_label)
+		_add_label(project_credits_list, role, label_settings_role)
 		project_credits_list.add_child(role_parent)
 		project_credits_list.add_child(HSeparator.new())
 
@@ -106,11 +119,10 @@ func make_project_credits(project):
 # REQUIREMENTS:
 # * SS-17
 func _ready():
-	var core_credits = load_credit_file(core_credits_path)
-	make_project_credits(core_credits)
+	_add_project_credits(_load_credit_file(core_credits_path))
 
 # REQUIREMENTS:
 # * UI-38
 # * UIFUN-37
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
 	back_button_pressed.emit()
