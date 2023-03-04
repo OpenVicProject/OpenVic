@@ -32,7 +32,7 @@ var label_settings_personel : LabelSettings
 @export
 var credits_list: VBoxContainer
 
-const title_str : String = "TITLE"
+const title_key : String = "TITLE"
 
 # REQUIREMENTS:
 # * 1.5 Credits Menu
@@ -72,12 +72,12 @@ func _load_credit_file(path : String) -> Dictionary:
 				push_warning("Duplicate person %s for role %s in %s" % [person, role, path])
 			else:
 				roles[role].push_back(person)
-	if title_str in roles:
-		if roles[title_str].size() > 1:
-			push_warning("More than one %s: %s in %s" % [title_str, roles[title_str], path])
-			roles[title_str] = [roles[title_str][0]]
+	if title_key in roles:
+		if roles[title_key].size() > 1:
+			push_warning("More than one %s: %s in %s" % [title_key, roles[title_key], path])
+			roles[title_key] = [roles[title_key][0]]
 	else:
-		push_warning("Credits file %s missing %s" % [path, title_str])
+		push_warning("Credits file %s missing %s" % [path, title_key])
 	for role_list in roles.values():
 		role_list.sort_custom(func(a : String, b : String) -> bool: return a.naturalnocasecmp_to(b) < 0)
 	return roles
@@ -92,17 +92,17 @@ func _add_label(node : Node, text : String, settings : LabelSettings) -> void:
 
 # REQUIREMENTS:
 # * UI-34, UI-35
-func _add_project_credits(project) -> void:
+func _add_project_credits(project : Dictionary) -> void:
 	var project_credits_list = VBoxContainer.new()
 	project_credits_list.name = 'Credits'
-	if title_str in project:
-		var title : String = project[title_str][0]
+	if title_key in project:
+		var title : String = project[title_key][0]
 		project_credits_list.name += title
 		_add_label(project_credits_list, title, label_settings_project)
 		project_credits_list.add_child(HSeparator.new())
 
 	for role in project:
-		if role == title_str:
+		if role == title_key:
 			continue
 
 		var role_parent = VBoxContainer.new()
