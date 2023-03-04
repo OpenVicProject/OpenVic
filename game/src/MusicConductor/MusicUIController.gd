@@ -1,5 +1,12 @@
 extends Control
+
 # UI-104
+@export var songSelectorButton : OptionButton
+@export var progressSlider : HSlider
+@export var prevSongButton : Button
+@export var playPauseButton : Button
+@export var nextSongButton : Button
+@export var widgetVisibilityButton : Button
 
 var isMusicPlayerVisible : bool = true
 var isUserDraggingProgressSlider : bool = false
@@ -7,20 +14,20 @@ var isUserDraggingProgressSlider : bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	for songName in MusicConductor.getAllSongNames():
-		$VBoxContainer/SongSelectorButton.add_item(songName, $VBoxContainer/SongSelectorButton.item_count)
+		songSelectorButton.add_item(songName, songSelectorButton.item_count)
 	updateSongNameVisual()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	if !isUserDraggingProgressSlider:
-		$VBoxContainer/ProgressSlider.value = MusicConductor.getCurrentSongProgressPercentage()
+		progressSlider.value = MusicConductor.getCurrentSongProgressPercentage()
 
 func updateSongNameVisual():
-	$VBoxContainer/SongSelectorButton.selected = MusicConductor.getCurrentSongIndex()
+	songSelectorButton.selected = MusicConductor.getCurrentSongIndex()
 
 func updatePlayPauseButtonVisual():
-	$VBoxContainer/HBoxContainer/PlayPauseButton.text = "||" if MusicConductor.isPaused() else ">"
+	playPauseButton.text = "||" if MusicConductor.isPaused() else ">"
 
 func _on_play_pause_button_pressed():
 	MusicConductor.togglePlayPause()
@@ -47,13 +54,15 @@ func _on_progress_slider_drag_started():
 
 
 func _on_progress_slider_drag_ended(_value_changed):
-	MusicConductor.scrubSongByPercentage($VBoxContainer/ProgressSlider.value)
+	MusicConductor.scrubSongByPercentage(progressSlider.value)
 	isUserDraggingProgressSlider = false
 
 # UI-107
 func _on_music_ui_visibility_button_pressed():
 	isMusicPlayerVisible = !isMusicPlayerVisible
-	$VBoxContainer/MusicUIVisibilityButton.text = "Hide Player" if isMusicPlayerVisible else "Show Player"
-	$VBoxContainer/SongSelectorButton.visible = isMusicPlayerVisible
-	$VBoxContainer/ProgressSlider.visible = isMusicPlayerVisible
-	$VBoxContainer/HBoxContainer.visible = isMusicPlayerVisible
+	widgetVisibilityButton.text = "Hide Player" if isMusicPlayerVisible else "Show Player"
+	songSelectorButton.visible = isMusicPlayerVisible
+	progressSlider.visible = isMusicPlayerVisible
+	prevSongButton.visible = isMusicPlayerVisible
+	playPauseButton.visible = isMusicPlayerVisible
+	nextSongButton.visible = isMusicPlayerVisible

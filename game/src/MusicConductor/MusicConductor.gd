@@ -1,5 +1,9 @@
 extends Node
+
 # SS-67
+@export_dir var musicDir : String
+@export_file var firstSongName : String
+
 var selectedTrack = 0
 var availableSongs : Array[SongInfo] = []
 var autoPlayNextSong : bool = true
@@ -49,12 +53,12 @@ func prevSong() -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var dir = DirAccess.open("res://audio/music/")
+	var dir = DirAccess.open(musicDir)
 	for fname in dir.get_files():
-		if fname.ends_with(".mp3"):
-			if fname == "The_Crown.mp3":
+		if fname.ends_with(".mp3") or fname.ends_with(".ogg") or fname.ends_with(".wav"):
+			if fname == firstSongName:
 				selectedTrack = availableSongs.size()
-			availableSongs.append(SongInfo.new("res://audio/music/", fname))
+			availableSongs.append(SongInfo.new(musicDir, fname))
 	startCurrentSong()
 
 
