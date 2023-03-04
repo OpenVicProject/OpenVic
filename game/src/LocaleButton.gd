@@ -39,6 +39,8 @@ func load_setting(file : ConfigFile) -> void:
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	reset_setting()
 
+# REQUIREMENTS:
+# * UIFUN-74
 func save_setting(file : ConfigFile) -> void:
 	if file == null: return
 	file.set_value(section_name, setting_name, _locales_list[selected])
@@ -46,6 +48,8 @@ func save_setting(file : ConfigFile) -> void:
 func reset_setting() -> void:
 	selected = _locales_list.find(TranslationServer.get_locale())
 
+# REQUIREMENTS:
+# * SS-58
 func _on_item_selected(index : int) -> void:
 	if _valid_index(index):
 		TranslationServer.set_locale(_locales_list[index])

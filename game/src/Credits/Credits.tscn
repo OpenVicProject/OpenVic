@@ -6,6 +6,7 @@
 [ext_resource type="LabelSettings" uid="uid://bwmyvoa3q0ve5" path="res://src/Credits/PersonLabelSettings.tres" id="4_004ma"]
 
 [node name="Credits" type="Control" node_paths=PackedStringArray("credits_list")]
+editor_description = "UI-34"
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,10 +31,12 @@ theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 10
 
 [node name="BackButton" type="Button" parent="ControlMargin"]
+editor_description = "UI-38"
 layout_mode = 2
 text = "Back to Main Menu"
 
 [node name="Scroll" type="ScrollContainer" parent="."]
+editor_description = "UI-35"
 layout_mode = 2
 anchor_top = 0.071
 anchor_right = 1.0

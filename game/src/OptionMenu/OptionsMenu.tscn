@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/OptionMenu/OtherTab.tscn" id="5_ahefp"]
 
 [node name="OptionsMenu" type="Control"]
+editor_description = "UI-25"
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,19 +30,23 @@ theme_override_constants/margin_right = 250
 theme_override_constants/margin_bottom = 200
 
 [node name="Tab" type="TabContainer" parent="Margin"]
+editor_description = "UI-45"
 layout_mode = 2
 size_flags_vertical = 3
 tab_alignment = 1
 use_hidden_tabs_for_min_size = true
 
 [node name="Video" parent="Margin/Tab" instance=ExtResource("2_ji8xr")]
+editor_description = "UI-46, UIFUN-43"
 layout_mode = 2
 
 [node name="Sound" parent="Margin/Tab" instance=ExtResource("3_4w35t")]
+editor_description = "UI-47, UIFUN-44"
 visible = false
 layout_mode = 2
 
 [node name="Controls" parent="Margin/Tab" instance=ExtResource("4_vdhjp")]
+editor_description = "SS-27, UI-49, UIFUN-46"
 visible = false
 layout_mode = 2
 
@@ -64,4 +69,5 @@ mouse_filter = 2
 alignment = 2
 
 [node name="LocaleButton" parent="LocaleVBox/LocaleHBox" instance=ExtResource("2_d7wvq")]
+editor_description = "UI-79"
 layout_mode = 2

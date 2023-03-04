@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 
 [node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_checksum_label")]
+editor_description = "UI-13"
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,6 +50,7 @@ theme_override_constants/separation = 18
 alignment = 1
 
 [node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
+editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../ExitButton")
@@ -74,6 +76,7 @@ text = "Continue"
 clip_text = true
 
 [node name="MultiplayerButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+editor_description = "UI-27"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../ContinueButton")
@@ -85,6 +88,7 @@ text = "Multiplayer"
 clip_text = true
 
 [node name="OptionsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+editor_description = "UI-5"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../MultiplayerButton")
@@ -96,6 +100,7 @@ text = "Options"
 clip_text = true
 
 [node name="CreditsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+editor_description = "UI-32"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../OptionsButton")
@@ -107,6 +112,7 @@ text = "Credits"
 clip_text = true
 
 [node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+editor_description = "UI-3"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../OptionsButton")
@@ -129,6 +135,7 @@ theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 10
 
 [node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/Margin2"]
+editor_description = "UI-31"
 layout_mode = 2
 
 [node name="VersionLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
@@ -138,6 +145,7 @@ mouse_filter = 1
 text = "v0.01"
 
 [node name="ChecksumLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
+editor_description = "UI-111"
 layout_mode = 2
 tooltip_text = "Checksum 00000000"
 mouse_filter = 1

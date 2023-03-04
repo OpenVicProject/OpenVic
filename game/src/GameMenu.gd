@@ -1,5 +1,7 @@
 extends Control
 
+# REQUIREMENTS
+# * SS-10
 func _ready():
 	Events.Options.load_settings_from_file()
 
@@ -8,7 +10,9 @@ func _on_main_menu_new_game_button_pressed():
 	$LobbyMenu.show()
 	$MainMenu.hide()
 
-
+# REQUIREMENTS
+# * SS-6
+# * UIFUN-5
 func _on_main_menu_options_button_pressed():
 	$OptionsMenu.toggle_locale_button_visibility(false)
 	$OptionsMenu.show()

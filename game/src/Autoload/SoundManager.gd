@@ -1,11 +1,16 @@
 extends Node
 
+# REQUIREMENTS:
+# * SS-68
+
 const _audio_directory_path : StringName = &"res://audio/sfx/"
 
 var _loaded_sound : Dictionary = {}
 
 var _bus_to_stream_player : Dictionary = {}
 
+# REQUIREMENTS:
+# * SND-10
 func _ready():
 	var dir = DirAccess.open(_audio_directory_path)
 	for fname in dir.get_files():
@@ -28,7 +33,8 @@ func play_stream(sound : AudioStream, bus_type : String) -> void:
 func play(sound : String, bus_type : String) -> void:
 	play_stream(_loaded_sound[sound], bus_type)
 
-# SND-7
+# REQUIREMENTS:
+# * SND-7
 func play_effect_stream(sound : AudioStream) -> void:
 	play_stream(sound, "SFX")
 

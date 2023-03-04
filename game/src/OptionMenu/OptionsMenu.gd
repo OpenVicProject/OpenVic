@@ -1,5 +1,8 @@
 extends Control
 
+# REQUIREMENTS
+# * SS-13
+
 signal back_button_pressed
 
 func _ready():
@@ -13,11 +16,17 @@ func _ready():
 	button_list.alignment = BoxContainer.ALIGNMENT_END
 	tab_bar.add_child(button_list)
 
+	# REQUIREMENTS
+	# * UI-12
+	# * UIFUN-14
 	var reset_button := Button.new()
 	reset_button.text = "R"
 	reset_button.pressed.connect(Events.Options.try_reset_settings)
 	button_list.add_child(reset_button)
 
+	# REQUIREMENTS
+	# * UI-11
+	# * UIFUN-17
 	var back_button := Button.new()
 	back_button.text = "X"
 	back_button.pressed.connect(_on_back_button_pressed)

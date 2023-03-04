@@ -1,5 +1,9 @@
 extends SettingOptionButton
 
+# REQUIREMENTS
+# * UIFUN-21
+# * UIFUN-28
+
 @export
 var default_value : Vector2i = Resolution.error_resolution
 

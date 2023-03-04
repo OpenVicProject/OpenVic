@@ -1,5 +1,8 @@
 extends SettingOptionButton
 
+# REQUIREMENTS
+# * UIFUN-42
+
 enum ScreenMode { Unknown = -1, Fullscreen, Borderless, Windowed }
 
 func get_screen_mode_from_window_mode(window_mode : int) -> ScreenMode:
