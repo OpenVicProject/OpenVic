@@ -98,13 +98,13 @@ Example:
 ```
 root/
 |- src/
-    |- theme/
+    |- Theme/
     |   |- ButtonNormal.tres
     |   |- ButtonHover.tres
     |   |- ButtonDisabled.tres
-    |- utility/
+    |- Utility/
     |   |- Math.gd
-    |- menu/
+    |- Menu/
     |   |- MenuManager.tscn
     |   |- MenuManager.gd
     |   |- MainMenu/
@@ -112,12 +112,12 @@ root/
     |   |   |- MainMenu.gd
     |   |   |- MainMenuFont.ttf
     |   |   |- MainMenuLabel.tres
-    |   |- settings_menu/
+    |   |- SettingsMenu/
     |   |   |- Settings.tscn
     |   |   |- Settings.gd
     |   |   |- Resolution/
     |   |   |   |- ResolutionSelector.gd
-    |   |   |- volume/
+    |   |   |- Volume/
     |   |   |   |- VolumeGrid.tscn
     |   |   |   |- VolumeGrid.gd
 ```
