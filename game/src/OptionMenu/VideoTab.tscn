@@ -26,6 +26,7 @@ layout_mode = 2
 text = "Resolution"
 
 [node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+editor_description = "UI-19"
 layout_mode = 2
 item_count = 1
 selected = 0
@@ -36,6 +37,7 @@ section_name = "Video"
 setting_name = "Resolution"
 
 [node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
+editor_description = "UI-44"
 layout_mode = 2
 text = "Screen Mode"
 

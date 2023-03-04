@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
 
 [node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("start_button")]
+editor_description = "UI-36"
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,6 +32,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
+editor_description = "UI-37"
 layout_mode = 2
 text = "Back"
 
@@ -66,6 +68,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="StartButton" type="Button" parent="GameStartPanel/VBoxContainer"]
+editor_description = "UI-43"
 layout_mode = 2
 disabled = true
 text = "Start Game"

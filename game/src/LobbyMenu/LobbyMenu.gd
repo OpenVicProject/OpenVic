@@ -11,6 +11,7 @@ signal save_game_selected
 var start_button : BaseButton
 
 # REQUIREMENTS:
+# * SS-16
 # * UIFUN-40
 func _on_back_button_button_down():
 	print("Returning to Main Menu.")
@@ -18,14 +19,14 @@ func _on_back_button_button_down():
 
 
 # REQUIREMENTS:
-# * UIFUN-65
+# * SS-21
 func _on_start_button_button_down():
 	print("Starting new game.")
 	get_tree().change_scene_to_file("res://src/SampleGame.tscn")
 
 
 # REQUIREMENTS:
-# * UIFUN-61
+# * SS-19
 func _on_game_select_list_item_selected(index):
 	print("Selected save game: ", index)
 	save_game_selected.emit(index)
