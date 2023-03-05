@@ -27,6 +27,7 @@ func _on_start_button_button_down():
 
 # REQUIREMENTS:
 # * SS-19
+# * SS-18
 func _on_game_select_list_item_selected(index):
 	print("Selected save game: ", index)
 	save_game_selected.emit(index)

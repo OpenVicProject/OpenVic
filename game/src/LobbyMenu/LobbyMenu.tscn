@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://crhkgngfnxf4y"]
+[gd_scene load_steps=3 format=3 uid="uid://crhkgngfnxf4y"]
 
 [ext_resource type="Script" path="res://src/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
+[ext_resource type="Script" path="res://src/LobbyMenu/GameSelectList.gd" id="2_5dtbm"]
 
 [node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("start_button")]
 editor_description = "UI-36"
@@ -25,6 +26,7 @@ size_flags_vertical = 3
 item_count = 2
 item_0/text = "1836"
 item_1/text = "1863"
+script = ExtResource("2_5dtbm")
 
 [node name="Spacer" type="Control" parent="GameSelectPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 150)

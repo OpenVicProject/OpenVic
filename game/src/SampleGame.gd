@@ -47,3 +47,10 @@ func _on_prev_prov_button_pressed():
 
 func _on_to_main_menu_pressed():
 	get_tree().change_scene_to_packed(_main_menu_scene)
+	
+
+func _on_save_button_button_down():
+	# Should add function to name files in the future
+	print("Saved the game as savegame.ov2")
+	var save_system = load("res://src/SaveSystem/SaveSystem.gd")
+	save_system.save_game()

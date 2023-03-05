@@ -65,7 +65,12 @@ text = "View Previous Province"
 layout_mode = 2
 text = "Exit to Main Menu"
 
+[node name="SaveButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Save the Game"
+
 [connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PassTimeButton" to="." method="_on_pass_time_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/NextProvButton" to="." method="_on_next_prov_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PrevProvButton" to="." method="_on_prev_prov_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/ToMainMenu" to="." method="_on_to_main_menu_pressed"]
+[connection signal="button_down" from="CenterContainer/VBoxContainer2/VBoxContainer/SaveButton" to="." method="_on_save_button_button_down"]
