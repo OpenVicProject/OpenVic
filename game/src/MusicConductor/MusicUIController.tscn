@@ -1,0 +1,64 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmnqyvl3qfq2e"]
+
+[ext_resource type="Script" path="res://src/MusicConductor/MusicUIController.gd" id="1_u4qbn"]
+
+[node name="MusicUIController" type="Control" node_paths=PackedStringArray("songSelectorButton", "progressSlider", "prevSongButton", "playPauseButton", "nextSongButton", "widgetVisibilityButton")]
+editor_description = "UI-104"
+layout_mode = 3
+anchor_right = 0.11
+anchor_bottom = 0.165
+offset_right = 0.199997
+offset_bottom = 0.199997
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u4qbn")
+songSelectorButton = NodePath("VBoxContainer/SongSelectorButton")
+progressSlider = NodePath("VBoxContainer/ProgressSlider")
+prevSongButton = NodePath("VBoxContainer/HBoxContainer/PreviousSongButton")
+playPauseButton = NodePath("VBoxContainer/HBoxContainer/PlayPauseButton")
+nextSongButton = NodePath("VBoxContainer/HBoxContainer/NextSongButton")
+widgetVisibilityButton = NodePath("VBoxContainer/MusicUIVisibilityButton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SongSelectorButton" type="OptionButton" parent="VBoxContainer"]
+editor_description = "UI-107"
+layout_mode = 2
+
+[node name="ProgressSlider" type="HSlider" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PreviousSongButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Prev"
+
+[node name="PlayPauseButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = ">"
+
+[node name="NextSongButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Next"
+
+[node name="MusicUIVisibilityButton" type="Button" parent="VBoxContainer"]
+editor_description = "UI-106"
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+text = "Hide Player"
+
+[connection signal="item_selected" from="VBoxContainer/SongSelectorButton" to="." method="_on_option_button_item_selected"]
+[connection signal="drag_ended" from="VBoxContainer/ProgressSlider" to="." method="_on_progress_slider_drag_ended"]
+[connection signal="drag_started" from="VBoxContainer/ProgressSlider" to="." method="_on_progress_slider_drag_started"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PreviousSongButton" to="." method="_on_previous_song_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PlayPauseButton" to="." method="_on_play_pause_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/NextSongButton" to="." method="_on_next_song_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MusicUIVisibilityButton" to="." method="_on_music_ui_visibility_button_pressed"]

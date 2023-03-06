@@ -20,6 +20,7 @@ config/project_settings_override.template="user://settings.cfg"
 
 Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
+MusicConductor="*res://src/MusicConductor/MusicConductor.tscn"
 SoundManager="*res://src/Autoload/SoundManager.gd"
 Keychain="*res://addons/keychain/Keychain.gd"
 
