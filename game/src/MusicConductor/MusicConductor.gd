@@ -25,7 +25,7 @@ func scrubSongByPercentage(percentage: float) -> void:
 	$AudioStreamPlayer.play(percentInSeconds)
 
 func getCurrentSongProgressPercentage() -> float:
-	return 100 * ($AudioStreamPlayer.get_playback_position() / $AudioStreamPlayer.stream.get_length()) #(getCurrentSongTime() / getCurrentSongLength())
+	return 100 * ($AudioStreamPlayer.get_playback_position() / $AudioStreamPlayer.stream.get_length())
 
 func isPaused() -> bool:
 	return $AudioStreamPlayer.stream_paused
@@ -55,7 +55,7 @@ func prevSong() -> void:
 func _ready():
 	var dir = DirAccess.open(musicDir)
 	for fname in dir.get_files():
-		if fname.ends_with(".mp3") or fname.ends_with(".ogg") or fname.ends_with(".wav"):
+		if !fname.ends_with(".import"):
 			if fname == firstSongName:
 				selectedTrack = availableSongs.size()
 			availableSongs.append(SongInfo.new(musicDir, fname))

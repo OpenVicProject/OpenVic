@@ -7,5 +7,5 @@ var loadedStream : Resource
 
 func _init(dirname:String, fname:String):
 		fullyQualifiedPath = dirname + fname
-		readableName = fname.replace(".mp3","").replace(".ogg","").replace(".wav","").replace("_", " ")
+		readableName = fname.get_basename().replace("_", " ")
 		loadedStream = load(fullyQualifiedPath)

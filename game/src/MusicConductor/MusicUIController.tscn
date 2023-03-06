@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/MusicConductor/MusicUIController.gd" id="1_u4qbn"]
 
 [node name="MusicUIController" type="Control" node_paths=PackedStringArray("songSelectorButton", "progressSlider", "prevSongButton", "playPauseButton", "nextSongButton", "widgetVisibilityButton")]
+editor_description = "UI-104"
 layout_mode = 3
 anchor_right = 0.11
 anchor_bottom = 0.165
@@ -24,6 +25,7 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="SongSelectorButton" type="OptionButton" parent="VBoxContainer"]
+editor_description = "UI-107"
 layout_mode = 2
 
 [node name="ProgressSlider" type="HSlider" parent="VBoxContainer"]
@@ -47,6 +49,7 @@ layout_mode = 2
 text = "Next"
 
 [node name="MusicUIVisibilityButton" type="Button" parent="VBoxContainer"]
+editor_description = "UI-106"
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 3

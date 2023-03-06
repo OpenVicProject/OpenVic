@@ -1,6 +1,5 @@
 extends Control
 
-# UI-104
 @export var songSelectorButton : OptionButton
 @export var progressSlider : HSlider
 @export var prevSongButton : Button
@@ -43,7 +42,6 @@ func _on_previous_song_button_pressed():
 	updateSongNameVisual()
 	updatePlayPauseButtonVisual()
 
-# UI-107
 func _on_option_button_item_selected(index):
 	# UIFUN-92
 	MusicConductor.startSongByIndex(index)
@@ -57,7 +55,6 @@ func _on_progress_slider_drag_ended(_value_changed):
 	MusicConductor.scrubSongByPercentage(progressSlider.value)
 	isUserDraggingProgressSlider = false
 
-# UI-107
 func _on_music_ui_visibility_button_pressed():
 	isMusicPlayerVisible = !isMusicPlayerVisible
 	widgetVisibilityButton.text = "Hide Player" if isMusicPlayerVisible else "Show Player"
