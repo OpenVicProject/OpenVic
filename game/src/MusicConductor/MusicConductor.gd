@@ -56,7 +56,7 @@ func _ready():
 	var dir = DirAccess.open(musicDir)
 	for fname in dir.get_files():
 		if !fname.ends_with(".import"):
-			if fname == firstSongName:
+			if fname.get_basename() == firstSongName:
 				selectedTrack = availableSongs.size()
 			availableSongs.append(SongInfo.new(musicDir, fname))
 	startCurrentSong()
