@@ -54,6 +54,7 @@ func _on_progress_slider_drag_started():
 func _on_progress_slider_drag_ended(_value_changed):
 	MusicConductor.scrubSongByPercentage(progressSlider.value)
 	isUserDraggingProgressSlider = false
+	updatePlayPauseButtonVisual()
 
 func _on_music_ui_visibility_button_pressed():
 	isMusicPlayerVisible = !isMusicPlayerVisible
