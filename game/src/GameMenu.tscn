@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://b4pg2y2ivib8f"]
+[gd_scene load_steps=8 format=3 uid="uid://b4pg2y2ivib8f"]
 
 [ext_resource type="Script" path="res://src/GameMenu.gd" id="1_cafwe"]
+[ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="1_q3b4c"]
 [ext_resource type="PackedScene" uid="uid://dvoin538iby54" path="res://src/MainMenu/MainMenu.tscn" id="2_2jbkh"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="3_111lv"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="4_jno35"]
@@ -15,6 +16,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_q3b4c")
 script = ExtResource("1_cafwe")
 
 [node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]

@@ -19,15 +19,15 @@ var core_credits_path : String
 
 # TODO: implement for theme instead
 # waiting for https://github.com/OpenVic2Project/OpenVic2/pull/48
-@export_group("Label Settings", "label_settings_")
+@export_group("Label Variants", "label_variants_")
 @export
-var label_settings_project : LabelSettings
+var label_variants_project : StringName
 
 @export
-var label_settings_role : LabelSettings
+var label_variants_role : StringName
 
 @export
-var label_settings_personel : LabelSettings
+var label_variants_person : StringName
 
 @export
 var credits_list: VBoxContainer
@@ -82,12 +82,12 @@ func _load_credit_file(path : String) -> Dictionary:
 		role_list.sort_custom(func(a : String, b : String) -> bool: return a.naturalnocasecmp_to(b) < 0)
 	return roles
 
-func _add_label(node : Node, text : String, settings : LabelSettings) -> void:
+func _add_label(node : Node, text : String, type_variation : StringName) -> void:
 	var label := Label.new()
 	label.name = 'Label' + text
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.label_settings = settings
+	label.theme_type_variation = type_variation
 	node.add_child(label)
 
 # REQUIREMENTS:
@@ -98,7 +98,7 @@ func _add_project_credits(project : Dictionary) -> void:
 	if title_key in project:
 		var title : String = project[title_key][0]
 		project_credits_list.name += title
-		_add_label(project_credits_list, title, label_settings_project)
+		_add_label(project_credits_list, title, label_variants_project)
 		project_credits_list.add_child(HSeparator.new())
 
 	for role in project:
@@ -108,9 +108,9 @@ func _add_project_credits(project : Dictionary) -> void:
 		var role_parent = VBoxContainer.new()
 
 		for person in project[role]:
-			_add_label(role_parent, person, label_settings_personel)
+			_add_label(role_parent, person, label_variants_person)
 
-		_add_label(project_credits_list, role, label_settings_role)
+		_add_label(project_credits_list, role, label_variants_role)
 		project_credits_list.add_child(role_parent)
 		project_credits_list.add_child(HSeparator.new())
 
