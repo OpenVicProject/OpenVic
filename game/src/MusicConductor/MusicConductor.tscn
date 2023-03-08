@@ -4,8 +4,8 @@
 
 [node name="MusicConductor" type="Node"]
 script = ExtResource("1_56t1b")
-musicDir = "res://audio/music/"
-firstSongName = "The_Crown"
+music_directory = "res://audio/music"
+first_song_name = "The_Crown"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 bus = &"Music"

@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvl76duuym1wq"]
+
+[ext_resource type="Script" path="res://src/MusicConductor/MusicPlayer.gd" id="1_gcm4m"]
+
+[node name="MusicPlayer" type="BoxContainer" node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visbility_button")]
+editor_description = "UI-104"
+mouse_filter = 2
+script = ExtResource("1_gcm4m")
+_song_selector_button = NodePath("Control/SongSelectorButton")
+_progress_slider = NodePath("Control/ProgressSlider")
+_previous_song_button = NodePath("Control/HBoxContainer/PreviousSongButton")
+_play_pause_button = NodePath("Control/HBoxContainer/PlayPauseButton")
+_next_song_button = NodePath("Control/HBoxContainer/NextSongButton")
+_visbility_button = NodePath("Control/MusicUIVisibilityButton")
+
+[node name="Control" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SongSelectorButton" type="OptionButton" parent="Control"]
+editor_description = "UI-107"
+layout_mode = 2
+alignment = 1
+text_overrun_behavior = 3
+fit_to_longest_item = false
+
+[node name="ProgressSlider" type="HSlider" parent="Control"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+
+[node name="PreviousSongButton" type="Button" parent="Control/HBoxContainer"]
+layout_mode = 2
+text = "<"
+
+[node name="PlayPauseButton" type="Button" parent="Control/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "▶"
+
+[node name="NextSongButton" type="Button" parent="Control/HBoxContainer"]
+layout_mode = 2
+text = ">"
+
+[node name="MusicUIVisibilityButton" type="Button" parent="Control"]
+editor_description = "UI-106"
+layout_mode = 2
+size_flags_horizontal = 4
+text = "⬆"
+
+[connection signal="item_selected" from="Control/SongSelectorButton" to="." method="_on_option_button_item_selected"]
+[connection signal="drag_ended" from="Control/ProgressSlider" to="." method="_on_progress_slider_drag_ended"]
+[connection signal="drag_started" from="Control/ProgressSlider" to="." method="_on_progress_slider_drag_started"]
+[connection signal="pressed" from="Control/HBoxContainer/PreviousSongButton" to="." method="_on_previous_song_button_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/PlayPauseButton" to="." method="_on_play_pause_button_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/NextSongButton" to="." method="_on_next_song_button_pressed"]
+[connection signal="pressed" from="Control/MusicUIVisibilityButton" to="." method="_on_music_ui_visibility_button_pressed"]
