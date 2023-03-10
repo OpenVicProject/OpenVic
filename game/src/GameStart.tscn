@@ -1,0 +1,52 @@
+[gd_scene load_steps=6 format=3 uid="uid://1udsn4mggep2"]
+
+[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="1_wlojq"]
+[ext_resource type="Script" path="res://src/SplashContainer.gd" id="2_xmcgv"]
+[ext_resource type="Texture2D" uid="uid://deef5hufq0j61" path="res://splash_assets/splash_end.png" id="3_qfv12"]
+[ext_resource type="Texture2D" uid="uid://cgdnixsyh7bja" path="res://splash_assets/splash_image.png" id="4_5b6yq"]
+[ext_resource type="VideoStream" path="res://splash_assets/splash_startup.ogv" id="5_8euyy"]
+
+[node name="GameStartup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameMenu" parent="." instance=ExtResource("1_wlojq")]
+visible = false
+layout_mode = 1
+
+[node name="SplashContainer" type="AspectRatioContainer" parent="." node_paths=PackedStringArray("_splash_finish", "_splash_image", "_splash_video")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.7778
+stretch_mode = 3
+script = ExtResource("2_xmcgv")
+_splash_finish = NodePath("SplashFinish")
+_splash_image = NodePath("SplashImage")
+_splash_video = NodePath("SplashVideo")
+
+[node name="SplashFinish" type="TextureRect" parent="SplashContainer"]
+layout_mode = 2
+texture = ExtResource("3_qfv12")
+expand_mode = 1
+
+[node name="SplashImage" type="TextureRect" parent="SplashContainer"]
+layout_mode = 2
+texture = ExtResource("4_5b6yq")
+expand_mode = 1
+
+[node name="SplashVideo" type="VideoStreamPlayer" parent="SplashContainer"]
+layout_mode = 2
+stream = ExtResource("5_8euyy")
+autoplay = true
+expand = true
+
+[connection signal="splash_end" from="SplashContainer" to="GameMenu" method="_on_splash_container_splash_end"]
+[connection signal="finished" from="SplashContainer/SplashVideo" to="SplashContainer" method="_on_splash_startup_finished"]
