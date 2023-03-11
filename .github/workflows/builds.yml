@@ -1,6 +1,6 @@
 name: Builds
 
-#on: [pull_request]
+on: [pull_request]
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
