@@ -35,3 +35,8 @@ func _on_credits_back_button_pressed():
 func _on_main_menu_credits_button_pressed():
 	$Credits.show()
 	$MainMenu.hide()
+
+
+
+func _on_splash_container_splash_end():
+	show()

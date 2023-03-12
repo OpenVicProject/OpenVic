@@ -11,8 +11,10 @@ config_version=5
 [application]
 
 config/name="OpenVic2"
-run/main_scene="res://src/GameMenu.tscn"
+run/main_scene="res://src/GameStart.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
+boot_splash/bg_color=Color(0.380392, 0.145098, 0.14902, 1)
+boot_splash/image="res://splash_assets/splash_image.png"
 config/icon="res://icon.svg"
 config/project_settings_override.template="user://settings.cfg"
 
