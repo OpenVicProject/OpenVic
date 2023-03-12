@@ -21,10 +21,7 @@ script = ExtResource("1_tlein")
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 180
-theme_override_constants/margin_top = 150
-theme_override_constants/margin_right = 180
-theme_override_constants/margin_bottom = 150
+theme_type_variation = &"Margin_OptionsMenu_Tabs"
 
 [node name="Tab" type="TabContainer" parent="Margin"]
 editor_description = "UI-45"

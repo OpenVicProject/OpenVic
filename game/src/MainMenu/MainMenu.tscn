@@ -33,24 +33,22 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 6
 size_flags_stretch_ratio = 1.5
-theme_override_font_sizes/font_size = 90
+theme_type_variation = &"Label_MainMenu_Title"
 text = "OpenVic2"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Margin" type="MarginContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_right = 12
+theme_type_variation = &"Margin_MainMenu_ButtonList"
 
 [node name="ButtonList" type="HBoxContainer" parent="Panel/VBox/Margin"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_type_variation = &"HBox_MainMenu_ButtonList"
-theme_override_constants/separation = 18
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
+[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -59,7 +57,6 @@ focus_neighbor_top = NodePath("../ExitButton")
 focus_neighbor_right = NodePath("../ContinueButton")
 focus_next = NodePath("../ContinueButton")
 focus_previous = NodePath("../ExitButton")
-shortcut_context = NodePath("")
 theme_type_variation = &"Button_MainMenu"
 text = "New Game"
 clip_text = true
@@ -131,9 +128,7 @@ size_flags_stretch_ratio = 0.35
 
 [node name="Margin2" type="MarginContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_constants/margin_left = 50
-theme_override_constants/margin_right = 50
-theme_override_constants/margin_bottom = 10
+theme_type_variation = &"Margin_MainMenu_Bottom"
 
 [node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/Margin2"]
 editor_description = "UI-31"
