@@ -31,7 +31,6 @@ func _ready():
 	back_button.text = "X"
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
-
 	get_viewport().get_window().close_requested.connect(_on_window_close_requested)
 	_save_overrides.call_deferred()
 	Events.Options.save_settings.connect(func(_f): self._save_overrides.call_deferred())
@@ -41,10 +40,10 @@ func _notification(what):
 		NOTIFICATION_CRASH:
 			_on_window_close_requested()
 
-# Could pass the LocaleButton between the MainMenu and OptionsMenu
-# but that seems a bit excessive
-func toggle_locale_button_visibility(locale_visible : bool):
-	$LocaleVBox/LocaleHBox/LocaleButton.visible = locale_visible
+func _input(event):
+	if self.is_visible_in_tree():
+		if event.is_action_pressed("ui_cancel"):
+			_on_back_button_pressed()
 
 func _on_back_button_pressed():
 	Events.Options.save_settings_to_file()
