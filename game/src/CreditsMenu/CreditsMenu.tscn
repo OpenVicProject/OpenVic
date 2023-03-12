@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://c8knthxkwj1uj"]
 
-[ext_resource type="Script" path="res://src/Credits/Credits.gd" id="1_csd7i"]
+[ext_resource type="Script" path="res://src/CreditsMenu/CreditsMenu.gd" id="1_csd7i"]
 
-[node name="Credits" type="Control" node_paths=PackedStringArray("credits_list")]
+[node name="CreditsMenu" type="Control" node_paths=PackedStringArray("credits_list")]
 editor_description = "UI-34"
 layout_mode = 3
 anchors_preset = 15
