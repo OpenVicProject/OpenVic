@@ -9,16 +9,17 @@ classDiagram
 
     class IdeologicalGroup {
         <<enumeration>>
-        Facist
+        Fascist
         Conservative
         Socialist
         Liberal
     }
 
     class Ideology {
+        + String id
         + IdeologicalGroup group
-        + Date earliest_date
-        + boolean uncivilized_nations
+        + Date earliestDate
+        + boolean uncivilizedNations
         + Colour colour
     }
 
@@ -38,7 +39,7 @@ classDiagram
 |anarcho_liberal|liberal|1845/01/01|True|#96960A|
 |socialist|socialist|1860/01/01|False|#FF0000|
 |communist|socialist|1865/01/01|False|#960A0A|
-|facist|facist|1905/01/01|False|#3C3C3C|
+|fascist|fascist|1905/01/01|False|#3C3C3C|
 
 ### John Cena 
 
@@ -50,7 +51,7 @@ classDiagram
 |anarcho_liberal|liberal|1845/01/01|True|#96960A|
 |socialist|socialist|1860/01/01|False|#FF0000|
 |communist|socialist|1865/01/01|False|#960A0A|
-|facist|facist|1905/01/01|False|#3C3C3C|
+|fascist|fascist|1905/01/01|False|#3C3C3C|
 
 ## References
 
