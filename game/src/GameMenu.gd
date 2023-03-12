@@ -28,10 +28,10 @@ func _on_lobby_menu_back_button_pressed():
 
 
 func _on_credits_back_button_pressed():
-	$Credits.hide()
+	$CreditsMenu.hide()
 	$MainMenu.show()
 
 
 func _on_main_menu_credits_button_pressed():
-	$Credits.show()
+	$CreditsMenu.show()
 	$MainMenu.hide()

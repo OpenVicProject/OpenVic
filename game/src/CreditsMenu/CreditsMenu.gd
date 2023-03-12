@@ -17,8 +17,6 @@ signal back_button_pressed
 @export_file("*.csv")
 var core_credits_path : String
 
-# TODO: implement for theme instead
-# waiting for https://github.com/OpenVic2Project/OpenVic2/pull/48
 @export_group("Label Variants", "label_variants_")
 @export
 var label_variants_project : StringName
