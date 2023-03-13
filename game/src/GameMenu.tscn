@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://crhkgngfnxf4y" path="res://src/LobbyMenu/LobbyMenu.tscn" id="4_nofk1"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/MusicConductor/MusicPlayer.tscn" id="6_lts1m"]
 
-[node name="GameMenu" type="Control"]
+[node name="GameMenu" type="Control" node_paths=PackedStringArray("_main_menu", "_options_menu", "_lobby_menu", "_credits_menu")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,6 +17,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_q3b4c")
 script = ExtResource("1_cafwe")
+_main_menu = NodePath("MainMenu")
+_options_menu = NodePath("OptionsMenu")
+_lobby_menu = NodePath("LobbyMenu")
+_credits_menu = NodePath("CreditsMenu")
 
 [node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]
 layout_mode = 1
