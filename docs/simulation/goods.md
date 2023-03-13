@@ -36,7 +36,7 @@ classDiagram
 |--|--|--|--|--|--|--|--|
 |ammunition|Military|17.50|208 202 127|False|True|False|False|
 |small_arms|Military|37.00|189 118 22|False|True|False|False|
-|artillary|Military|60.00|145 130 86|False|True|False|False|
+|artillery|Military|60.00|145 130 86|False|True|False|False|
 |canned_food|Military|16.00|255 39 12|True|True|False|False|
 |tanks|Military|98.00|55 41 9|False|True|False|False|
 |aeroplanes|Military|110.00|221 213 182|False|True|False|False|
@@ -89,7 +89,7 @@ classDiagram
 |--|--|--|--|--|--|--|--|
 |ammunition|Military|17.50|208 202 127|False|True|False|False|
 |small_arms|Military|37.00|189 118 22|False|True|False|False|
-|artillary|Military|60.00|145 130 86|False|True|False|False|
+|artillery|Military|60.00|145 130 86|False|True|False|False|
 |canned_food|Military|16.00|255 39 12|True|True|False|False|
 |tanks|Military|98.00|55 41 9|False|True|False|False|
 |aeroplanes|Military|110.00|221 213 182|False|True|False|False|
