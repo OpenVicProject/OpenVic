@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://bgnupcshe1m7r"]
 
-[ext_resource type="Script" path="res://src/SampleGame.gd" id="1_eklvp"]
-[ext_resource type="PackedScene" uid="uid://b4pg2y2ivib8f" path="res://src/GameMenu.tscn" id="2_r7wq5"]
+[ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
+[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="2_r7wq5"]
 
-[node name="SampleGame" type="Control" node_paths=PackedStringArray("_province_num_display", "_province_size_display")]
+[node name="GameSession" type="Control" node_paths=PackedStringArray("_province_num_display", "_province_size_display")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
