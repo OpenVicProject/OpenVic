@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
+editor_description = "SS-102"
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="2_xi6a4"]
 
 [node name="GameSessionMenu" type="CenterContainer"]
+editor_description = "UI-68"
 script = ExtResource("1_usq6o")
 _main_menu_scene = ExtResource("2_xi6a4")
 
@@ -14,6 +15,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="MainMenuButton" type="Button" parent="PanelContainer/VBoxContainer"]
+editor_description = "UI-71"
 layout_mode = 2
 text = "Resign"
 
@@ -21,6 +23,7 @@ text = "Resign"
 layout_mode = 2
 
 [node name="CloseButton" type="Button" parent="PanelContainer/VBoxContainer"]
+editor_description = "UI-80"
 layout_mode = 2
 text = "Close"
 

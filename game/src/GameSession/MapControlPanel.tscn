@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
 
 [node name="PanelContainer" type="PanelContainer"]
+editor_description = "SS-103"
 script = ExtResource("1_ign64")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
@@ -20,9 +21,11 @@ layout_mode = 2
 text = "MINIMAP"
 
 [node name="AuxiliaryPanel" type="VBoxContainer" parent="HBoxContainer"]
+editor_description = "UI-761"
 layout_mode = 2
 
 [node name="GameSessionMenuButton" type="Button" parent="HBoxContainer/AuxiliaryPanel"]
+editor_description = "UI-9"
 layout_mode = 2
 text = "ESC"
 
