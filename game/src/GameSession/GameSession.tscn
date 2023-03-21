@@ -1,9 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=5 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
-[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="2_r7wq5"]
+[ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 
-[node name="GameSession" type="Control" node_paths=PackedStringArray("_province_num_display", "_province_size_display")]
+[sub_resource type="InputEventKey" id="InputEventKey_bumck"]
+keycode = 4194305
+
+[sub_resource type="Shortcut" id="Shortcut_yhevr"]
+events = [SubResource("InputEventKey_bumck")]
+
+[node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,11 +17,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_eklvp")
-_province_num_display = NodePath("CenterContainer/VBoxContainer2/GridContainer/ProvinceNumDisplay")
-_province_size_display = NodePath("CenterContainer/VBoxContainer2/GridContainer/ProvinceSizeDisplay")
-_main_menu_scene = ExtResource("2_r7wq5")
+_game_session_menu = NodePath("GameSessionMenu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="GameSessionMenu" parent="." instance=ExtResource("3_bvmqh")]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,49 +28,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="CenterContainer"]
-layout_mode = 2
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+anchor_left = 0.167969
+anchor_top = 0.369444
+anchor_right = 0.258594
+anchor_bottom = 0.405556
+text = "GAME SESSION"
 
-[node name="GridContainer" type="GridContainer" parent="CenterContainer/VBoxContainer2"]
-layout_mode = 2
-columns = 2
+[node name="GameSessionMenuButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.960156
+anchor_top = 0.940278
+anchor_right = 0.988281
+anchor_bottom = 0.983333
+shortcut = SubResource("Shortcut_yhevr")
+text = "ESC"
 
-[node name="ProvenceLabel" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
-layout_mode = 2
-text = "Viewing Province #:"
-horizontal_alignment = 2
-
-[node name="ProvinceNumDisplay" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
-layout_mode = 2
-
-[node name="ProvinceSizeLabel" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
-layout_mode = 2
-text = "Province Size:"
-horizontal_alignment = 2
-
-[node name="ProvinceSizeDisplay" type="Label" parent="CenterContainer/VBoxContainer2/GridContainer"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/VBoxContainer2"]
-layout_mode = 2
-
-[node name="PassTimeButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-text = "Pass Time"
-
-[node name="NextProvButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-text = "View Next Province"
-
-[node name="PrevProvButton" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-text = "View Previous Province"
-
-[node name="ToMainMenu" type="Button" parent="CenterContainer/VBoxContainer2/VBoxContainer"]
-layout_mode = 2
-text = "Exit to Main Menu"
-
-[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PassTimeButton" to="." method="_on_pass_time_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/NextProvButton" to="." method="_on_next_prov_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/PrevProvButton" to="." method="_on_prev_prov_button_pressed"]
-[connection signal="pressed" from="CenterContainer/VBoxContainer2/VBoxContainer/ToMainMenu" to="." method="_on_to_main_menu_pressed"]
+[connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
+[connection signal="pressed" from="GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]

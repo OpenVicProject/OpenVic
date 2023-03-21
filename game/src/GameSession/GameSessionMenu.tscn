@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://dvdynl6eir40o"]
+
+[ext_resource type="Script" path="res://src/GameSession/GameSessionMenu.gd" id="1_usq6o"]
+[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="2_xi6a4"]
+
+[node name="GameSessionMenu" type="CenterContainer"]
+script = ExtResource("1_usq6o")
+_main_menu_scene = ExtResource("2_xi6a4")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="MainMenuButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Resign"
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Close"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/MainMenuButton" to="." method="_on_to_main_menu_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
