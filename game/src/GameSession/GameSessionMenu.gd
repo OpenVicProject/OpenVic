@@ -1,4 +1,4 @@
-extends CenterContainer
+extends PanelContainer
 
 signal close_button_pressed
 
