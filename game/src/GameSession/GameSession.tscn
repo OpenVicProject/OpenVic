@@ -1,13 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=4 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
+[ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
-
-[sub_resource type="InputEventKey" id="InputEventKey_bumck"]
-keycode = 4194305
-
-[sub_resource type="Shortcut" id="Shortcut_yhevr"]
-events = [SubResource("InputEventKey_bumck")]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
 layout_mode = 3
@@ -22,29 +17,23 @@ _game_session_menu = NodePath("GameSessionMenu")
 [node name="GameSessionMenu" parent="." instance=ExtResource("3_bvmqh")]
 visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-anchor_left = 0.167969
-anchor_top = 0.369444
-anchor_right = 0.258594
-anchor_bottom = 0.405556
-text = "GAME SESSION"
-
-[node name="GameSessionMenuButton" type="Button" parent="."]
+[node name="MapControlPanel" parent="." instance=ExtResource("3_afh6d")]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.960156
-anchor_top = 0.940278
-anchor_right = 0.988281
-anchor_bottom = 0.983333
-shortcut = SubResource("Shortcut_yhevr")
-text = "ESC"
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
-[connection signal="pressed" from="GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
