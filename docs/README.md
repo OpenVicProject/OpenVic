@@ -3,7 +3,7 @@
 - [Contribution Quickstart Guide](contribution-quickstart-guide.md)
 - [General Program Architecture](general-program-architecture.md)
 - [Project File Structure](project-file-structure.md)
-- [C++ Style Guidlines](styleguide-cpp.md)
+- [C++ Style Guidelines](styleguide-cpp.md)
 
 ## Simulation
 - [Goods](simulation/goods.md)
