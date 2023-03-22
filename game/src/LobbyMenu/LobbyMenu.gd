@@ -22,7 +22,7 @@ func _on_back_button_button_down():
 # * SS-21
 func _on_start_button_button_down():
 	print("Starting new game.")
-	get_tree().change_scene_to_file("res://src/SampleGame.tscn")
+	get_tree().change_scene_to_file("res://src/GameSession/GameSession.tscn")
 
 
 # REQUIREMENTS:

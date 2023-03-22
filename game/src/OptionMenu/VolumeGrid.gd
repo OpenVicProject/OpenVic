@@ -4,6 +4,8 @@ const RATIO_FOR_LINEAR : float = 100
 
 var _slider_dictionary : Dictionary
 
+var initial_focus : Control
+
 func get_db_as_volume_value(db : float) -> float:
 	# db_to_linear produces a float between 0 and 1 from a db value
 	return db_to_linear(db) * RATIO_FOR_LINEAR
@@ -29,6 +31,7 @@ func add_volume_row(bus_name : StringName, bus_index : int) -> HSlider:
 	add_child(volume_slider)
 
 	_slider_dictionary[volume_label.text] = volume_slider
+	if not initial_focus: initial_focus = volume_slider
 	return volume_slider
 
 # REQUIREMENTS
@@ -36,6 +39,11 @@ func add_volume_row(bus_name : StringName, bus_index : int) -> HSlider:
 func _ready():
 	for bus_index in AudioServer.bus_count:
 		add_volume_row(AudioServer.get_bus_name(bus_index), bus_index)
+
+func _notification(what : int) -> void:
+	match(what):
+		NOTIFICATION_VISIBILITY_CHANGED:
+			if visible and is_inside_tree() and initial_focus: initial_focus.grab_focus()
 
 # REQUIREMENTS
 # * UIFUN-30
