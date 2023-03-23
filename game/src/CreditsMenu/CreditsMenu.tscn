@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8knthxkwj1uj"]
+[gd_scene load_steps=3 format=3 uid="uid://c8knthxkwj1uj"]
 
+[ext_resource type="Theme" uid="uid://stfxt4hpsify" path="res://theme/credits_menu.tres" id="1_7y4l8"]
 [ext_resource type="Script" path="res://src/CreditsMenu/CreditsMenu.gd" id="1_csd7i"]
 
 [node name="CreditsMenu" type="Control" node_paths=PackedStringArray("credits_list")]
@@ -10,11 +11,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_7y4l8")
 script = ExtResource("1_csd7i")
 core_credits_path = "res://common/credits.csv"
-label_variants_project = &"Label_ProjectCredits"
-label_variants_role = &"Label_RoleCredits"
-label_variants_person = &"Label_PersonCredits"
+label_variants_project = &"ProjectLabel"
+label_variants_role = &"RoleLabel"
+label_variants_person = &"PersonLabel"
 credits_list = NodePath("Scroll/CreditsList")
 
 [node name="ControlMargin" type="MarginContainer" parent="."]
@@ -22,10 +24,7 @@ layout_mode = 2
 anchor_right = 1.0
 anchor_bottom = 0.071
 offset_bottom = -0.120003
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 10
+theme_type_variation = &"BackButtonsMargin"
 
 [node name="BackButton" type="Button" parent="ControlMargin"]
 editor_description = "UI-38"

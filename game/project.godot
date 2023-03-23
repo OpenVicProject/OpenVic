@@ -40,6 +40,10 @@ window/stretch/aspect="ignore"
 
 enabled=PackedStringArray("res://addons/keychain/plugin.cfg")
 
+[gui]
+
+theme/custom="res://theme/default_theme.tres"
+
 [internationalization]
 
 locale/translation_remaps={}

@@ -1,0 +1,17 @@
+[gd_resource type="Theme" format=3 uid="uid://stfxt4hpsify"]
+
+[resource]
+BackButtonsMargin/base_type = &"MarginContainer"
+BackButtonsMargin/constants/margin_bottom = 10
+BackButtonsMargin/constants/margin_left = 20
+BackButtonsMargin/constants/margin_right = 20
+BackButtonsMargin/constants/margin_top = 10
+PersonLabel/base_type = &"Label"
+PersonLabel/constants/line_spacing = 10
+PersonLabel/font_sizes/font_size = 20
+ProjectLabel/base_type = &"Label"
+ProjectLabel/constants/line_spacing = 20
+ProjectLabel/font_sizes/font_size = 50
+RoleLabel/base_type = &"Label"
+RoleLabel/constants/line_spacing = 10
+RoleLabel/font_sizes/font_size = 30

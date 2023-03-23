@@ -1,0 +1,67 @@
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://fbxssqcg1s0m"]
+
+[ext_resource type="Script" path="res://src/Utility/StyleBoxCombinedTexture.gd" id="1_6eqg5"]
+[ext_resource type="Script" path="res://src/Utility/TextureSetting.gd" id="2_d0e1t"]
+[ext_resource type="Texture2D" uid="uid://dapuqgpjs56bs" path="res://theme/assets/main_menu_background.png" id="3_t863y"]
+[ext_resource type="Texture2D" uid="uid://q25s41oavuxw" path="res://theme/assets/main_menu_border_paper.png" id="4_ljte1"]
+
+[sub_resource type="Resource" id="Resource_hxpog"]
+script = ExtResource("2_d0e1t")
+texture = ExtResource("3_t863y")
+draw_center = true
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
+expand_margin_left = 0.0
+expand_margin_top = 0.0
+expand_margin_right = 0.0
+expand_margin_bottom = 0.0
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+region_rect = Rect2(0, 0, 0, 0)
+modulate_color = Color(1, 1, 1, 1)
+content_margin_left = -1.0
+content_margin_top = -1.0
+content_margin_right = -1.0
+content_margin_bottom = -1.0
+
+[sub_resource type="Resource" id="Resource_c0k5l"]
+script = ExtResource("2_d0e1t")
+texture = ExtResource("4_ljte1")
+draw_center = true
+texture_margin_left = 0.0
+texture_margin_top = 0.0
+texture_margin_right = 0.0
+texture_margin_bottom = 0.0
+expand_margin_left = 0.0
+expand_margin_top = 0.0
+expand_margin_right = 0.0
+expand_margin_bottom = 0.0
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+region_rect = Rect2(0, 0, 0, 0)
+modulate_color = Color(1, 1, 1, 1)
+content_margin_left = -1.0
+content_margin_top = -1.0
+content_margin_right = -1.0
+content_margin_bottom = -1.0
+
+[sub_resource type="StyleBox" id="StyleBox_lm8by"]
+resource_local_to_scene = false
+resource_name = ""
+content_margin_left = -1.0
+content_margin_top = -1.0
+content_margin_right = -1.0
+content_margin_bottom = -1.0
+script = ExtResource("1_6eqg5")
+texture_settings = Array[ExtResource("2_d0e1t")]([SubResource("Resource_hxpog"), SubResource("Resource_c0k5l")])
+
+[resource]
+BackgroundPanel/base_type = &"PanelContainer"
+BackgroundPanel/styles/panel = SubResource("StyleBox_lm8by")
+TabMargin/base_type = &"MarginContainer"
+TabMargin/constants/margin_bottom = 150
+TabMargin/constants/margin_left = 180
+TabMargin/constants/margin_right = 180
+TabMargin/constants/margin_top = 150
