@@ -5,22 +5,22 @@ Main Repo for the OpenVic2 Project
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
 
 ## Required
-* [Godot 4.0](https://github.com/godotengine/godot/releases/tag/4.0-stable)
+* [Godot 4.0.1](https://github.com/godotengine/godot/releases/tag/4.0.1-stable)
 * [scons](https://scons.org/)
 
 ## [Godot Documentation](https://docs.godotengine.org/en/latest/)
 
 ## Build/Run Instructions
-1. Install [Godot 4.0](https://github.com/godotengine/godot/releases/tag/4.0-stable) and [scons](https://scons.org/) for your system.
+1. Install [Godot 4.0.1](https://github.com/godotengine/godot/releases/tag/4.0.1-stable) and [scons](https://scons.org/) for your system.
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Run `scons` in the project root, you should see a libopenvic2 file in `game/bin/openvic2`.
-4. Open with Godot 4.0, click import and navigate to the `game` directory.
+4. Open with Godot 4.0.1, click import and navigate to the `game` directory.
 5. Import and edit.
 6. Once loaded, click the play button at the top right, if you see `Hello GDExtension Singleton!` in the output at the bottom then it is working.
 
 ## Project Export
 1. Build the extension with `scons` or `scons target=template_debug`. (or `scons target=template_release` for release)
-2. Open `game/project.godot` with Godot 4.0.
+2. Open `game/project.godot` with Godot 4.0.1.
 3. Click `Project` at the top left, click `Export`.
 4. If you do not have the templates, you must download the templates, there is highlighted white text at the bottom of the Export subwindow that opens up the template manager for you to download.
 5. Click `Export All`:
