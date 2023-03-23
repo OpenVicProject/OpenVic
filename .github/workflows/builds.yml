@@ -1,6 +1,6 @@
 name: Builds
 
-on: [pull_request]
+on: [push, pull_request]
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
@@ -15,13 +15,13 @@ jobs:
       matrix:
         include:
           - identifier: windows-debug
-            os: windows-2019
+            os: windows-latest
             name: 🏁 Windows Debug
             target: template_debug
             platform: windows
             arch: x86_64
           - identifier: windows-release
-            os: windows-2019
+            os: windows-latest
             name: 🏁 Windows Release
             target: template_release
             platform: windows
@@ -39,14 +39,14 @@ jobs:
             platform: macos
             arch: universal
           - identifier: linux-debug
-            os: ubuntu-18.04
+            os: ubuntu-latest
             name: 🐧 Linux Debug
             runner: ubuntu-20.04
             target: template_debug
             platform: linux
             arch: x86_64
           - identifier: linux-release
-            os: ubuntu-18.04
+            os: ubuntu-latest
             name: 🐧 Linux Release
             runner: ubuntu-20.04
             target: template_release
@@ -82,12 +82,6 @@ jobs:
         if: ${{ matrix.platform == 'windows' }}
         uses: egor-tensin/setup-mingw@v2
 
-      - name: Compile godot-cpp
-        shell: sh
-        run: |
-          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
-        working-directory: godot-cpp
-
       - name: Compile Extension
         shell: sh
         run: |
@@ -98,9 +92,114 @@ jobs:
         run: |
           Remove-Item game/bin/openvic2/* -Include *.exp,*.lib,*.pdb -Force
 
+      - name: Upload extension artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-extension
+          path: |
+            ${{ github.workspace }}/game/bin/openvic2/*
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: 'zip'
+          filename: 'libopenvic2.${{ matrix.platform }}.${{ matrix.arch }}.zip'
+          path: '${{ github.workspace }}/game/bin/openvic2/'
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+      - name: Create and upload asset
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: "libopenvic2.${{ matrix.platform }}.${{ matrix.arch }}.zip"
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+  godot-debug-checks:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    name: Peform Godot Debug Checks
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3.3.0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-extension
+          path: game/bin/openvic2
+
+      - name: Export pack file
+        id: export_game
+        uses: Spartan322/godot-export@master
+        with:
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.1/Godot_v4.0.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.1/Godot_v4.0.1-stable_export_templates.tpz
+          relative_project_path: ./game
+          export_as_pack: true
+          export_debug: true
+          relative_export_path: ./game/export
+
+      - run: mv "./game/export/LinuxX11 x86_64/OpenVic2.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
+
+      - name: Upload pack artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-debug-pck
+          path: |
+            ./game/export/${{ github.event.repository.name }}.pck
+
+
+  export:
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions: write-all
+
+    name: Export
+    steps:
+
+      - name: Checkout project
+        uses: actions/checkout@v3.3.0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-extension
+          path: game/bin/openvic2
+
+      - name: Install WINE
+        id: wine_install
+        run: |
+          sudo apt install wine64
+          echo "WINE_PATH=$(which wine64)" >> $GITHUB_OUTPUT
+
+      - name: Export game
+        id: export_game
+        uses: Spartan322/godot-export@master
+        with:
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.1/Godot_v4.0.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.1/Godot_v4.0.1-stable_export_templates.tpz
+          relative_project_path: ./game
+          archive_output: true
+          wine_path: ${{ steps.wine_install.outputs.WINE_PATH }}
+
+      - name: Create release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: ${{ steps.export.outputs.archive_directory }}/*
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}
+          retention-days: 15
           path: |
-            ${{ github.workspace }}/game/bin/openvic2/*
+            ${{ steps.export_game.outputs.archive_directory }}
