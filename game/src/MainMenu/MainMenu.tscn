@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://dvoin538iby54"]
+[gd_scene load_steps=4 format=3 uid="uid://c5nyjkpsx14h1"]
 
-[ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="1_dfm41"]
+[ext_resource type="Theme" uid="uid://dx1s0qdvtcb6l" path="res://theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
 
@@ -12,10 +12,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_dfm41")
+theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
-_checksum_label = NodePath("Panel/VBox/Margin2/VersionChecksumBox/ChecksumLabel")
+_checksum_label = NodePath("Panel/VBox/BottomMargin/VersionChecksumBox/ChecksumLabel")
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -24,7 +24,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_type_variation = &"Panel_MainMenu"
+theme_type_variation = &"BackgroundPanel"
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
@@ -33,7 +33,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_vertical = 6
 size_flags_stretch_ratio = 1.5
-theme_override_font_sizes/font_size = 90
+theme_type_variation = &"TitleLabel"
 text = "OpenVic2"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -50,7 +50,7 @@ theme_type_variation = &"HBox_MainMenu_ButtonList"
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList" node_paths=PackedStringArray("shortcut_context")]
+[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
 editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -59,8 +59,7 @@ focus_neighbor_top = NodePath("../ExitButton")
 focus_neighbor_right = NodePath("../ContinueButton")
 focus_next = NodePath("../ContinueButton")
 focus_previous = NodePath("../ExitButton")
-shortcut_context = NodePath("")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 text = "New Game"
 clip_text = true
 
@@ -71,7 +70,7 @@ focus_neighbor_left = NodePath("../NewGameButton")
 focus_neighbor_right = NodePath("../MultiplayerButton")
 focus_next = NodePath("../MultiplayerButton")
 focus_previous = NodePath("../NewGameButton")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 disabled = true
 text = "Continue"
 clip_text = true
@@ -84,7 +83,7 @@ focus_neighbor_left = NodePath("../ContinueButton")
 focus_neighbor_right = NodePath("../OptionsButton")
 focus_next = NodePath("../OptionsButton")
 focus_previous = NodePath("../ContinueButton")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 text = "Multiplayer"
 clip_text = true
 
@@ -96,7 +95,7 @@ focus_neighbor_left = NodePath("../MultiplayerButton")
 focus_neighbor_right = NodePath("../CreditsButton")
 focus_next = NodePath("../CreditsButton")
 focus_previous = NodePath("../MultiplayerButton")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 text = "Options"
 clip_text = true
 
@@ -108,7 +107,7 @@ focus_neighbor_left = NodePath("../OptionsButton")
 focus_neighbor_right = NodePath("../ExitButton")
 focus_next = NodePath("../ExitButton")
 focus_previous = NodePath("../OptionsButton")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 text = "Credits"
 clip_text = true
 
@@ -120,7 +119,7 @@ focus_neighbor_left = NodePath("../OptionsButton")
 focus_neighbor_right = NodePath("../NewGameButton")
 focus_next = NodePath("../NewGameButton")
 focus_previous = NodePath("../OptionsButton")
-theme_type_variation = &"Button_MainMenu"
+theme_type_variation = &"TitleButton"
 text = "Exit"
 clip_text = true
 
@@ -129,31 +128,30 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.35
 
-[node name="Margin2" type="MarginContainer" parent="Panel/VBox"]
+[node name="BottomMargin" type="MarginContainer" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_constants/margin_left = 50
-theme_override_constants/margin_right = 50
-theme_override_constants/margin_bottom = 10
+theme_type_variation = &"BottomMargin"
 
-[node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/Margin2"]
+[node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/BottomMargin"]
 editor_description = "UI-31"
 layout_mode = 2
 
-[node name="VersionLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
+[node name="VersionLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
 layout_mode = 2
 tooltip_text = "OpenVic2 v0.01 \"Primum Mobile\""
 mouse_filter = 1
+theme_type_variation = &"VersionLabel"
 text = "v0.01"
 
-[node name="ChecksumLabel" type="Label" parent="Panel/VBox/Margin2/VersionChecksumBox"]
+[node name="ChecksumLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
 editor_description = "UI-111"
 layout_mode = 2
 tooltip_text = "Checksum 00000000"
 mouse_filter = 1
-theme_type_variation = &"Label_Checksum"
+theme_type_variation = &"ChecksumLabel"
 text = "(0000)"
 
-[node name="LocaleButton" parent="Panel/VBox/Margin2" instance=ExtResource("3_amonp")]
+[node name="LocaleButton" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_amonp")]
 layout_mode = 2
 size_flags_horizontal = 8
 alignment = 0

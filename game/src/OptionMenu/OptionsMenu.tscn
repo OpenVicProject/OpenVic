@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://cnbfxjy1m6wja"]
 
+[ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://theme/options_menu.tres" id="1_0up1d"]
 [ext_resource type="Script" path="res://src/OptionMenu/OptionsMenu.gd" id="1_tlein"]
-[ext_resource type="Theme" uid="uid://cr4lh0vraucx7" path="res://default_theme.tres" id="2_8cfng"]
 [ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
 [ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/OptionMenu/SoundTab.tscn" id="3_4w35t"]
 [ext_resource type="PackedScene" uid="uid://duwjal7sd7p6w" path="res://src/OptionMenu/GeneralTab.tscn" id="3_6gvf6"]
@@ -15,16 +15,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_8cfng")
-theme_type_variation = &"Panel_MainMenu"
+theme = ExtResource("1_0up1d")
+theme_type_variation = &"BackgroundPanel"
 script = ExtResource("1_tlein")
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 180
-theme_override_constants/margin_top = 150
-theme_override_constants/margin_right = 180
-theme_override_constants/margin_bottom = 150
+theme_type_variation = &"TabMargin"
 
 [node name="Tab" type="TabContainer" parent="Margin"]
 editor_description = "UI-45"
