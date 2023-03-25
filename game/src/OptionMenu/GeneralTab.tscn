@@ -26,7 +26,7 @@ columns = 2
 
 [node name="SavegameFormatLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Savegame Format"
+text = "OPTIONS_GENERAL_SAVEFORMAT"
 
 [node name="SavegameFormatSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-50"
@@ -34,18 +34,18 @@ layout_mode = 2
 focus_neighbor_bottom = NodePath("../AutosaveIntervalSelector")
 item_count = 2
 selected = 0
-popup/item_0/text = "Binary"
+popup/item_0/text = "OPTIONS_GENERAL_BINARY"
 popup/item_0/id = 0
-popup/item_1/text = "Text"
+popup/item_1/text = "OPTIONS_GENERAL_TEXT"
 popup/item_1/id = 1
 script = ExtResource("2_msx2u")
-section_name = "General"
-setting_name = "Savegame Format"
+section_name = "general"
+setting_name = "savegame_format"
 default_selected = 0
 
 [node name="AutosaveIntervalLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Autosave Interval"
+text = "OPTIONS_GENERAL_AUTOSAVE"
 horizontal_alignment = 1
 
 [node name="AutosaveIntervalSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
@@ -55,24 +55,24 @@ focus_neighbor_top = NodePath("../SavegameFormatSelector")
 focus_neighbor_bottom = NodePath("../LocaleButton")
 item_count = 5
 selected = 0
-popup/item_0/text = "Monthly"
+popup/item_0/text = "OPTIONS_GENERAL_AUTOSAVE_MONTHLY"
 popup/item_0/id = 0
-popup/item_1/text = "Bi-Monthly"
+popup/item_1/text = "OPTIONS_GENERAL_AUTOSAVE_BIMONTHLY"
 popup/item_1/id = 1
-popup/item_2/text = "Bi-Yearly"
+popup/item_2/text = "OPTIONS_GENERAL_AUTOSAVE_YEARLY"
 popup/item_2/id = 2
-popup/item_3/text = "Yearly"
+popup/item_3/text = "OPTIONS_GENERAL_AUTOSAVE_BIYEARLY"
 popup/item_3/id = 3
-popup/item_4/text = "Never"
+popup/item_4/text = "OPTIONS_GENERAL_AUTOSAVE_NEVER"
 popup/item_4/id = 4
 script = ExtResource("2_t06tb")
-section_name = "General"
-setting_name = "Autosave Interval"
+section_name = "general"
+setting_name = "autosave_interval"
 default_selected = 0
 
 [node name="LocaleLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Language"
+text = "OPTIONS_GENERAL_LANGUAGE"
 
 [node name="LocaleButton" parent="VBoxContainer/GridContainer" instance=ExtResource("2_5cfd7")]
 editor_description = "UI-79"

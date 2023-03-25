@@ -2,10 +2,10 @@ extends OptionButton
 class_name SettingOptionButton
 
 @export
-var section_name : String = "Setting"
+var section_name : String = "setting"
 
 @export
-var setting_name : String = "SettingOptionMenu"
+var setting_name : String = "setting_optionbutton"
 
 @export
 var default_selected : int = -1:

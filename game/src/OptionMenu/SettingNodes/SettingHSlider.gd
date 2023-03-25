@@ -2,10 +2,10 @@ extends HSlider
 class_name SettingHSlider
 
 @export
-var section_name : String = "Setting"
+var section_name : String = "setting"
 
 @export
-var setting_name : String = "SettingHSlider"
+var setting_name : String = "setting_hslider"
 
 @export
 var default_value : float = 0

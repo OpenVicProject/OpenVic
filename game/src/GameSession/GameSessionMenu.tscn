@@ -14,7 +14,7 @@ layout_mode = 2
 [node name="MainMenuButton" type="Button" parent="VBoxContainer"]
 editor_description = "UI-71"
 layout_mode = 2
-text = "Resign"
+text = "GAMESESSIONMENU_RESIGN"
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
@@ -22,7 +22,7 @@ layout_mode = 2
 [node name="CloseButton" type="Button" parent="VBoxContainer"]
 editor_description = "UI-80"
 layout_mode = 2
-text = "Close"
+text = "GAMESESSIONMENU_CLOSE"
 
 [connection signal="pressed" from="VBoxContainer/MainMenuButton" to="." method="_on_to_main_menu_pressed"]
 [connection signal="pressed" from="VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]

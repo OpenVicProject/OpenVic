@@ -20,7 +20,7 @@ func _ready():
 	# * UI-12
 	# * UIFUN-14
 	var reset_button := Button.new()
-	reset_button.text = "R"
+	reset_button.text = "OPTIONS_RESET"
 	reset_button.pressed.connect(Events.Options.try_reset_settings)
 	button_list.add_child(reset_button)
 
@@ -28,7 +28,7 @@ func _ready():
 	# * UI-11
 	# * UIFUN-17
 	var back_button := Button.new()
-	back_button.text = "X"
+	back_button.text = "OPTIONS_BACK"
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
 	get_viewport().get_window().close_requested.connect(_on_window_close_requested)

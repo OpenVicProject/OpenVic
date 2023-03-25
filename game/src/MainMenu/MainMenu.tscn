@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_checksum_label")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_version_label", "_checksum_label")]
 editor_description = "UI-13"
 layout_mode = 3
 anchors_preset = 15
@@ -15,6 +15,7 @@ grow_vertical = 2
 theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
+_version_label = NodePath("Panel/VBox/BottomMargin/VersionChecksumBox/VersionLabel")
 _checksum_label = NodePath("Panel/VBox/BottomMargin/VersionChecksumBox/ChecksumLabel")
 
 [node name="Panel" type="PanelContainer" parent="."]
@@ -34,7 +35,7 @@ layout_mode = 2
 size_flags_vertical = 6
 size_flags_stretch_ratio = 1.5
 theme_type_variation = &"TitleLabel"
-text = "OpenVic2"
+text = "MAINMENU_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -60,7 +61,7 @@ focus_neighbor_right = NodePath("../ContinueButton")
 focus_next = NodePath("../ContinueButton")
 focus_previous = NodePath("../ExitButton")
 theme_type_variation = &"TitleButton"
-text = "New Game"
+text = "MAINMENU_NEW_GAME"
 clip_text = true
 
 [node name="ContinueButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -72,7 +73,7 @@ focus_next = NodePath("../MultiplayerButton")
 focus_previous = NodePath("../NewGameButton")
 theme_type_variation = &"TitleButton"
 disabled = true
-text = "Continue"
+text = "MAINMENU_CONTINUE"
 clip_text = true
 
 [node name="MultiplayerButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -84,7 +85,7 @@ focus_neighbor_right = NodePath("../OptionsButton")
 focus_next = NodePath("../OptionsButton")
 focus_previous = NodePath("../ContinueButton")
 theme_type_variation = &"TitleButton"
-text = "Multiplayer"
+text = "MAINMENU_MULTIPLAYER"
 clip_text = true
 
 [node name="OptionsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -96,7 +97,7 @@ focus_neighbor_right = NodePath("../CreditsButton")
 focus_next = NodePath("../CreditsButton")
 focus_previous = NodePath("../MultiplayerButton")
 theme_type_variation = &"TitleButton"
-text = "Options"
+text = "MAINMENU_OPTIONS"
 clip_text = true
 
 [node name="CreditsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -108,7 +109,7 @@ focus_neighbor_right = NodePath("../ExitButton")
 focus_next = NodePath("../ExitButton")
 focus_previous = NodePath("../OptionsButton")
 theme_type_variation = &"TitleButton"
-text = "Credits"
+text = "MAINMENU_CREDITS"
 clip_text = true
 
 [node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
@@ -120,7 +121,7 @@ focus_neighbor_right = NodePath("../NewGameButton")
 focus_next = NodePath("../NewGameButton")
 focus_previous = NodePath("../OptionsButton")
 theme_type_variation = &"TitleButton"
-text = "Exit"
+text = "MAINMENU_EXIT"
 clip_text = true
 
 [node name="BottomSpace" type="Control" parent="Panel/VBox"]
@@ -138,18 +139,18 @@ layout_mode = 2
 
 [node name="VersionLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
 layout_mode = 2
-tooltip_text = "OpenVic2 v0.01 \"Primum Mobile\""
+tooltip_text = "OpenVic2 VERSION_MISSING"
 mouse_filter = 1
 theme_type_variation = &"VersionLabel"
-text = "v0.01"
+text = "VERSION_MISSING"
 
 [node name="ChecksumLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
 editor_description = "UI-111"
 layout_mode = 2
-tooltip_text = "Checksum 00000000"
+tooltip_text = "CHECKSUM_MISSING"
 mouse_filter = 1
 theme_type_variation = &"ChecksumLabel"
-text = "(0000)"
+text = "(????)"
 
 [node name="LocaleButton" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_amonp")]
 layout_mode = 2
