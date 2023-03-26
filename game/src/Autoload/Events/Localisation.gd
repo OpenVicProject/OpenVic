@@ -1,10 +1,6 @@
 extends RefCounted
 
 # REQUIREMENTS
-# * FS-17
-const _localisation_dir_path : String = "res://localisation"
-
-# REQUIREMENTS
 # * SS-59, SS-60, SS-61
 func get_default_locale() -> String:
 	var locales := TranslationServer.get_loaded_locales()
@@ -25,5 +21,10 @@ func load_localisation(dir_path : String) -> void:
 
 # REQUIREMENTS
 # * SS-57
+# * FS-17
 func _init():
-	load_localisation(_localisation_dir_path)
+	var localisation_dir_path : String = ProjectSettings.get_setting("internationalization/locale/localisation_path", "")
+	if localisation_dir_path.is_empty():
+		push_error("Missing localisation_path setting!")
+	else:
+		load_localisation(localisation_dir_path)

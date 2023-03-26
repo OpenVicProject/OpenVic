@@ -6,7 +6,7 @@ const setting_name : String = "locale"
 var _default_locale_index : int
 
 func _ready():
-	var locales_country_rename = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
+	var locales_country_rename : Dictionary = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
 
 	var locales_list = TranslationServer.get_loaded_locales()
 	var default_locale := Events.Localisation.get_default_locale()
@@ -14,13 +14,17 @@ func _ready():
 		locales_list.push_back(default_locale)
 
 	for locale in locales_list:
+		# locale_name consists of a compulsory language name and optional script
+		# and country names, in the format: "<language>[ (script)][, country]"
 		var locale_name := TranslationServer.get_locale_name(locale)
-		var locale_first_part := locale_name.get_slice(", ", 0)
-		var locale_second_part := locale_name.substr(locale_first_part.length() + 2)
-		if locale_second_part in locales_country_rename:
-			locale_second_part = locales_country_rename[locale_second_part]
+		var comma_idx := locale_name.find(", ")
+		if comma_idx != -1:
+			var locale_country_name := locale_name.substr(comma_idx + 2)
+			locale_country_name = locales_country_rename.get(locale_country_name, "")
+			if not locale_country_name.is_empty():
+				locale_name = locale_name.left(comma_idx + 2) + locale_country_name
 
-		add_item("%s, %s" % [locale_first_part, locale_second_part])
+		add_item(locale_name)
 		set_item_metadata(item_count - 1, locale)
 
 		if locale == default_locale:
