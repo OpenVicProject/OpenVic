@@ -9,7 +9,6 @@ var _locales_list : Array[String]
 func _ready():
 	_locales_country_rename = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
 
-	_locales_list = [TranslationServer.get_locale()]
 	_locales_list.append_array(TranslationServer.get_loaded_locales())
 
 	for locale in _locales_list:

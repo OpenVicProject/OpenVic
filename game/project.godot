@@ -26,6 +26,7 @@ MusicConductor="*res://src/MusicConductor/MusicConductor.tscn"
 SoundManager="*res://src/Autoload/SoundManager.gd"
 Keychain="*res://addons/keychain/Keychain.gd"
 GameDebug="*res://src/Autoload/GameDebug.gd"
+TranslationLoader="res://src/Autoload/TranslationLoader.gd"
 
 [display]
 
@@ -52,6 +53,7 @@ locale/locale_filter_mode=0
 locale/country_short_name={
 "United States of America": "USA"
 }
+locale/localization_path="common/localization"
 
 [memory]
 
