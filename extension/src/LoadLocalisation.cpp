@@ -37,9 +37,17 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 		UtilityFunctions::push_error("Failed to load localisation file: ", file_path);
 		return err == OK ? FAILED : err;
 	}
+	int line_number = 0;
 	while (!file->eof_reached()) {
 		PackedStringArray line = file->get_csv_line();
-		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) continue;
+		line_number++;
+		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
+			if (!line[0].is_empty())
+				UtilityFunctions::push_warning("Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path);
+			else if (line.size() >= 2 && !line[1].is_empty())
+				UtilityFunctions::push_warning("Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path);
+			continue;
+		}
 		translation->add_message(line[0], line[1].c_unescape());
 	}
 	return OK;
