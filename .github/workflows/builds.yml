@@ -56,9 +56,12 @@ jobs:
     steps:
 
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           submodules: recursive
+
+      - name: Setup Environment
+        uses: ./.github/actions/openvic2-env
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -123,8 +126,12 @@ jobs:
 
     name: Peform Godot Debug Checks
     steps:
+
       - name: Checkout project
         uses: actions/checkout@v3.3.0
+
+      - name: Setup Environment
+        uses: ./.github/actions/openvic2-env
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -163,6 +170,9 @@ jobs:
 
       - name: Checkout project
         uses: actions/checkout@v3.3.0
+
+      - name: Setup Environment
+        uses: ./.github/actions/openvic2-env
 
       - name: Download artifact
         uses: actions/download-artifact@v3
