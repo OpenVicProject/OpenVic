@@ -1,10 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://c5nyjkpsx14h1"]
+[gd_scene load_steps=5 format=3 uid="uid://bp5n3mlu45ygw"]
 
 [ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
+[ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/MainMenu/ReleaseInfoBox.tscn" id="3_km0er"]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button", "_version_label", "_checksum_label")]
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button")]
 editor_description = "UI-13"
 layout_mode = 3
 anchors_preset = 15
@@ -15,8 +16,6 @@ grow_vertical = 2
 theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
-_version_label = NodePath("Panel/VBox/BottomMargin/VersionChecksumBox/VersionLabel")
-_checksum_label = NodePath("Panel/VBox/BottomMargin/VersionChecksumBox/ChecksumLabel")
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -133,24 +132,8 @@ size_flags_stretch_ratio = 0.35
 layout_mode = 2
 theme_type_variation = &"BottomMargin"
 
-[node name="VersionChecksumBox" type="HBoxContainer" parent="Panel/VBox/BottomMargin"]
-editor_description = "UI-31"
+[node name="ReleaseInfoBox" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_km0er")]
 layout_mode = 2
-
-[node name="VersionLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
-layout_mode = 2
-tooltip_text = "OpenVic2 VERSION_MISSING"
-mouse_filter = 1
-theme_type_variation = &"VersionLabel"
-text = "VERSION_MISSING"
-
-[node name="ChecksumLabel" type="Label" parent="Panel/VBox/BottomMargin/VersionChecksumBox"]
-editor_description = "UI-111"
-layout_mode = 2
-tooltip_text = "CHECKSUM_MISSING"
-mouse_filter = 1
-theme_type_variation = &"ChecksumLabel"
-text = "(????)"
 
 [node name="LocaleButton" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_amonp")]
 layout_mode = 2

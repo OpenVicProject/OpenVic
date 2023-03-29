@@ -38,7 +38,7 @@ window/stretch/aspect="ignore"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/keychain/plugin.cfg")
+enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic2-plugin/plugin.cfg")
 
 [gui]
 
