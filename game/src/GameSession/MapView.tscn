@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://dkehmdnuxih2r"]
+
+[ext_resource type="Script" path="res://src/GameSession/MapView.gd" id="1_exccw"]
+[ext_resource type="Shader" path="res://src/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Texture2D" uid="uid://cmw0pvjthnn8c" path="res://common/map/terrain/terrain.png" id="3_l8pnf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
+render_priority = 0
+shader = ExtResource("1_upocn")
+shader_parameter/hover_pos = Vector2(0.5, 0.5)
+shader_parameter/selected_pos = Vector2(0.5, 0.5)
+shader_parameter/terrain_tex = ExtResource("3_l8pnf")
+
+[sub_resource type="MapMesh" id="MapMesh_3gtsd"]
+
+[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance")]
+script = ExtResource("1_exccw")
+_camera = NodePath("MapCamera")
+_map_mesh_instance = NodePath("MapMeshInstance")
+
+[node name="MapCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 1, 1)
+
+[node name="MapMeshInstance" type="MeshInstance3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_tayeg")
+mesh = SubResource("MapMesh_3gtsd")

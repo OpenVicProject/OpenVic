@@ -8,13 +8,13 @@ namespace OpenVic2 {
 	{
 		GDCLASS(TestSingleton, godot::Object)
 
-		static TestSingleton *singleton;
+		static TestSingleton* singleton;
 
 	protected:
 		static void _bind_methods();
 
 	public:
-		static TestSingleton *get_singleton();
+		static TestSingleton* get_singleton();
 
 		TestSingleton();
 		~TestSingleton();

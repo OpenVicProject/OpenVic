@@ -1,4 +1,4 @@
-extends Control
+extends Node
 
 @export var _game_session_menu : Control
 

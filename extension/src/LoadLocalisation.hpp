@@ -4,11 +4,11 @@
 #include <godot_cpp/classes/translation.hpp>
 
 namespace OpenVic2 {
-	class LoadLocalisation : public godot::Object
-	{
+	class LoadLocalisation : public godot::Object {
+
 		GDCLASS(LoadLocalisation, godot::Object)
 
-		static LoadLocalisation *singleton;
+		static LoadLocalisation* singleton;
 
 		godot::Error _load_file_into_translation(godot::String const& file_path, godot::Ref<godot::Translation> translation);
 		godot::Ref<godot::Translation> _get_translation(godot::String const& locale);
@@ -17,7 +17,7 @@ namespace OpenVic2 {
 		static void _bind_methods();
 
 	public:
-		static LoadLocalisation *get_singleton();
+		static LoadLocalisation* get_singleton();
 
 		LoadLocalisation();
 		~LoadLocalisation();
