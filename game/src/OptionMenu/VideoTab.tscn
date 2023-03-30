@@ -9,7 +9,6 @@
 
 [node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-46"
-tooltip_text = "This is my cool and very nice tooltip"
 alignment = 1
 script = ExtResource("1_jvv62")
 initial_focus = NodePath("VBoxContainer/GridContainer/ResolutionSelector")
@@ -29,7 +28,7 @@ columns = 2
 
 [node name="ResolutionLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Resolution"
+text = "OPTIONS_VIDEO_RESOLUTION"
 
 [node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-19"
@@ -40,13 +39,13 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("1_i8nro")
-section_name = "Video"
-setting_name = "Resolution"
+section_name = "video"
+setting_name = "resolution"
 
 [node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-44"
 layout_mode = 2
-text = "Screen Mode"
+text = "OPTIONS_VIDEO_SCREEN_MODE"
 
 [node name="ScreenModeSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
@@ -54,19 +53,19 @@ focus_neighbor_top = NodePath("../ResolutionSelector")
 focus_neighbor_bottom = NodePath("../MonitorDisplaySelector")
 item_count = 3
 selected = 0
-popup/item_0/text = "Fullscreen"
+popup/item_0/text = "OPTIONS_VIDEO_FULLSCREEN"
 popup/item_0/id = 0
-popup/item_1/text = "Borderless"
+popup/item_1/text = "OPTIONS_VIDEO_BORDERLESS"
 popup/item_1/id = 1
-popup/item_2/text = "Windowed"
+popup/item_2/text = "OPTIONS_VIDEO_WINDOWED"
 popup/item_2/id = 2
 script = ExtResource("2_wa7vw")
-section_name = "Video"
-setting_name = "Mode Selected"
+section_name = "video"
+setting_name = "mode_selected"
 
 [node name="MonitorSelectionLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Monitor Selection"
+text = "OPTIONS_VIDEO_MONITOR_SELECTION"
 
 [node name="MonitorDisplaySelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
@@ -77,17 +76,17 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("3_y6lyb")
-section_name = "Video"
-setting_name = "Current Screen"
+section_name = "video"
+setting_name = "current_screen"
 
 [node name="RefreshRateLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Refresh Rate"
+text = "OPTIONS_VIDEO_REFRESH_RATE"
 
 [node name="RefreshRateSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-18"
 layout_mode = 2
-tooltip_text = "Only change from VSYNC if you are having issues with screen tearing."
+tooltip_text = "OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP"
 focus_neighbor_top = NodePath("../MonitorDisplaySelector")
 focus_neighbor_bottom = NodePath("../QualityPresetSelector")
 item_count = 8
@@ -109,13 +108,13 @@ popup/item_6/id = 6
 popup/item_7/text = "Unlimited"
 popup/item_7/id = 7
 script = ExtResource("4_381mg")
-section_name = "Video"
-setting_name = "Refresh Rate"
+section_name = "video"
+setting_name = "refresh_rate"
 default_selected = 0
 
 [node name="QualityPresetLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
-text = "Quality Preset"
+text = "OPTIONS_VIDEO_QUALITY"
 
 [node name="QualityPresetSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-21"
@@ -134,8 +133,8 @@ popup/item_3/id = 3
 popup/item_4/text = "Custom"
 popup/item_4/id = 4
 script = ExtResource("5_srg4v")
-section_name = "Video"
-setting_name = "Quality Preset"
+section_name = "video"
+setting_name = "quality_preset"
 default_selected = 1
 
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]

@@ -11,25 +11,25 @@ _checksum_label = NodePath("ChecksumLabel")
 
 [node name="VersionLabel" type="Button" parent="."]
 layout_mode = 2
-tooltip_text = "OpenVic2 v0.01 \"Primum Mobile\""
+tooltip_text = "VERSION_MISSING"
 theme_type_variation = &"VersionLabel"
-text = "v0.01"
+text = "VERSION_MISSING"
 flat = true
 alignment = 0
 
 [node name="CommitLabel" type="Button" parent="."]
 layout_mode = 2
 theme_type_variation = &"CommitLabel"
-text = "ffffffff"
+text = "????????"
 flat = true
 alignment = 0
 
 [node name="ChecksumLabel" type="Button" parent="."]
 editor_description = "UI-111"
 layout_mode = 2
-tooltip_text = "Checksum 00000000"
+tooltip_text = "CHECKSUM_MISSING"
 theme_type_variation = &"ChecksumLabel"
-text = "(0000)"
+text = "(????)"
 flat = true
 alignment = 0
 

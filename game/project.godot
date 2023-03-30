@@ -50,8 +50,10 @@ locale/translation_remaps={}
 locale/fallback="en_GB"
 locale/locale_filter_mode=0
 locale/country_short_name={
+"United Kingdom": "UK",
 "United States of America": "USA"
 }
+locale/localisation_path="res://localisation"
 
 [memory]
 

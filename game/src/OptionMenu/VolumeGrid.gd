@@ -14,13 +14,16 @@ func get_volume_value_as_db(value : float) -> float:
 	# linear_to_db consumes a float between 0 and 1 to produce the db value
 	return linear_to_db(value / RATIO_FOR_LINEAR)
 
-func add_volume_row(bus_name : StringName, bus_index : int) -> HSlider:
+func add_volume_row(bus_name : String, bus_index : int) -> HSlider:
 	var volume_label := Label.new()
-	volume_label.text = bus_name + " Volume"
+	if bus_name == "Master":
+		volume_label.text = "MASTER_BUS"
+	else:
+		volume_label.text = bus_name
 	add_child(volume_label)
 
 	var volume_slider := SettingHSlider.new()
-	volume_slider.section_name = "Audio"
+	volume_slider.section_name = "audio"
 	volume_slider.setting_name = volume_label.text
 	volume_slider.custom_minimum_size = Vector2(290, 0)
 	volume_slider.size_flags_vertical = Control.SIZE_FILL

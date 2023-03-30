@@ -34,7 +34,7 @@ size_flags_vertical = 3
 [node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
 editor_description = "UI-37"
 layout_mode = 2
-text = "Back"
+text = "GAMELOBBY_BACK"
 
 [node name="Spacer2" type="Control" parent="GameSelectPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 33)
@@ -71,7 +71,7 @@ size_flags_vertical = 3
 editor_description = "UI-43"
 layout_mode = 2
 disabled = true
-text = "Start Game"
+text = "GAMELOBBY_START"
 
 [node name="Spacer3" type="Control" parent="GameStartPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 33)

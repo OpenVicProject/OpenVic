@@ -29,7 +29,7 @@ theme_type_variation = &"BackButtonsMargin"
 [node name="BackButton" type="Button" parent="ControlMargin"]
 editor_description = "UI-38"
 layout_mode = 2
-text = "Back to Main Menu"
+text = "CREDITS_BACK"
 
 [node name="Scroll" type="ScrollContainer" parent="."]
 editor_description = "UI-35"
