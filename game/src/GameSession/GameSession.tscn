@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=5 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
+[ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapViewport.tscn" id="4_xkg5j"]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102"
@@ -14,6 +15,14 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
+
+[node name="MapViewport" parent="." instance=ExtResource("4_xkg5j")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="GameSessionMenu" parent="." instance=ExtResource("3_bvmqh")]
 visible = false

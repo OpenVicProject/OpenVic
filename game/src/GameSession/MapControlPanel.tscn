@@ -1,6 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://g524p8lr574w"]
+[gd_scene load_steps=4 format=3 uid="uid://g524p8lr574w"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_fc1tk"]
+events = [SubResource("InputEventAction_5nck3")]
 
 [node name="PanelContainer" type="PanelContainer"]
 editor_description = "SS-103"
@@ -27,6 +33,7 @@ layout_mode = 2
 [node name="GameSessionMenuButton" type="Button" parent="HBoxContainer/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
+shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
 
 [connection signal="pressed" from="HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]

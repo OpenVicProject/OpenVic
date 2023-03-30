@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://dkehmdnuxih2r"]
+
+[ext_resource type="Script" path="res://src/GameSession/MapViewport.gd" id="1_exccw"]
+[ext_resource type="Shader" path="res://src/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Texture2D" uid="uid://cmw0pvjthnn8c" path="res://common/map/terrain/terrain.png" id="3_l8pnf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
+render_priority = 0
+shader = ExtResource("1_upocn")
+shader_parameter/tex = ExtResource("3_l8pnf")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_skc48"]
+size = Vector2(10.8, 2)
+
+[node name="MapViewportContainer" type="SubViewportContainer" node_paths=PackedStringArray("_camera", "_map_mesh")]
+stretch = true
+script = ExtResource("1_exccw")
+_camera = NodePath("MapViewport/Camera3D")
+_map_mesh = NodePath("MapViewport/MeshInstance3D")
+
+[node name="MapViewport" type="SubViewport" parent="."]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MapViewport"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_tayeg")
+mesh = SubResource("PlaneMesh_skc48")
+
+[node name="Camera3D" type="Camera3D" parent="MapViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 1, 1)
