@@ -183,7 +183,8 @@ jobs:
       - name: Install WINE
         id: wine_install
         run: |
-          sudo apt install wine64
+          sudo apt update
+          sudo apt install --fix-missing wine64
           echo "WINE_PATH=$(which wine64)" >> $GITHUB_OUTPUT
 
       - name: Export game
