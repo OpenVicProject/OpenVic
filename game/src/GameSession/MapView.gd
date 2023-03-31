@@ -1,4 +1,4 @@
-extends SubViewportContainer
+extends Node3D
 
 const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
@@ -7,14 +7,14 @@ const _action_west : StringName = &"map_west"
 const _action_zoomin : StringName = &"map_zoomin"
 const _action_zoomout : StringName = &"map_zoomout"
 
-const _move_speed : float = 1.0
+@export var _move_speed : float = 1.0
 
-const _zoom_target_min : float = 0.2
-const _zoom_target_max : float = 5.0
-const _zoom_target_step : float = 0.1
-const _zoom_epsilon : float = _zoom_target_step * 0.1
-const _zoom_speed : float = 5.0
-var _zoom_target : float = 1.0:
+@export var _zoom_target_min : float = 0.2
+@export var _zoom_target_max : float = 5.0
+@export var _zoom_target_step : float = 0.1
+@export var _zoom_epsilon : float = _zoom_target_step * 0.1
+@export var _zoom_speed : float = 5.0
+@export var _zoom_target : float = 1.0:
 	get: return _zoom_target
 	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
 
