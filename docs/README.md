@@ -5,6 +5,10 @@
 - [Project File Structure](project-file-structure.md)
 - [C++ Style Guidelines](styleguide-cpp.md)
 
+## Design
+- [Economy Design](design/econ-design.md)
+- [Event Design](design/event-design.md)
+
 ## Simulation
 - [Goods](simulation/goods.md)
 - [Ideologies](simulation/ideologies.md)
