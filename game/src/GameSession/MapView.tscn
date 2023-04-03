@@ -7,10 +7,10 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
 shader = ExtResource("1_upocn")
-shader_parameter/tex = ExtResource("3_l8pnf")
+shader_parameter/mouse_pos = Vector2(0.5, 0.5)
+shader_parameter/terrain_tex = ExtResource("3_l8pnf")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_skc48"]
-size = Vector2(10.8, 2)
 
 [node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh")]
 script = ExtResource("1_exccw")
@@ -21,6 +21,6 @@ _map_mesh = NodePath("MapMeshInstance")
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 1, 1)
 
 [node name="MapMeshInstance" type="MeshInstance3D" parent="."]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_tayeg")
 mesh = SubResource("PlaneMesh_skc48")

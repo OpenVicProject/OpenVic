@@ -9,6 +9,7 @@
 #include "Simulation.hpp"
 #include "Checksum.hpp"
 #include "LoadLocalisation.hpp"
+#include "MapSingleton.hpp"
 
 using namespace godot;
 using namespace OpenVic2;
@@ -17,6 +18,7 @@ static TestSingleton* _test_singleton;
 static Simulation* _simulation;
 static Checksum* _checksum;
 static LoadLocalisation* _load_localisation;
+static MapSingleton* _map_singleton;
 
 void initialize_openvic2_types(ModuleInitializationLevel p_level)
 {
@@ -40,6 +42,9 @@ void initialize_openvic2_types(ModuleInitializationLevel p_level)
 	_load_localisation = memnew(LoadLocalisation);
 	Engine::get_singleton()->register_singleton("LoadLocalisation", LoadLocalisation::get_singleton());
 
+	ClassDB::register_class<MapSingleton>();
+	_map_singleton = memnew(MapSingleton);
+	Engine::get_singleton()->register_singleton("MapSingleton", MapSingleton::get_singleton());
 }
 
 void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
@@ -58,6 +63,9 @@ void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("LoadLocalisation");
 	memdelete(_load_localisation);
+
+	Engine::get_singleton()->unregister_singleton("MapSingleton");
+	memdelete(_map_singleton);
 }
 
 extern "C"
