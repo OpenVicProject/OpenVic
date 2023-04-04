@@ -25,6 +25,7 @@ namespace OpenVic2 {
 
 		godot::Error load_province_identifier_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
+		godot::String get_province_id(godot::String const& hex_str);
 		godot::Ref<godot::Image> get_province_shape_image() const;
 	};
 }

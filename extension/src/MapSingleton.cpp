@@ -13,6 +13,7 @@ void MapSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_province_identifier_file", "file_path"), &MapSingleton::load_province_identifier_file);
 	ClassDB::bind_method(D_METHOD("load_province_shape_file", "file_path"), &MapSingleton::load_province_shape_file);
 	ClassDB::bind_method(D_METHOD("get_province_shape_image"), &MapSingleton::get_province_shape_image);
+	ClassDB::bind_method(D_METHOD("get_province_id"), &MapSingleton::get_province_id);
 }
 
 MapSingleton* MapSingleton::get_singleton() {
@@ -63,9 +64,9 @@ Error MapSingleton::load_province_identifier_file(String const& file_path) {
 			err = FAILED;
 			continue;
 		}
-		static const String prov_prefix = "prov_";
-		if (!identifier.begins_with(prov_prefix))
-			UtilityFunctions::push_warning("Province identifier missing prefix: ", identifier);
+		// static const String prov_prefix = "prov_";
+		// if (!identifier.begins_with(prov_prefix))
+		// 	UtilityFunctions::push_warning("Province identifier missing prefix: ", identifier);
 		type = colour_var.get_type();
 		Province::colour_t colour = Province::NULL_COLOUR;
 		if (type == Variant::ARRAY) {
@@ -112,6 +113,14 @@ Error MapSingleton::load_province_identifier_file(String const& file_path) {
 		}
 	}
 	return err;
+}
+
+godot::String MapSingleton::get_province_id(godot::String const& hex_str) {
+	UtilityFunctions::print(hex_str);
+	int64_t colour_string = hex_str.hex_to_int();
+	godot::String province_id = map.get_province(colour_string).identifier.c_str();
+	UtilityFunctions::print("Returning: ",map.get_province(colour_string).to_string().c_str());
+	return province_id;
 }
 
 Error MapSingleton::load_province_shape_file(String const& file_path) {

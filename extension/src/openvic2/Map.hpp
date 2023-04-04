@@ -23,6 +23,7 @@ namespace OpenVic2 {
 
 	public:
 		bool add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message);
+		Province get_province(Province::colour_t colour);
 	};
 
 }

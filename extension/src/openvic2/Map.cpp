@@ -27,3 +27,11 @@ bool Map::add_province(std::string const& identifier, Province::colour_t colour,
 	error_message = "Added province: " + new_province.to_string();
 	return true;
 }
+
+Province Map::get_province(Province::colour_t colour) {
+	for(Province const& province : provinces) {
+		if (province.colour == colour) {
+			return province;
+		}
+	}
+}
