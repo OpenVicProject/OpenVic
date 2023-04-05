@@ -1,6 +1,5 @@
 #pragma once
 
-#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include "openvic2/Map.hpp"
 
@@ -25,7 +24,7 @@ namespace OpenVic2 {
 
 		godot::Error load_province_identifier_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
-		godot::String get_province_id(godot::String const& hex_str);
+		godot::String get_province_identifier_from_colour(Province::colour_t colour);
 		godot::Ref<godot::Image> get_province_shape_image() const;
 	};
 }

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/GameSession/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 
-[node name="ProvinceOverviewPanel" type="Panel"]
+[node name="ProvinceOverviewPanel" type="Panel" node_paths=PackedStringArray("_province_name_label")]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -10,16 +10,7 @@ offset_top = -300.0
 offset_right = 200.0
 grow_vertical = 0
 script = ExtResource("1_3n8k5")
-
-[node name="Button" type="Button" parent="."]
-custom_minimum_size = Vector2(30, 30)
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -30.0
-offset_bottom = 30.0
-grow_horizontal = 0
+_province_name_label = NodePath("VBoxContainer/ProvinceName")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -33,7 +24,17 @@ offset_bottom = -5.0
 
 [node name="ProvinceName" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "1_NAME"
+text = "PROVINCE_NAME"
 vertical_alignment = 1
+
+[node name="Button" type="Button" parent="."]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.85
+anchor_right = 1.0
+anchor_bottom = 0.103333
+grow_horizontal = 0
+text = "X"
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

@@ -4,16 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
-[ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_5gj48"]
+[ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
 
-[node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
+[node name="GameSession" type="Node" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102"
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
 
@@ -21,24 +15,30 @@ _game_session_menu = NodePath("GameSessionMenu")
 
 [node name="GameSessionMenu" parent="." instance=ExtResource("3_bvmqh")]
 visible = false
-layout_mode = 1
-offset_right = 232.0
-offset_bottom = 74.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MapControlPanel" parent="." instance=ExtResource("3_afh6d")]
-layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -133.0
-offset_top = -56.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="ProvinceOverviewPanel" parent="." instance=ExtResource("5_5gj48")]
-layout_mode = 1
+[node name="ProvinceOverviewPanel" parent="." instance=ExtResource("5_osjnn")]
+anchors_preset = -1
+anchor_top = 0.583333
+anchor_right = 0.15625
+offset_top = 0.0
+offset_right = 0.0
 
+[connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]

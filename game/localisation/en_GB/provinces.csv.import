@@ -1,17 +1,3 @@
 [remap]
 
-importer="csv_translation"
-type="Translation"
-uid="uid://ljh3sy6dw0tv"
-
-[deps]
-
-files=["res://localisation/en_GB/provinces..translation", "res://localisation/en_GB/provinces. Provinces.translation"]
-
-source_file="res://localisation/en_GB/provinces.csv"
-dest_files=["res://localisation/en_GB/provinces..translation", "res://localisation/en_GB/provinces. Provinces.translation"]
-
-[params]
-
-compress=true
-delimiter=0
+importer="keep"

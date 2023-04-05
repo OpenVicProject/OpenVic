@@ -6,14 +6,14 @@
 using namespace godot;
 using namespace OpenVic2;
 
-TestSingleton *TestSingleton::singleton = nullptr;
+TestSingleton* TestSingleton::singleton = nullptr;
 
 void TestSingleton::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("hello_singleton"), &TestSingleton::hello_singleton);
 }
 
-TestSingleton *TestSingleton::get_singleton()
+TestSingleton* TestSingleton::get_singleton()
 {
 	return singleton;
 }

@@ -1,13 +1,22 @@
 extends Panel
-@export var ProvinceID: String = "ID not loaded"
 
-# Called when the node enters the scene tree for the first time.
+@export var _province_name_label : Label
+
+@export var province_identifier: String = "":
+	get: return province_identifier
+	set(v):
+		province_identifier = v
+		update_info()
+
 func _ready():
-	set_id()
+	update_info()
 
-func set_id():
-	$VBoxContainer/ProvinceName.text = str(ProvinceID)+"_NAME"
+func update_info() -> void:
+	_province_name_label.text = province_identifier + "_NAME"
+	visible = not province_identifier.is_empty()
 
+func _on_province_selected(identifier : String) -> void:
+	province_identifier = identifier
 
-func _on_button_pressed():
-	queue_free()
+func _on_button_pressed() -> void:
+	province_identifier = ""
