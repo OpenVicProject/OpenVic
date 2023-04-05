@@ -10,6 +10,7 @@
 #include "Checksum.hpp"
 #include "LoadLocalisation.hpp"
 #include "MapSingleton.hpp"
+#include "MapMesh.hpp"
 
 using namespace godot;
 using namespace OpenVic2;
@@ -44,6 +45,8 @@ void initialize_openvic2_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MapSingleton>();
 	_map_singleton = memnew(MapSingleton);
 	Engine::get_singleton()->register_singleton("MapSingleton", MapSingleton::get_singleton());
+
+	ClassDB::register_class<MapMesh>();
 }
 
 void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {

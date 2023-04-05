@@ -31,10 +31,10 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 	get: return _zoom_target
 	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
 
-@export var _map_mesh : MeshInstance3D
+@export var _map_mesh_instance : MeshInstance3D
+var _map_mesh : MapMesh
 var _map_shader_material : ShaderMaterial
 var _map_province_shape_image : Image
-var _map_aspect_ratio : float = 1.0
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
@@ -46,22 +46,21 @@ func _ready():
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
-	if _map_mesh == null:
+	if _map_mesh_instance == null:
 		push_error("MapView's _map_mesh variable hasn't been set!")
 		return
 	_map_province_shape_image = MapSingleton.get_province_shape_image()
 	if _map_province_shape_image == null:
 		push_error("Failed to get province shape image!")
 		return
+	if not _map_mesh_instance.mesh is MapMesh:
+		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
+		return
+	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	_map_aspect_ratio = float(_map_province_shape_image.get_width()) / float(_map_province_shape_image.get_height())
-	if _map_mesh.mesh is PlaneMesh:
-		# Width is doubled so that the map appears to loop horizontally
-		(_map_mesh.mesh as PlaneMesh).size = Vector2(_map_aspect_ratio * 2, 1)
-	else:
-		push_error("Invalid map mesh class: ", _map_mesh.mesh.get_class(), "(expected PlaneMesh)")
-	var map_mesh_aabb := _map_mesh.get_aabb() * _map_mesh.transform
+	_map_mesh.aspect_ratio = float(_map_province_shape_image.get_width()) / float(_map_province_shape_image.get_height())
+	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
 		min(map_mesh_aabb.position.z, map_mesh_aabb.end.z)
@@ -71,7 +70,7 @@ func _ready():
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
 
-	var map_material = _map_mesh.get_active_material(0)
+	var map_material = _map_mesh_instance.get_active_material(0)
 	if map_material == null:
 		push_error("Map mesh is missing material!")
 		return
@@ -87,11 +86,8 @@ func _unhandled_input(event : InputEvent):
 		# Check if the mouse is outside of bounds
 		var mouse_inside_flag := 0 < _mouse_pos_map.x and _mouse_pos_map.x < 1 and 0 < _mouse_pos_map.y and _mouse_pos_map.y < 1
 		if mouse_inside_flag:
-			var mouse_pos2D := _mouse_pos_map
-			mouse_pos2D.x = mouse_pos2D.x * 2.0 - 0.5
-			mouse_pos2D *= Vector2(_map_province_shape_image.get_size())
-
-			var province_colour := _map_province_shape_image.get_pixelv(Vector2i(mouse_pos2D)).to_argb32() & 0xFFFFFF
+			var mouse_pixel_pos := Vector2i(_mouse_pos_map * Vector2(_map_province_shape_image.get_size()))
+			var province_colour := _map_province_shape_image.get_pixelv(mouse_pixel_pos).to_argb32() & 0xFFFFFF
 			var province_identifier := MapSingleton.get_province_identifier_from_colour(province_colour)
 			_map_shader_material.set_shader_parameter(_shader_param_selected_pos, _mouse_pos_map)
 			province_selected.emit(province_identifier)
@@ -142,9 +138,7 @@ func _move_process(delta : float) -> void:
 	_camera.global_translate(move)
 
 func _clamp_over_map() -> void:
-	var left := _map_mesh_corner.x + 0.25 * _map_mesh_dims.x
-	var longitude := fposmod(_camera.position.x - left, _map_mesh_dims.x * 0.5)
-	_camera.position.x = left + longitude
+	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
 	_camera.position.z = clamp(_camera.position.z, _map_mesh_corner.y, _map_mesh_corner.y + _map_mesh_dims.y)
 
 func _zoom_process(delta : float) -> void:

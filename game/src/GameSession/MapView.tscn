@@ -11,12 +11,12 @@ shader_parameter/hover_pos = Vector2(0.5, 0.5)
 shader_parameter/selected_pos = Vector2(0.5, 0.5)
 shader_parameter/terrain_tex = ExtResource("3_l8pnf")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_skc48"]
+[sub_resource type="MapMesh" id="MapMesh_3gtsd"]
 
-[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh")]
+[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance")]
 script = ExtResource("1_exccw")
 _camera = NodePath("MapCamera")
-_map_mesh = NodePath("MapMeshInstance")
+_map_mesh_instance = NodePath("MapMeshInstance")
 
 [node name="MapCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 1, 1)
@@ -24,4 +24,4 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 [node name="MapMeshInstance" type="MeshInstance3D" parent="."]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_tayeg")
-mesh = SubResource("PlaneMesh_skc48")
+mesh = SubResource("MapMesh_3gtsd")

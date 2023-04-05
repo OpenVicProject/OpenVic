@@ -11,21 +11,13 @@ uniform vec2 hover_pos;
 // Position in UV coords of a pixel belonging to the currently selected province
 uniform vec2 selected_pos;
 
-// Transform map mesh UV coordinates to account for the extra
-// half map on either side. This takes the x-coord from [0 -> 1]
-// to [-0.5 -> 1.5], while leaving the y-coord unchanged.
-vec2 fix_uv(vec2 uv) {
-	return vec2(uv.x * 2.0 - 0.5, uv.y);
-}
-
 const vec3 NULL_COLOUR = vec3(0.0);
 
 void fragment() {
-	vec2 fixed_uv = fix_uv(UV);
-	vec3 terrain_colour = texture(terrain_tex, fixed_uv).rgb;
-	vec3 prov_colour = texture(province_tex, fixed_uv).rgb;
-	vec3 hover_colour = texture(province_tex, fix_uv(hover_pos)).rgb;
-	vec3 selected_colour = texture(province_tex, fix_uv(selected_pos)).rgb;
+	vec3 terrain_colour = texture(terrain_tex, UV).rgb;
+	vec3 prov_colour = texture(province_tex, UV).rgb;
+	vec3 hover_colour = texture(province_tex, hover_pos).rgb;
+	vec3 selected_colour = texture(province_tex, selected_pos).rgb;
 	// Boost prov_colour's contribution if it matches hover_colour or selected_colour
 	float mix_val = float(prov_colour == hover_colour) * 0.3 + float(prov_colour == selected_colour) * 0.5;
 	// Set to 0 if the province has NULL colour
