@@ -23,7 +23,7 @@ Province::colour_t Province::get_colour() const {
 }
 
 std::string Province::to_string() const {
-	return "(" + std::to_string(index) + ", " + identifier + ", " + colour_to_hex_string(colour) + ")";
+	return "(" + identifier + ", " + colour_to_hex_string(colour) + ")";
 }
 
 bool Map::add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message) {
