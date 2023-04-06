@@ -1,5 +1,6 @@
 #include "LoadGoods.hpp"
 
+#include <cstdint>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/json.hpp>
@@ -40,7 +41,7 @@ std::vector<Good> LoadGoods::load_goods_from_disk(godot::String const& file_path
 	return goods;
 }
 
-bool LoadGoods::extract_property_from_json(const godot::Variant& variant, std::vector<Good>& goods, int32_t index) {
+bool LoadGoods::extract_property_from_json(godot::Variant const& variant, std::vector<Good>& goods, int32_t index) {
 	bool valid;
 	String id = variant.get_named(JSON_PROPERTY_NAME("id"), valid);
 	if(!valid) {
@@ -52,7 +53,7 @@ bool LoadGoods::extract_property_from_json(const godot::Variant& variant, std::v
 		UtilityFunctions::push_error("Could not extract property category of type string from goods.json");
 		return false;
 	}
-	float_t cost = (float_t)variant.get_named(JSON_PROPERTY_NAME("cost"), valid);
+	float cost = static_cast<float>(variant.get_named(JSON_PROPERTY_NAME("cost"), valid));
 	if(!valid) {
 		UtilityFunctions::push_error("Could not extract property cost of type float from goods.json");
 		return false;
@@ -62,22 +63,22 @@ bool LoadGoods::extract_property_from_json(const godot::Variant& variant, std::v
 		UtilityFunctions::push_error("Could not extract property colour of type string from goods.json");
 		return false;
 	}
-	bool isAvailableAtStart = (bool)variant.get_named(JSON_PROPERTY_NAME("isAvailableAtStart"), valid);
+	bool isAvailableAtStart = static_cast<bool>(variant.get_named(JSON_PROPERTY_NAME("isAvailableAtStart"), valid));
 	if(!valid) {
 		UtilityFunctions::push_error("Could not extract property isAvailableAtStart of type bool from goods.json");
 		return false;
 	}
-	bool isTradable = (bool)variant.get_named(JSON_PROPERTY_NAME("isTradeable"), valid); 
+	bool isTradable = static_cast<bool>(variant.get_named(JSON_PROPERTY_NAME("isTradeable"), valid));
 	if(!valid) {
 		UtilityFunctions::push_error("Could not extract property isTradable of type bool from goods.json");
 		return false;
 	}
-	bool isMoney = (bool)variant.get_named(JSON_PROPERTY_NAME("isMoney"), valid); 
+	bool isMoney = static_cast<bool>(variant.get_named(JSON_PROPERTY_NAME("isMoney"), valid));
 	if(!valid) {
 		UtilityFunctions::push_error("Could not extract property isMoney of type bool from goods.json");
 		return false; 
 	}
-	bool hasOverseasPenalty = (bool)variant.get_named(JSON_PROPERTY_NAME("hasOverseasPenalty"), valid);
+	bool hasOverseasPenalty = static_cast<bool>(variant.get_named(JSON_PROPERTY_NAME("hasOverseasPenalty"), valid));
 	if(!valid) {
 		UtilityFunctions::push_error("Could not extract property hasOverseaPenalty of type bool from goods.json");
 		return false;
