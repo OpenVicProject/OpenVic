@@ -27,6 +27,7 @@ namespace OpenVic2 {
 		int get_subdivide_depth() const;
 
 		godot::AABB get_core_aabb() const;
+		bool is_valid_uv_coord(godot::Vector2 const& uv) const;
 
 		godot::Array _create_mesh_array() const override;
 	};

@@ -11,7 +11,8 @@ const _action_zoomout : StringName = &"map_zoomout"
 const _action_drag : StringName = &"map_drag"
 const _action_click : StringName = &"map_click"
 
-const _shader_param_provinces : StringName = &"province_tex"
+const _shader_param_province_index : StringName = &"province_index_tex"
+const _shader_param_province_colour : StringName = &"province_colour_tex"
 const _shader_param_hover_pos : StringName = &"hover_pos"
 const _shader_param_selected_pos : StringName = &"selected_pos"
 
@@ -34,7 +35,8 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 @export var _map_mesh_instance : MeshInstance3D
 var _map_mesh : MapMesh
 var _map_shader_material : ShaderMaterial
-var _map_province_shape_image : Image
+var _map_image_size : Vector2
+var _map_province_index_image : Image
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
@@ -49,17 +51,14 @@ func _ready():
 	if _map_mesh_instance == null:
 		push_error("MapView's _map_mesh variable hasn't been set!")
 		return
-	_map_province_shape_image = MapSingleton.get_province_shape_image()
-	if _map_province_shape_image == null:
-		push_error("Failed to get province shape image!")
-		return
 	if not _map_mesh_instance.mesh is MapMesh:
 		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
 		return
 	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	_map_mesh.aspect_ratio = float(_map_province_shape_image.get_width()) / float(_map_province_shape_image.get_height())
+	_map_image_size = Vector2(Vector2i(MapSingleton.get_width(), MapSingleton.get_height()))
+	_map_mesh.aspect_ratio = _map_image_size.x / _map_image_size.y
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
@@ -78,18 +77,28 @@ func _ready():
 		push_error("Invalid map mesh material class: ", map_material.get_class())
 		return
 	_map_shader_material = map_material
-	var texture := ImageTexture.create_from_image(_map_province_shape_image)
-	_map_shader_material.set_shader_parameter(_shader_param_provinces, texture)
+	# Province index texture
+	_map_province_index_image = MapSingleton.get_province_index_image()
+	if _map_province_index_image == null:
+		push_error("Failed to get province index image!")
+		return
+	var province_index_texture := ImageTexture.create_from_image(_map_province_index_image)
+	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
+	# Province colour texture
+	var province_colour_image = MapSingleton.get_province_colour_image()
+	if province_colour_image == null:
+		push_error("Failed to get province colour image!")
+		return
+	var province_colour_texture := ImageTexture.create_from_image(province_colour_image)
+	_map_shader_material.set_shader_parameter(_shader_param_province_colour, province_colour_texture)
 
 func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
-		var mouse_inside_flag := 0 < _mouse_pos_map.x and _mouse_pos_map.x < 1 and 0 < _mouse_pos_map.y and _mouse_pos_map.y < 1
-		if mouse_inside_flag:
-			var mouse_pixel_pos := Vector2i(_mouse_pos_map * Vector2(_map_province_shape_image.get_size()))
-			var province_colour := _map_province_shape_image.get_pixelv(mouse_pixel_pos).to_argb32() & 0xFFFFFF
-			var province_identifier := MapSingleton.get_province_identifier_from_colour(province_colour)
+		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
 			_map_shader_material.set_shader_parameter(_shader_param_selected_pos, _mouse_pos_map)
+			var mouse_pixel_pos := Vector2i(_mouse_pos_map * _map_image_size)
+			var province_identifier := MapSingleton.get_province_identifier_from_pixel_coords(mouse_pixel_pos)
 			province_selected.emit(province_identifier)
 
 	elif event is InputEventMouseMotion and Input.is_action_pressed(_action_drag):

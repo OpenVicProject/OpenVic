@@ -10,7 +10,8 @@ namespace OpenVic2 {
 
 		static MapSingleton* singleton;
 
-		godot::Ref<godot::Image> province_shape_image;
+		godot::Ref<godot::Image> province_shape_image, province_index_image, province_colour_image;
+		int32_t width = 0, height = 0;
 		Map map;
 
 	protected:
@@ -24,7 +25,10 @@ namespace OpenVic2 {
 
 		godot::Error load_province_identifier_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
-		godot::String get_province_identifier_from_colour(Province::colour_t colour);
-		godot::Ref<godot::Image> get_province_shape_image() const;
+		godot::String get_province_identifier_from_pixel_coords(godot::Vector2i const& coords);
+		int32_t get_width() const;
+		int32_t get_height() const;
+		godot::Ref<godot::Image> get_province_index_image() const;
+		godot::Ref<godot::Image> get_province_colour_image() const;
 	};
 }

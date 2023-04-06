@@ -19,6 +19,7 @@ void MapMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_subdivide_depth"), &MapMesh::get_subdivide_depth);
 
 	ClassDB::bind_method(D_METHOD("get_core_aabb"), &MapMesh::get_core_aabb);
+	ClassDB::bind_method(D_METHOD("is_valid_uv_coord"), &MapMesh::is_valid_uv_coord);
 
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "aspect_ratio", PROPERTY_HINT_NONE, "suffix:m"), "set_aspect_ratio", "get_aspect_ratio");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "repeat_proportion", PROPERTY_HINT_NONE, "suffix:m"), "set_repeat_proportion", "get_repeat_proportion");
@@ -70,6 +71,10 @@ int MapMesh::get_subdivide_depth() const {
 AABB MapMesh::get_core_aabb() const {
 	const Vector3 size{ aspect_ratio, 0.0f, 1.0f };
 	return AABB{ size * -0.5f, size };
+}
+
+bool MapMesh::is_valid_uv_coord(godot::Vector2 const& uv) const {
+	return -repeat_proportion <= uv.x && uv.x <= 1.0f + repeat_proportion && 0.0f <= uv.y && uv.y <= 1.0f;
 }
 
 Array MapMesh::_create_mesh_array() const {
