@@ -76,14 +76,34 @@ Province* Map::get_province_by_index(Province::index_t index) {
 	return index != Province::NULL_INDEX && index <= provinces.size() ? &provinces[index - 1] : nullptr;
 }
 
+Province const* Map::get_province_by_index(Province::index_t index) const {
+	return index != Province::NULL_INDEX && index <= provinces.size() ? &provinces[index - 1] : nullptr;
+}
+
 Province* Map::get_province_by_identifier(std::string const& identifier) {
-	for (Province& province : provinces)
-		if (province.identifier == identifier) return &province;
+	if (!identifier.empty())
+		for (Province& province : provinces)
+			if (province.identifier == identifier) return &province;
+	return nullptr;
+}
+
+Province const* Map::get_province_by_identifier(std::string const& identifier) const {
+	if (!identifier.empty())
+		for (Province const& province : provinces)
+			if (province.identifier == identifier) return &province;
 	return nullptr;
 }
 
 Province* Map::get_province_by_colour(Province::colour_t colour) {
-	for (Province& province : provinces)
-		if (province.colour == colour) return &province;
+	if (colour != Province::NULL_COLOUR)
+		for (Province& province : provinces)
+			if (province.colour == colour) return &province;
+	return nullptr;
+}
+
+Province const* Map::get_province_by_colour(Province::colour_t colour) const {
+	if (colour != Province::NULL_COLOUR)
+		for (Province const& province : provinces)
+			if (province.colour == colour) return &province;
 	return nullptr;
 }

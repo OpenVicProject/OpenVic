@@ -1,8 +1,5 @@
 #include "register_types.h"
-#include <gdextension_interface.h>
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/core/defs.hpp>
-#include <godot_cpp/godot.hpp>
+
 #include <godot_cpp/classes/engine.hpp>
 
 #include "TestSingleton.hpp"
@@ -74,7 +71,7 @@ extern "C" {
 
 	// Initialization.
 
-	GDExtensionBool GDE_EXPORT openvic2_library_init(const GDExtensionInterface* p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization* r_initialization) {
+	GDExtensionBool GDE_EXPORT openvic2_library_init(GDExtensionInterface const* p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization* r_initialization) {
 		GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
 
 		init_obj.register_initializer(initialize_openvic2_types);

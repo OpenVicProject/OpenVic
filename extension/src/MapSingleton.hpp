@@ -1,6 +1,7 @@
 #pragma once
 
 #include <godot_cpp/classes/image.hpp>
+
 #include "openvic2/Map.hpp"
 
 namespace OpenVic2 {
@@ -25,7 +26,7 @@ namespace OpenVic2 {
 
 		godot::Error load_province_identifier_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
-		godot::String get_province_identifier_from_pixel_coords(godot::Vector2i const& coords);
+		godot::String get_province_identifier_from_pixel_coords(godot::Vector2i const& coords) const;
 		int32_t get_width() const;
 		int32_t get_height() const;
 		godot::Ref<godot::Image> get_province_index_image() const;

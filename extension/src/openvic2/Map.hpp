@@ -17,7 +17,7 @@ namespace OpenVic2 {
 		std::string identifier;
 		colour_t colour;
 
-		Province(index_t index, std::string const& identifier, colour_t colour);
+		Province(index_t new_index, std::string const& new_identifier, colour_t new_colour);
 	public:
 		static std::string colour_to_hex_string(colour_t colour);
 
@@ -38,8 +38,11 @@ namespace OpenVic2 {
 		size_t get_province_count() const;
 
 		Province* get_province_by_index(Province::index_t index);
+		Province const* get_province_by_index(Province::index_t index) const;
 		Province* get_province_by_identifier(std::string const& identifier);
+		Province const* get_province_by_identifier(std::string const& identifier) const;
 		Province* get_province_by_colour(Province::colour_t colour);
+		Province const* get_province_by_colour(Province::colour_t colour) const;
 	};
 
 }
