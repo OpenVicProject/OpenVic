@@ -18,10 +18,11 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 
 @export var _camera : Camera3D
 
-@export var _move_speed : float = 1.0
-@export var _edge_move_threshold: float = 50.0
-@export var _edge_move_speed: float = 0.02
-@export var _dragSensitivity: float = 0.005
+@export var _cardinal_move_speed : float = 1.0
+@export var _edge_move_threshold: float = 0.15
+@export var _edge_move_speed: float = 2.5
+var _drag_anchor : Vector2
+var _drag_active : bool = false
 
 @export var _zoom_target_min : float = 0.2
 @export var _zoom_target_max : float = 5.0
@@ -40,9 +41,8 @@ var _map_province_index_image : Image
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
-var _mouse_pos_window : Vector2 = Vector2(0.5, 0.5)
+var _mouse_pos_viewport : Vector2 = Vector2(0.5, 0.5)
 var _mouse_pos_map : Vector2 = Vector2(0.5, 0.5)
-var _viewport_dims : Vector2i = Vector2i(1, 1)
 
 func _ready():
 	if _camera == null:
@@ -100,22 +100,24 @@ func _unhandled_input(event : InputEvent):
 			var mouse_pixel_pos := Vector2i(_mouse_pos_map * _map_image_size)
 			var province_identifier := MapSingleton.get_province_identifier_from_pixel_coords(mouse_pixel_pos)
 			province_selected.emit(province_identifier)
-
-	elif event is InputEventMouseMotion and Input.is_action_pressed(_action_drag):
-		_camera.position.x -= event.relative.x * _dragSensitivity
-		_camera.position.z -= event.relative.y * _dragSensitivity
-
+	elif event.is_action_pressed(_action_drag):
+		if _drag_active:
+			push_warning("Drag being activated while already active!")
+		_drag_active = true
+		_drag_anchor = _mouse_pos_map
+	elif event.is_action_released(_action_drag):
+		if not _drag_active:
+			push_warning("Drag being deactivated while already not active!")
+		_drag_active = false
 	elif event.is_action_pressed(_action_zoomin, true):
 		_zoom_target -= _zoom_target_step
 	elif event.is_action_pressed(_action_zoomout, true):
 		_zoom_target += _zoom_target_step
 
 func _physics_process(delta : float):
-	_mouse_pos_window = get_viewport().get_mouse_position()
-	_viewport_dims = get_viewport().size
+	_mouse_pos_viewport = get_viewport().get_mouse_position()
 	# Process movement
-	_move_process(delta)
-	_edge_scrolling()
+	_movement_process(delta)
 	# Keep within map bounds
 	_clamp_over_map()
 	# Process zooming
@@ -125,26 +127,29 @@ func _physics_process(delta : float):
 	# Calculate where the mouse lies on the map
 	_update_mouse_map_position()
 
-func _edge_scrolling() -> void:
-	if _mouse_pos_window.y < _edge_move_threshold:
-		_camera.position.z -= _edge_move_speed
-	elif _mouse_pos_window.y > _viewport_dims.y - _edge_move_threshold:
-		_camera.position.z += _edge_move_speed
+func _movement_process(delta : float) -> void:
+	var direction : Vector2
+	if _drag_active:
+		direction = (_drag_anchor - _mouse_pos_map) * _map_mesh_dims
+	else:
+		direction = _edge_scrolling_vector() + _cardinal_movement_vector()
+		# Scale movement speed with height
+		direction *= _camera.position.y * delta
+	_camera.position += Vector3(direction.x, 0, direction.y)
 
-	if _mouse_pos_window.x < _edge_move_threshold:
-		_camera.position.x -= _edge_move_speed
-	elif _mouse_pos_window.x > _viewport_dims.x - _edge_move_threshold:
-		_camera.position.x += _edge_move_speed
+func _edge_scrolling_vector() -> Vector2:
+	var viewport_dims := Vector2(Resolution.get_current_resolution())
+	var mouse_vector := _mouse_pos_viewport / viewport_dims - Vector2(0.5, 0.5);
+	if pow(mouse_vector.x, 4) + pow(mouse_vector.y, 4) < pow(0.5 - _edge_move_threshold, 4):
+		mouse_vector *= 0
+	return mouse_vector * _edge_move_speed
 
-func _move_process(delta : float) -> void:
-	var move := Vector3(
+func _cardinal_movement_vector() -> Vector2:
+	var move := Vector2(
 		float(Input.is_action_pressed(_action_east)) - float(Input.is_action_pressed(_action_west)),
-		0,
 		float(Input.is_action_pressed(_action_south)) - float(Input.is_action_pressed(_action_north))
 	)
-	# Scale movement speed with height
-	move *= _move_speed * _camera.position.y * delta
-	_camera.global_translate(move)
+	return move * _cardinal_move_speed
 
 func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
@@ -165,8 +170,8 @@ func _update_orientation() -> void:
 	_camera.look_at(_camera.position + dir)
 
 func _update_mouse_map_position() -> void:
-	var ray_origin := _camera.project_ray_origin(_mouse_pos_window)
-	var ray_normal := _camera.project_ray_normal(_mouse_pos_window)
+	var ray_origin := _camera.project_ray_origin(_mouse_pos_viewport)
+	var ray_normal := _camera.project_ray_normal(_mouse_pos_viewport)
 	# Plane with normal (0,1,0) facing upwards, at a distance 0 from the origin
 	var intersection = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
 	if typeof(intersection) == TYPE_VECTOR3:

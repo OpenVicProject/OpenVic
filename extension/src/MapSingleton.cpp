@@ -228,11 +228,12 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 }
 
 String MapSingleton::get_province_identifier_from_pixel_coords(Vector2i const& coords) {
-	if (province_index_image.is_valid() && 0 <= coords.y && coords.y < height) {
+	if (province_index_image.is_valid()) {
 		const PackedByteArray index_data_array = province_index_image->get_data();
 		const Province::index_t* index_data = reinterpret_cast<const Province::index_t*>(index_data_array.ptr());
 		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, width);
-		const Province* province = map.get_province_by_index(index_data[x_mod_w + coords.y * width]);
+		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, height);
+		const Province* province = map.get_province_by_index(index_data[x_mod_w + y_mod_h * width]);
 		if (province) return province->get_identifier().c_str();
 	}
 	return String{};
