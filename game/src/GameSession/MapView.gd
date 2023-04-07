@@ -1,6 +1,8 @@
 extends Node3D
 
 signal province_selected(identifier : String)
+signal map_view_camera_change(camera_position : Vector3)
+
 
 const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
@@ -123,6 +125,7 @@ func _physics_process(delta : float):
 	# Process zooming
 	_zoom_process(delta)
 	# Orient based on height
+	map_view_camera_change.emit(_camera.position)
 	_update_orientation()
 	# Calculate where the mouse lies on the map
 	_update_mouse_map_position()
