@@ -1,10 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=10 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
+[ext_resource type="Texture2D" uid="uid://c0sm1jfu4kyv3" path="res://common/map/minimap.png" id="5_l05wo"]
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
+[ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="5_stb8q"]
+[ext_resource type="Texture2D" uid="uid://vr1hq2stk8ny" path="res://common/map/MapFrame.png" id="6_ujbv2"]
+[ext_resource type="Script" path="res://src/GameSession/RectangularCamera.gd" id="7_go8y3"]
 
 [node name="GameSession" type="Node" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102"
@@ -24,13 +28,53 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MapControlPanel" parent="." instance=ExtResource("3_afh6d")]
+offset_left = 1147.0
+offset_top = 486.0
+offset_right = 1280.0
+offset_bottom = 542.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Minimap" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -175.0
 grow_horizontal = 0
 grow_vertical = 0
+script = ExtResource("5_stb8q")
+
+[node name="TextureRect" type="TextureRect" parent="Minimap"]
+layout_mode = 0
+offset_right = 350.0
+offset_bottom = 175.0
+texture = ExtResource("5_l05wo")
+
+[node name="RectangularCamera" type="Control" parent="Minimap"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("7_go8y3")
+
+[node name="Frame" type="NinePatchRect" parent="Minimap"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -87.5
+offset_right = 175.0
+offset_bottom = 87.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_ujbv2")
 
 [node name="ProvinceOverviewPanel" parent="." instance=ExtResource("5_osjnn")]
 anchors_preset = -1
@@ -39,6 +83,9 @@ anchor_right = 0.15625
 offset_top = 0.0
 offset_right = 0.0
 
+[connection signal="map_view_camera_change" from="MapView" to="Minimap/RectangularCamera" method="_on_map_view_map_view_camera_change"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="mouse_entered" from="Minimap" to="Minimap" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Minimap" to="Minimap" method="_on_mouse_exited"]
