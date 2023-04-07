@@ -19,14 +19,14 @@ Player ->> UI: Press "New Game" or<br>"Load Game" button
 UI ->> Bridge: Begin new Game Session
 Bridge ->> Simulation: Start new Game Session
 Simulation -->> Dataloader: Load previous savegame<br>(If necessary)
-Dataloader -->> Simulation: 
+Dataloader -->> Simulation:
 Simulation ->> Bridge: Provide information necessary<br>for UI and visual elements
 Bridge ->> UI: Signal that Game Session<br> is ready for interaction
 UI ->> Player: Present to Player
 
 loop Core Game Loop
 Player ->> UI: Interact with game controls
-UI ->> Bridge: Convey player intent<br>according to UI<br>handler functions 
+UI ->> Bridge: Convey player intent<br>according to UI<br>handler functions
 Bridge ->> Simulation: Relay changes to entities<br>controlled by the Player
 Note over Simulation: When unpaused:
 Simulation ->> Simulation: Advance to next in-game day<br>according to game speed<br>and update Simulation state

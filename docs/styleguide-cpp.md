@@ -1,4 +1,4 @@
-# OpenVic2 C++ Style Guidelines 
+# OpenVic2 C++ Style Guidelines
 
 ## Table of Contents
  1. [Why Style?](styleguide-cpp.md#1-why-style)
@@ -169,7 +169,7 @@ Source code files should adhere to the following:
 			longArgumentNameOne, longArgumentNameTwo, longArgumentNameThree,
 			longArgumentNameFour, longArgumentNameFive, longArgumentNameSix,
 			longArgumentNameSeven, longArgumentNameEight);
-	
+
 	//Incorrect
 	callingAFunctionWithAVeryLongNameAndManyArguments(longArgumentNameOne, longArgumentNameTwo, longArgumentNameThree, longArgumentNameFour, longArgumentNameFive, longArgumentNameSix, longArgumentNameSeven, longArgumentNameEight);
 	```
@@ -255,7 +255,7 @@ Source code files should adhere to the following:
 - For constant values that are computable at compile-time, use `constexpr` instead of the `const` keyword
 	```c++
 	//Correct
-	constexpr size_t UNIQUE_RGB_COLOURS = 256 * 256 * 256; 
+	constexpr size_t UNIQUE_RGB_COLOURS = 256 * 256 * 256;
 
 	//Incorrect
 	const size_t UNIQUE_RGB_COLOURS = 256 * 256 * 256;

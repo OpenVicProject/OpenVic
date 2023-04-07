@@ -28,7 +28,7 @@ classDiagram
     Good o-- GoodCategory
 ```
 
-## Data 
+## Data
 
 ### Vanilla
 

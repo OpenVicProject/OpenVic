@@ -27,7 +27,7 @@ classDiagram
 
 ```
 
-## Data 
+## Data
 
 ### Vanilla
 
@@ -41,7 +41,7 @@ classDiagram
 |communist|socialist|1865/01/01|False|#960A0A|
 |fascist|fascist|1905/01/01|False|#3C3C3C|
 
-### John Cena 
+### John Cena
 
 |Identifier|Ideological Group|Earliest Date|Uncivilized Nations|Colour|
 |--|--|--|--|--|
