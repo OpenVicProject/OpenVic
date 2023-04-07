@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
 
 [node name="GameSession" type="Node" node_paths=PackedStringArray("_game_session_menu")]
-editor_description = "SS-102"
+editor_description = "SS-102, UI-546"
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
 
@@ -29,6 +29,8 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -210.0
 grow_horizontal = 0
 grow_vertical = 0
 
@@ -39,6 +41,11 @@ anchor_right = 0.15625
 offset_top = 0.0
 offset_right = 0.0
 
+[connection signal="map_view_camera_changed" from="MapView" to="MapControlPanel" method="_on_map_view_camera_changed"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="mapmode_changed" from="MapControlPanel" to="MapView" method="_update_colour_texture"]
+[connection signal="minimap_clicked" from="MapControlPanel" to="MapView" method="_on_minimap_clicked"]
+[connection signal="mouse_entered" from="MapControlPanel" to="MapView" method="_on_mouse_exited_viewport"]
+[connection signal="mouse_exited" from="MapControlPanel" to="MapView" method="_on_mouse_entered_viewport"]

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <godot_cpp/classes/object.hpp>
-#include <godot_cpp/core/class_db.hpp>
 
 namespace OpenVic2 {
 	class TestSingleton : public godot::Object
