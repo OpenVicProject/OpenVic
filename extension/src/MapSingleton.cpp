@@ -195,7 +195,7 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 		if (!province_checklist[idx]) {
 			Province* province = map.get_province_by_index(idx + 1);
 			if (province) UtilityFunctions::push_error("Province missing from shape image: ", province->to_string().c_str());
-			else UtilityFunctions::push_error("Province missing for index: ", idx + 1);
+			else UtilityFunctions::push_error("Province missing for index: ", static_cast<int32_t>(idx + 1));
 			err = FAILED;
 		}
 	}
@@ -208,14 +208,14 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 
 	PackedByteArray colour_data_array;
 	colour_data_array.resize((Province::MAX_INDEX + 1) * 3);
-	for (int64_t idx = 1; idx <= map.get_province_count(); ++idx) {
+	for (size_t idx = 1; idx <= map.get_province_count(); ++idx) {
 		const Province* province = map.get_province_by_index(idx);
 		if (province) {
 			const Province::colour_t colour = province->get_colour();
 			colour_data_array[3 * idx + 0] = (colour >> 16) & 0xFF;
 			colour_data_array[3 * idx + 1] = (colour >> 8) & 0xFF;
 			colour_data_array[3 * idx + 2] = colour & 0xFF;
-		} else UtilityFunctions::push_error("Missing province at index ", idx);
+		} else UtilityFunctions::push_error("Missing province at index ", static_cast<int32_t>(idx));
 	}
 	static const int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
 	province_colour_image = Image::create_from_data(PROVINCE_INDEX_SQRT, PROVINCE_INDEX_SQRT, false, Image::FORMAT_RGB8, colour_data_array);
@@ -228,10 +228,11 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 }
 
 String MapSingleton::get_province_identifier_from_pixel_coords(Vector2i const& coords) {
-	if (province_index_image.is_valid() && 0 <= coords.x && coords.x < width && 0 <= coords.y && coords.y < height) {
+	if (province_index_image.is_valid() && 0 <= coords.y && coords.y < height) {
 		const PackedByteArray index_data_array = province_index_image->get_data();
 		const Province::index_t* index_data = reinterpret_cast<const Province::index_t*>(index_data_array.ptr());
-		const Province* province = map.get_province_by_colour(index_data[coords.x + coords.y * width]);
+		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, width);
+		const Province* province = map.get_province_by_index(index_data[x_mod_w + coords.y * width]);
 		if (province) return province->get_identifier().c_str();
 	}
 	return String{};

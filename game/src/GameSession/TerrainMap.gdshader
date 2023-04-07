@@ -14,7 +14,7 @@ uniform vec2 hover_pos;
 uniform vec2 selected_pos;
 
 uvec2 vec2_to_uvec2(vec2 v) {
-	return uvec2(v * 256.0);
+	return uvec2(v * 255.0);
 }
 
 uint uvec2_to_uint(uvec2 v) {

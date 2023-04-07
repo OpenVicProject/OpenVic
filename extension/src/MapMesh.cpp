@@ -74,7 +74,7 @@ AABB MapMesh::get_core_aabb() const {
 }
 
 bool MapMesh::is_valid_uv_coord(godot::Vector2 const& uv) const {
-	return -repeat_proportion <= uv.x && uv.x <= 1.0f + repeat_proportion && 0.0f <= uv.y && uv.y <= 1.0f;
+	return 0.0f <= uv.y && uv.y <= 1.0f;
 }
 
 Array MapMesh::_create_mesh_array() const {
