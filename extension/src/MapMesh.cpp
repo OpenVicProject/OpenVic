@@ -8,7 +8,7 @@ using namespace OpenVic2;
 void MapMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_aspect_ratio", "ratio"), &MapMesh::set_aspect_ratio);
 	ClassDB::bind_method(D_METHOD("get_aspect_ratio"), &MapMesh::get_aspect_ratio);
-
+	
 	ClassDB::bind_method(D_METHOD("set_repeat_proportion", "proportion"), &MapMesh::set_repeat_proportion);
 	ClassDB::bind_method(D_METHOD("get_repeat_proportion"), &MapMesh::get_repeat_proportion);
 
