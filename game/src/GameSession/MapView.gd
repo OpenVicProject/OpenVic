@@ -44,6 +44,13 @@ var _map_mesh_dims : Vector2
 var _mouse_pos_viewport : Vector2 = Vector2(0.5, 0.5)
 var _mouse_pos_map : Vector2 = Vector2(0.5, 0.5)
 
+# ??? Strange Godot/GDExtension Bug ???
+# Upon first opening a clone of this repo with the Godot Editor,
+# if MapSingleton.get_province_index_image is called before MapMesh
+# is referenced in the script below, then the editor will crash due
+# to a failed HashMap lookup. I'm not sure if this is a bug in the
+# editor, GDExtension, my own extension, or a combination of them.
+# This was an absolute pain to track down. --- hop311
 func _ready():
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
@@ -51,6 +58,33 @@ func _ready():
 	if _map_mesh_instance == null:
 		push_error("MapView's _map_mesh variable hasn't been set!")
 		return
+
+	# Shader Material
+	var map_material = _map_mesh_instance.get_active_material(0)
+	if map_material == null:
+		push_error("Map mesh is missing material!")
+		return
+	if not map_material is ShaderMaterial:
+		push_error("Invalid map mesh material class: ", map_material.get_class())
+		return
+	_map_shader_material = map_material
+
+	# Province index texture
+	_map_province_index_image = MapSingleton.get_province_index_image()
+	if _map_province_index_image == null:
+		push_error("Failed to get province index image!")
+		return
+	var province_index_texture := ImageTexture.create_from_image(_map_province_index_image)
+	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
+
+	# Province colour texture
+	var province_colour_image = MapSingleton.get_province_colour_image()
+	if province_colour_image == null:
+		push_error("Failed to get province colour image!")
+		return
+	var province_colour_texture := ImageTexture.create_from_image(province_colour_image)
+	_map_shader_material.set_shader_parameter(_shader_param_province_colour, province_colour_texture)
+
 	if not _map_mesh_instance.mesh is MapMesh:
 		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
 		return
@@ -68,29 +102,6 @@ func _ready():
 		map_mesh_aabb.position.x - map_mesh_aabb.end.x,
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
-
-	var map_material = _map_mesh_instance.get_active_material(0)
-	if map_material == null:
-		push_error("Map mesh is missing material!")
-		return
-	if not map_material is ShaderMaterial:
-		push_error("Invalid map mesh material class: ", map_material.get_class())
-		return
-	_map_shader_material = map_material
-	# Province index texture
-	_map_province_index_image = MapSingleton.get_province_index_image()
-	if _map_province_index_image == null:
-		push_error("Failed to get province index image!")
-		return
-	var province_index_texture := ImageTexture.create_from_image(_map_province_index_image)
-	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
-	# Province colour texture
-	var province_colour_image = MapSingleton.get_province_colour_image()
-	if province_colour_image == null:
-		push_error("Failed to get province colour image!")
-		return
-	var province_colour_texture := ImageTexture.create_from_image(province_colour_image)
-	_map_shader_material.set_shader_parameter(_shader_param_province_colour, province_colour_texture)
 
 func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
