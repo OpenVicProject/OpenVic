@@ -1,0 +1,6 @@
+{
+	"region_europe": ["prov_britain", "prov_ireland", "prov_iceland"],
+	"region_america": ["prov_cuba"],
+	"region_africa": ["prov_madagascar"],
+	"region_asia": ["prov_ceylon", "prov_formosa"]
+}

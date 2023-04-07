@@ -31,8 +31,32 @@ Province::colour_t Province::get_colour() const {
 	return colour;
 }
 
+Region* Province::get_region() const {
+	return region;
+}
+
 std::string Province::to_string() const {
 	return "(#" + std::to_string(index) + ", " + identifier + ", 0x" + colour_to_hex_string(colour) + ")";
+}
+
+Region::Region(std::string const& new_identifier) : identifier(new_identifier) {
+	assert(!identifier.empty());
+}
+
+std::string const& Region::get_identifier() const {
+	return identifier;
+}
+
+size_t Region::get_province_count() const {
+	return provinces.size();
+}
+
+bool Region::contains_province(Province const* province) const {
+	return province && std::find(provinces.begin(), provinces.end(), province) != provinces.end();
+}
+
+std::vector<Province*> const& Region::get_provinces() const {
+	return provinces;
 }
 
 bool Map::add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message) {
@@ -42,6 +66,10 @@ bool Map::add_province(std::string const& identifier, Province::colour_t colour,
 	}
 	if (provinces.size() >= Province::MAX_INDEX) {
 		error_message = "The map's province list is full - there can be at most " + std::to_string(Province::MAX_INDEX) + " provinces";
+		return false;
+	}
+	if (identifier.empty()) {
+		error_message = "Empty province identifier for colour " + Province::colour_to_hex_string(colour);
 		return false;
 	}
 	if (colour == Province::NULL_COLOUR || colour > Province::MAX_COLOUR) {
@@ -66,6 +94,66 @@ bool Map::add_province(std::string const& identifier, Province::colour_t colour,
 
 void Map::lock_provinces() {
 	provinces_locked = true;
+}
+
+bool Map::add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers, std::string& error_message) {
+	if (regions_locked) {
+		error_message = "The map's region list has already been locked!";
+		return false;
+	}
+	if (identifier.empty()) {
+		error_message = "Empty region identifier!";
+		return false;
+	}
+	if (provinces.empty()) {
+		error_message = "Empty province list for region " + identifier;
+		return false;
+	}
+	Region new_region{ identifier };
+	error_message = "Error message for region: " + identifier;
+	static const std::string SEPARATOR = "\n - ";
+	for (std::string const& province_identifier : province_identifiers) {
+		Province* province = get_province_by_identifier(province_identifier);
+		if (province) {
+			if (new_region.contains_province(province))
+				error_message += SEPARATOR + "Duplicate province identifier " + province_identifier;
+			else {
+				if (province->region) {
+					error_message += SEPARATOR + "Province " + province_identifier + " is already part of ";
+					const size_t other_region_index = reinterpret_cast<size_t>(province->region) - 1;
+					if (other_region_index < regions.size())
+						error_message += regions[other_region_index].get_identifier();
+					else
+						error_message += "an unknown region with index " + std::to_string(other_region_index);
+				} else new_region.provinces.push_back(province);
+			}
+		} else error_message += SEPARATOR + "Invalid province identifier " + province_identifier;
+	}
+	if (!new_region.get_province_count()) {
+		error_message += SEPARATOR + "No valid provinces in region's list";
+		return false;
+	}
+	for (Region const& region : regions) {
+		if (region.identifier == identifier) {
+			error_message += SEPARATOR + "Duplicate region identifiers: " + region.get_identifier() + " and " + identifier;
+			return false;
+		}
+	}
+	regions.push_back(new_region);
+	error_message += SEPARATOR + "Added region: " + identifier;
+	// Used to detect provinces listed in multiple regions, will
+	// be corrected once regions is stable (i.e. lock_regions).
+	Region* tmp_region_index = reinterpret_cast<Region*>(regions.size());
+	for (Province* province : new_region.provinces)
+		province->region = tmp_region_index;
+	return true;
+}
+
+void Map::lock_regions() {
+	regions_locked = true;
+	for (Region& region : regions)
+		for (Province* province : region.provinces)
+			province->region = &region;
 }
 
 size_t Map::get_province_count() const {
