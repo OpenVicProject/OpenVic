@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=9 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
 [ext_resource type="Texture2D" uid="uid://c0sm1jfu4kyv3" path="res://common/map/minimap.png" id="5_l05wo"]
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
-[ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="5_stb8q"]
 [ext_resource type="Texture2D" uid="uid://vr1hq2stk8ny" path="res://common/map/MapFrame.png" id="6_ujbv2"]
 [ext_resource type="Script" path="res://src/GameSession/RectangularCamera.gd" id="7_go8y3"]
 
@@ -46,7 +45,6 @@ offset_left = -350.0
 offset_top = -175.0
 grow_horizontal = 0
 grow_vertical = 0
-script = ExtResource("5_stb8q")
 
 [node name="TextureRect" type="TextureRect" parent="Minimap"]
 layout_mode = 0
@@ -83,7 +81,7 @@ anchor_right = 0.15625
 offset_top = 0.0
 offset_right = 0.0
 
-[connection signal="map_view_camera_change" from="MapView" to="Minimap/RectangularCamera" method="_on_map_view_map_view_camera_change"]
+[connection signal="map_view_camera_changed" from="MapView" to="Minimap/RectangularCamera" method="_on_map_view_map_view_camera_changed"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]

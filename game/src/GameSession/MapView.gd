@@ -1,8 +1,7 @@
 extends Node3D
 
 signal province_selected(identifier : String)
-signal map_view_camera_change(camera_position : Vector3)
-
+signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 
 const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
@@ -45,11 +44,13 @@ var _map_mesh_dims : Vector2
 
 var _mouse_pos_viewport : Vector2 = Vector2(0.5, 0.5)
 var _mouse_pos_map : Vector2 = Vector2(0.5, 0.5)
+var _viewport_dims : Vector2 = Vector2(1, 1)
 
 func _ready():
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
+	_zoom_target = _camera.position.y
 	if _map_mesh_instance == null:
 		push_error("MapView's _map_mesh variable hasn't been set!")
 		return
@@ -94,6 +95,22 @@ func _ready():
 	var province_colour_texture := ImageTexture.create_from_image(province_colour_image)
 	_map_shader_material.set_shader_parameter(_shader_param_province_colour, province_colour_texture)
 
+func _world_to_map_coords(pos : Vector3) -> Vector2:
+	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
+
+func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
+	var ray_origin := _camera.project_ray_origin(pos_viewport)
+	var ray_normal := _camera.project_ray_normal(pos_viewport)
+	# Plane with normal (0,1,0) facing upwards, at a distance 0 from the origin
+	var intersection = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
+	if typeof(intersection) == TYPE_VECTOR3:
+		return _world_to_map_coords(intersection as Vector3)
+	else:
+		# Normals parallel to the xz-plane could cause null intersections,
+		# but the camera's orientation should prevent such normals
+		push_error("Invalid intersection: ", intersection)
+		return Vector2(0.5, 0.5)
+
 func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
@@ -118,6 +135,7 @@ func _unhandled_input(event : InputEvent):
 
 func _physics_process(delta : float):
 	_mouse_pos_viewport = get_viewport().get_mouse_position()
+	_viewport_dims = Vector2(Resolution.get_current_resolution())
 	# Process movement
 	_movement_process(delta)
 	# Keep within map bounds
@@ -125,8 +143,9 @@ func _physics_process(delta : float):
 	# Process zooming
 	_zoom_process(delta)
 	# Orient based on height
-	map_view_camera_change.emit(_camera.position)
 	_update_orientation()
+	# Update viewport on minimap
+	_update_minimap_viewport()
 	# Calculate where the mouse lies on the map
 	_update_mouse_map_position()
 
@@ -141,8 +160,7 @@ func _movement_process(delta : float) -> void:
 	_camera.position += Vector3(direction.x, 0, direction.y)
 
 func _edge_scrolling_vector() -> Vector2:
-	var viewport_dims := Vector2(Resolution.get_current_resolution())
-	var mouse_vector := _mouse_pos_viewport / viewport_dims - Vector2(0.5, 0.5);
+	var mouse_vector := _mouse_pos_viewport / _viewport_dims - Vector2(0.5, 0.5);
 	if pow(mouse_vector.x, 4) + pow(mouse_vector.y, 4) < pow(0.5 - _edge_move_threshold, 4):
 		mouse_vector *= 0
 	return mouse_vector * _edge_move_speed
@@ -172,17 +190,13 @@ func _update_orientation() -> void:
 	var dir := Vector3(0, -1, -exp(-_camera.position.y * 2.0 + 0.5))
 	_camera.look_at(_camera.position + dir)
 
+func _update_minimap_viewport() -> void:
+	var near_left := _viewport_to_map_coords(Vector2(0, _viewport_dims.y))
+	var far_left := _viewport_to_map_coords(Vector2(0, 0))
+	var far_right := _viewport_to_map_coords(Vector2(_viewport_dims.x, 0))
+	var near_right := _viewport_to_map_coords(_viewport_dims)
+	map_view_camera_changed.emit(near_left, far_left, far_right, near_right)
+
 func _update_mouse_map_position() -> void:
-	var ray_origin := _camera.project_ray_origin(_mouse_pos_viewport)
-	var ray_normal := _camera.project_ray_normal(_mouse_pos_viewport)
-	# Plane with normal (0,1,0) facing upwards, at a distance 0 from the origin
-	var intersection = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
-	if typeof(intersection) == TYPE_VECTOR3:
-		var intersection_vec := intersection as Vector3
-		# This loops both horizontally (good) and vertically (bad)
-		_mouse_pos_map = (Vector2(intersection_vec.x, intersection_vec.z) - _map_mesh_corner) / _map_mesh_dims
-		_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
-	else:
-		# Normals parallel to the xz-plane could cause null intersections,
-		# but the camera's orientation should prevent such normals
-		push_error("Invalid intersection: ", intersection)
+	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
+	_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
