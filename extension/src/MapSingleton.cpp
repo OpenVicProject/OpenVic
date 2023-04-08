@@ -59,7 +59,7 @@ MapSingleton::~MapSingleton() {
 }
 
 Error MapSingleton::parse_json_dictionary_file(String const& file_description, String const& file_path,
-	String const& identifier_prefix, parse_json_entry_func_t parse_entry) {
+	String const& identifier_prefix, parse_json_entry_func_t parse_entry) const {
 	UtilityFunctions::print("Loading ", file_description, " file: ", file_path);
 	Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
@@ -95,7 +95,7 @@ Error MapSingleton::parse_json_dictionary_file(String const& file_description, S
 		}
 		if (!identifier.begins_with(identifier_prefix))
 			UtilityFunctions::push_warning("Identifier in ", file_description, " file missing \"", identifier_prefix, "\" prefix: ", identifier);
-		if ((this->*parse_entry)(identifier, entry) != OK) err = FAILED;
+		if (parse_entry(identifier, entry) != OK) err = FAILED;
 	}
 	return err;
 }
@@ -145,8 +145,10 @@ Error MapSingleton::_parse_province_identifier_entry(String const& identifier, V
 }
 
 Error MapSingleton::load_province_identifier_file(String const& file_path) {
-	const Error err = parse_json_dictionary_file("province identifier",
-		file_path, "prov_", &MapSingleton::_parse_province_identifier_entry);
+	const Error err = parse_json_dictionary_file("province identifier", file_path, "prov_",
+		[this](String const& identifier, Variant const& entry) -> Error {
+			return this->_parse_province_identifier_entry(identifier, entry);
+		});
 	map.lock_provinces();
 	return err;
 }
@@ -178,8 +180,10 @@ Error MapSingleton::_parse_region_entry(String const& identifier, Variant const&
 }
 
 Error MapSingleton::load_region_file(String const& file_path) {
-	const Error err = parse_json_dictionary_file("region",
-		file_path, "region_", &MapSingleton::_parse_region_entry);
+	const Error err = parse_json_dictionary_file("region", file_path, "region_",
+		[this](String const& identifier, Variant const& entry) -> Error {
+			return this->_parse_region_entry(identifier, entry);
+		});
 	map.lock_regions();
 	return err;
 }

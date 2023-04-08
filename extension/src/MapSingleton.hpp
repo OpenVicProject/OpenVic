@@ -1,12 +1,14 @@
 #pragma once
 
+#include <functional>
+
 #include <godot_cpp/classes/image.hpp>
 
 #include "openvic2/Map.hpp"
 
 namespace OpenVic2 {
 	class MapSingleton : public godot::Object {
-		using parse_json_entry_func_t = godot::Error (MapSingleton::*)(godot::String const& identifier, godot::Variant const& entry);
+		using parse_json_entry_func_t = std::function<godot::Error (godot::String const&, godot::Variant const&)>;
 
 		GDCLASS(MapSingleton, godot::Object)
 
@@ -17,7 +19,7 @@ namespace OpenVic2 {
 		Mapmode::index_t mapmode_index = 0;
 
 		godot::Error parse_json_dictionary_file(godot::String const& file_description, godot::String const& file_path,
-			godot::String const& identifier_prefix, parse_json_entry_func_t parse_entry);
+			godot::String const& identifier_prefix, parse_json_entry_func_t parse_entry) const;
 		godot::Error _parse_province_identifier_entry(godot::String const& identifier, godot::Variant const& entry);
 		godot::Error _parse_region_entry(godot::String const& identifier, godot::Variant const& entry);
 	protected:

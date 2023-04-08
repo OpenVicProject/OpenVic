@@ -297,7 +297,7 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target, 
 	Mapmode const& mapmode = mapmodes[index];
 	target += 3; // Skip past Province::NULL_INDEX
 	for (Province const& province : provinces) {
-		const Province::colour_t colour = (*mapmode.get_colour_func())(*this, province);
+		const Province::colour_t colour = mapmode.get_colour_func()(*this, province);
 		*target++ = (colour >> 16) & 0xFF;
 		*target++ = (colour >> 8) & 0xFF;
 		*target++ = colour & 0xFF;

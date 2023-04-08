@@ -3,16 +3,20 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <functional>
 
 #include "Types.hpp"
 
 namespace OpenVic2 {
 	struct Region;
+	struct Map;
 
 	struct Province {
+		friend struct Map;
+
 		using colour_t = uint32_t;
 		using index_t = uint16_t;
-		friend struct Map;
+
 		static const colour_t NULL_COLOUR = 0, MAX_COLOUR = 0xFFFFFF;
 		static const index_t NULL_INDEX = 0, MAX_INDEX = 0xFFFF;
 	private:
@@ -47,9 +51,10 @@ namespace OpenVic2 {
 	};
 
 	struct Mapmode {
-		using colour_func_t = Province::colour_t (*)(Map const& map, Province const& province);
-		using index_t = size_t;
 		friend struct Map;
+
+		using colour_func_t = std::function<Province::colour_t (Map const&, Province const&)>;
+		using index_t = size_t;
 	private:
 		index_t index;
 		std::string identifier;
