@@ -111,7 +111,6 @@ Array MapMesh::_create_mesh_array() const {
 		uv.x = -repeat_proportion;
 
 		for (int i = 0; i <= subdivide_w + 1; ++i) {
-
 			points[point_index] = point;
 			normals[point_index] = normal;
 			tangents[point_index * 4 + 0] = 1.0f;

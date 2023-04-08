@@ -19,7 +19,7 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 @export var _camera : Camera3D
 
 @export var _cardinal_move_speed : float = 1.0
-@export var _edge_move_threshold: float = 0.15
+@export var _edge_move_threshold: float = 0.02
 @export var _edge_move_speed: float = 2.5
 var _drag_anchor : Vector2
 var _drag_active : bool = false
@@ -38,6 +38,8 @@ var _map_mesh : MapMesh
 var _map_shader_material : ShaderMaterial
 var _map_image_size : Vector2
 var _map_province_index_image : Image
+var _map_province_colour_image : Image
+var _map_province_colour_texture : ImageTexture
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
@@ -60,7 +62,7 @@ func _ready():
 		return
 
 	# Shader Material
-	var map_material = _map_mesh_instance.get_active_material(0)
+	var map_material := _map_mesh_instance.get_active_material(0)
 	if map_material == null:
 		push_error("Map mesh is missing material!")
 		return
@@ -78,12 +80,12 @@ func _ready():
 	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
 
 	# Province colour texture
-	var province_colour_image = MapSingleton.get_province_colour_image()
-	if province_colour_image == null:
+	_map_province_colour_image = MapSingleton.get_province_colour_image()
+	if _map_province_colour_image == null:
 		push_error("Failed to get province colour image!")
 		return
-	var province_colour_texture := ImageTexture.create_from_image(province_colour_image)
-	_map_shader_material.set_shader_parameter(_shader_param_province_colour, province_colour_texture)
+	_map_province_colour_texture = ImageTexture.create_from_image(_map_province_colour_image)
+	_map_shader_material.set_shader_parameter(_shader_param_province_colour, _map_province_colour_texture)
 
 	if not _map_mesh_instance.mesh is MapMesh:
 		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
@@ -102,6 +104,10 @@ func _ready():
 		map_mesh_aabb.position.x - map_mesh_aabb.end.x,
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
+
+func _update_colour_texture() -> void:
+	MapSingleton.update_colour_image()
+	_map_province_colour_texture.update(_map_province_colour_image)
 
 func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
@@ -151,7 +157,7 @@ func _movement_process(delta : float) -> void:
 func _edge_scrolling_vector() -> Vector2:
 	var viewport_dims := Vector2(Resolution.get_current_resolution())
 	var mouse_vector := _mouse_pos_viewport / viewport_dims - Vector2(0.5, 0.5);
-	if pow(mouse_vector.x, 4) + pow(mouse_vector.y, 4) < pow(0.5 - _edge_move_threshold, 4):
+	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
 		mouse_vector *= 0
 	return mouse_vector * _edge_move_speed
 
