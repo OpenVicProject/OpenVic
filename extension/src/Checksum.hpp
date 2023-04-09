@@ -1,15 +1,13 @@
 #pragma once
 
-#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/variant/utility_functions.hpp>
 
 namespace OpenVic2 {
 	class Checksum : public godot::Object {
 		GDCLASS(Checksum, godot::Object)
 
 		//BEGIN BOILERPLATE
-		static Checksum* _checksum;
+		inline static Checksum* _checksum = nullptr;
 
 	protected:
 		static void _bind_methods() {
@@ -33,6 +31,4 @@ namespace OpenVic2 {
 			return godot::String("1234abcd");
 		}
 	};
-
-	Checksum* Checksum::_checksum = nullptr;
 }

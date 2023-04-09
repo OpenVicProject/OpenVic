@@ -86,3 +86,4 @@ offset_right = 0.0
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="close_button_pressed" from="GameSessionMenu" to="." method="_on_game_session_menu_close_button_pressed"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="mapmode_changed" from="MapControlPanel" to="MapView" method="_update_colour_texture"]

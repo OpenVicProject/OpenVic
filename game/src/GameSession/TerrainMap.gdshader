@@ -37,7 +37,7 @@ void fragment() {
 	uint selected_index = read_uint16(province_index_tex, selected_pos);
 
 	// Boost prov_colour's contribution if it matches hover_colour or selected_colour
-	float mix_val = float(prov_index == hover_index) * 0.3 + float(prov_index == selected_index) * 0.5;
+	float mix_val = 0.3 + float(prov_index == hover_index) * 0.3 + float(prov_index == selected_index) * 0.3;
 	// Don't mix if the province index is 0
 	mix_val *= float(prov_index != 0u);
 
