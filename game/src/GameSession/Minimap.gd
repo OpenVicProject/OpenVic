@@ -15,4 +15,13 @@ func _on_camera_view_changed(near_left : Vector2, far_left : Vector2, far_right 
 	_viewport_points.push_back(far_right * _background.size)
 	_viewport_points.push_back(near_right * _background.size)
 	_viewport_points.push_back(_viewport_points[0])
+	
+	# Cutting out of Frame part of camera polyline
+	for i in range(0,_viewport_points.size()):
+		for j in range(0,2):
+			if _viewport_points[i][j] > _background.size[j]:
+				_viewport_points[i][j] = _background.size[j]
+			elif _viewport_points[i][j] < 0:
+				_viewport_points[i][j] = 1
+
 	queue_redraw()

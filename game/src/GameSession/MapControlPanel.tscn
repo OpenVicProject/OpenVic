@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://g524p8lr574w"]
+[gd_scene load_steps=7 format=3 uid="uid://g524p8lr574w"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
+[ext_resource type="Texture2D" uid="uid://c0sm1jfu4kyv3" path="res://art/ui/minimap.png" id="2_r613r"]
+[ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="3_s4dml"]
+[ext_resource type="Texture2D" uid="uid://vr1hq2stk8ny" path="res://art/ui/minimap_frame.png" id="4_f1exl"]
 
 [sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
 action = &"ui_cancel"
@@ -8,33 +11,55 @@ action = &"ui_cancel"
 [sub_resource type="Shortcut" id="Shortcut_fc1tk"]
 events = [SubResource("InputEventAction_5nck3")]
 
-[node name="PanelContainer" type="PanelContainer" node_paths=PackedStringArray("_mapmodes_grid")]
+[node name="PanelContainer" type="PanelContainer" node_paths=PackedStringArray("_mapmodes_grid", "_minimap")]
 editor_description = "SS-103"
+mouse_filter = 1
 script = ExtResource("1_ign64")
-_mapmodes_grid = NodePath("HBoxContainer/VBoxContainer/MapmodesGrid")
+_mapmodes_grid = NodePath("VBoxContainer/HBoxContainer/VBoxContainer/MapmodesGrid")
+_minimap = NodePath("VBoxContainer/Minimap")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="MapmodesGrid" type="GridContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="MapmodesGrid" type="GridContainer" parent="VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 columns = 11
 
-[node name="MinimapPlaceholder" type="Label" parent="HBoxContainer/VBoxContainer"]
-layout_mode = 2
-text = "MINIMAP"
-
-[node name="AuxiliaryPanel" type="VBoxContainer" parent="HBoxContainer"]
+[node name="AuxiliaryPanel" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
 editor_description = "UI-761"
 layout_mode = 2
 
-[node name="GameSessionMenuButton" type="Button" parent="HBoxContainer/AuxiliaryPanel"]
+[node name="GameSessionMenuButton" type="Button" parent="VBoxContainer/HBoxContainer/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
 shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
 
-[connection signal="pressed" from="HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[node name="Minimap" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Minimap"]
+layout_mode = 2
+texture = ExtResource("2_r613r")
+
+[node name="RectangularCamera" type="Control" parent="VBoxContainer/Minimap" node_paths=PackedStringArray("_background")]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("3_s4dml")
+_background = NodePath("../TextureRect")
+
+[node name="Frame" type="NinePatchRect" parent="VBoxContainer/Minimap"]
+layout_mode = 2
+texture = ExtResource("4_f1exl")
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/Minimap" to="." method="_on_minimap_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/Minimap" to="." method="_on_minimap_mouse_exited"]

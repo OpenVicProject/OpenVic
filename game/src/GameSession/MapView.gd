@@ -25,6 +25,8 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 var _drag_anchor : Vector2
 var _drag_active : bool = false
 
+var _lock_movement : bool = false
+
 @export var _zoom_target_min : float = 0.2
 @export var _zoom_target_max : float = 5.0
 @export var _zoom_target_step : float = 0.1
@@ -55,6 +57,17 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 # to a failed HashMap lookup. I'm not sure if this is a bug in the
 # editor, GDExtension, my own extension, or a combination of them.
 # This was an absolute pain to track down. --- hop311
+
+func _notification(what):
+	# Working with MainLoop notifications system. 
+	# https://godotengine.org/qa/101601/how-to-detect-when-my-application-is-not-visible
+	# https://docs.godotengine.org/en/stable/classes/class_mainloop.html#constants
+	
+	if what == 1003: # Mouse out of window
+		_lock_movement = true
+	elif what == 1002: # Mouse inside window
+		_lock_movement = false
+
 func _ready():
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
@@ -178,8 +191,11 @@ func _movement_process(delta : float) -> void:
 
 func _edge_scrolling_vector() -> Vector2:
 	var mouse_vector := _mouse_pos_viewport / _viewport_dims - Vector2(0.5, 0.5)
-	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
-		mouse_vector *= 0
+	if _lock_movement:
+		mouse_vector = Vector2(0,0)
+	else:
+		if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
+			mouse_vector *= 0
 	return mouse_vector * _edge_move_speed
 
 func _cardinal_movement_vector() -> Vector2:
@@ -217,3 +233,13 @@ func _update_minimap_viewport() -> void:
 func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
 	_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
+
+func _on_map_control_panel_mouse_entered():
+	_lock_movement = true
+
+func _on_map_control_panel_mouse_exited():
+	_lock_movement = false
+
+func _on_map_control_panel_camera_change(_camera_pos_clicked):
+	_camera.position.x = (_camera_pos_clicked.x-$"../MapControlPanel"._minimap.size.x/2)/$"../MapControlPanel"._minimap.size.x * _map_mesh_dims.x
+	_camera.position.z = (_camera_pos_clicked.y-$"../MapControlPanel"._minimap.size.y/2)/$"../MapControlPanel"._minimap.size.y * _map_mesh_dims.y

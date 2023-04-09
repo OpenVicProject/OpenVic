@@ -2,8 +2,16 @@ extends PanelContainer
 
 signal game_session_menu_button_pressed
 signal mapmode_changed
+signal camera_change(_camera_pos_clicked: Vector2)
+
+const _action_click : StringName = &"map_click"
 
 @export var _mapmodes_grid : GridContainer
+@export var _minimap : PanelContainer
+@onready var _map_camera : Control = _minimap.get_node("RectangularCamera")
+
+var _mouse_inside: bool = false
+
 var _mapmode_button_group : ButtonGroup
 
 func _add_mapmode_button(identifier : String) -> void:
@@ -30,3 +38,16 @@ func _on_game_session_menu_button_pressed() -> void:
 func _mapmode_pressed(button : BaseButton) -> void:
 	MapSingleton.set_mapmode(button.tooltip_text)
 	mapmode_changed.emit()
+
+func _on_map_view_map_view_camera_changed(near_left, far_left, far_right, near_right):
+	_map_camera._on_camera_view_changed(near_left, far_left, far_right, near_right)
+
+func _process(delta):
+	if _mouse_inside and Input.is_action_pressed(_action_click):
+		camera_change.emit($VBoxContainer/Minimap.get_local_mouse_position())
+		
+func _on_minimap_mouse_entered():
+	_mouse_inside = true
+
+func _on_minimap_mouse_exited():
+	_mouse_inside = false
