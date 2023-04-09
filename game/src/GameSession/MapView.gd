@@ -232,7 +232,8 @@ func _update_minimap_viewport() -> void:
 
 func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
-	_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
+	if not _lock_movement:
+		_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
 
 func _on_map_control_panel_mouse_entered():
 	_lock_movement = true
