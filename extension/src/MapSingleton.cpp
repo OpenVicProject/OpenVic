@@ -14,7 +14,8 @@ void MapSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_region_file", "file_path"), &MapSingleton::load_region_file);
 	ClassDB::bind_method(D_METHOD("load_province_shape_file", "file_path"), &MapSingleton::load_province_shape_file);
 
-	ClassDB::bind_method(D_METHOD("get_province_identifier_from_pixel_coords", "coords"), &MapSingleton::get_province_identifier_from_pixel_coords);
+	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &MapSingleton::get_province_index_from_uv_coords);
+	ClassDB::bind_method(D_METHOD("get_province_identifier_from_uv_coords", "coords"), &MapSingleton::get_province_identifier_from_uv_coords);
 	ClassDB::bind_method(D_METHOD("get_width"), &MapSingleton::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &MapSingleton::get_height);
 	ClassDB::bind_method(D_METHOD("get_province_index_image"), &MapSingleton::get_province_index_image);
@@ -235,15 +236,37 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 	return err;
 }
 
-String MapSingleton::get_province_identifier_from_pixel_coords(Vector2i const& coords) const {
+Province* MapSingleton::get_province_from_uv_coords(godot::Vector2 const& coords) {
 	if (province_index_image.is_valid()) {
 		const PackedByteArray index_data_array = province_index_image->get_data();
 		Province::index_t const* index_data = reinterpret_cast<Province::index_t const*>(index_data_array.ptr());
-		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, get_width());
-		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, get_height());
-		Province const* province = map.get_province_by_index(index_data[x_mod_w + y_mod_h * get_width()]);
-		if (province != nullptr) return province->get_identifier().c_str();
+		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, 1.0f) * get_width();
+		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, 1.0f) * get_height();
+		return map.get_province_by_index(index_data[x_mod_w + y_mod_h * get_width()]);
 	}
+	return nullptr;
+}
+
+Province const* MapSingleton::get_province_from_uv_coords(godot::Vector2 const& coords) const {
+	if (province_index_image.is_valid()) {
+		const PackedByteArray index_data_array = province_index_image->get_data();
+		Province::index_t const* index_data = reinterpret_cast<Province::index_t const*>(index_data_array.ptr());
+		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, 1.0f) * get_width();
+		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, 1.0f) * get_height();
+		return map.get_province_by_index(index_data[x_mod_w + y_mod_h * get_width()]);
+	}
+	return nullptr;
+}
+
+int32_t MapSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
+	Province const* province = get_province_from_uv_coords(coords);
+	if (province != nullptr) return province->get_index();
+	return Province::NULL_INDEX;
+}
+
+String MapSingleton::get_province_identifier_from_uv_coords(Vector2 const& coords) const {
+	Province const* province = get_province_from_uv_coords(coords);
+	if (province != nullptr) return province->get_identifier().c_str();
 	return String{};
 }
 

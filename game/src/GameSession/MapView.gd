@@ -14,8 +14,8 @@ const _action_click : StringName = &"map_click"
 
 const _shader_param_province_index : StringName = &"province_index_tex"
 const _shader_param_province_colour : StringName = &"province_colour_tex"
-const _shader_param_hover_pos : StringName = &"hover_pos"
-const _shader_param_selected_pos : StringName = &"selected_pos"
+const _shader_param_hover_index : StringName = &"hover_index"
+const _shader_param_selected_index : StringName = &"selected_index"
 
 @export var _camera : Camera3D
 
@@ -25,7 +25,7 @@ const _shader_param_selected_pos : StringName = &"selected_pos"
 var _drag_anchor : Vector2
 var _drag_active : bool = false
 
-var _lock_movement : bool = false
+var _mouse_over_viewport : bool = false
 
 @export var _zoom_target_min : float = 0.2
 @export var _zoom_target_max : float = 5.0
@@ -57,17 +57,6 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 # to a failed HashMap lookup. I'm not sure if this is a bug in the
 # editor, GDExtension, my own extension, or a combination of them.
 # This was an absolute pain to track down. --- hop311
-
-func _notification(what):
-	# Working with MainLoop notifications system. 
-	# https://godotengine.org/qa/101601/how-to-detect-when-my-application-is-not-visible
-	# https://docs.godotengine.org/en/stable/classes/class_mainloop.html#constants
-	
-	if what == 1003: # Mouse out of window
-		_lock_movement = true
-	elif what == 1002: # Mouse inside window
-		_lock_movement = false
-
 func _ready():
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
@@ -121,6 +110,13 @@ func _ready():
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
 
+func _notification(what : int):
+	match what:
+		NOTIFICATION_WM_MOUSE_ENTER: # Mouse inside window
+			_on_mouse_entered_viewport()
+		NOTIFICATION_WM_MOUSE_EXIT: # Mouse out of window
+			_on_mouse_exited_viewport()
+
 func _update_colour_texture() -> void:
 	MapSingleton.update_colour_image()
 	_map_province_colour_texture.update(_map_province_colour_image)
@@ -145,10 +141,12 @@ func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-			_map_shader_material.set_shader_parameter(_shader_param_selected_pos, _mouse_pos_map)
-			var mouse_pixel_pos := Vector2i(_mouse_pos_map * _map_image_size)
-			var province_identifier := MapSingleton.get_province_identifier_from_pixel_coords(mouse_pixel_pos)
+			var selected_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+			_map_shader_material.set_shader_parameter(_shader_param_selected_index, selected_index)
+			var province_identifier := MapSingleton.get_province_identifier_from_uv_coords(_mouse_pos_map)
 			province_selected.emit(province_identifier)
+		else:
+			print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):
 		if _drag_active:
 			push_warning("Drag being activated while already active!")
@@ -190,12 +188,11 @@ func _movement_process(delta : float) -> void:
 	_camera.position += Vector3(direction.x, 0, direction.y)
 
 func _edge_scrolling_vector() -> Vector2:
+	if not _mouse_over_viewport:
+		return Vector2()
 	var mouse_vector := _mouse_pos_viewport / _viewport_dims - Vector2(0.5, 0.5)
-	if _lock_movement:
-		mouse_vector = Vector2(0,0)
-	else:
-		if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
-			mouse_vector *= 0
+	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
+		mouse_vector *= 0
 	return mouse_vector * _edge_move_speed
 
 func _cardinal_movement_vector() -> Vector2:
@@ -232,15 +229,18 @@ func _update_minimap_viewport() -> void:
 
 func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
-	if not _lock_movement:
-		_map_shader_material.set_shader_parameter(_shader_param_hover_pos, _mouse_pos_map)
+	var hover_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+	if not _mouse_over_viewport:
+		_map_shader_material.set_shader_parameter(_shader_param_hover_index, hover_index)
 
-func _on_map_control_panel_mouse_entered():
-	_lock_movement = true
+func _on_mouse_entered_viewport():
+	_mouse_over_viewport = true
 
-func _on_map_control_panel_mouse_exited():
-	_lock_movement = false
+func _on_mouse_exited_viewport():
+	_mouse_over_viewport = false
 
-func _on_map_control_panel_camera_change(_camera_pos_clicked):
-	_camera.position.x = (_camera_pos_clicked.x-$"../MapControlPanel"._minimap.size.x/2)/$"../MapControlPanel"._minimap.size.x * _map_mesh_dims.x
-	_camera.position.z = (_camera_pos_clicked.y-$"../MapControlPanel"._minimap.size.y/2)/$"../MapControlPanel"._minimap.size.y * _map_mesh_dims.y
+func _on_minimap_clicked(pos_clicked : Vector2):
+	pos_clicked *= _map_mesh_dims
+	_camera.position.x = pos_clicked.x
+	_camera.position.z = pos_clicked.y
+	_clamp_over_map()

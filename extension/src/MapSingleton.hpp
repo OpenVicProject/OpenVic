@@ -35,7 +35,10 @@ namespace OpenVic2 {
 		godot::Error load_region_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
 
-		godot::String get_province_identifier_from_pixel_coords(godot::Vector2i const& coords) const;
+		Province* get_province_from_uv_coords(godot::Vector2 const& coords);
+		Province const* get_province_from_uv_coords(godot::Vector2 const& coords) const;
+		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
+		godot::String get_province_identifier_from_uv_coords(godot::Vector2 const& coords) const;
 		int32_t get_width() const;
 		int32_t get_height() const;
 		godot::Ref<godot::Image> get_province_index_image() const;
