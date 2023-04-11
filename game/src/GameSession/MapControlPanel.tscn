@@ -25,14 +25,17 @@ alignment = 2
 layout_mode = 2
 
 [node name="MapmodesGrid" type="GridContainer" parent="HBoxContainer/VBoxContainer"]
+editor_description = "UI-750"
 layout_mode = 2
 columns = 11
 
 [node name="Minimap" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+editor_description = "UI-549"
 layout_mode = 2
 mouse_filter = 1
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/Minimap"]
+editor_description = "UI-751, FS-338"
 layout_mode = 2
 texture = ExtResource("2_r613r")
 

@@ -137,6 +137,8 @@ func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 		push_error("Invalid intersection: ", intersection)
 		return Vector2(0.5, 0.5)
 
+# REQUIREMENTS
+# * SS-31
 func _unhandled_input(event : InputEvent):
 	if event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
@@ -177,6 +179,8 @@ func _physics_process(delta : float):
 	# Calculate where the mouse lies on the map
 	_update_mouse_map_position()
 
+# REQUIREMENTS
+# * UIFUN-124
 func _movement_process(delta : float) -> void:
 	var direction : Vector2
 	if _drag_active:
@@ -187,6 +191,8 @@ func _movement_process(delta : float) -> void:
 		direction *= _camera.position.y * delta
 	_camera.position += Vector3(direction.x, 0, direction.y)
 
+# REQUIREMENTS
+# * UIFUN-125
 func _edge_scrolling_vector() -> Vector2:
 	if not _mouse_over_viewport:
 		return Vector2()
@@ -195,6 +201,8 @@ func _edge_scrolling_vector() -> Vector2:
 		mouse_vector *= 0
 	return mouse_vector * _edge_move_speed
 
+# REQUIREMENTS
+# * SS-75
 func _cardinal_movement_vector() -> Vector2:
 	var move := Vector2(
 		float(Input.is_action_pressed(_action_east)) - float(Input.is_action_pressed(_action_west)),
@@ -206,6 +214,9 @@ func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
 	_camera.position.z = clamp(_camera.position.z, _map_mesh_corner.y, _map_mesh_corner.y + _map_mesh_dims.y)
 
+# REQUIREMENTS
+# * SS-74
+# * UIFUN-123
 func _zoom_process(delta : float) -> void:
 	var height := _camera.position.y
 	var zoom := _zoom_target - height

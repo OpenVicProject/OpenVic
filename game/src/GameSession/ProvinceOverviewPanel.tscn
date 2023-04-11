@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/GameSession/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 
 [node name="ProvinceOverviewPanel" type="Panel" node_paths=PackedStringArray("_province_name_label")]
+editor_description = "UI-56"
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -23,6 +24,7 @@ offset_right = -10.0
 offset_bottom = -5.0
 
 [node name="ProvinceName" type="Label" parent="VBoxContainer"]
+editor_description = "UI-57"
 layout_mode = 2
 text = "PROVINCE_NAME"
 vertical_alignment = 1

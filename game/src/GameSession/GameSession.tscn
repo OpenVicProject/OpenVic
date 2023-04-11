@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
 
 [node name="GameSession" type="Node" node_paths=PackedStringArray("_game_session_menu")]
-editor_description = "SS-102"
+editor_description = "SS-102, UI-546"
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
 

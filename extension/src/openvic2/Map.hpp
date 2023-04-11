@@ -11,6 +11,9 @@ namespace OpenVic2 {
 	struct Region;
 	struct Map;
 
+	/* REQUIREMENTS:
+	 * MAP-43, MAP-47
+	 */
 	struct Province {
 		friend struct Map;
 
@@ -36,6 +39,9 @@ namespace OpenVic2 {
 		std::string to_string() const;
 	};
 
+	/* REQUIREMENTS:
+	 * MAP-6, MAP-44, MAP-48
+	 */
 	struct Region {
 		friend struct Map;
 	private:
@@ -67,6 +73,9 @@ namespace OpenVic2 {
 		colour_func_t get_colour_func() const;
 	};
 
+	/* REQUIREMENTS:
+	 * MAP-4
+	 */
 	struct Map {
 	private:
 		std::vector<Province> provinces;

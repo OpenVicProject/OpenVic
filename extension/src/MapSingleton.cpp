@@ -31,6 +31,9 @@ MapSingleton* MapSingleton::get_singleton() {
 	return singleton;
 }
 
+/* REQUIREMENTS:
+ * MAP-21, MAP-25
+ */
 MapSingleton::MapSingleton() {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;

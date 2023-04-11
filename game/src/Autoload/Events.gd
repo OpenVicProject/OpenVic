@@ -7,6 +7,8 @@ const _province_identifier_file : String = "res://common/map/provinces.json"
 const _region_file : String = "res://common/map/regions.json"
 const _province_shape_file : String = "res://common/map/provinces.png"
 
+# REQUIREMENTS
+# * FS-333, FS-335, FS-341
 func _ready():
 	if MapSingleton.load_province_identifier_file(_province_identifier_file) != OK:
 		push_error("Failed to load province identifiers")

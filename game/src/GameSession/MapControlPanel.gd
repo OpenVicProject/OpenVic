@@ -9,6 +9,8 @@ signal minimap_clicked(pos_clicked : Vector2)
 
 var _mapmode_button_group : ButtonGroup
 
+# REQUIREMENTS:
+# * UI-550, UI-554
 func _add_mapmode_button(identifier : String) -> void:
 	var button := Button.new()
 	button.text = identifier
@@ -30,6 +32,9 @@ func _ready():
 func _on_game_session_menu_button_pressed() -> void:
 	game_session_menu_button_pressed.emit()
 
+# REQUIREMENTS:
+# * SS-76
+# * UIFUN-129, UIFUN-133
 func _mapmode_pressed(button : BaseButton) -> void:
 	MapSingleton.set_mapmode(button.tooltip_text)
 	mapmode_changed.emit()

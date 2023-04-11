@@ -6,10 +6,16 @@ const _action_click : StringName = &"map_click"
 
 var _viewport_points : PackedVector2Array
 
+# REQUIREMENTS
+# * SS-80
+# * UI-752
 func _draw() -> void:
 	if _viewport_points.size() > 1:
 		draw_multiline(_viewport_points, Color.WHITE, -1)
 
+# REQUIREMENTS
+# * SS-81
+# * UIFUN-127
 func _unhandled_input(event : InputEvent):
 	if event is InputEventMouseMotion and Input.is_action_pressed(_action_click):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
