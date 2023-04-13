@@ -1,0 +1,25 @@
+root = true
+
+[*]
+# LLVM style settings for most files
+# See https://clang.llvm.org/docs/ClangFormatStyleOptions.html#configurable-formatting-style-options
+# and https://llvm.org/docs/CodingStandards.html#code-style-guide
+# for more information on LLVM style
+indent_style = space
+indent_size = 2
+tab_width = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{h,hpp,c,cpp}]
+# Godot style settings for C/C++ files
+indent_style = tab
+indent_size = 4
+tab_width = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
