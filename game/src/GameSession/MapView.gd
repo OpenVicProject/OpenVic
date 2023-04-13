@@ -241,7 +241,7 @@ func _update_minimap_viewport() -> void:
 func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
 	var hover_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
-	if not _mouse_over_viewport:
+	if _mouse_over_viewport:
 		_map_shader_material.set_shader_parameter(_shader_param_hover_index, hover_index)
 
 func _on_mouse_entered_viewport():

@@ -243,8 +243,8 @@ Province* MapSingleton::get_province_from_uv_coords(godot::Vector2 const& coords
 	if (province_index_image.is_valid()) {
 		const PackedByteArray index_data_array = province_index_image->get_data();
 		Province::index_t const* index_data = reinterpret_cast<Province::index_t const*>(index_data_array.ptr());
-		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, 1.0f) * get_width();
-		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, 1.0f) * get_height();
+		const int32_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_width();
+		const int32_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_height();
 		return map.get_province_by_index(index_data[x_mod_w + y_mod_h * get_width()]);
 	}
 	return nullptr;
@@ -254,8 +254,8 @@ Province const* MapSingleton::get_province_from_uv_coords(godot::Vector2 const& 
 	if (province_index_image.is_valid()) {
 		const PackedByteArray index_data_array = province_index_image->get_data();
 		Province::index_t const* index_data = reinterpret_cast<Province::index_t const*>(index_data_array.ptr());
-		const int32_t x_mod_w = UtilityFunctions::posmod(coords.x, 1.0f) * get_width();
-		const int32_t y_mod_h = UtilityFunctions::posmod(coords.y, 1.0f) * get_height();
+		const int32_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_width();
+		const int32_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_height();
 		return map.get_province_by_index(index_data[x_mod_w + y_mod_h * get_width()]);
 	}
 	return nullptr;

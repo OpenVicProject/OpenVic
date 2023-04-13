@@ -17,11 +17,7 @@ func _draw() -> void:
 # * SS-81
 # * UIFUN-127
 func _unhandled_input(event : InputEvent):
-	if event is InputEventMouseMotion and Input.is_action_pressed(_action_click):
-		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
-		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
-			minimap_clicked.emit(pos_clicked)
-	if event != InputEventMouseMotion and Input.is_action_pressed(_action_click):
+	if event is InputEventMouse and Input.is_action_pressed(_action_click):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
 		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
 			minimap_clicked.emit(pos_clicked)
