@@ -21,6 +21,10 @@ func _unhandled_input(event : InputEvent):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
 		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
 			minimap_clicked.emit(pos_clicked)
+	if event != InputEventMouseMotion and Input.is_action_pressed(_action_click):
+		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
+		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
+			minimap_clicked.emit(pos_clicked)
 
 # Returns the point on the line going through p and q with the specific x coord
 func _intersect_x(p : Vector2, q : Vector2, x : float) -> Vector2:
