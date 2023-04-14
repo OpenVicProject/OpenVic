@@ -5,16 +5,16 @@
 ```mermaid
 classDiagram
 	class Province {
-		Int64 id                 
-		string provinceName    
-		string tradeGood       
-		Int64 lifeRating         
-		bool hasLegalSlavery   
+		Int64 id
+		string provinceName
+		string tradeGood
+		Int64 lifeRating
+		bool hasLegalSlavery
 
-		Int64 fortLevel          
-		Int64 navalBaseLevel     
+		Int64 fortLevel
+		Int64 navalBaseLevel
 		Int64 railroadLevel
-		
+
 		string regionId
 		string continentId
 	}

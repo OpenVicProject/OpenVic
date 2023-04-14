@@ -22,6 +22,12 @@ runs:
                 } catch(error) {
                   if (error.response.status != 404) throw error;
                   const tagList = await github.rest.repos.listTags({owner: context.repo.owner, repo: context.repo.repo});
-                  core.exportVariable(tag_name, tagList.data[0].name);
-                  core.exportVariable(release_name, tagList.data[0].name);
+                  if (tagList.data.length == 0) {
+                    core.warning("Could not list tags, this repo has no tags on it, setting tag_name and release_name environment variables to '<UserRepo-NoTag>' and '<UserRepo-NoRelease>', you can fetch tags with 'git fetch --tags' <remote-name>' and push tags with 'git push --tags");
+                    core.exportVariable(tag_name, `<${context.repo.owner}/${context.repo.repo}-NoTag>`);
+                    core.exportVariable(release_name, `<${context.repo.owner}/${context.repo.repo}-NoRelease>`);
+                  } else {
+                    core.exportVariable(tag_name, tagList.data[0].name);
+                    core.exportVariable(release_name, tagList.data[0].name);
+                  }
                 }

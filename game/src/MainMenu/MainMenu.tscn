@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bp5n3mlu45ygw"]
+[gd_scene load_steps=6 format=3 uid="uid://bp5n3mlu45ygw"]
 
 [ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
+[ext_resource type="Texture2D" uid="uid://dxys0wg0f0ic5" path="res://theme/assets/OpenVicFINALREALTRANS.png" id="3_58ess"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
 [ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/MainMenu/ReleaseInfoBox.tscn" id="3_km0er"]
 
@@ -29,14 +30,13 @@ theme_type_variation = &"BackgroundPanel"
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+[node name="TextureRect" type="TextureRect" parent="Panel/VBox"]
 layout_mode = 2
-size_flags_vertical = 6
-size_flags_stretch_ratio = 1.5
-theme_type_variation = &"TitleLabel"
-text = "MAINMENU_TITLE"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.75
+texture = ExtResource("3_58ess")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Margin" type="MarginContainer" parent="Panel/VBox"]
 layout_mode = 2
