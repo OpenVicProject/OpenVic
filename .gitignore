@@ -39,6 +39,9 @@
 !.vscode/launch.json
 !.vscode/tasks.json
 
+# Visual Studio
+.vs/
+
 # Godot 4+ specific ignores
 .godot/
 game/bin/openvic2/*
