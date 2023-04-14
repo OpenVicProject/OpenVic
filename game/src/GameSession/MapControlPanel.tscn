@@ -1,24 +1,52 @@
-[gd_scene load_steps=2 format=3 uid="uid://g524p8lr574w"]
+[gd_scene load_steps=7 format=3 uid="uid://g524p8lr574w"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
+[ext_resource type="Texture2D" uid="uid://c0sm1jfu4kyv3" path="res://art/ui/minimap.png" id="2_r613r"]
+[ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="3_s4dml"]
+[ext_resource type="Texture2D" uid="uid://vr1hq2stk8ny" path="res://art/ui/minimap_frame.png" id="4_f1exl"]
 
-[node name="PanelContainer" type="PanelContainer"]
+[sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_fc1tk"]
+events = [SubResource("InputEventAction_5nck3")]
+
+[node name="MapControlPanel" type="PanelContainer" node_paths=PackedStringArray("_mapmodes_grid")]
 editor_description = "SS-103"
+mouse_filter = 1
 script = ExtResource("1_ign64")
+_mapmodes_grid = NodePath("HBoxContainer/VBoxContainer/MapmodesGrid")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
+alignment = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="MapmodesPlaceholder" type="Label" parent="HBoxContainer/VBoxContainer"]
+[node name="MapmodesGrid" type="GridContainer" parent="HBoxContainer/VBoxContainer"]
+editor_description = "UI-750"
 layout_mode = 2
-text = "MAPMODES"
+columns = 11
 
-[node name="MinimapPlaceholder" type="Label" parent="HBoxContainer/VBoxContainer"]
+[node name="Minimap" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+editor_description = "UI-549"
 layout_mode = 2
-text = "MINIMAP"
+mouse_filter = 1
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/Minimap"]
+editor_description = "UI-751, FS-338"
+layout_mode = 2
+texture = ExtResource("2_r613r")
+
+[node name="ViewportQuad" type="Control" parent="HBoxContainer/VBoxContainer/Minimap"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("3_s4dml")
+
+[node name="Frame" type="NinePatchRect" parent="HBoxContainer/VBoxContainer/Minimap"]
+layout_mode = 2
+texture = ExtResource("4_f1exl")
 
 [node name="AuxiliaryPanel" type="VBoxContainer" parent="HBoxContainer"]
 editor_description = "UI-761"
@@ -27,6 +55,9 @@ layout_mode = 2
 [node name="GameSessionMenuButton" type="Button" parent="HBoxContainer/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
+shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
 
+[connection signal="map_view_camera_changed" from="." to="HBoxContainer/VBoxContainer/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
+[connection signal="minimap_clicked" from="HBoxContainer/VBoxContainer/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
 [connection signal="pressed" from="HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]

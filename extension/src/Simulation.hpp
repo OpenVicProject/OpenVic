@@ -1,8 +1,6 @@
 #pragma once
 
-#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <vector>
 
 namespace OpenVic2 {
@@ -11,7 +9,7 @@ namespace OpenVic2 {
 		std::vector<uint64_t> exampleProvinces;
 
 		//BEGIN BOILERPLATE
-		static Simulation* _simulation;
+		inline static Simulation* _simulation = nullptr;
 
 		protected:
 		static void _bind_methods() {
@@ -47,6 +45,4 @@ namespace OpenVic2 {
 			return exampleProvinces[provinceID];
 		}
 	};
-
-	Simulation* Simulation::_simulation = nullptr;
 }

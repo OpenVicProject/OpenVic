@@ -70,3 +70,4 @@ bin/*
 .DS_Store
 
 *.translation
+!game/common/map/*.obj
