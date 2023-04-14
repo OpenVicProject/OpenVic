@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=10 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
@@ -6,10 +6,31 @@
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8qaci"]
+
+[sub_resource type="Sky" id="Sky_w8b4m"]
+sky_material = SubResource("ProceduralSkyMaterial_8qaci")
+
+[sub_resource type="Environment" id="Environment_wam0l"]
+background_mode = 2
+sky = SubResource("Sky_w8b4m")
+tonemap_mode = 3
+sdfgi_enabled = true
+sdfgi_use_occlusion = true
+fog_enabled = true
+fog_light_color = Color(0.466667, 0.541176, 0.607843, 1)
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_foqwj"]
+dof_blur_far_distance = 8192.0
+
 [node name="GameSession" type="Node" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102, UI-546"
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wam0l")
+camera_attributes = SubResource("CameraAttributesPractical_foqwj")
 
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 

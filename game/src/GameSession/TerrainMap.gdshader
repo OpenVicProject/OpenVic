@@ -13,6 +13,13 @@ uniform uint hover_index;
 // Index of the currently selected province
 uniform uint selected_index;
 
+uniform sampler2D basemap;
+uniform sampler2D heightmap;
+uniform float height_ratio: hint_range(0.0, 1.0, 0.002) = .005;
+uniform float base_ratio: hint_range(0.0, 1.0, 0.002) = .001;
+
+
+
 uvec2 vec2_to_uvec2(vec2 v) {
 	return uvec2(v * 255.0);
 }
@@ -40,6 +47,11 @@ void fragment() {
 
 	vec3 terrain_colour = texture(terrain_tex, UV).rgb;
 	vec3 province_colour = texelFetch(province_colour_tex, ivec2(prov_idx_split), 0).rgb;
-
+	ANISOTROPY = 1.0;
 	ALBEDO = mix(terrain_colour, province_colour, mix_val);
+}
+
+void vertex() {
+	VERTEX.y += texture(basemap, UV).r * base_ratio;
+	VERTEX.y += texture(heightmap, UV).r * height_ratio;
 }

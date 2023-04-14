@@ -1,17 +1,30 @@
-[gd_scene load_steps=6 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene load_steps=10 format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" path="res://src/GameSession/TerrainMap.gdshader" id="1_upocn"]
-[ext_resource type="Texture2D" uid="uid://cmw0pvjthnn8c" path="res://art/terrain/terrain.png" id="3_l8pnf"]
+[ext_resource type="Texture2D" uid="uid://dw3sykhcyw2v7" path="res://art/terrain/Basemap.png" id="3_tw3yw"]
+[ext_resource type="Texture2D" uid="uid://bds8jrlnde3mm" path="res://art/terrain/Height.png" id="4_2d2pi"]
+[ext_resource type="Texture2D" uid="uid://cmw0pvjthnn8c" path="res://art/terrain/terrain.png" id="4_eahcr"]
+[ext_resource type="PackedScene" uid="uid://b35mxcc3d74di" path="res://src/GameSession/Water/WaterPlane.tscn" id="6_b5h2h"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
 shader = ExtResource("1_upocn")
 shader_parameter/hover_index = null
 shader_parameter/selected_index = null
-shader_parameter/terrain_tex = ExtResource("3_l8pnf")
+shader_parameter/height_ratio = 0.014
+shader_parameter/base_ratio = 0.01
+shader_parameter/terrain_tex = ExtResource("4_eahcr")
+shader_parameter/basemap = ExtResource("3_tw3yw")
+shader_parameter/heightmap = ExtResource("4_2d2pi")
 
 [sub_resource type="MapMesh" id="MapMesh_3gtsd"]
+subdivide_width = 1500
+subdivide_depth = 750
+
+[sub_resource type="QuadMesh" id="QuadMesh_f5kgg"]
+size = Vector2(40, 10)
+orientation = 1
 
 [node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance")]
 editor_description = "SS-73"
@@ -27,3 +40,7 @@ editor_description = "FS-343"
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_tayeg")
 mesh = SubResource("MapMesh_3gtsd")
+
+[node name="Water" parent="." instance=ExtResource("6_b5h2h")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.08, 0)
+mesh = SubResource("QuadMesh_f5kgg")
