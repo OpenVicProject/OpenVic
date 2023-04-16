@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/primitive_mesh.hpp>
 
 namespace OpenVic2 {
+	//Note: this class inherits from godot::PrimitiveMesh, should retain godot-style function names
 	class MapMesh : public godot::PrimitiveMesh {
 		GDCLASS(MapMesh, godot::PrimitiveMesh)
 

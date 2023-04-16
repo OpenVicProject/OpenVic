@@ -28,15 +28,15 @@ namespace OpenVic2 {
 		colour_t colour;
 		Region* region = nullptr;
 
-		Province(index_t new_index, std::string const& new_identifier, colour_t new_colour);
+		Province(index_t newIndex, std::string const& newIdentifier, colour_t newColour);
 	public:
-		static std::string colour_to_hex_string(colour_t colour);
+		static std::string colourToHexString(colour_t colour);
 
-		index_t get_index() const;
-		std::string const& get_identifier() const;
-		colour_t get_colour() const;
-		Region* get_region() const;
-		std::string to_string() const;
+		index_t getIndex() const;
+		std::string const& getIdentifier() const;
+		colour_t getColour() const;
+		Region* getRegion() const;
+		std::string toString() const;
 	};
 
 	/* REQUIREMENTS:
@@ -48,12 +48,12 @@ namespace OpenVic2 {
 		std::string identifier;
 		std::vector<Province*> provinces;
 
-		Region(std::string const& new_identifier);
+		Region(std::string const& newIdentifier);
 	public:
-		std::string const& get_identifier() const;
-		size_t get_province_count() const;
-		bool contains_province(Province const* province) const;
-		std::vector<Province*> const& get_provinces() const;
+		std::string const& getIdentifier() const;
+		size_t getProvinceCount() const;
+		bool containsProvince(Province const* province) const;
+		std::vector<Province*> const& getProvinces() const;
 	};
 
 	struct Mapmode {
@@ -64,13 +64,13 @@ namespace OpenVic2 {
 	private:
 		index_t index;
 		std::string identifier;
-		colour_func_t colour_func;
+		colour_func_t colourFunc;
 
-		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
+		Mapmode(index_t newIndex, std::string const& newIdentifier, colour_func_t newColourFunc);
 	public:
-		index_t get_index() const;
-		std::string const& get_identifier() const;
-		colour_func_t get_colour_func() const;
+		index_t getIndex() const;
+		std::string const& getIdentifier() const;
+		colour_func_t getColourFunc() const;
 	};
 
 	/* REQUIREMENTS:
@@ -86,28 +86,28 @@ namespace OpenVic2 {
 		std::vector<Province::index_t> province_index_image;
 		std::vector<Mapmode> mapmodes;
 	public:
-		return_t add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message);
-		void lock_provinces();
-		return_t add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers, std::string& error_message);
-		void lock_regions();
-		size_t get_province_count() const;
+		return_t addProvince(std::string const& identifier, Province::colour_t colour, std::string& error_message);
+		void lockProvinces();
+		return_t addRegion(std::string const& identifier, std::vector<std::string> const& province_identifiers, std::string& error_message);
+		void lockRegions();
+		size_t getProvinceCount() const;
 
-		Province* get_province_by_index(Province::index_t index);
-		Province const* get_province_by_index(Province::index_t index) const;
-		Province* get_province_by_identifier(std::string const& identifier);
-		Province const* get_province_by_identifier(std::string const& identifier) const;
-		Province* get_province_by_colour(Province::colour_t colour);
-		Province const* get_province_by_colour(Province::colour_t colour) const;
+		Province* getProvinceByIndex(Province::index_t index);
+		Province const* getProvinceByIndex(Province::index_t index) const;
+		Province* getProvinceByIdentifier(std::string const& identifier);
+		Province const* getProvinceByIdentifier(std::string const& identifier) const;
+		Province* getProvinceByColour(Province::colour_t colour);
+		Province const* getProvinceByColour(Province::colour_t colour) const;
 
-		return_t generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data, std::string& error_message);
-		size_t get_width() const;
-		size_t get_height() const;
-		std::vector<Province::index_t> const& get_province_index_image() const;
+		return_t generateProvinceIndexImage(size_t new_width, size_t new_height, uint8_t const* colour_data, std::string& error_message);
+		size_t getWidth() const;
+		size_t getHeight() const;
+		std::vector<Province::index_t> const& getProvinceIndexImage() const;
 
-		return_t add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func, std::string& error_message);
-		size_t get_mapmode_count() const;
-		Mapmode const* get_mapmode_by_index(Mapmode::index_t index) const;
-		Mapmode const* get_mapmode_by_identifier(std::string const& identifier) const;
-		return_t generate_mapmode_colours(Mapmode::index_t index, uint8_t* target, std::string& error_message) const;
+		return_t addMapmode(std::string const& identifier, Mapmode::colour_func_t colour_func, std::string& error_message);
+		size_t getMapmodeCount() const;
+		Mapmode const* getMapmodeByIndex(Mapmode::index_t index) const;
+		Mapmode const* getMapmodeByIdentifier(std::string const& identifier) const;
+		return_t generateMapmodeColours(Mapmode::index_t index, uint8_t* target, std::string& error_message) const;
 	};
 }

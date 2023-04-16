@@ -5,22 +5,22 @@
 
 using namespace OpenVic2;
 
-Region::Region(std::string const& new_identifier) : identifier(new_identifier) {
+Region::Region(std::string const& newIdentifier) : identifier(newIdentifier) {
 	assert(!identifier.empty());
 }
 
-std::string const& Region::get_identifier() const {
+std::string const& Region::getIdentifier() const {
 	return identifier;
 }
 
-size_t Region::get_province_count() const {
+size_t Region::getProvinceCount() const {
 	return provinces.size();
 }
 
-bool Region::contains_province(Province const* province) const {
+bool Region::containsProvince(Province const* province) const {
 	return province && std::find(provinces.begin(), provinces.end(), province) != provinces.end();
 }
 
-std::vector<Province*> const& Region::get_provinces() const {
+std::vector<Province*> const& Region::getProvinces() const {
 	return provinces;
 }

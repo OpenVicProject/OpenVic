@@ -11,7 +11,7 @@ namespace OpenVic2 {
 
 	protected:
 		static void _bind_methods() {
-			godot::ClassDB::bind_method(godot::D_METHOD("get_checksum_text"), &Checksum::get_checksum_text);
+			godot::ClassDB::bind_method(godot::D_METHOD("get_checksum_text"), &Checksum::getChecksumText);
 		}
 
 	public:
@@ -27,7 +27,7 @@ namespace OpenVic2 {
 		}
 		//END BOILERPLATE
 
-		inline godot::String get_checksum_text() {
+		inline godot::String getChecksumText() {
 			return godot::String("1234abcd");
 		}
 	};

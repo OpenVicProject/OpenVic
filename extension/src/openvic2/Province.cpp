@@ -6,35 +6,35 @@
 
 using namespace OpenVic2;
 
-Province::Province(index_t new_index, std::string const& new_identifier, colour_t new_colour) :
-	index(new_index), identifier(new_identifier), colour(new_colour) {
+Province::Province(index_t newIndex, std::string const& newIdentifier, colour_t newColour) :
+	index(newIndex), identifier(newIdentifier), colour(newColour) {
 	assert(index != NULL_INDEX);
 	assert(!identifier.empty());
 	assert(colour != NULL_COLOUR);
 }
 
-std::string Province::colour_to_hex_string(colour_t colour) {
+std::string Province::colourToHexString(colour_t colour) {
 	std::ostringstream stream;
 	stream << std::hex << std::setfill('0') << std::setw(6) << colour;
 	return stream.str();
 }
 
-Province::index_t Province::get_index() const {
+Province::index_t Province::getIndex() const {
 	return index;
 }
 
-std::string const& Province::get_identifier() const {
+std::string const& Province::getIdentifier() const {
 	return identifier;
 }
 
-Province::colour_t Province::get_colour() const {
+Province::colour_t Province::getColour() const {
 	return colour;
 }
 
-Region* Province::get_region() const {
+Region* Province::getRegion() const {
 	return region;
 }
 
-std::string Province::to_string() const {
-	return "(#" + std::to_string(index) + ", " + identifier + ", 0x" + colour_to_hex_string(colour) + ")";
+std::string Province::toString() const {
+	return "(#" + std::to_string(index) + ", " + identifier + ", 0x" + colourToHexString(colour) + ")";
 }
