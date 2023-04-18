@@ -11,11 +11,13 @@ MapSingleton* MapSingleton::singleton = nullptr;
 
 void MapSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_province_identifier_file", "file_path"), &MapSingleton::load_province_identifier_file);
+	ClassDB::bind_method(D_METHOD("load_water_province_file", "file_path"), &MapSingleton::load_water_province_file);
 	ClassDB::bind_method(D_METHOD("load_region_file", "file_path"), &MapSingleton::load_region_file);
 	ClassDB::bind_method(D_METHOD("load_province_shape_file", "file_path"), &MapSingleton::load_province_shape_file);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &MapSingleton::get_province_index_from_uv_coords);
 	ClassDB::bind_method(D_METHOD("get_province_identifier_from_uv_coords", "coords"), &MapSingleton::get_province_identifier_from_uv_coords);
+	ClassDB::bind_method(D_METHOD("get_region_identifier_from_province_identifier", "identifier"), &MapSingleton::get_region_identifier_from_province_identifier);
 	ClassDB::bind_method(D_METHOD("get_width"), &MapSingleton::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &MapSingleton::get_height);
 	ClassDB::bind_method(D_METHOD("get_province_index_image"), &MapSingleton::get_province_index_image);
@@ -43,16 +45,19 @@ MapSingleton::MapSingleton() {
 		{ "mapmode_province", [](Map const&, Province const& province) -> Province::colour_t { return province.get_colour(); } },
 		{ "mapmode_region", [](Map const&, Province const& province) -> Province::colour_t {
 			Region const* region = province.get_region();
-			if (region != nullptr) return region->get_provinces().front()->get_colour();
+			if (region != nullptr) return region->get_colour();
 			return province.get_colour();
+		} },
+		{ "mapmode_terrain", [](Map const&, Province const& province) -> Province::colour_t {
+			return province.is_water() ? 0x4287F5 : 0x0D7017;
 		} },
 		{ "mapmode_index", [](Map const& map, Province const& province) -> Province::colour_t {
 			const uint8_t f = float(province.get_index()) / float(map.get_province_count()) * 255.0f;
 			return (f << 16) | (f << 8) | f;
 		} }
 	};
-	std::string error_message = "";
-	for (mapmode_t mapmode : mapmodes)
+	std::string error_message;
+	for (mapmode_t const& mapmode : mapmodes)
 		if (map.add_mapmode(mapmode.first, mapmode.second, error_message) != SUCCESS)
 			UtilityFunctions::push_error(error_message.c_str());
 }
@@ -62,34 +67,43 @@ MapSingleton::~MapSingleton() {
 	singleton = nullptr;
 }
 
-Error MapSingleton::parse_json_dictionary_file(String const& file_description, String const& file_path,
-	String const& identifier_prefix, parse_json_entry_func_t parse_entry) const {
+static Error load_json_file(String const& file_description, String const& file_path, Variant& result) {
+	result.clear();
 	UtilityFunctions::print("Loading ", file_description, " file: ", file_path);
-	Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
+	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	if (err != OK || file.is_null()) {
 		UtilityFunctions::push_error("Failed to load ", file_description, " file: ", file_path);
 		return err == OK ? FAILED : err;
 	}
 	const String json_string = file->get_as_text();
-	Ref<JSON> json;
-	json.instantiate();
-	err = json->parse(json_string);
+	JSON json;
+	err = json.parse(json_string);
 	if (err != OK) {
 		UtilityFunctions::push_error("Failed to parse ", file_description, " file as JSON: ", file_path,
-			"\nError at line ", json->get_error_line(), ": ", json->get_error_message());
+			"\nError at line ", json.get_error_line(), ": ", json.get_error_message());
 		return err;
 	}
-	const Variant json_var = json->get_data();
+	result = json.get_data();
+	return err;
+}
+
+using parse_json_entry_func_t = std::function<godot::Error (godot::String const&, godot::Variant const&)>;
+
+static Error parse_json_dictionary_file(String const& file_description, String const& file_path,
+	String const& identifier_prefix, parse_json_entry_func_t parse_entry) {
+	Variant json_var;
+	Error err = load_json_file(file_description, file_path, json_var);
+	if (err != OK) return err;
 	const Variant::Type type = json_var.get_type();
 	if (type != Variant::DICTIONARY) {
 		UtilityFunctions::push_error("Invalid ", file_description, " JSON: root has type ",
 			Variant::get_type_name(type), " (expected Dictionary)");
 		return FAILED;
 	}
-	const Dictionary dict = json_var;
+	Dictionary const& dict = json_var;
 	const Array identifiers = dict.keys();
-	for (int idx = 0; idx < identifiers.size(); ++idx) {
+	for (int64_t idx = 0; idx < identifiers.size(); ++idx) {
 		String const& identifier = identifiers[idx];
 		Variant const& entry = dict[identifier];
 		if (identifier.is_empty()) {
@@ -108,20 +122,20 @@ Error MapSingleton::_parse_province_identifier_entry(String const& identifier, V
 	const Variant::Type type = entry.get_type();
 	Province::colour_t colour = Province::NULL_COLOUR;
 	if (type == Variant::ARRAY) {
-		const Array colour_array = entry;
+		Array const& colour_array = entry;
 		if (colour_array.size() == 3) {
 			for (int jdx = 0; jdx < 3; ++jdx) {
-				const Variant var = colour_array[jdx];
+				Variant const& var = colour_array[jdx];
 				if (var.get_type() != Variant::FLOAT) {
 					colour = Province::NULL_COLOUR;
 					break;
 				}
-				double colour_double = var;
+				const double colour_double = var;
 				if (std::trunc(colour_double) != colour_double) {
 					colour = Province::NULL_COLOUR;
 					break;
 				}
-				int64_t colour_int = static_cast<int64_t>(colour_double);
+				const int64_t colour_int = static_cast<int64_t>(colour_double);
 				if (colour_int < 0 || colour_int > 255) {
 					colour = Province::NULL_COLOUR;
 					break;
@@ -130,17 +144,18 @@ Error MapSingleton::_parse_province_identifier_entry(String const& identifier, V
 			}
 		}
 	} else if (type == Variant::STRING) {
-		String colour_string = entry;
+		String const& colour_string = entry;
 		if (colour_string.is_valid_hex_number()) {
-			int64_t colour_int = colour_string.hex_to_int();
+			const int64_t colour_int = colour_string.hex_to_int();
 			if (0 <= colour_int && colour_int <= 0xFFFFFF)
 				colour = colour_int;
 		}
-	} else {
+	}
+	if (colour == Province::NULL_COLOUR) {
 		UtilityFunctions::push_error("Invalid colour for province identifier \"", identifier, "\": ", entry);
 		return FAILED;
 	}
-	std::string error_message = "";
+	std::string error_message;
 	if (map.add_province(identifier.utf8().get_data(), colour, error_message) != SUCCESS) {
 		UtilityFunctions::push_error(error_message.c_str());
 		return FAILED;
@@ -162,12 +177,12 @@ Error MapSingleton::_parse_region_entry(String const& identifier, Variant const&
 	Variant::Type type = entry.get_type();
 	std::vector<std::string> province_identifiers;
 	if (type == Variant::ARRAY) {
-		const Array province_array = entry;
+		Array const& province_array = entry;
 		for (int64_t idx = 0; idx < province_array.size(); ++idx) {
-			const Variant province_var = province_array[idx];
+			Variant const& province_var = province_array[idx];
 			type = province_var.get_type();
 			if (type == Variant::STRING) {
-				String province_string = province_var;
+				String const& province_string = province_var;
 				province_identifiers.push_back(province_string.utf8().get_data());
 			} else {
 				UtilityFunctions::push_error("Invalid province identifier for region \"", identifier, "\": ", entry);
@@ -175,7 +190,11 @@ Error MapSingleton::_parse_region_entry(String const& identifier, Variant const&
 			}
 		}
 	}
-	std::string error_message = "";
+	if (province_identifiers.empty()) {
+		UtilityFunctions::push_error("Invalid province list for region \"", identifier, "\": ", entry);
+		return FAILED;
+	}
+	std::string error_message;
 	if (map.add_region(identifier.utf8().get_data(), province_identifiers, error_message) != SUCCESS) {
 		UtilityFunctions::push_error(error_message.c_str());
 		return FAILED;
@@ -218,7 +237,7 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 	}
 	if (err != OK) return err;
 
-	std::string error_message = "";
+	std::string error_message;
 	if (map.generate_province_index_image(width, height, province_shape_image->get_data().ptr(), error_message) != SUCCESS) {
 		UtilityFunctions::push_error(error_message.c_str());
 		err = FAILED;
@@ -236,6 +255,37 @@ Error MapSingleton::load_province_shape_file(String const& file_path) {
 
 	if (update_colour_image() != OK) err = FAILED;
 
+	return err;
+}
+
+Error MapSingleton::load_water_province_file(String const& file_path) {
+	Variant json_var;
+	Error err = load_json_file("water province", file_path, json_var);
+	if (err != OK) return err;
+	Variant::Type type = json_var.get_type();
+	if (type != Variant::ARRAY) {
+		UtilityFunctions::push_error("Invalid water province JSON: root has type ",
+			Variant::get_type_name(type), " (expected Array)");
+		err = FAILED;
+	} else {
+		Array const& array = json_var;
+		std::string error_message;
+		for (int64_t idx = 0; idx < array.size(); ++idx) {
+			Variant const& entry = array[idx];
+			type = entry.get_type();
+			if (type != Variant::STRING) {
+				UtilityFunctions::push_error("Invalid water province identifier: ", entry);
+				err = FAILED;
+				continue;
+			}
+			String const& identifier = entry;
+			if (map.set_water_province(identifier.utf8().get_data(), error_message) != SUCCESS) {
+				UtilityFunctions::push_error(error_message.c_str());
+				err = FAILED;
+			}
+		}
+	}
+	map.lock_water_provinces();
 	return err;
 }
 
@@ -273,6 +323,15 @@ String MapSingleton::get_province_identifier_from_uv_coords(Vector2 const& coord
 	return String{};
 }
 
+String MapSingleton::get_region_identifier_from_province_identifier(String const& identifier) const {
+	Province const* province = map.get_province_by_identifier(identifier.utf8().get_data());
+	if (province != nullptr) {
+		Region const* region = province->get_region();
+		if (region != nullptr) return region->get_identifier().c_str();
+	}
+	return String{};
+}
+
 int32_t MapSingleton::get_width() const {
 	return map.get_width();
 }
@@ -291,11 +350,11 @@ Ref<Image> MapSingleton::get_province_colour_image() const {
 
 Error MapSingleton::update_colour_image() {
 	static PackedByteArray colour_data_array;
-	static const int64_t colour_data_array_size = (Province::MAX_INDEX + 1) * 3;
+	static const int64_t colour_data_array_size = (Province::MAX_INDEX + 1) * 4;
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
-	std::string error_message = "";
+	std::string error_message;
 	if (map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw(), error_message) != SUCCESS) {
 		UtilityFunctions::push_error(error_message.c_str());
 		err = FAILED;
@@ -305,7 +364,7 @@ Error MapSingleton::update_colour_image() {
 	if (province_colour_image.is_null())
 		province_colour_image.instantiate();
 	province_colour_image->set_data(PROVINCE_INDEX_SQRT, PROVINCE_INDEX_SQRT,
-		false, Image::FORMAT_RGB8, colour_data_array);
+		false, Image::FORMAT_RGBA8, colour_data_array);
 	if (province_colour_image.is_null()) {
 		UtilityFunctions::push_error("Failed to update province colour image");
 		return FAILED;

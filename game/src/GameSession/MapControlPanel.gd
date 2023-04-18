@@ -4,6 +4,8 @@ signal game_session_menu_button_pressed
 signal mapmode_changed
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal minimap_clicked(pos_clicked : Vector2)
+signal zoom_in_button_pressed
+signal zoom_out_button_pressed
 
 @export var _mapmodes_grid : GridContainer
 
@@ -17,6 +19,7 @@ func _add_mapmode_button(identifier : String) -> void:
 	button.tooltip_text = identifier
 	button.toggle_mode = true
 	button.button_group = _mapmode_button_group
+	button.mouse_filter = MOUSE_FILTER_PASS
 	_mapmodes_grid.add_child(button)
 	if _mapmode_button_group.get_pressed_button() == null:
 		button.button_pressed = true
@@ -44,3 +47,13 @@ func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_ri
 
 func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	minimap_clicked.emit(pos_clicked)
+
+# REQUIREMENTS:
+# * UIFUN-269
+func _on_zoom_in_button_pressed() -> void:
+	zoom_in_button_pressed.emit()
+
+# REQUIREMENTS:
+# * UIFUN-270
+func _on_zoom_out_button_pressed() -> void:
+	zoom_out_button_pressed.emit()
