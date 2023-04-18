@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=9 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
+[ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
@@ -19,6 +20,15 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
+
+[node name="MusicPlayer" parent="." instance=ExtResource("2_kt6aa")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_bottom = 110.0
+grow_horizontal = 0
 
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 

@@ -44,6 +44,8 @@ func _on_previous_song_button_pressed():
 func _on_option_button_item_selected(index):
 	# UIFUN-92
 	MusicConductor.start_song_by_index(index)
+	_update_song_name_visual()
+	_update_play_pause_button()
 
 
 func _on_progress_slider_drag_started():
