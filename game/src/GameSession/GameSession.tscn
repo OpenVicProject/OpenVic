@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=8 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel.tscn" id="3_afh6d"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
 [ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel.tscn" id="5_osjnn"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
+[ext_resource type="PackedScene" uid="uid://dd8k3p7r3huwc" path="res://src/GameSession/GameSpeedPanel.tscn" id="7_myy4q"]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102, UI-546"
@@ -48,6 +49,9 @@ layout_mode = 1
 [node name="OptionsMenu" parent="." instance=ExtResource("6_p5mnx")]
 visible = false
 layout_mode = 1
+
+[node name="GameSpeedPanel" parent="." instance=ExtResource("7_myy4q")]
+layout_mode = 0
 
 [connection signal="map_view_camera_changed" from="MapView" to="MapControlPanel" method="_on_map_view_camera_changed"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
