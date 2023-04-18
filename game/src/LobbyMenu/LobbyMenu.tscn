@@ -78,6 +78,7 @@ custom_minimum_size = Vector2(0, 33)
 layout_mode = 2
 
 [connection signal="save_game_selected" from="." to="." method="_on_save_game_selected"]
+[connection signal="item_activated" from="GameSelectPanel/VBoxContainer/GameSelectList" to="." method="_on_game_select_list_item_activated"]
 [connection signal="item_selected" from="GameSelectPanel/VBoxContainer/GameSelectList" to="." method="_on_game_select_list_item_selected"]
 [connection signal="button_down" from="GameSelectPanel/VBoxContainer/BackButton" to="." method="_on_back_button_button_down"]
 [connection signal="button_down" from="GameStartPanel/VBoxContainer/StartButton" to="." method="_on_start_button_button_down"]

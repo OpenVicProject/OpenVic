@@ -34,3 +34,8 @@ func _on_game_select_list_item_selected(index):
 
 func _on_save_game_selected(_index):
 	start_button.disabled = false
+
+# If the date is double-clicked, start the game!
+func _on_game_select_list_item_activated(index):
+	_on_game_select_list_item_selected(index)
+	_on_start_button_button_down()
