@@ -16,6 +16,7 @@ const _shader_param_province_index : StringName = &"province_index_tex"
 const _shader_param_province_colour : StringName = &"province_colour_tex"
 const _shader_param_hover_index : StringName = &"hover_index"
 const _shader_param_selected_index : StringName = &"selected_index"
+const _shader_param_terrain_tile_factor : StringName = &"terrain_tile_factor"
 
 @export var _camera : Camera3D
 
@@ -25,9 +26,9 @@ const _shader_param_selected_index : StringName = &"selected_index"
 var _drag_anchor : Vector2
 var _drag_active : bool = false
 
-var _mouse_over_viewport : bool = false
+var _mouse_over_viewport : bool = true
 
-@export var _zoom_target_min : float = 0.2
+@export var _zoom_target_min : float = 0.05
 @export var _zoom_target_max : float = 5.0
 @export var _zoom_target_step : float = 0.1
 @export var _zoom_epsilon : float = _zoom_target_step * 0.1
@@ -100,6 +101,7 @@ func _ready():
 	# Set map mesh size and get bounds
 	_map_image_size = Vector2(Vector2i(MapSingleton.get_width(), MapSingleton.get_height()))
 	_map_mesh.aspect_ratio = _map_image_size.x / _map_image_size.y
+	_map_shader_material.set_shader_parameter(_shader_param_terrain_tile_factor, _map_image_size.y / 64.0)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
@@ -137,10 +139,16 @@ func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 		push_error("Invalid intersection: ", intersection)
 		return Vector2(0.5, 0.5)
 
+func zoom_in() -> void:
+	_zoom_target -= _zoom_target_step
+
+func zoom_out() -> void:
+	_zoom_target += _zoom_target_step
+
 # REQUIREMENTS
 # * SS-31
 func _unhandled_input(event : InputEvent):
-	if event.is_action_pressed(_action_click):
+	if _mouse_over_viewport and event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
 			var selected_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
@@ -159,9 +167,9 @@ func _unhandled_input(event : InputEvent):
 			push_warning("Drag being deactivated while already not active!")
 		_drag_active = false
 	elif event.is_action_pressed(_action_zoomin, true):
-		_zoom_target -= _zoom_target_step
+		zoom_in()
 	elif event.is_action_pressed(_action_zoomout, true):
-		_zoom_target += _zoom_target_step
+		zoom_out()
 
 func _physics_process(delta : float):
 	_mouse_pos_viewport = get_viewport().get_mouse_position()
@@ -228,7 +236,7 @@ func _zoom_process(delta : float) -> void:
 	_camera.position.y = height
 
 func _update_orientation() -> void:
-	var dir := Vector3(0, -1, -exp(-_camera.position.y * 2.0 + 0.5))
+	var dir := Vector3(0, -1, -exp(-_camera.position.y - 1))
 	_camera.look_at(_camera.position + dir)
 
 func _update_minimap_viewport() -> void:
@@ -255,3 +263,11 @@ func _on_minimap_clicked(pos_clicked : Vector2):
 	_camera.position.x = pos_clicked.x
 	_camera.position.z = pos_clicked.y
 	_clamp_over_map()
+
+func enable_processing() -> void:
+	set_process_unhandled_input(true)
+	set_physics_process(true)
+
+func disable_processing() -> void:
+	set_process_unhandled_input(false)
+	set_physics_process(false)

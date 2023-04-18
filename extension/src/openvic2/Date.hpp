@@ -28,6 +28,9 @@ namespace OpenVic2 {
 
 		Timespan& operator+= (Timespan const& other);
 		Timespan& operator-= (Timespan const& other);
+
+		explicit operator std::string() const;
+		friend std::ostream& operator<< (std::ostream& out, Timespan const& timespan);
 	};
 
 	static constexpr size_t MONTHS_IN_YEAR = 12;

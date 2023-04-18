@@ -1,75 +1,24 @@
 #pragma once
 
-#include <string>
-#include <cstdint>
 #include <vector>
 #include <functional>
 
-#include "Types.hpp"
+#include "Region.hpp"
 
 namespace OpenVic2 {
-	struct Region;
-	struct Map;
 
-	/* REQUIREMENTS:
-	 * MAP-43, MAP-47
-	 */
-	struct Province {
-		friend struct Map;
-
-		using colour_t = uint32_t;
-		using index_t = uint16_t;
-
-		static const colour_t NULL_COLOUR = 0, MAX_COLOUR = 0xFFFFFF;
-		static const index_t NULL_INDEX = 0, MAX_INDEX = 0xFFFF;
-	private:
-		index_t index;
-		std::string identifier;
-		colour_t colour;
-		Region* region = nullptr;
-
-		Province(index_t new_index, std::string const& new_identifier, colour_t new_colour);
-	public:
-		static std::string colour_to_hex_string(colour_t colour);
-
-		index_t get_index() const;
-		std::string const& get_identifier() const;
-		colour_t get_colour() const;
-		Region* get_region() const;
-		std::string to_string() const;
-	};
-
-	/* REQUIREMENTS:
-	 * MAP-6, MAP-44, MAP-48
-	 */
-	struct Region {
-		friend struct Map;
-	private:
-		std::string identifier;
-		std::vector<Province*> provinces;
-
-		Region(std::string const& new_identifier);
-	public:
-		std::string const& get_identifier() const;
-		size_t get_province_count() const;
-		bool contains_province(Province const* province) const;
-		std::vector<Province*> const& get_provinces() const;
-	};
-
-	struct Mapmode {
+	struct Mapmode : HasIdentifier {
 		friend struct Map;
 
 		using colour_func_t = std::function<Province::colour_t (Map const&, Province const&)>;
 		using index_t = size_t;
 	private:
 		index_t index;
-		std::string identifier;
 		colour_func_t colour_func;
 
 		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
 	public:
 		index_t get_index() const;
-		std::string const& get_identifier() const;
 		colour_func_t get_colour_func() const;
 	};
 
@@ -80,7 +29,7 @@ namespace OpenVic2 {
 	private:
 		std::vector<Province> provinces;
 		std::vector<Region> regions;
-		bool provinces_locked = false, regions_locked = false;
+		bool provinces_locked = false, water_provinces_locked = false, regions_locked = false;
 
 		size_t width = 0, height = 0;
 		std::vector<Province::index_t> province_index_image;
@@ -88,16 +37,21 @@ namespace OpenVic2 {
 	public:
 		return_t add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message);
 		void lock_provinces();
+		return_t set_water_province(std::string const& identifier, std::string& error_message);
+		void lock_water_provinces();
 		return_t add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers, std::string& error_message);
 		void lock_regions();
-		size_t get_province_count() const;
 
+		size_t get_province_count() const;
 		Province* get_province_by_index(Province::index_t index);
 		Province const* get_province_by_index(Province::index_t index) const;
 		Province* get_province_by_identifier(std::string const& identifier);
 		Province const* get_province_by_identifier(std::string const& identifier) const;
 		Province* get_province_by_colour(Province::colour_t colour);
 		Province const* get_province_by_colour(Province::colour_t colour) const;
+
+		Region* get_region_by_identifier(std::string const& identifier);
+		Region const* get_region_by_identifier(std::string const& identifier) const;
 
 		return_t generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data, std::string& error_message);
 		size_t get_width() const;

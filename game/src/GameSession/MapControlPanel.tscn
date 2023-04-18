@@ -15,49 +15,89 @@ events = [SubResource("InputEventAction_5nck3")]
 editor_description = "SS-103"
 mouse_filter = 1
 script = ExtResource("1_ign64")
-_mapmodes_grid = NodePath("HBoxContainer/VBoxContainer/MapmodesGrid")
+_mapmodes_grid = NodePath("MarginContainer/HBoxContainer/VBoxContainer/MapmodesGrid")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-alignment = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
 
-[node name="MapmodesGrid" type="GridContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="MapmodesGrid" type="GridContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
 editor_description = "UI-750"
 layout_mode = 2
 columns = 11
 
-[node name="Minimap" type="PanelContainer" parent="HBoxContainer/VBoxContainer"]
+[node name="Minimap" type="PanelContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
 editor_description = "UI-549"
 layout_mode = 2
 mouse_filter = 1
 
-[node name="TextureRect" type="TextureRect" parent="HBoxContainer/VBoxContainer/Minimap"]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
 editor_description = "UI-751, FS-338"
 layout_mode = 2
 texture = ExtResource("2_r613r")
 
-[node name="ViewportQuad" type="Control" parent="HBoxContainer/VBoxContainer/Minimap"]
+[node name="ViewportQuad" type="Control" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("3_s4dml")
 
-[node name="Frame" type="NinePatchRect" parent="HBoxContainer/VBoxContainer/Minimap"]
+[node name="Frame" type="NinePatchRect" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
 layout_mode = 2
 texture = ExtResource("4_f1exl")
 
-[node name="AuxiliaryPanel" type="VBoxContainer" parent="HBoxContainer"]
+[node name="AuxiliaryPanel" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
 editor_description = "UI-761"
 layout_mode = 2
 
-[node name="GameSessionMenuButton" type="Button" parent="HBoxContainer/AuxiliaryPanel"]
+[node name="GameSessionMenuButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
+mouse_filter = 1
 shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
 
-[connection signal="map_view_camera_changed" from="." to="HBoxContainer/VBoxContainer/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
-[connection signal="minimap_clicked" from="HBoxContainer/VBoxContainer/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
-[connection signal="pressed" from="HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[node name="LedgerButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+editor_description = "UI-860"
+layout_mode = 2
+mouse_filter = 1
+text = "L"
+
+[node name="FindButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+editor_description = "UI-861"
+layout_mode = 2
+mouse_filter = 1
+text = "F"
+
+[node name="ZoomButtonsContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="ZoomInButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer"]
+editor_description = "UI-862"
+layout_mode = 2
+mouse_filter = 1
+text = "+"
+
+[node name="ZoomOutButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer"]
+editor_description = "UI-863"
+layout_mode = 2
+mouse_filter = 1
+text = "-"
+
+[connection signal="map_view_camera_changed" from="." to="MarginContainer/HBoxContainer/VBoxContainer/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
+[connection signal="minimap_clicked" from="MarginContainer/HBoxContainer/VBoxContainer/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]
