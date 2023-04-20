@@ -50,7 +50,6 @@ prov_russia_NAME,Russia
 ,, North America
 prov_north_america_NAME,North America
 prov_cuba_NAME,Cuba
-prov_nova_scotia_NAME,Nova Scotia
 prov_bermuda_NAME,Bermuda
 prov_jamaica_NAME,Jamaica
 prov_hispaniola_NAME,Hispaniola
@@ -75,6 +74,22 @@ prov_cayman_islands_NAME,Cayman Islands
 prov_angulia_NAME,Angulia
 prov_central_america_NAME,Central America
 prov_mexico_NAME,Mexico
+
+,, Canada
+prov_victoria_NAME,Victoria
+prov_calgary_NAME,Calgary
+prov_saskatoon_NAME,Saskatoon
+prov_winnipeg_NAME,Winnipeg
+prov_ottawa_NAME,Ottawa
+prov_quebec_NAME,Quebec
+prov_new_brunswick_NAME,New Brunswick
+prov_prince_edward_island_NAME,Prince Edward Island
+prov_nova_scotia_NAME,Nova Scotia
+prov_labrador_NAME,Labrador
+prov_newfoundland_NAME,Newfoundland
+prov_whitehorse_NAME,Whitehorse
+prov_yellowknife_NAME,Yellowknife
+prov_iqaluit_NAME,Iqaluit
 
 ,, South America
 prov_south_america_NAME,South America
