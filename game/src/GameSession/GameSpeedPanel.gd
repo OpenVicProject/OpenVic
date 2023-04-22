@@ -13,7 +13,7 @@ func _ready():
 	_update_buttons()
 
 func _update_buttons():
-	_play_pause_display_button.text = "⏸️" if GameSingleton.is_paused() else "▶"
+	_play_pause_display_button.text = "⏸  " if GameSingleton.is_paused() else "▶"
 
 	_increase_speed_button.disabled = not GameSingleton.can_increase_speed()
 	_decrease_speed_button.disabled = not GameSingleton.can_decrease_speed()

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/GameSession/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 
-[node name="ProvinceOverviewPanel" type="Panel" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_buildings_container")]
+[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_buildings_container")]
 editor_description = "UI-56"
 anchors_preset = 2
 anchor_top = 1.0
@@ -11,47 +11,48 @@ offset_top = -300.0
 offset_right = 200.0
 grow_vertical = 0
 script = ExtResource("1_3n8k5")
-_province_name_label = NodePath("VBoxContainer/ProvinceName")
-_region_name_label = NodePath("VBoxContainer/RegionName")
-_buildings_container = NodePath("VBoxContainer/BuildingsContainer")
+_province_name_label = NodePath("PanelList/TopBarList/NameList/ProvinceName")
+_region_name_label = NodePath("PanelList/TopBarList/NameList/RegionName")
+_buildings_container = NodePath("PanelList/InteractList/BuildingsContainer")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 5.0
-offset_right = -10.0
-offset_bottom = -5.0
+[node name="PanelList" type="VBoxContainer" parent="."]
+layout_mode = 2
 
-[node name="ProvinceName" type="Label" parent="VBoxContainer"]
+[node name="TopBarList" type="HBoxContainer" parent="PanelList"]
+layout_mode = 2
+
+[node name="NameList" type="VBoxContainer" parent="PanelList/TopBarList"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="ProvinceName" type="Label" parent="PanelList/TopBarList/NameList"]
 editor_description = "UI-57"
 layout_mode = 2
 text = "province_MISSING"
 vertical_alignment = 1
 
-[node name="RegionName" type="Label" parent="VBoxContainer"]
+[node name="RegionName" type="Label" parent="PanelList/TopBarList/NameList"]
 editor_description = "UI-58"
 layout_mode = 2
 text = "region_MISSING"
 vertical_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="CloseButton" type="Button" parent="PanelList/TopBarList"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 0
+text = "X"
+
+[node name="InteractList" type="VBoxContainer" parent="PanelList"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator" type="HSeparator" parent="PanelList/InteractList"]
 layout_mode = 2
 
-[node name="BuildingsContainer" type="GridContainer" parent="VBoxContainer"]
+[node name="BuildingsContainer" type="GridContainer" parent="PanelList/InteractList"]
 layout_mode = 2
 columns = 3
 
-[node name="CloseButton" type="Button" parent="."]
-custom_minimum_size = Vector2(30, 30)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.85
-anchor_right = 1.0
-anchor_bottom = 0.103333
-grow_horizontal = 0
-text = "X"
-
-[connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
+[connection signal="pressed" from="PanelList/TopBarList/CloseButton" to="." method="_on_close_button_pressed"]

@@ -63,6 +63,8 @@ GAMESESSIONMENU_QUIT_DIALOG_TEXT,Are you sure you want to quit and return to des
 
 DIALOG_OK,OK
 DIALOG_CANCEL,Cancel
+DIALOG_SAVE_AND_RESIGN,Save and Resign
+DIALOG_SAVE_AND_QUIT,Save and Quit
 
 ,, Province Overview Panel
 province_MISSING,No Province
