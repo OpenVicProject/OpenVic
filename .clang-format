@@ -1,0 +1,48 @@
+---
+UseCRLF: false
+Standard: c++20
+UseTab: Always
+TabWidth: 4
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+SpacesInContainerLiterals: false
+SpacesInConditionalStatement: false
+SpacesInCStyleCastParentheses: false
+SpacesInAngles: Never
+SpaceInEmptyParentheses: false
+SpaceInEmptyBlock: false
+SpaceBeforeSquareBrackets: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterFunctionDeclarationName: false
+  BeforeNonEmptyParentheses: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeInheritanceColon: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCaseColon: false
+SpaceBeforeAssignmentOperators: true
+SpaceAroundPointerQualifiers: Before
+SpaceAfterTemplateKeyword: false
+SpaceAfterLogicalNot: false
+RemoveBracesLLVM: false
+ReferenceAlignment: Left
+PointerAlignment: Left
+NamespaceIndentation: All
+LineEnding: LF
+Language: Cpp
+InsertNewlineAtEOF: true
+IndentExternBlock: Indent
+IndentCaseLabels: true
+FixNamespaceComments: false
+Cpp11BracedListStyle: false
+CompactNamespaces: false
+BreakBeforeBraces: Attach
+AlwaysBreakTemplateDeclarations: Yes
+AlignTrailingComments:
+  Kind: Always
+AlignEscapedNewlines: Left
+AlignArrayOfStructures: Right
