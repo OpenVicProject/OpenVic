@@ -1,115 +1,161 @@
-#include <sstream>
-#include "Date.hpp"
+#include "openvic2/Date.hpp"
+
+#include <cctype>
+#include <algorithm>
+
+#include "openvic2/Logger.hpp"
 
 using namespace OpenVic2;
 
-bool Timespan::operator<  (Timespan const& other) const { return days <  other.days; }
-bool Timespan::operator>  (Timespan const& other) const { return days >  other.days; }
-bool Timespan::operator<= (Timespan const& other) const { return days <= other.days; }
-bool Timespan::operator>= (Timespan const& other) const { return days >= other.days; }
-bool Timespan::operator== (Timespan const& other) const { return days == other.days; }
-bool Timespan::operator!= (Timespan const& other) const { return days != other.days; }
+Timespan::Timespan(day_t value) : days{value} {}
 
-Timespan Timespan::operator+ (Timespan const& other) const { return Timespan(days + other.days); }
-Timespan Timespan::operator- (Timespan const& other) const { return Timespan(days - other.days); }
-Timespan Timespan::operator* (int64_t const& factor) const { return Timespan(days * factor); }
-Timespan Timespan::operator/ (int64_t const& factor) const { return Timespan(days / factor); }
+bool Timespan::operator<(Timespan other) const { return days < other.days; };
+bool Timespan::operator>(Timespan other) const { return days > other.days; };
+bool Timespan::operator<=(Timespan other) const { return days <= other.days; };
+bool Timespan::operator>=(Timespan other) const { return days >= other.days; };
+bool Timespan::operator==(Timespan other) const { return days == other.days; };
+bool Timespan::operator!=(Timespan other) const { return days != other.days; };
 
-Timespan& Timespan::operator+= (Timespan const& other) {
+Timespan Timespan::operator+(Timespan other) const { return days + other.days; }
+
+Timespan Timespan::operator-(Timespan other) const { return days - other.days; }
+
+Timespan Timespan::operator*(day_t factor) const { return days * factor; }
+
+Timespan Timespan::operator/(day_t factor) const { return days / factor; }
+
+Timespan& Timespan::operator+=(Timespan other) {
 	days += other.days;
 	return *this;
 }
-Timespan& Timespan::operator-= (Timespan const& other) {
+
+Timespan& Timespan::operator-=(Timespan other) {
 	days -= other.days;
 	return *this;
+}
+
+Timespan& Timespan::operator++() {
+	days++;
+	return *this;
+}
+
+Timespan Timespan::operator++(int) {
+	Timespan old = *this;
+	++(*this);
+	return old;
+}
+
+Timespan::operator day_t() const {
+	return days;
+}
+
+Timespan::operator double() const {
+	return days;
 }
 
 Timespan::operator std::string() const {
 	return std::to_string(days);
 }
-std::ostream &operator<<(std::ostream &out, Timespan const& timespan) {
+
+std::ostream& OpenVic2::operator<<(std::ostream& out, Timespan timespan) {
 	return out << static_cast<std::string>(timespan);
 }
 
-Timespan fromYearZero(year_t year, month_t month, date_t day) {
-	int64_t daysElapsed = year * DAYS_IN_YEAR;
-	size_t daysSinceMonthStart = (day == 0) ? 0 : day - 1; //Underflow protection
-	for (size_t x = 0; x < month && x < MONTHS_IN_YEAR; x++) {
-		daysElapsed += DAYS_IN_MONTH[x];
+Timespan Date::_dateToTimespan(year_t year, month_t month, day_t day) {
+	month = std::clamp<month_t>(month, 1, MONTHS_IN_YEAR);
+	day = std::clamp<day_t>(day, 1, DAYS_IN_MONTH[month - 1]);
+	return year * DAYS_IN_YEAR + DAYS_UP_TO_MONTH[month - 1] + day - 1;
+}
+
+Date::Date(Timespan total_days) : timespan{ total_days } {
+	if (timespan < 0) {
+		Logger::error("Invalid timespan for date: ", timespan, " (cannot be negative)");
+		timespan = 0;
 	}
-	daysElapsed += daysSinceMonthStart;
-	return Timespan(daysElapsed);
 }
 
-//This function is not set up to handle dates before Year 0
-YearMonthDayBundle toGregorianDate(Timespan const& timespan) {
-	year_t year = 0;
-	month_t month = 0;
-	date_t day = 0;
+Date::Date(year_t year, month_t month, day_t day) : timespan{ _dateToTimespan(year, month, day) } {}
 
-	if (timespan >= 0) {
-		year = timespan.days / DAYS_IN_YEAR;
-		int64_t remainingDays = timespan.days % DAYS_IN_YEAR;
+Date::year_t Date::getYear() const {
+	return static_cast<Timespan::day_t>(timespan) / DAYS_IN_YEAR;
+}
 
-		for (size_t x = 0; x < MONTHS_IN_YEAR && remainingDays >= DAYS_IN_MONTH[x]; x++) {
-			remainingDays -= DAYS_IN_MONTH[x];
-			month++;
-		}
+Date::month_t Date::getMonth() const {
+	return ((static_cast<Timespan::day_t>(timespan) % DAYS_IN_YEAR) / 32) + 1;
+}
 
-		//Corrects month and day to be 1-indexed
-		month++;
-		day++;
-	}
-	return std::make_tuple(year, month, day);
+Date::day_t Date::getDay() const {
+	const Timespan::day_t days_in_year = static_cast<Timespan::day_t>(timespan) % DAYS_IN_YEAR;
+	return days_in_year - DAYS_UP_TO_MONTH[days_in_year / 32] + 1;
 }
 
 
-Date::Date(Timespan const& timespan) : ts(timespan) { updateDate(ts); }
+bool Date::operator<(Date other) const { return timespan < other.timespan; };
+bool Date::operator>(Date other) const { return timespan > other.timespan; };
+bool Date::operator<=(Date other) const { return timespan <= other.timespan; };
+bool Date::operator>=(Date other) const { return timespan >= other.timespan; };
+bool Date::operator==(Date other) const { return timespan == other.timespan; };
+bool Date::operator!=(Date other) const { return timespan != other.timespan; };
 
-Date::Date(year_t year, month_t month, date_t day) {
-	ts = fromYearZero(year, month, day);
-	updateDate(ts);
-}
+Date Date::operator+(Timespan other) const { return timespan + other; }
 
-void Date::updateDate(Timespan const& timespan) {
-	gregorianDate = toGregorianDate(timespan);
-}
+Timespan Date::operator-(Date other) const { return timespan - other.timespan; }
 
-size_t Date::getDay()   const { return std::get<2>(gregorianDate); }
-size_t Date::getMonth() const { return std::get<1>(gregorianDate); }
-size_t Date::getYear()  const { return std::get<0>(gregorianDate); }
-
-bool Date::operator<  (Date const& other) const { return ts <  other.ts; }
-bool Date::operator>  (Date const& other) const { return ts >  other.ts; }
-bool Date::operator<= (Date const& other) const { return ts <= other.ts; }
-bool Date::operator>= (Date const& other) const { return ts >= other.ts; }
-bool Date::operator== (Date const& other) const { return ts == other.ts; }
-bool Date::operator!= (Date const& other) const { return ts != other.ts; }
-
-Date Date::operator+ (Timespan timespan) const { return Date(ts + timespan); }
-Timespan Date::operator- (Date const& other) const { return ts - other.ts; }
-
-Date& Date::operator+= (Timespan const& timespan) {
-	ts += timespan;
-	updateDate(ts);
+Date& Date::operator+=(Timespan other) {
+	timespan += other;
 	return *this;
 }
-Date& Date::operator-= (Timespan const& timespan) {
-	ts -= timespan;
-	updateDate(ts);
+
+Date& Date::operator-=(Timespan other) {
+	timespan -= other;
 	return *this;
 }
-Date Date::operator++ (int) {
-	Date oldCopy = *this;
-	(*this) += 1;
-	return oldCopy;
+
+Date& Date::operator++() {
+	timespan++;
+	return *this;
+}
+
+Date Date::operator++(int) {
+	Date old = *this;
+	++(*this);
+	return old;
 }
 
 Date::operator std::string() const {
 	std::stringstream ss;
-	ss << getYear() << '.' << getMonth() << '.' << getDay();
+	ss << *this;
 	return ss.str();
 }
-std::ostream &operator<<(std::ostream &out, Date const& date) {
-	return out << static_cast<std::string>(date);
+
+std::ostream& OpenVic2::operator<<(std::ostream& out, Date date) {
+	return out << (int) date.getYear() << '.' << (int) date.getMonth() << '.' << (int) date.getDay();
 }
+
+// Parsed from string of the form YYYY.MM.DD
+Date Date::from_string(std::string const& date) {
+	year_t year = 0;
+	month_t month = 1;
+	day_t day = 1;
+
+	size_t first_pos = 0;
+	while (first_pos < date.length() && std::isdigit(date[first_pos++]));
+	year = atoi(date.substr(0, first_pos).c_str());
+	if (first_pos < date.length()) {
+		if (date[first_pos] == '.') {
+			size_t second_pos = first_pos + 1;
+			while (second_pos < date.length() && std::isdigit(date[second_pos++]));
+			month = atoi(date.substr(first_pos, second_pos - first_pos).c_str());
+			if (second_pos < date.length()) {
+				if (date[second_pos] == '.') {
+					size_t third_pos = second_pos + 1;
+					while (third_pos < date.length() && std::isdigit(date[third_pos++]));
+					day = atoi(date.substr(second_pos, third_pos - second_pos).c_str());
+					if (third_pos < date.length())
+						Logger::error("Unexpected string \"", date.substr(third_pos), "\" at the end of date ", date);
+				} else Logger::error("Unexpected character \"", date[second_pos], "\" in date ", date);
+			}
+		} else Logger::error("Unexpected character \"", date[first_pos], "\" in date ", date);
+	}
+	return _dateToTimespan(year, month, day);
+};

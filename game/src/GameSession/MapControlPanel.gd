@@ -27,8 +27,8 @@ func _add_mapmode_button(identifier : String) -> void:
 func _ready():
 	_mapmode_button_group = ButtonGroup.new()
 	_mapmode_button_group.pressed.connect(_mapmode_pressed)
-	for index in MapSingleton.get_mapmode_count():
-		_add_mapmode_button(MapSingleton.get_mapmode_identifier(index))
+	for index in GameSingleton.get_mapmode_count():
+		_add_mapmode_button(GameSingleton.get_mapmode_identifier(index))
 
 # REQUIREMENTS:
 # * UIFUN-10
@@ -39,7 +39,7 @@ func _on_game_session_menu_button_pressed() -> void:
 # * SS-76
 # * UIFUN-129, UIFUN-133
 func _mapmode_pressed(button : BaseButton) -> void:
-	MapSingleton.set_mapmode(button.tooltip_text)
+	GameSingleton.set_mapmode(button.tooltip_text)
 	mapmode_changed.emit()
 
 func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2) -> void:

@@ -1,69 +1,67 @@
-#include "GameAdvancementHook.hpp"
+#include "openvic2/GameAdvancementHook.hpp"
 
-namespace OpenVic2 {
-	GameAdvancementHook::GameAdvancementHook(AdvancementFunction function, bool startPaused, GameSpeed startingSpeed) {
-		triggerFunction = function;
-		lastPolledTime = std::chrono::high_resolution_clock::now();
-		isPaused = startPaused;
-		currentSpeed = startingSpeed;
-	}
+using namespace OpenVic2;
 
-	void GameAdvancementHook::increaseSimulationSpeed() {
-		switch (currentSpeed) {
-		case(GameSpeed::Speed1):
-			currentSpeed = GameSpeed::Speed2;
-			break;
-		case(GameSpeed::Speed2):
-			currentSpeed = GameSpeed::Speed3;
-			break;
-		case(GameSpeed::Speed3):
-			currentSpeed = GameSpeed::Speed4;
-			break;
-		case(GameSpeed::Speed4):
-			currentSpeed = GameSpeed::Speed5;
-			break;
+const std::vector<std::chrono::milliseconds> GameAdvancementHook::GAME_SPEEDS = {
+	std::chrono::milliseconds{ 4000 },
+	std::chrono::milliseconds{ 3000 },
+	std::chrono::milliseconds{ 2000 },
+	std::chrono::milliseconds{ 1000 },
+	std::chrono::milliseconds{ 100 },
+	std::chrono::milliseconds{ 1 } };
+
+GameAdvancementHook::GameAdvancementHook(AdvancementFunction tickFunction, RefreshFunction updateFunction, bool startPaused, speed_t startingSpeed)
+	: triggerFunction{ tickFunction }, refreshFunction{ updateFunction }, isPaused{ startPaused } {
+	lastPolledTime = std::chrono::high_resolution_clock::now();
+	setSimulationSpeed(startingSpeed);
+}
+
+void GameAdvancementHook::setSimulationSpeed(speed_t speed) {
+	if (speed < 0)
+		currentSpeed = 0;
+	else if (speed >= GAME_SPEEDS.size())
+		currentSpeed = GAME_SPEEDS.size() - 1;
+	else
+		currentSpeed = speed;
+}
+
+GameAdvancementHook::speed_t GameAdvancementHook::getSimulationSpeed() const {
+	return currentSpeed;
+}
+
+void GameAdvancementHook::increaseSimulationSpeed() {
+	setSimulationSpeed(currentSpeed + 1);
+}
+
+void GameAdvancementHook::decreaseSimulationSpeed() {
+	setSimulationSpeed(currentSpeed - 1);
+}
+
+bool GameAdvancementHook::canIncreaseSimulationSpeed() const {
+	return currentSpeed + 1 < GAME_SPEEDS.size();
+}
+
+bool GameAdvancementHook::canDecreaseSimulationSpeed() const {
+	return currentSpeed > 0;
+}
+
+GameAdvancementHook& GameAdvancementHook::operator++() {
+	increaseSimulationSpeed();
+	return *this;
+};
+
+GameAdvancementHook& GameAdvancementHook::operator--() {
+	decreaseSimulationSpeed();
+	return *this;
+};
+
+void GameAdvancementHook::conditionallyAdvanceGame() {
+	if (!isPaused) {
+		std::chrono::time_point<std::chrono::high_resolution_clock> currentTime = std::chrono::high_resolution_clock::now();
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastPolledTime) >= GAME_SPEEDS[currentSpeed]) {
+			lastPolledTime = currentTime;
+			if (triggerFunction) triggerFunction();
 		}
 	}
-
-	void GameAdvancementHook::decreaseSimulationSpeed() {
-		switch (currentSpeed) {
-		case(GameSpeed::Speed2):
-			currentSpeed = GameSpeed::Speed1;
-			break;
-		case(GameSpeed::Speed3):
-			currentSpeed = GameSpeed::Speed2;
-			break;
-		case(GameSpeed::Speed4):
-			currentSpeed = GameSpeed::Speed3;
-			break;
-		case(GameSpeed::Speed5):
-			currentSpeed = GameSpeed::Speed4;
-			break;
-		}
-	}
-
-	GameAdvancementHook GameAdvancementHook::operator++(int) {
-		GameAdvancementHook oldCopy = *this;
-		increaseSimulationSpeed();
-		return oldCopy;
-	};
-
-	GameAdvancementHook GameAdvancementHook::operator--(int) {
-		GameAdvancementHook oldCopy = *this;
-		decreaseSimulationSpeed();
-		return oldCopy;
-	};
-
-	void GameAdvancementHook::conditionallyAdvanceGame() {
-		if (!isPaused) {
-			std::chrono::time_point<std::chrono::high_resolution_clock> previousTime = lastPolledTime;
-			std::chrono::time_point<std::chrono::high_resolution_clock> currentTime = std::chrono::high_resolution_clock::now();
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - previousTime).count() >= static_cast<int64_t>(currentSpeed)) {
-				lastPolledTime = currentTime;
-				if (triggerFunction) {
-					triggerFunction();
-				}
-			}
-		}
-	}
+	if (refreshFunction) refreshFunction();
 }

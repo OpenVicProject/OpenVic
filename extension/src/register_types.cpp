@@ -4,7 +4,7 @@
 
 #include "Checksum.hpp"
 #include "LoadLocalisation.hpp"
-#include "MapSingleton.hpp"
+#include "GameSingleton.hpp"
 #include "MapMesh.hpp"
 
 using namespace godot;
@@ -12,7 +12,7 @@ using namespace OpenVic2;
 
 static Checksum* _checksum;
 static LoadLocalisation* _load_localisation;
-static MapSingleton* _map_singleton;
+static GameSingleton* _map_singleton;
 
 void initialize_openvic2_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -27,9 +27,9 @@ void initialize_openvic2_types(ModuleInitializationLevel p_level) {
 	_load_localisation = memnew(LoadLocalisation);
 	Engine::get_singleton()->register_singleton("LoadLocalisation", LoadLocalisation::get_singleton());
 
-	ClassDB::register_class<MapSingleton>();
-	_map_singleton = memnew(MapSingleton);
-	Engine::get_singleton()->register_singleton("MapSingleton", MapSingleton::get_singleton());
+	ClassDB::register_class<GameSingleton>();
+	_map_singleton = memnew(GameSingleton);
+	Engine::get_singleton()->register_singleton("GameSingleton", GameSingleton::get_singleton());
 
 	ClassDB::register_class<MapMesh>();
 }
@@ -45,7 +45,7 @@ void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
 	Engine::get_singleton()->unregister_singleton("LoadLocalisation");
 	memdelete(_load_localisation);
 
-	Engine::get_singleton()->unregister_singleton("MapSingleton");
+	Engine::get_singleton()->unregister_singleton("GameSingleton");
 	memdelete(_map_singleton);
 }
 

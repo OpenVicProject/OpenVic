@@ -1,14 +1,14 @@
-#include "Map.hpp"
+#include "openvic2/map/Map.hpp"
 
 #include <cassert>
 #include <unordered_set>
 
+#include "openvic2/Logger.hpp"
+
 using namespace OpenVic2;
 
-static const std::string SEPARATOR = "\n - ";
-
 Mapmode::Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func)
-	: HasIdentifier(new_identifier), index(new_index), colour_func(new_colour_func) {
+	: HasIdentifier{ new_identifier }, index{ new_index }, colour_func{ new_colour_func } {
 	assert(colour_func != nullptr);
 }
 
@@ -20,124 +20,120 @@ Mapmode::colour_func_t Mapmode::get_colour_func() const {
 	return colour_func;
 }
 
-return_t Map::add_province(std::string const& identifier, Province::colour_t colour, std::string& error_message) {
+return_t Map::add_province(std::string const& identifier, Province::colour_t colour) {
 	if (provinces_locked) {
-		error_message = "The map's province list has already been locked!";
+		Logger::error("The map's province list has already been locked!");
 		return FAILURE;
 	}
 	if (provinces.size() >= Province::MAX_INDEX) {
-		error_message = "The map's province list is full - there can be at most " + std::to_string(Province::MAX_INDEX) + " provinces";
+		Logger::error("The map's province list is full - there can be at most ", Province::MAX_INDEX, " provinces");
 		return FAILURE;
 	}
 	if (identifier.empty()) {
-		error_message = "Empty province identifier for colour " + Province::colour_to_hex_string(colour);
+		Logger::error("Empty province identifier for colour ", Province::colour_to_hex_string(colour));
 		return FAILURE;
 	}
 	if (colour == Province::NULL_COLOUR || colour > Province::MAX_COLOUR) {
-		error_message = "Invalid province colour: " + Province::colour_to_hex_string(colour);
+		Logger::error("Invalid province colour: ", Province::colour_to_hex_string(colour));
 		return FAILURE;
 	}
 	Province new_province{ static_cast<Province::index_t>(provinces.size() + 1), identifier, colour };
 	Province const* old_province = get_province_by_identifier(identifier);
 	if (old_province != nullptr) {
-		error_message = "Duplicate province identifiers: " + old_province->to_string() + " and " + new_province.to_string();
+		Logger::error("Duplicate province identifiers: ", old_province->to_string(), " and ", new_province.to_string());
 		return FAILURE;
 	}
 	old_province = get_province_by_colour(colour);
 	if (old_province != nullptr) {
-		error_message = "Duplicate province colours: " + old_province->to_string() + " and " + new_province.to_string();
+		Logger::error("Duplicate province colours: ", old_province->to_string(), " and ", new_province.to_string());
 		return FAILURE;
 	}
 	provinces.push_back(new_province);
-	error_message = "Added province: " + new_province.to_string();
 	return SUCCESS;
 }
 
 void Map::lock_provinces() {
 	provinces_locked = true;
+	Logger::info("Locked provinces after registering ", provinces.size());
 }
 
-return_t Map::set_water_province(std::string const& identifier, std::string& error_message) {
+return_t Map::set_water_province(std::string const& identifier) {
 	if (water_provinces_locked) {
-		error_message = "The map's water provinces have already been locked!";
+		Logger::error("The map's water provinces have already been locked!");
 		return FAILURE;
 	}
 	Province* province = get_province_by_identifier(identifier);
 	if (province == nullptr) {
-		error_message = "Unrecognised water province identifier: " + identifier;
+		Logger::error("Unrecognised water province identifier: ", identifier);
 		return FAILURE;
 	}
 	if (province->is_water()) {
-		error_message = "Province " + identifier + " is already a water province!";
+		Logger::error("Province ", identifier, " is already a water province!");
 		return FAILURE;
 	}
 	province->water = true;
-	error_message = "Set province " + identifier + " as a water province";
+	water_province_count++;
 	return SUCCESS;
 }
 
 void Map::lock_water_provinces() {
 	water_provinces_locked = true;
+	Logger::info("Locked water provinces after registering ", water_province_count);
 }
 
-return_t Map::add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers, std::string& error_message) {
+return_t Map::add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers) {
 	if (regions_locked) {
-		error_message = "The map's region list has already been locked!";
+		Logger::error("The map's region list has already been locked!");
 		return FAILURE;
 	}
 	if (identifier.empty()) {
-		error_message = "Empty region identifier!";
+		Logger::error("Empty region identifier!");
 		return FAILURE;
 	}
 	if (provinces.empty()) {
-		error_message = "Empty province list for region " + identifier;
+		Logger::error("Empty province list for region ", identifier);
 		return FAILURE;
 	}
+	return_t ret = SUCCESS;
 	Region new_region{ identifier };
-	error_message.clear();
 	for (std::string const& province_identifier : province_identifiers) {
 		Province* province = get_province_by_identifier(province_identifier);
 		if (province != nullptr) {
-			if (new_region.contains_province(province))
-				error_message += SEPARATOR + "Duplicate province identifier " + province_identifier;
-			else {
+			if (new_region.contains_province(province)) {
+				Logger::error("Duplicate province identifier ", province_identifier);
+				ret = FAILURE;
+			} else {
 				size_t other_region_index = reinterpret_cast<size_t>(province->get_region());
 				if (other_region_index != 0) {
 					other_region_index--;
-					error_message += SEPARATOR + "Province " + province_identifier + " is already part of ";
 					if (other_region_index < regions.size())
-						error_message += regions[other_region_index].get_identifier();
+						Logger::error("Province ", province_identifier, " is already part of ", regions[other_region_index].get_identifier());
 					else
-						error_message += "an unknown region with index " + std::to_string(other_region_index);
+						Logger::error("Province ", province_identifier, " is already part of an unknown region with index ", other_region_index);
+					ret = FAILURE;
 				} else new_region.provinces.insert(province);
 			}
-		} else error_message += SEPARATOR + "Invalid province identifier " + province_identifier;
+		} else {
+			Logger::error("Invalid province identifier ", province_identifier);
+			ret = FAILURE;
+		}
 	}
-	return_t ret = SUCCESS;
 	if (!new_region.get_province_count()) {
-		error_message += SEPARATOR + "No valid provinces in region's list";
-		ret = FAILURE;
+		Logger::error("No valid provinces in region's list");
+		return FAILURE;
 	}
 	Region const* old_region = get_region_by_identifier(identifier);
 	if (old_region != nullptr) {
-		error_message += SEPARATOR + "Duplicate region identifiers: " + old_region->get_identifier() + " and " + identifier;
-		ret = FAILURE;
+		Logger::error("Duplicate region identifiers: ", old_region->get_identifier(), " and ", identifier);
+		return FAILURE;
 	}
 
-	if (ret == SUCCESS) {
-		regions.push_back(new_region);
-		// Used to detect provinces listed in multiple regions, will
-		// be corrected once regions is stable (i.e. lock_regions).
-		Region* tmp_region_index = reinterpret_cast<Region*>(regions.size());
-		for (Province* province : new_region.get_provinces())
-			province->region = tmp_region_index;
-		if (!error_message.empty()) {
-			error_message += SEPARATOR;
-			ret = FAILURE;
-		}
-		error_message += "Added region: " + identifier;
-	}
-	if (ret != SUCCESS) error_message = "Error message for region: " + identifier + error_message;
+	regions.push_back(new_region);
+	// Used to detect provinces listed in multiple regions, will
+	// be corrected once regions is stable (i.e. lock_regions).
+	Region* tmp_region_index = reinterpret_cast<Region*>(regions.size());
+	for (Province* province : new_region.get_provinces())
+		province->region = tmp_region_index;
 	return ret;
 }
 
@@ -146,6 +142,7 @@ void Map::lock_regions() {
 	for (Region& region : regions)
 		for (Province* province : region.get_provinces())
 			province->region = &region;
+	Logger::info("Locked regions after registering ", regions.size());
 }
 
 size_t Map::get_province_count() const {
@@ -188,6 +185,11 @@ Province const* Map::get_province_by_colour(Province::colour_t colour) const {
 	return nullptr;
 }
 
+Province::index_t Map::get_province_index_at(size_t x, size_t y) const {
+	if (x < width && y < height) return province_index_image[x + y * width];
+	return Province::NULL_INDEX;
+}
+
 Region* Map::get_region_by_identifier(std::string const& identifier) {
 	if (!identifier.empty())
 		for (Region& region : regions)
@@ -206,21 +208,21 @@ static Province::colour_t colour_at(uint8_t const* colour_data, int32_t idx) {
 	return (colour_data[idx * 3] << 16) | (colour_data[idx * 3 + 1] << 8) | colour_data[idx * 3 + 2];
 }
 
-return_t Map::generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data, std::string& error_message) {
+return_t Map::generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data) {
 	if (!province_index_image.empty()) {
-		error_message = "Province index image has already been generated!";
+		Logger::error("Province index image has already been generated!");
 		return FAILURE;
 	}
 	if (!provinces_locked) {
-		error_message = "Province index image cannot be generated until after provinces are locked!";
+		Logger::error("Province index image cannot be generated until after provinces are locked!");
 		return FAILURE;
 	}
 	if (new_width < 1 || new_height < 1) {
-		error_message = "Invalid province image dimensions: " + std::to_string(new_width) + "x" + std::to_string(new_height);
+		Logger::error("Invalid province image dimensions: ", new_width, "x", new_height);
 		return FAILURE;
 	}
 	if (colour_data == nullptr) {
-		error_message = "Province colour data pointer is null!";
+		Logger::error("Province colour data pointer is null!");
 		return FAILURE;
 	}
 	width = new_width;
@@ -230,7 +232,6 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 	std::vector<bool> province_checklist(provinces.size());
 	return_t ret = SUCCESS;
 	std::unordered_set<Province::colour_t> unrecognised_colours;
-	error_message.clear();
 
 	for (int32_t y = 0; y < height; ++y) {
 		for (int32_t x = 0; x < width; ++x) {
@@ -259,7 +260,7 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 			}
 			if (unrecognised_colours.find(colour) == unrecognised_colours.end()) {
 				unrecognised_colours.insert(colour);
-				error_message += SEPARATOR + "Unrecognised province colour " + Province::colour_to_hex_string(colour) + " at (" + std::to_string(x) + ", " + std::to_string(y) + ")";
+				Logger::error("Unrecognised province colour ", Province::colour_to_hex_string(colour), " at (", x, ", ", y, ")");
 				ret = FAILURE;
 			}
 			province_index_image[idx] = Province::NULL_INDEX;
@@ -268,13 +269,10 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 
 	for (size_t idx = 0; idx < province_checklist.size(); ++idx) {
 		if (!province_checklist[idx]) {
-			error_message += SEPARATOR + "Province missing from shape image: " + provinces[idx].to_string();
+			Logger::error("Province missing from shape image: ", provinces[idx].to_string());
 			ret = FAILURE;
 		}
 	}
-
-	if (!error_message.empty()) error_message = "Error message for province index image generation:" + error_message + SEPARATOR;
-	error_message += "Generated province index image";
 	return ret;
 }
 
@@ -290,23 +288,22 @@ std::vector<Province::index_t> const& Map::get_province_index_image() const {
 	return province_index_image;
 }
 
-return_t Map::add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func, std::string& error_message) {
+return_t Map::add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func) {
 	if (identifier.empty()) {
-		error_message = "Empty mapmode identifier!";
+		Logger::error("Empty mapmode identifier!");
 		return FAILURE;
 	}
 	if (colour_func == nullptr) {
-		error_message = "Mapmode colour function is null for identifier: " + identifier;
+		Logger::error("Mapmode colour function is null for identifier: ", identifier);
 		return FAILURE;
 	}
 	Mapmode new_mapmode{ mapmodes.size(), identifier, colour_func };
 	Mapmode const* old_mapmode = get_mapmode_by_identifier(identifier);
 	if (old_mapmode != nullptr) {
-		error_message = "Duplicate mapmode identifiers: " + old_mapmode->get_identifier() + " and " + identifier;
+		Logger::error("Duplicate mapmode identifiers: ", old_mapmode->get_identifier(), " and ", identifier);
 		return FAILURE;
 	}
 	mapmodes.push_back(new_mapmode);
-	error_message = "Added mapmode: " + identifier;
 	return SUCCESS;
 }
 
@@ -325,13 +322,13 @@ Mapmode const* Map::get_mapmode_by_identifier(std::string const& identifier) con
 	return nullptr;
 }
 
-return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target, std::string& error_message) const {
+return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) const {
 	if (target == nullptr) {
-		error_message = "Mapmode colour target pointer is null!";
+		Logger::error("Mapmode colour target pointer is null!");
 		return FAILURE;
 	}
 	if (index >= mapmodes.size()) {
-		error_message = "Invalid mapmode index: " + std::to_string(index);
+		Logger::error("Invalid mapmode index: ", index);
 		return FAILURE;
 	}
 	Mapmode const& mapmode = mapmodes[index];
@@ -343,6 +340,20 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target, 
 		*target++ = colour & 0xFF;
 		*target++ = province.is_water() ? 0 : 255;
 	}
-	error_message = "Generated province colours for mapmode " + mapmode.get_identifier();
 	return SUCCESS;
+}
+
+void Map::generate_province_buildings(BuildingManager const& manager) {
+	for (Province& province : provinces)
+		manager.generate_province_buildings(province.buildings);
+}
+
+void Map::update_state(Date const& today) {
+	for (Province& province : provinces)
+		province.update_state(today);
+}
+
+void Map::tick(Date const& today) {
+	for (Province& province : provinces)
+		province.tick(today);
 }

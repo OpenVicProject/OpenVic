@@ -1,4 +1,4 @@
-#include "Region.hpp"
+#include "openvic2/map/Region.hpp"
 
 #include <cassert>
 #include <algorithm>
@@ -17,7 +17,7 @@ std::set<Province*> const& ProvinceSet::get_provinces() const {
 	return provinces;
 }
 
-Region::Region(std::string const& new_identifier) : HasIdentifier(new_identifier) {}
+Region::Region(std::string const& new_identifier) : HasIdentifier{ new_identifier } {}
 
 Province::colour_t Region::get_colour() const {
 	if (provinces.empty()) return 0xFF0000;

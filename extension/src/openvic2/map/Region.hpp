@@ -2,10 +2,9 @@
 
 #include <set>
 
-#include "Province.hpp"
+#include "openvic2/map/Province.hpp"
 
 namespace OpenVic2 {
-	struct Map;
 
 	struct ProvinceSet {
 	protected:
