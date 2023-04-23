@@ -48,6 +48,12 @@ CREDITS_BACK,Back to Main Menu
 ,, Game Lobby
 GAMELOBBY_START,Start Game
 GAMELOBBY_BACK,Back
+GAMELOBBY_SESSION_TAG,Session Tag
+GAMELOBBY_SELECT_ALL,All
+GAMELOBBY_DELETE_DIALOG_TITLE,Delete {file_name}
+GAMELOBBY_DELETE_DIALOG_TEXT,Are you sure you want to delete {file_name}?
+GAMELOBBY_SESSIONTAG_DIALOG_TITLE,Override {session_tag}
+GAMELOBBY_SESSIONTAG_DIALOG_TEXT,Are you want to override {session_tag} as a previous session?
 
 ,, Game Session Menu
 GAMESESSIONMENU_SAVE,Save Game
@@ -61,6 +67,21 @@ GAMESESSIONMENU_MAINMENU_DIALOG_TITLE,Resign Game
 GAMESESSIONMENU_MAINMENU_DIALOG_TEXT,Are you sure you want to resign and return to the main menu?
 GAMESESSIONMENU_QUIT_DIALOG_TITLE,Quit Game
 GAMESESSIONMENU_QUIT_DIALOG_TEXT,Are you sure you want to quit and return to desktop?
+
+,, Save Load Menu
+SAVELOADMENU_SAVE_TITLE,Save Menu
+SAVELOADMENU_LOAD_TITLE,Load Menu
+SAVELOADMENU_SAVE_BUTTON,Save
+SAVELOADMENU_LOAD_BUTTON,Load
+
+SAVELOADMENU_DELETE_DIALOG_TITLE,Delete {file_name}
+SAVELOADMENU_DELETE_DIALOG_TEXT,Are you sure you want to delete {file_name}?
+SAVELOADMENU_OVERWRITE_DIALOG_TITLE,Overwrite {file_name}
+SAVELOADMENU_OVERWRITE_DIALOG_TEXT,Are you want to overwrite {file_name}?
+
+SAVELOADMENU_SESSION,Session:
+
+SAVELOADMENU_TABSELECTIONTABBAR_ALL,All
 
 DIALOG_OK,OK
 DIALOG_CANCEL,Cancel

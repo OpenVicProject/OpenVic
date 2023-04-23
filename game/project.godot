@@ -27,6 +27,7 @@ SoundManager="*res://src/Autoload/SoundManager.gd"
 MusicConductor="*res://src/MusicConductor/MusicConductor.tscn"
 Keychain="*res://addons/keychain/Keychain.gd"
 GuiScale="*res://src/Autoload/GuiScale.gd"
+SaveManager="*res://src/Autoload/SaveManager.gd"
 
 [display]
 
@@ -112,6 +113,7 @@ limits/message_queue/max_size_kb=16384
 [openvic2]
 
 settings/settings_file_path="user://settings.cfg"
+data/saves_directory="user://saves"
 
 [rendering]
 

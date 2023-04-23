@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://k71f5gibwmtc"]
+
+[ext_resource type="Script" path="res://src/LobbyMenu/LobbyPanelButton.gd" id="1_327u2"]
+
+[node name="LobbyPanelButton" type="Container" node_paths=PackedStringArray("background_button", "name_label")]
+offset_right = 113.0
+offset_bottom = 48.0
+script = ExtResource("1_327u2")
+background_button = NodePath("BackgroundButton")
+name_label = NodePath("SaveList/NameLabel")
+
+[node name="BackgroundButton" type="Button" parent="."]
+layout_mode = 2
+theme_type_variation = &"ButtonContainer"
+
+[node name="SaveList" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+
+[node name="NameLabel" type="Label" parent="SaveList"]
+layout_mode = 2
+size_flags_vertical = 1
+text = "PLACEHOLDER"
+vertical_alignment = 1
+
+[connection signal="button_down" from="BackgroundButton" to="." method="_on_background_button_button_down"]
+[connection signal="button_up" from="BackgroundButton" to="." method="_on_background_button_button_up"]
+[connection signal="pressed" from="BackgroundButton" to="." method="_on_background_button_pressed"]
+[connection signal="toggled" from="BackgroundButton" to="." method="_on_background_button_toggled"]
