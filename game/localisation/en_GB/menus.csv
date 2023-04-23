@@ -63,3 +63,12 @@ GAMESESSIONMENU_QUIT_DIALOG_TEXT,Are you sure you want to quit and return to des
 
 DIALOG_OK,OK
 DIALOG_CANCEL,Cancel
+
+,, Province Overview Panel
+province_MISSING,No Province
+region_MISSING,No Region
+building_MISSING,No Building
+building_fort,Fort
+building_naval_base,Naval Base
+building_railroad,Railroad
+EXPAND_PROVINCE_BUILDING,Expand

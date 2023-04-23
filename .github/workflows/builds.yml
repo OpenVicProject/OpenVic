@@ -80,6 +80,10 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -qqq build-essential pkg-config
+          g++ --version
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+          sudo update-alternatives --set g++ /usr/bin/g++-12
+          g++ --version
 
       - name: Setup MinGW for Windows/MinGW build
         if: ${{ matrix.platform == 'windows' }}

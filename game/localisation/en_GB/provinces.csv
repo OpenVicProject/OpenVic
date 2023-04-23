@@ -1,51 +1,51 @@
 
 ,, Europe
-prov_britain_NAME,Britain
-prov_ireland_NAME,Ireland
-prov_iceland_NAME,Iceland
-prov_corsica_NAME,Corsica
-prov_sardinia_NAME,Sardinia
-prov_sicily_NAME,Sicily
-prov_malta_NAME,Malta
-prov_cyprus_NAME,Cyprus
-prov_greenland_NAME,Greenland
-prov_baleares_NAME,Balearic Islands
-prov_gotland_NAME,Gotland
-prov_crete_NAME,Crete
-prov_jan_mayen_NAME,Jan Mayen
-prov_faroes_NAME,Faroe Islands
-prov_mann_NAME,Isle of Mann
-prov_shetlands_NAME,Shetlands
-prov_orkney_NAME,Orkney
-prov_channel_islands_NAME,Channel Islands
-prov_madiera_NAME,Madiera
-prov_canarias_NAME,Canarias
-prov_sjaeland_NAME,Sjaeland
-prov_bornholm_NAME,Bornholm
-prov_bear_island_NAME,Bear Island
-prov_pantelleria_NAME,Pantelleria
-prov_iberia_NAME,Iberia
-prov_scandinavia_NAME,Scandinavia
-prov_jutland_NAME,Jutland
-prov_fyn_NAME,Fyn
-prov_hiiumaa_NAME,Hiiumaa
-prov_saaremaa_NAME,Saaremaa
-prov_italy_NAME,Italy
-prov_elba_NAME,Elba
-prov_france_NAME,France
-prov_netherlands_NAME,Netherlands
-prov_belgium_NAME,Belgium
-prov_luxembourg_NAME,Luxembourg
-prov_switzerland_NAME,Switzerland
-prov_balkans_NAME,Balkans
-prov_crimea_NAME,Crimea
-prov_germany_NAME,Germany
-prov_poland_NAME,Poland
-prov_baltics_NAME,Baltics
-prov_finland_NAME,Finland
-prov_aland_NAME,Åland
-prov_ukraine_NAME,Ukraine
-prov_russia_NAME,Russia
+prov_britain,Britain
+prov_ireland,Ireland
+prov_iceland,Iceland
+prov_corsica,Corsica
+prov_sardinia,Sardinia
+prov_sicily,Sicily
+prov_malta,Malta
+prov_cyprus,Cyprus
+prov_greenland,Greenland
+prov_baleares,Balearic Islands
+prov_gotland,Gotland
+prov_crete,Crete
+prov_jan_mayen,Jan Mayen
+prov_faroes,Faroe Islands
+prov_mann,Isle of Mann
+prov_shetlands,Shetlands
+prov_orkney,Orkney
+prov_channel_islands,Channel Islands
+prov_madiera,Madiera
+prov_canarias,Canarias
+prov_sjaeland,Sjaeland
+prov_bornholm,Bornholm
+prov_bear_island,Bear Island
+prov_pantelleria,Pantelleria
+prov_iberia,Iberia
+prov_scandinavia,Scandinavia
+prov_jutland,Jutland
+prov_fyn,Fyn
+prov_hiiumaa,Hiiumaa
+prov_saaremaa,Saaremaa
+prov_italy,Italy
+prov_elba,Elba
+prov_france,France
+prov_netherlands,Netherlands
+prov_belgium,Belgium
+prov_luxembourg,Luxembourg
+prov_switzerland,Switzerland
+prov_balkans,Balkans
+prov_crimea,Crimea
+prov_germany,Germany
+prov_poland,Poland
+prov_baltics,Baltics
+prov_finland,Finland
+prov_aland,Åland
+prov_ukraine,Ukraine
+prov_russia,Russia
 
 ,, North America
 prov_north_america_NAME,North America
@@ -92,154 +92,154 @@ prov_yellowknife_NAME,Yellowknife
 prov_iqaluit_NAME,Iqaluit
 
 ,, South America
-prov_south_america_NAME,South America
-prov_galapagos_NAME,Galapagos
-prov_falklands_NAME,Falklands
-prov_south_georgia_NAME,South Georgia
+prov_south_america,South America
+prov_galapagos,Galapagos
+prov_falklands,Falklands
+prov_south_georgia,South Georgia
 
 ,, Africa
-prov_africa_NAME,Africa
-prov_madagascar_NAME,Madagascar
-prov_socotra_NAME,Socotra
-prov_mauritius_NAME,Mauritius
-prov_reunion_NAME,Réunion
-prov_comoros_NAME,Comoros
-prov_sao_tome_NAME,Sao Tome
-prov_fernando_po_NAME,Fernando Po
-prov_cape_verde_NAME,Cape Verde
-prov_ascension_NAME,Ascension
-prov_st_helena_NAME,St Helena
-prov_tristan_da_cunha_NAME,Tristan da Cunha
-prov_seychelles_NAME,Seychelles
-prov_prince_edward_islands_NAME,Prince Edward Islands
-prov_kerguelen_islands_NAME,Kerguelen Islands
-prov_heard_island_NAME,Heard Island
-prov_egypt_NAME,Egypt
-prov_morocco_NAME,Morocco
+prov_africa,Africa
+prov_madagascar,Madagascar
+prov_socotra,Socotra
+prov_mauritius,Mauritius
+prov_reunion,Réunion
+prov_comoros,Comoros
+prov_sao_tome,Sao Tome
+prov_fernando_po,Fernando Po
+prov_cape_verde,Cape Verde
+prov_ascension,Ascension
+prov_st_helena,St Helena
+prov_tristan_da_cunha,Tristan da Cunha
+prov_seychelles,Seychelles
+prov_prince_edward_islands,Prince Edward Islands
+prov_kerguelen_islands,Kerguelen Islands
+prov_heard_island,Heard Island
+prov_egypt,Egypt
+prov_morocco,Morocco
 
 ,, Asia
-prov_middle_east_NAME,Middle East
-prov_ceylon_NAME,Ceylon
-prov_formosa_NAME,Formosa
-prov_sakhalin_NAME,Sakhalin
-prov_maldives_NAME,Maldives
-prov_hainan_NAME,Hainan
-prov_hokkaido_NAME,Hokkaido
-prov_diego_garcia_NAME,Diego Garcia
-prov_philippines_NAME,Philippines
-prov_india_NAME,India
-prov_andamans_NAME,Andaman Islands
-prov_nicobar_islands_NAME,Nicobar Islands
-prov_indochina_NAME,Indochina
-prov_korea_NAME,Korea
-prov_okinawa_NAME,Okinawa
-prov_yaeyama_NAME,Yaeyama
-prov_kyushu_NAME,Kyushu
-prov_shikoku_NAME,Shikoku
-prov_japan_NAME,Japan
-prov_kurils_NAME,Kuril Islands
-prov_manchuria_NAME,Manchuria
-prov_china_NAME,China
-prov_central_asia_NAME,Central Asia
-prov_siberia_NAME,Siberia
-prov_iran_NAME,Iran
-prov_anatolia_NAME,Anatolia
+prov_middle_east,Middle East
+prov_ceylon,Ceylon
+prov_formosa,Formosa
+prov_sakhalin,Sakhalin
+prov_maldives,Maldives
+prov_hainan,Hainan
+prov_hokkaido,Hokkaido
+prov_diego_garcia,Diego Garcia
+prov_philippines,Philippines
+prov_india,India
+prov_andamans,Andaman Islands
+prov_nicobar_islands,Nicobar Islands
+prov_indochina,Indochina
+prov_korea,Korea
+prov_okinawa,Okinawa
+prov_yaeyama,Yaeyama
+prov_kyushu,Kyushu
+prov_shikoku,Shikoku
+prov_japan,Japan
+prov_kurils,Kuril Islands
+prov_manchuria,Manchuria
+prov_china,China
+prov_central_asia,Central Asia
+prov_siberia,Siberia
+prov_iran,Iran
+prov_anatolia,Anatolia
 
 ,, Oceania
-prov_oceania_NAME,Oceania
-prov_indonesia_NAME,Indonesia
-prov_north_island_NAME,North Island
-prov_south_island_NAME,South Island
-prov_tasmania_NAME,Tasmania
-prov_australia_NAME,Australia
-prov_hawaii_NAME,Hawaii
+prov_oceania,Oceania
+prov_indonesia,Indonesia
+prov_north_island,North Island
+prov_south_island,South Island
+prov_tasmania,Tasmania
+prov_australia,Australia
+prov_hawaii,Hawaii
 
 ,, Lakes
-prov_aral_sea_NAME,Aral Sea
-prov_caspian_sea_NAME,Caspian Sea
-prov_lake_ladoga_NAME,Lake Ladoga
-prov_lake_ontario_NAME,Lake Ontario
-prov_lake_erie_NAME,Lake Erie
-prov_lake_huron_NAME,Lake Huron
-prov_lake_michigan_NAME,Lake Michigan
-prov_lake_superior_NAME,Lake Superior
-prov_lake_baikal_NAME,Lake Baikal
-prov_lake_woods_NAME,Lake of the Woods
-prov_lake_manitoba_NAME,Lake Manitoba
-prov_reindeer_lake_NAME,Reindeer Lake
-prov_lake_ronge_NAME,Lac la Ronge
-prov_lake_athabasca_NAME,Lake Athabasca
-prov_great_slave_lake_NAME,Great Slave Lake
-prov_great_bear_lake_NAME,Great Bear Lake
+prov_aral_sea,Aral Sea
+prov_caspian_sea,Caspian Sea
+prov_lake_ladoga,Lake Ladoga
+prov_lake_ontario,Lake Ontario
+prov_lake_erie,Lake Erie
+prov_lake_huron,Lake Huron
+prov_lake_michigan,Lake Michigan
+prov_lake_superior,Lake Superior
+prov_lake_baikal,Lake Baikal
+prov_lake_woods,Lake of the Woods
+prov_lake_manitoba,Lake Manitoba
+prov_reindeer_lake,Reindeer Lake
+prov_lake_ronge,Lac la Ronge
+prov_lake_athabasca,Lake Athabasca
+prov_great_slave_lake,Great Slave Lake
+prov_great_bear_lake,Great Bear Lake
 
 ,, Seas and Oceans
-prov_azov_sea_NAME,Sea of Azov
-prov_black_sea_NAME,Black Sea
-prov_marmara_sea_NAME,Sea of Marmara
-prov_agean_sea_NAME,Agean Sea
-prov_ionian_sea_NAME,Ionian Sea
-prov_adriatic_sea_NAME,Adriatic Sea
-prov_tyrrhenian_sea_NAME,Tyrrhenian Sea
-prov_east_mediterranean_NAME,East Mediterranean Sea
-prov_central_mediterranean_NAME,Central Mediterranean Sea
-prov_west_mediterranean_NAME,West Mediterranean Sea
-prov_ligurian_sea_NAME,Ligurian Sea
-prov_balearic_sea_NAME,Balearic Sea
-prov_alboran_sea_NAME,Alboran Sea
-prov_gulf_bothnia_NAME,Gulf of Bothnia
-prov_gulf_finland_NAME,Gulf of Finland
-prov_gulf_riga_NAME,Gulf of Riga
-prov_baltic_sea_NAME,Baltic Sea
-prov_danish_straits_NAME,Danish Straits
-prov_english_channel_NAME,English Channel
-prov_irish_sea_NAME,Irish Sea
-prov_biscay_bay_NAME,Bay of Biscay
-prov_north_sea_NAME,North Sea
-prov_red_sea_NAME,Red Sea
-prov_arabian_sea_NAME,Arabian Sea
-prov_persian_gulf_NAME,Persian Gulf
-prov_andaman_sea_NAME,Andaman Sea
-prov_bay_bengal_NAME,Bay of Bengal
-prov_okhotsk_sea_NAME,Sea of Okhotsk
-prov_japan_sea_NAME,Sea of Japan
-prov_east_china_sea_NAME,East China Sea
-prov_south_china_sea_NAME,South China Sea
-prov_philippine_sea_NAME,Philippine Sea
-prov_celebes_sea_NAME,Celebes Sea
-prov_java_sea_NAME,Java Sea
-prov_banda_sea_NAME,Banda Sea
-prov_arafura_sea_NAME,Arafura Sea
-prov_gulf_mexico_NAME,Gulf of Mexico
-prov_caribbean_sea_NAME,Caribbean Sea
-prov_mozambique_channel_NAME,Mozambique Channel
-prov_zanj_sea_NAME,Sea of Zanj
-prov_kara_sea_NAME,Kara Sea
-prov_barents_sea_NAME,Barents Sea
-prov_norwegian_sea_NAME,Norwegian Sea
-prov_greenland_sea_NAME,Greenland Sea
-prov_labrador_sea_NAME,Labrador Sea
-prov_hudson_bay_NAME,Hudson Bay
-prov_gulf_st_lawrence_NAME,Gulf of St Lawrence
-prov_gulf_alaska_NAME,Gulf of Alaska
-prov_gulf_california_NAME,Gulf of California
-prov_east_siberian_sea_NAME,East Siberian Sea
-prov_sargasso_sea_NAME,Sargasso Sea
-prov_gulf_guinea_NAME,Gulf of Guinea
-prov_celtic_sea_NAME,Celtic Sea
-prov_argentine_sea_NAME,Argentine Sea
-prov_chilean_sea_NAME,Chilean Sea
-prov_north_atlantic_NAME,North Atlantic Ocean
-prov_central_atlantic_NAME,Central Atlantic Ocean
-prov_south_atlantic_NAME,South Atlantic Ocean
-prov_indian_ocean_NAME,Indian Ocean
-prov_great_australian_bight_NAME,Great Australian Bight
-prov_tasman_sea_NAME,Tasman Sea
-prov_coral_sea_NAME,Coral Sea
-prov_melanesia_NAME,Melanesia
-prov_micronesia_NAME,Micronesia
-prov_polynesia_NAME,Polynesia
-prov_north_pacific_NAME,North Pacific Ocean
-prov_south_pacific_NAME,South Pacific Ocean
-prov_bering_sea_NAME,Bering Sea
-prov_chukchi_sea_NAME,Chukchi Sea
-prov_beaufort_sea_NAME,Beaufort Sea
+prov_azov_sea,Sea of Azov
+prov_black_sea,Black Sea
+prov_marmara_sea,Sea of Marmara
+prov_agean_sea,Agean Sea
+prov_ionian_sea,Ionian Sea
+prov_adriatic_sea,Adriatic Sea
+prov_tyrrhenian_sea,Tyrrhenian Sea
+prov_east_mediterranean,East Mediterranean Sea
+prov_central_mediterranean,Central Mediterranean Sea
+prov_west_mediterranean,West Mediterranean Sea
+prov_ligurian_sea,Ligurian Sea
+prov_balearic_sea,Balearic Sea
+prov_alboran_sea,Alboran Sea
+prov_gulf_bothnia,Gulf of Bothnia
+prov_gulf_finland,Gulf of Finland
+prov_gulf_riga,Gulf of Riga
+prov_baltic_sea,Baltic Sea
+prov_danish_straits,Danish Straits
+prov_english_channel,English Channel
+prov_irish_sea,Irish Sea
+prov_biscay_bay,Bay of Biscay
+prov_north_sea,North Sea
+prov_red_sea,Red Sea
+prov_arabian_sea,Arabian Sea
+prov_persian_gulf,Persian Gulf
+prov_andaman_sea,Andaman Sea
+prov_bay_bengal,Bay of Bengal
+prov_okhotsk_sea,Sea of Okhotsk
+prov_japan_sea,Sea of Japan
+prov_east_china_sea,East China Sea
+prov_south_china_sea,South China Sea
+prov_philippine_sea,Philippine Sea
+prov_celebes_sea,Celebes Sea
+prov_java_sea,Java Sea
+prov_banda_sea,Banda Sea
+prov_arafura_sea,Arafura Sea
+prov_gulf_mexico,Gulf of Mexico
+prov_caribbean_sea,Caribbean Sea
+prov_mozambique_channel,Mozambique Channel
+prov_zanj_sea,Sea of Zanj
+prov_kara_sea,Kara Sea
+prov_barents_sea,Barents Sea
+prov_norwegian_sea,Norwegian Sea
+prov_greenland_sea,Greenland Sea
+prov_labrador_sea,Labrador Sea
+prov_hudson_bay,Hudson Bay
+prov_gulf_st_lawrence,Gulf of St Lawrence
+prov_gulf_alaska,Gulf of Alaska
+prov_gulf_california,Gulf of California
+prov_east_siberian_sea,East Siberian Sea
+prov_sargasso_sea,Sargasso Sea
+prov_gulf_guinea,Gulf of Guinea
+prov_celtic_sea,Celtic Sea
+prov_argentine_sea,Argentine Sea
+prov_chilean_sea,Chilean Sea
+prov_north_atlantic,North Atlantic Ocean
+prov_central_atlantic,Central Atlantic Ocean
+prov_south_atlantic,South Atlantic Ocean
+prov_indian_ocean,Indian Ocean
+prov_great_australian_bight,Great Australian Bight
+prov_tasman_sea,Tasman Sea
+prov_coral_sea,Coral Sea
+prov_melanesia,Melanesia
+prov_micronesia,Micronesia
+prov_polynesia,Polynesia
+prov_north_pacific,North Pacific Ocean
+prov_south_pacific,South Pacific Ocean
+prov_bering_sea,Bering Sea
+prov_chukchi_sea,Chukchi Sea
+prov_beaufort_sea,Beaufort Sea

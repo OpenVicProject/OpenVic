@@ -1,6 +1,6 @@
 extends Node3D
 
-signal province_selected(identifier : String)
+signal province_selected(index : int)
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 
 const _action_north : StringName = &"map_north"
@@ -21,7 +21,7 @@ const _shader_param_terrain_tile_factor : StringName = &"terrain_tile_factor"
 @export var _camera : Camera3D
 
 @export var _cardinal_move_speed : float = 1.0
-@export var _edge_move_threshold: float = 0.02
+@export var _edge_move_threshold: float = 0.01
 @export var _edge_move_speed: float = 2.5
 var _drag_anchor : Vector2
 var _drag_active : bool = false
@@ -53,7 +53,7 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 
 # ??? Strange Godot/GDExtension Bug ???
 # Upon first opening a clone of this repo with the Godot Editor,
-# if MapSingleton.get_province_index_image is called before MapMesh
+# if GameSingleton.get_province_index_image is called before MapMesh
 # is referenced in the script below, then the editor will crash due
 # to a failed HashMap lookup. I'm not sure if this is a bug in the
 # editor, GDExtension, my own extension, or a combination of them.
@@ -78,7 +78,7 @@ func _ready():
 	_map_shader_material = map_material
 
 	# Province index texture
-	_map_province_index_image = MapSingleton.get_province_index_image()
+	_map_province_index_image = GameSingleton.get_province_index_image()
 	if _map_province_index_image == null:
 		push_error("Failed to get province index image!")
 		return
@@ -86,7 +86,7 @@ func _ready():
 	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
 
 	# Province colour texture
-	_map_province_colour_image = MapSingleton.get_province_colour_image()
+	_map_province_colour_image = GameSingleton.get_province_colour_image()
 	if _map_province_colour_image == null:
 		push_error("Failed to get province colour image!")
 		return
@@ -99,7 +99,7 @@ func _ready():
 	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	_map_image_size = Vector2(Vector2i(MapSingleton.get_width(), MapSingleton.get_height()))
+	_map_image_size = Vector2(Vector2i(GameSingleton.get_width(), GameSingleton.get_height()))
 	_map_mesh.aspect_ratio = _map_image_size.x / _map_image_size.y
 	_map_shader_material.set_shader_parameter(_shader_param_terrain_tile_factor, _map_image_size.y / 64.0)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
@@ -120,7 +120,7 @@ func _notification(what : int):
 			_on_mouse_exited_viewport()
 
 func _update_colour_texture() -> void:
-	MapSingleton.update_colour_image()
+	GameSingleton.update_colour_image()
 	_map_province_colour_texture.update(_map_province_colour_image)
 
 func _world_to_map_coords(pos : Vector3) -> Vector2:
@@ -151,10 +151,9 @@ func _unhandled_input(event : InputEvent):
 	if _mouse_over_viewport and event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-			var selected_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+			var selected_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 			_map_shader_material.set_shader_parameter(_shader_param_selected_index, selected_index)
-			var province_identifier := MapSingleton.get_province_identifier_from_uv_coords(_mouse_pos_map)
-			province_selected.emit(province_identifier)
+			province_selected.emit(selected_index)
 		else:
 			print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):
@@ -248,7 +247,7 @@ func _update_minimap_viewport() -> void:
 
 func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
-	var hover_index := MapSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+	var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 	if _mouse_over_viewport:
 		_map_shader_material.set_shader_parameter(_shader_param_hover_index, hover_index)
 

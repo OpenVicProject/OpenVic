@@ -7,27 +7,32 @@ extends PanelContainer
 @export var _decrease_speed_button : Button
 @export var _increase_speed_button : Button
 
-var is_game_paused : bool = true
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	_update_playpause_button()
+	GameSingleton.state_updated.connect(_update_buttons)
+	_update_buttons()
 
-func _update_playpause_button():
-	_play_pause_display_button.text = "⏸️" if is_game_paused else "▶"
-	print("Game is paused" if is_game_paused else "Game is advancing")
+func _update_buttons():
+	_play_pause_display_button.text = "⏸️" if GameSingleton.is_paused() else "▶"
+
+	_increase_speed_button.disabled = not GameSingleton.can_increase_speed()
+	_decrease_speed_button.disabled = not GameSingleton.can_decrease_speed()
+
+	_longform_date_button.text = GameSingleton.get_longform_date()
 
 
 func _on_decrease_speed_button_pressed():
-	print("Decrease speed")
+	GameSingleton.decrease_speed()
+	_update_buttons()
 
 func _on_increase_speed_button_pressed():
-	print("Increase speed")
+	GameSingleton.increase_speed()
+	_update_buttons()
 
 func _on_play_pause_display_button_pressed():
-	is_game_paused = !is_game_paused
-	_update_playpause_button()
+	GameSingleton.toggle_paused()
+	_update_buttons()
 
 func _on_longform_date_label_pressed():
-	is_game_paused = !is_game_paused
-	_update_playpause_button()
+	GameSingleton.toggle_paused()
+	_update_buttons()
