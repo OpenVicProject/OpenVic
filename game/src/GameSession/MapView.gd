@@ -7,8 +7,8 @@ const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
 const _action_south : StringName = &"map_south"
 const _action_west : StringName = &"map_west"
-const _action_zoomin : StringName = &"map_zoomin"
-const _action_zoomout : StringName = &"map_zoomout"
+const _action_zoom_in : StringName = &"map_zoom_in"
+const _action_zoom_out : StringName = &"map_zoom_out"
 const _action_drag : StringName = &"map_drag"
 const _action_click : StringName = &"map_click"
 
@@ -165,9 +165,9 @@ func _unhandled_input(event : InputEvent):
 		if not _drag_active:
 			push_warning("Drag being deactivated while already not active!")
 		_drag_active = false
-	elif event.is_action_pressed(_action_zoomin, true):
+	elif event.is_action_pressed(_action_zoom_in, true):
 		zoom_in()
-	elif event.is_action_pressed(_action_zoomout, true):
+	elif event.is_action_pressed(_action_zoom_out, true):
 		zoom_out()
 
 func _physics_process(delta : float):

@@ -1,4 +1,4 @@
-extends Panel
+extends PanelContainer
 
 @export var _province_name_label : Label
 @export var _region_name_label : Label

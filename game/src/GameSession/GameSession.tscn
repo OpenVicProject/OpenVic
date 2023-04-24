@@ -21,15 +21,6 @@ mouse_filter = 2
 script = ExtResource("1_eklvp")
 _game_session_menu = NodePath("GameSessionMenu")
 
-[node name="MusicPlayer" parent="." instance=ExtResource("2_kt6aa")]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -150.0
-offset_bottom = 110.0
-grow_horizontal = 0
-
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 
 [node name="GameSessionMenu" parent="." instance=ExtResource("3_bvmqh")]
@@ -56,12 +47,23 @@ grow_vertical = 0
 [node name="ProvinceOverviewPanel" parent="." instance=ExtResource("5_osjnn")]
 layout_mode = 1
 
+[node name="GameSpeedPanel" parent="." instance=ExtResource("7_myy4q")]
+layout_mode = 0
+offset_right = 302.0
+offset_bottom = 31.0
+
 [node name="OptionsMenu" parent="." instance=ExtResource("6_p5mnx")]
 visible = false
 layout_mode = 1
 
-[node name="GameSpeedPanel" parent="." instance=ExtResource("7_myy4q")]
-layout_mode = 0
+[node name="MusicPlayer" parent="." instance=ExtResource("2_kt6aa")]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_right = 0.0
+grow_horizontal = 0
 
 [connection signal="map_view_camera_changed" from="MapView" to="MapControlPanel" method="_on_map_view_camera_changed"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]

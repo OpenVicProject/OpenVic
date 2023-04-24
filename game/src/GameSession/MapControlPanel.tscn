@@ -15,89 +15,96 @@ events = [SubResource("InputEventAction_5nck3")]
 editor_description = "SS-103"
 mouse_filter = 1
 script = ExtResource("1_ign64")
-_mapmodes_grid = NodePath("MarginContainer/HBoxContainer/VBoxContainer/MapmodesGrid")
+_mapmodes_grid = NodePath("MapPanelMargin/MapPanelList/MapDisplayList/MapmodesGrid")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MapPanelMargin" type="MarginContainer" parent="."]
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="MapPanelList" type="HBoxContainer" parent="MapPanelMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="MapDisplayList" type="VBoxContainer" parent="MapPanelMargin/MapPanelList"]
 layout_mode = 2
 alignment = 1
 
-[node name="MapmodesGrid" type="GridContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="MapmodesGrid" type="GridContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
 editor_description = "UI-750"
 layout_mode = 2
 columns = 11
 
-[node name="Minimap" type="PanelContainer" parent="MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="Minimap" type="PanelContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
 editor_description = "UI-549"
 layout_mode = 2
 mouse_filter = 1
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
+[node name="MinimapTexture" type="TextureRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
 editor_description = "UI-751, FS-338"
 layout_mode = 2
 texture = ExtResource("2_r613r")
 
-[node name="ViewportQuad" type="Control" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
+[node name="ViewportQuad" type="Control" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("3_s4dml")
 
-[node name="Frame" type="NinePatchRect" parent="MarginContainer/HBoxContainer/VBoxContainer/Minimap"]
+[node name="Frame" type="NinePatchRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
 layout_mode = 2
 texture = ExtResource("4_f1exl")
+draw_center = false
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
-[node name="AuxiliaryPanel" type="VBoxContainer" parent="MarginContainer/HBoxContainer"]
+[node name="AuxiliaryPanel" type="VBoxContainer" parent="MapPanelMargin/MapPanelList"]
 editor_description = "UI-761"
 layout_mode = 2
 
-[node name="GameSessionMenuButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+[node name="GameSessionMenuButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
 mouse_filter = 1
 shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
 
-[node name="LedgerButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+[node name="LedgerButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-860"
 layout_mode = 2
 mouse_filter = 1
 text = "L"
 
-[node name="FindButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+[node name="FindButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-861"
 layout_mode = 2
 mouse_filter = 1
 text = "F"
 
-[node name="ZoomButtonsContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/AuxiliaryPanel"]
+[node name="ZoomButtonsContainer" type="HBoxContainer" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 layout_mode = 2
 alignment = 1
 
-[node name="ZoomInButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer"]
+[node name="ZoomInButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
 editor_description = "UI-862"
 layout_mode = 2
 mouse_filter = 1
 text = "+"
 
-[node name="ZoomOutButton" type="Button" parent="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer"]
+[node name="ZoomOutButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
 editor_description = "UI-863"
 layout_mode = 2
 mouse_filter = 1
 text = "-"
 
-[connection signal="map_view_camera_changed" from="." to="MarginContainer/HBoxContainer/VBoxContainer/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
-[connection signal="minimap_clicked" from="MarginContainer/HBoxContainer/VBoxContainer/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
-[connection signal="pressed" from="MarginContainer/HBoxContainer/AuxiliaryPanel/ZoomButtonsContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]
+[connection signal="map_view_camera_changed" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
+[connection signal="minimap_clicked" from="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]
