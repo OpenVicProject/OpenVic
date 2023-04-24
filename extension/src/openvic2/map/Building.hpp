@@ -9,7 +9,12 @@ namespace OpenVic2 {
 	struct BuildingManager;
 	struct BuildingType;
 
-	struct Building {
+	/* REQUIREMENTS:
+	 * MAP-11, MAP-72, MAP-73
+	 * MAP-12, MAP-75, MAP-76
+	 * MAP-13, MAP-78, MAP-79
+	 */
+	struct Building : HasIdentifier {
 		friend struct BuildingManager;
 
 		using level_t = int8_t;
@@ -52,8 +57,8 @@ namespace OpenVic2 {
 
 	struct BuildingManager {
 	private:
-		std::vector<BuildingType> building_types;
-		bool building_types_locked = false;
+		static const char building_types_name[];
+		IdentifierRegistry<BuildingType, building_types_name> building_types;
 	public:
 		return_t add_building_type(std::string const& identifier, Building::level_t max_level, Timespan build_time);
 		void lock_building_types();

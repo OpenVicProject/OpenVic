@@ -79,6 +79,7 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	};
 	for (mapmode_t const& mapmode : mapmodes)
 		game_manager.map.add_mapmode(mapmode.first, mapmode.second);
+	game_manager.map.lock_mapmodes();
 
 	using building_type_t = std::tuple<std::string, Building::level_t, Timespan>;
 	const std::vector<building_type_t> building_types = {
@@ -86,6 +87,7 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	};
 	for (building_type_t const& type : building_types)
 		game_manager.building_manager.add_building_type(std::get<0>(type), std::get<1>(type), std::get<2>(type));
+	game_manager.building_manager.lock_building_types();
 
 }
 
@@ -332,7 +334,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 			
 			Dictionary building_dict;
 			Building const& building = buildings[idx];
-			building_dict[building_key] = building.get_type().get_identifier().c_str();
+			building_dict[building_key] = building.get_identifier().c_str();
 			building_dict[level_key] = static_cast<int32_t>(building.get_level());
 			building_dict[expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[start_date_key] = static_cast<std::string>(building.get_start_date()).c_str();

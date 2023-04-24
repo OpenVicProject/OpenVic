@@ -6,6 +6,8 @@
 
 using namespace OpenVic2;
 
+const char Province::buildings_name[] = "buildings";
+
 Province::Province(index_t new_index, std::string const& new_identifier, colour_t new_colour) :
 	HasIdentifier{ new_identifier }, index{ new_index }, colour{ new_colour } {
 	assert(index != NULL_INDEX);
@@ -39,14 +41,13 @@ Province::life_rating_t Province::get_life_rating() const {
 }
 
 std::vector<Building> const& Province::get_buildings() const {
-	return buildings;
+	return buildings.get_items();
 }
 
 return_t Province::expand_building(std::string const& building_type_identifier) {
-	for (Building& building : buildings)
-		if (building.get_type().get_identifier() == building_type_identifier)
-			return building.expand();
-	return FAILURE;
+	Building* building = buildings.get_item_by_identifier(building_type_identifier);
+	if (building == nullptr) return FAILURE;
+	return building->expand();
 }
 
 std::string Province::to_string() const {
@@ -56,12 +57,12 @@ std::string Province::to_string() const {
 }
 
 void Province::update_state(Date const& today) {
-	for (Building& building : buildings)
+	for (Building& building : buildings.get_items())
 		building.update_state(today);
 
 }
 
 void Province::tick(Date const& today) {
-	for (Building& building : buildings)
+	for (Building& building : buildings.get_items())
 		building.tick(today);
 }

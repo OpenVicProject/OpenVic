@@ -2,6 +2,7 @@ extends PanelContainer
 
 @export var _province_name_label : Label
 @export var _region_name_label : Label
+@export var _life_rating_bar : ProgressBar
 @export var _buildings_container : Container
 
 const _missing_suffix : String = "_MISSING"
@@ -23,6 +24,10 @@ func _expand_building(building_identifier : String) -> void:
 	if GameSingleton.expand_building(_selected_index, building_identifier) != OK:
 		push_error("Failed to expand ", building_identifier, " in province #", _selected_index);
 
+# REQUIREMENTS:
+# * UI-183, UI-185, UI-186, UI-765, UI-187, UI-188, UI-189
+# * UI-191, UI-193, UI-194, UI-766, UI-195, UI-196, UI-197
+# * UI-199, UI-201, UI-202, UI-767, UI-203, UI-204, UI-205
 func _add_building(building : Dictionary) -> void:
 	const _building_key : StringName = &"building"
 	const _level_key : StringName = &"level"
@@ -62,10 +67,15 @@ func update_info() -> void:
 	const _life_rating_key : StringName = &"life_rating"
 	const _buildings_key : StringName = &"buildings"
 
+	const _life_rating_tooltip : String = "LIFE_RATING_TOOLTIP"
+
 	_province_info = GameSingleton.get_province_info_from_index(_selected_index)
 	if _province_info:
 		_province_name_label.text = _province_info.get(_province_key, _province_key + _missing_suffix)
 		_region_name_label.text = _province_info.get(_region_key, _region_key + _missing_suffix)
+
+		_life_rating_bar.value = _province_info.get(_life_rating_key, 0)
+		_life_rating_bar.tooltip_text = tr(_life_rating_tooltip) % _life_rating_bar.value
 
 		for child in _buildings_container.get_children():
 			_buildings_container.remove_child(child)

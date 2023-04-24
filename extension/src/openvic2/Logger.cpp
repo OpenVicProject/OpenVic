@@ -7,9 +7,9 @@ using namespace OpenVic2;
 Logger::log_func_t Logger::info_func = [](std::string&& str) { std::cout << str; };
 Logger::log_func_t Logger::error_func = [](std::string&& str) { std::cerr << str; };
 
-const char* Logger::get_filename(const char* filepath) {
+char const* Logger::get_filename(char const* filepath) {
 	if (filepath == nullptr) return nullptr;
-	const char *last_slash = filepath;
+	char const* last_slash = filepath;
 	while (*filepath != '\0') {
 		if (*filepath == '\\' || *filepath == '/') last_slash = filepath + 1;
 		filepath++;

@@ -6,7 +6,7 @@
 
 using namespace OpenVic2;
 
-Building::Building(BuildingType const& new_type) : type{ new_type } {}
+Building::Building(BuildingType const& new_type) : HasIdentifier{ new_type.get_identifier() }, type{ new_type } {}
 
 bool Building::_can_expand() const {
 	return level < type.get_max_level();
@@ -45,6 +45,9 @@ return_t Building::expand() {
 	return FAILURE;
 }
 
+/* REQUIREMENTS:
+ * MAP-71, MAP-74, MAP-77
+ */
 void Building::update_state(Date const& today) {
 	switch (expansion_state) {
 		case ExpansionState::Preparing:
@@ -84,15 +87,9 @@ Timespan BuildingType::get_build_time() const {
 	return build_time;
 }
 
+const char BuildingManager::building_types_name[] = "building types";
+
 return_t BuildingManager::add_building_type(std::string const& identifier, Building::level_t max_level, Timespan build_time) {
-	if (building_types_locked) {
-		Logger::error("The building type list has already been locked!");
-		return FAILURE;
-	}
-	if (identifier.empty()) {
-		Logger::error("Empty building type identifier!");
-		return FAILURE;
-	}
 	if (max_level < 0) {
 		Logger::error("Invalid building type max level: ", max_level);
 		return FAILURE;
@@ -101,29 +98,18 @@ return_t BuildingManager::add_building_type(std::string const& identifier, Build
 		Logger::error("Invalid building type build time: ", build_time);
 		return FAILURE;
 	}
-	BuildingType new_building_type{ identifier, max_level, build_time };
-	BuildingType const* old_building_type = get_building_type_by_identifier(identifier);
-	if (old_building_type != nullptr) {
-		Logger::error("Duplicate building type identifiers: ", old_building_type->get_identifier(), " and ", identifier);
-		return FAILURE;
-	}
-	building_types.push_back(new_building_type);
-	return SUCCESS;
+	return building_types.add_item({ identifier, max_level, build_time });
 }
 
 void BuildingManager::lock_building_types() {
-	building_types_locked = true;
-	Logger::info("Locked building types after registering ", building_types.size());
+	building_types.lock();
 }
 
 BuildingType const* BuildingManager::get_building_type_by_identifier(std::string const& identifier) const {
-	if (!identifier.empty())
-		for (BuildingType const& building_type : building_types)
-			if (building_type.get_identifier() == identifier) return &building_type;
-	return nullptr;
+	return building_types.get_item_by_identifier(identifier);
 }
 
 void BuildingManager::generate_province_buildings(std::vector<Building>& buildings) const {
-	for (BuildingType const& type : building_types)
+	for (BuildingType const& type : building_types.get_items())
 		buildings.push_back(Building{ type });
 }

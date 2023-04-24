@@ -24,7 +24,8 @@ namespace OpenVic2 {
 		Region* region = nullptr;
 		bool water = false;
 		life_rating_t life_rating = 0;
-		std::vector<Building> buildings;
+		static const char buildings_name[];
+		IdentifierRegistry<Building, buildings_name> buildings;
 
 		Province(index_t new_index, std::string const& new_identifier, colour_t new_colour);
 	public:

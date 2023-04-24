@@ -18,7 +18,7 @@ namespace OpenVic2 {
 		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
 	public:
 		index_t get_index() const;
-		colour_func_t get_colour_func() const;
+		Province::colour_t get_colour(Map const& map, Province const& province) const;
 	};
 
 	/* REQUIREMENTS:
@@ -26,14 +26,15 @@ namespace OpenVic2 {
 	 */
 	struct Map {
 	private:
-		std::vector<Province> provinces;
-		std::vector<Region> regions;
-		bool provinces_locked = false, water_provinces_locked = false, regions_locked = false;
+		static const char provinces_name[], regions_name[], mapmodes_name[];
+		IdentifierRegistry<Province, provinces_name> provinces;
+		IdentifierRegistry<Region, regions_name> regions;
+		IdentifierRegistry<Mapmode, mapmodes_name> mapmodes;
+		bool water_provinces_locked = false;
 		size_t water_province_count = 0;
 
 		size_t width = 0, height = 0;
 		std::vector<Province::index_t> province_index_image;
-		std::vector<Mapmode> mapmodes;
 	public:
 		return_t add_province(std::string const& identifier, Province::colour_t colour);
 		void lock_provinces();
@@ -60,6 +61,7 @@ namespace OpenVic2 {
 		std::vector<Province::index_t> const& get_province_index_image() const;
 
 		return_t add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func);
+		void lock_mapmodes();
 		size_t get_mapmode_count() const;
 		Mapmode const* get_mapmode_by_index(Mapmode::index_t index) const;
 		Mapmode const* get_mapmode_by_identifier(std::string const& identifier) const;

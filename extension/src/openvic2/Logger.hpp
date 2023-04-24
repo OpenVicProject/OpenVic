@@ -25,9 +25,9 @@ namespace OpenVic2 {
 			return source_location(f, l, n);
 		}
 
-		inline const char* file_name() const { return _file.c_str(); }
+		inline char const* file_name() const { return _file.c_str(); }
 		inline int line() const {return _line; }
-		inline const char* function_name() const { return _function.c_str(); }
+		inline char const* function_name() const { return _function.c_str(); }
 	};
 	#endif
 
@@ -42,7 +42,7 @@ namespace OpenVic2 {
 
 		static log_func_t info_func, error_func;
 
-		static const char* get_filename(const char* filepath);
+		static char const* get_filename(char const* filepath);
 
 		template <typename... Ts>
 		struct log {
