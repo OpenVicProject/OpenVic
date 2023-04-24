@@ -6,7 +6,7 @@ namespace OpenVic2 {
 	class Checksum : public godot::Object {
 		GDCLASS(Checksum, godot::Object)
 
-		//BEGIN BOILERPLATE
+		// BEGIN BOILERPLATE
 		inline static Checksum* _checksum = nullptr;
 
 	protected:
@@ -25,7 +25,7 @@ namespace OpenVic2 {
 			ERR_FAIL_COND(_checksum != this);
 			_checksum = nullptr;
 		}
-		//END BOILERPLATE
+		// END BOILERPLATE
 
 		inline godot::String get_checksum_text() {
 			return godot::String("1234abcd");

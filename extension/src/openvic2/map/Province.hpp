@@ -22,6 +22,7 @@ namespace OpenVic2 {
 		IdentifierRegistry<Building> buildings;
 
 		Province(index_t new_index, std::string const& new_identifier, colour_t new_colour);
+
 	public:
 		Province(Province&&) = default;
 

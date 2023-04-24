@@ -16,7 +16,7 @@ std::set<Province*> const& ProvinceSet::get_provinces() const {
 	return provinces;
 }
 
-Region::Region(std::string const& new_identifier) : HasIdentifier{ new_identifier } {}
+Region::Region(std::string const& new_identifier) : HasIdentifier { new_identifier } {}
 
 colour_t Region::get_colour() const {
 	if (provinces.empty()) return 0xFF0000;

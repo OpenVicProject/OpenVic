@@ -9,13 +9,15 @@ namespace OpenVic2 {
 	struct Mapmode : HasIdentifier {
 		friend struct Map;
 
-		using colour_func_t = std::function<colour_t (Map const&, Province const&)>;
+		using colour_func_t = std::function<colour_t(Map const&, Province const&)>;
 		using index_t = size_t;
+
 	private:
 		const index_t index;
 		const colour_func_t colour_func;
 
 		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
+
 	public:
 		index_t get_index() const;
 		colour_t get_colour(Map const& map, Province const& province) const;
@@ -28,12 +30,12 @@ namespace OpenVic2 {
 		using terrain_t = uint8_t;
 		using terrain_variant_map_t = std::map<colour_t, terrain_t>;
 
-		#pragma pack(push, 1)
+#pragma pack(push, 1)
 		struct shape_pixel_t {
 			index_t index;
 			terrain_t terrain;
 		};
-		#pragma pack(pop)
+#pragma pack(pop)
 	private:
 		using colour_index_map_t = std::map<colour_t, index_t>;
 
@@ -48,6 +50,7 @@ namespace OpenVic2 {
 		colour_index_map_t colour_index_map;
 
 		index_t get_index_from_colour(colour_t colour) const;
+
 	public:
 		Map();
 

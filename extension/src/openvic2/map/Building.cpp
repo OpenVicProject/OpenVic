@@ -7,7 +7,8 @@
 
 using namespace OpenVic2;
 
-Building::Building(BuildingType const& new_type) : HasIdentifier{ new_type.get_identifier() }, type{ new_type } {}
+Building::Building(BuildingType const& new_type) : HasIdentifier { new_type.get_identifier() },
+												   type { new_type } {}
 
 bool Building::_can_expand() const {
 	return level < type.get_max_level();
@@ -74,8 +75,9 @@ void Building::tick(Date const& today) {
 	}
 }
 
-BuildingType::BuildingType(std::string const& new_identifier, Building::level_t new_max_level, Timespan new_build_time) :
-	HasIdentifier{ new_identifier }, max_level{ new_max_level }, build_time{ new_build_time } {
+BuildingType::BuildingType(std::string const& new_identifier, Building::level_t new_max_level, Timespan new_build_time) : HasIdentifier { new_identifier },
+																														  max_level { new_max_level },
+																														  build_time { new_build_time } {
 	assert(new_max_level >= 0);
 	assert(build_time >= 0);
 }
@@ -88,7 +90,7 @@ Timespan BuildingType::get_build_time() const {
 	return build_time;
 }
 
-BuildingManager::BuildingManager() : building_types{ "building types" } {}
+BuildingManager::BuildingManager() : building_types { "building types" } {}
 
 return_t BuildingManager::add_building_type(std::string const& identifier, Building::level_t max_level, Timespan build_time) {
 	if (identifier.empty()) {

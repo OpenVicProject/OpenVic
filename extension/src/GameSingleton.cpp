@@ -1,8 +1,8 @@
 #include "GameSingleton.hpp"
 
-#include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/json.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic2/Logger.hpp"
 
@@ -58,7 +58,8 @@ GameSingleton* GameSingleton::get_singleton() {
 /* REQUIREMENTS:
  * MAP-21, MAP-25
  */
-GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_updated"); } }, terrain_variants{ "terrain variants" } {
+GameSingleton::GameSingleton() : game_manager { [this]() { emit_signal("state_updated"); } },
+								 terrain_variants { "terrain variants" } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 
@@ -69,21 +70,25 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	static constexpr colour_t LOW_ALPHA_VALUE = to_alpha_value(0.2f);
 	using mapmode_t = std::pair<std::string, Mapmode::colour_func_t>;
 	const std::vector<mapmode_t> mapmodes = {
-		{ "mapmode_terrain", [](Map const&, Province const& province) -> colour_t {
-			return LOW_ALPHA_VALUE | (province.is_water() ? 0x4287F5 : 0x0D7017);
-		} },
-		{ "mapmode_province", [](Map const&, Province const& province) -> colour_t {
-			return HIGH_ALPHA_VALUE | province.get_colour();
-		} },
-		{ "mapmode_region", [](Map const&, Province const& province) -> colour_t {
-			Region const* region = province.get_region();
-			if (region != nullptr) return (0xCC << 24) | region->get_colour();
-			return NULL_COLOUR;
-		} },
-		{ "mapmode_index", [](Map const& map, Province const& province) -> colour_t {
-			const uint8_t f = static_cast<float>(province.get_index()) / static_cast<float>(map.get_province_count()) * 255.0f;
-			return HIGH_ALPHA_VALUE | (f << 16) | (f << 8) | f;
-		} }
+		{ "mapmode_terrain",
+			[](Map const&, Province const& province) -> colour_t {
+				return LOW_ALPHA_VALUE | (province.is_water() ? 0x4287F5 : 0x0D7017);
+			} },
+		{ "mapmode_province",
+			[](Map const&, Province const& province) -> colour_t {
+				return HIGH_ALPHA_VALUE | province.get_colour();
+			} },
+		{ "mapmode_region",
+			[](Map const&, Province const& province) -> colour_t {
+				Region const* region = province.get_region();
+				if (region != nullptr) return (0xCC << 24) | region->get_colour();
+				return NULL_COLOUR;
+			} },
+		{ "mapmode_index",
+			[](Map const& map, Province const& province) -> colour_t {
+				const uint8_t f = static_cast<float>(province.get_index()) / static_cast<float>(map.get_province_count()) * 255.0f;
+				return HIGH_ALPHA_VALUE | (f << 16) | (f << 8) | f;
+			} }
 	};
 	for (mapmode_t const& mapmode : mapmodes)
 		game_manager.map.add_mapmode(mapmode.first, mapmode.second);
@@ -96,7 +101,6 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	for (building_type_t const& type : building_types)
 		game_manager.building_manager.add_building_type(std::get<0>(type), std::get<1>(type), std::get<2>(type));
 	game_manager.building_manager.lock_building_types();
-
 }
 
 GameSingleton::~GameSingleton() {
@@ -125,7 +129,7 @@ static Error _load_json_file(String const& file_description, String const& file_
 	return err;
 }
 
-using parse_json_entry_func_t = std::function<godot::Error (godot::String const&, godot::Variant const&)>;
+using parse_json_entry_func_t = std::function<godot::Error(godot::String const&, godot::Variant const&)>;
 
 static Error _parse_json_dictionary_file(String const& file_description, String const& file_path,
 	String const& identifier_prefix, parse_json_entry_func_t parse_entry) {
@@ -172,8 +176,7 @@ static colour_t _parse_colour(Variant const& var) {
 			}
 			return colour;
 		}
-	}
-	else if (type == Variant::STRING) {
+	} else if (type == Variant::STRING) {
 		String const& colour_string = var;
 		if (colour_string.is_valid_hex_number()) {
 			const int64_t colour_int = colour_string.hex_to_int();
@@ -214,8 +217,7 @@ Error GameSingleton::_parse_region_entry(String const& identifier, Variant const
 			if (type == Variant::STRING) {
 				String const& province_string = province_var;
 				province_identifiers.push_back(province_string.utf8().get_data());
-			}
-			else {
+			} else {
 				UtilityFunctions::push_error("Invalid province identifier for region \"", identifier, "\": ", entry);
 				err = FAILED;
 			}
@@ -238,7 +240,9 @@ Error GameSingleton::load_region_file(String const& file_path) {
 }
 
 TerrainVariant::TerrainVariant(std::string const& new_identfier, colour_t new_colour, Ref<Image> const& new_image)
-	: HasIdentifier(new_identfier), HasColour(new_colour), image(new_image) {}
+	: HasIdentifier(new_identfier),
+	  HasColour(new_colour),
+	  image(new_image) {}
 
 Ref<Image> TerrainVariant::get_image() const { return image; }
 
@@ -329,12 +333,14 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 
 	// Generate interleaved province and terrain ID image
 	if (game_manager.map.generate_province_shape_image(province_dims.x, province_dims.y, province_image->get_data().ptr(),
-		terrain_image->get_data().ptr(), terrain_variant_map) != SUCCESS) return FAILED;
+			terrain_image->get_data().ptr(), terrain_variant_map) != SUCCESS) return FAILED;
 
 	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT
-	for (int i = 0; i < 2; ++i) for (image_subdivisions[i] = 1;
-		province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || province_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i]);
+	for (int i = 0; i < 2; ++i)
+		for (image_subdivisions[i] = 1;
+			 province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || province_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i])
+			;
 
 	Map::shape_pixel_t const* province_shape_data = game_manager.map.get_province_shape_image().data();
 	const Vector2i divided_dims = province_dims / image_subdivisions;
@@ -383,8 +389,7 @@ Error GameSingleton::load_water_province_file(String const& file_path) {
 		UtilityFunctions::push_error("Invalid water province JSON: root has type ",
 			Variant::get_type_name(type), " (expected Array)");
 		err = FAILED;
-	}
-	else {
+	} else {
 		Array const& array = json_var;
 		for (int64_t idx = 0; idx < array.size(); ++idx) {
 			Variant const& entry = array[idx];
@@ -409,11 +414,14 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 	return game_manager.map.get_province_index_at(x_mod_w, y_mod_h);
 }
 
-#define KEY(x) static const StringName x##_key = #x;
+#define KEY(x) static const StringName x##_key = #x
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	Province const* province = game_manager.map.get_province_by_index(index);
 	if (province == nullptr) return {};
-	KEY(province) KEY(region) KEY(life_rating) KEY(buildings)
+	KEY(province);
+	KEY(region);
+	KEY(life_rating);
+	KEY(buildings);
 	Dictionary ret;
 
 	ret[province_key] = province->get_identifier().c_str();
@@ -428,7 +436,12 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 		Array buildings_array;
 		buildings_array.resize(buildings.size());
 		for (size_t idx = 0; idx < buildings.size(); ++idx) {
-			KEY(building) KEY(level) KEY(expansion_state) KEY(start_date) KEY(end_date) KEY(expansion_progress)
+			KEY(building);
+			KEY(level);
+			KEY(expansion_state);
+			KEY(start_date);
+			KEY(end_date);
+			KEY(expansion_progress);
 
 			Dictionary building_dict;
 			Building const& building = buildings[idx];
@@ -507,7 +520,7 @@ int32_t GameSingleton::get_mapmode_count() const {
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
 	Mapmode const* mapmode = game_manager.map.get_mapmode_by_index(index);
 	if (mapmode != nullptr) return mapmode->get_identifier().c_str();
-	return String{};
+	return String {};
 }
 
 Error GameSingleton::set_mapmode(godot::String const& identifier) {

@@ -10,6 +10,7 @@ namespace OpenVic2 {
 		Map map;
 		BuildingManager building_manager;
 		GameAdvancementHook clock;
+
 	private:
 		Date today;
 		state_updated_func_t state_updated;
@@ -18,6 +19,7 @@ namespace OpenVic2 {
 		void set_needs_update();
 		void update_state();
 		void tick();
+
 	public:
 		GameManager(state_updated_func_t state_updated_callback);
 

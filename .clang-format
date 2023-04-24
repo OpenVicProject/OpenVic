@@ -1,13 +1,16 @@
 ---
+Language: Cpp
 UseCRLF: false
 Standard: c++20
 UseTab: Always
 TabWidth: 4
-SpacesInParentheses: false
+IndentWidth: 4
+ColumnLimit: 0
 SpacesInSquareBrackets: false
+SpacesInParentheses: false
+SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInConditionalStatement: false
-SpacesInCStyleCastParentheses: false
 SpacesInAngles: false
 SpaceInEmptyParentheses: false
 SpaceInEmptyBlock: false
@@ -21,15 +24,36 @@ SpaceBeforeAssignmentOperators: true
 SpaceAfterTemplateKeyword: false
 SpaceAfterLogicalNot: false
 PointerAlignment: Left
+PackConstructorInitializers: CurrentLine
 NamespaceIndentation: All
-IndentWidth: 4
-Language: Cpp
+LambdaBodyIndentation: Signature
+IndentExternBlock: Indent
 IndentCaseLabels: true
+IndentAccessModifiers: false
+IncludeBlocks: Regroup
 FixNamespaceComments: false
+EmptyLineBeforeAccessModifier: LogicalBlock
 Cpp11BracedListStyle: false
-ColumnLimit: 0
 CompactNamespaces: false
+BreakConstructorInitializers: BeforeColon
 BreakBeforeBraces: Attach
 AlwaysBreakTemplateDeclarations: Yes
+AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortEnumsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
 AlignTrailingComments: true
 AlignEscapedNewlines: Left
+AlignAfterOpenBracket: DontAlign
+AccessModifierOffset: -4
+IncludeCategories:
+  - Regex: <[[:alnum:]_]+>
+    Priority: 1
+  - Regex: <[[:alnum:]_]+[.]h>
+    Priority: 2
+  - Regex: ^<godot_cpp/
+    Priority: 3
+  - Regex: ^"openvic2/
+    Priority: 4
+  - Regex: .*
+    Priority: 5
