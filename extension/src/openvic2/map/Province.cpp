@@ -6,10 +6,8 @@
 
 using namespace OpenVic2;
 
-const char Province::buildings_name[] = "buildings";
-
 Province::Province(index_t new_index, std::string const& new_identifier, colour_t new_colour) :
-	HasIdentifier{ new_identifier }, index{ new_index }, colour{ new_colour } {
+	HasIdentifier{ new_identifier }, index{ new_index }, colour{ new_colour }, buildings{ "buildings" } {
 	assert(index != NULL_INDEX);
 	assert(colour != NULL_COLOUR);
 }
@@ -38,6 +36,18 @@ bool Province::is_water() const {
 
 Province::life_rating_t Province::get_life_rating() const {
 	return life_rating;
+}
+
+return_t Province::add_building(BuildingType const& type) {
+	return buildings.add_item({ type });
+}
+
+void Province::lock_buildings() {
+	buildings.lock(false);
+}
+
+void Province::reset_buildings() {
+	buildings.reset();
 }
 
 std::vector<Building> const& Province::get_buildings() const {

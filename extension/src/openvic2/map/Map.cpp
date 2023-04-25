@@ -20,11 +20,15 @@ Province::colour_t Mapmode::get_colour(Map const& map, Province const& province)
 	return colour_func ? colour_func(map, province) : Province::NULL_COLOUR;
 }
 
-const char Map::provinces_name[] = "provinces", Map::regions_name[] = "regions", Map::mapmodes_name[] = "mapmodes";
+Map::Map() : provinces{ "provinces" }, regions{ "regions" }, mapmodes{ "mapmodes" } {}
 
 return_t Map::add_province(std::string const& identifier, Province::colour_t colour) {
 	if (provinces.get_item_count() >= Province::MAX_INDEX) {
 		Logger::error("The map's province list is full - there can be at most ", Province::MAX_INDEX, " provinces");
+		return FAILURE;
+	}
+	if (identifier.empty()) {
+		Logger::error("Invalid province identifier - empty!");
 		return FAILURE;
 	}
 	if (colour == Province::NULL_COLOUR || colour > Province::MAX_COLOUR) {
@@ -69,8 +73,12 @@ void Map::lock_water_provinces() {
 }
 
 return_t Map::add_region(std::string const& identifier, std::vector<std::string> const& province_identifiers) {
-	return_t ret = SUCCESS;
+	if (identifier.empty()) {
+		Logger::error("Invalid region identifier - empty!");
+		return FAILURE;
+	}
 	Region new_region{ identifier };
+	return_t ret = SUCCESS;
 	for (std::string const& province_identifier : province_identifiers) {
 		Province* province = get_province_by_identifier(province_identifier);
 		if (province != nullptr) {
@@ -246,6 +254,10 @@ std::vector<Province::index_t> const& Map::get_province_index_image() const {
 }
 
 return_t Map::add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func) {
+	if (identifier.empty()) {
+		Logger::error("Invalid mapmode identifier - empty!");
+		return FAILURE;
+	}
 	if (colour_func == nullptr) {
 		Logger::error("Mapmode colour function is null for identifier: ", identifier);
 		return FAILURE;
@@ -290,9 +302,11 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) 
 	return SUCCESS;
 }
 
-void Map::generate_province_buildings(BuildingManager const& manager) {
+return_t Map::generate_province_buildings(BuildingManager const& manager) {
+	return_t ret = SUCCESS;
 	for (Province& province : provinces.get_items())
-		manager.generate_province_buildings(province.buildings.get_items());
+		if (manager.generate_province_buildings(province) != SUCCESS) ret = FAILURE;
+	return ret;
 }
 
 void Map::update_state(Date const& today) {

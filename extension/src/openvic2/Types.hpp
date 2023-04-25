@@ -10,26 +10,37 @@ namespace OpenVic2 {
 	// This mirrors godot::Error, where `OK = 0` and `FAILED = 1`.
 	static constexpr return_t SUCCESS = false, FAILURE = true;
 
+	/*
+	 * Base class for objects with a non-empty string identifier,
+	 * uniquely named instances of which can be entered into an
+	 * IdentifierRegistry instance.
+	 */
 	class HasIdentifier {
-		std::string identifier;
+		const std::string identifier;
 	protected:
 		HasIdentifier(std::string const& new_identifier);
 	public:
+		HasIdentifier(HasIdentifier const&) = delete;
+		HasIdentifier(HasIdentifier&&) = default;
 		std::string const& get_identifier() const;
 	};
 
-	template<typename T, char const* name, std::enable_if<std::is_base_of<HasIdentifier, T>::value>::type* = nullptr>
+	/*
+	 * Template for a list of objects with unique string identifiers that can
+	 * be locked to prevent any further additions. The template argument T is
+	 * the type of object that the registry will store, and the second part ensures
+	 * that HasIdentifier is a base class of T.
+	 */
+	template<class T, typename std::enable_if<std::is_base_of<HasIdentifier, T>::value>::type* = nullptr>
 	class IdentifierRegistry {
+		const std::string name;
 		std::vector<T> items;
 		bool locked = false;
 	public:
+		IdentifierRegistry(std::string const& new_name) : name(new_name) {}
 		return_t add_item(T&& item) {
 			if (locked) {
 				Logger::error("Cannot add item to the ", name, " registry - locked!");
-				return FAILURE;
-			}
-			if (item.get_identifier().empty()) {
-				Logger::error("Cannot add item to the ", name, " registry - empty identifier!");
 				return FAILURE;
 			}
 			T const* old_item = get_item_by_identifier(item.get_identifier());
@@ -37,19 +48,23 @@ namespace OpenVic2 {
 				Logger::error("Cannot add item to the ", name, " registry - an item with the identifier \"", item.get_identifier(), "\" already exists!");
 				return FAILURE;
 			}
-			items.push_back(item);
+			items.push_back(std::move(item));
 			return SUCCESS;
 		}
-		void lock() {
+		void lock(bool log = true) {
 			if (locked) {
 				Logger::error("Failed to lock ", name, " registry - already locked!");
 			} else {
 				locked = true;
-				Logger::info("Locked ", name, " registry after registering ", get_item_count(), " items");
+				if (log) Logger::info("Locked ", name, " registry after registering ", get_item_count(), " items");
 			}
 		}
 		bool is_locked() const {
 			return locked;
+		}
+		void reset() {
+			items.clear();
+			locked = false;
 		}
 		size_t get_item_count() const {
 			return items.size();

@@ -65,3 +65,8 @@ void GameAdvancementHook::conditionallyAdvanceGame() {
 	}
 	if (refreshFunction) refreshFunction();
 }
+
+void GameAdvancementHook::reset() {
+	isPaused = true;
+	currentSpeed = 0;
+}

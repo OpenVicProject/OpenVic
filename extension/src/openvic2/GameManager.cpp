@@ -5,7 +5,7 @@
 using namespace OpenVic2;
 
 GameManager::GameManager(state_updated_func_t state_updated_callback)
-	: clock{ [this]() { tick(); }, [this]() { update_state(); }, true }, today{ 1836 }, state_updated{ state_updated_callback } {}
+	: clock{ [this]() { tick(); }, [this]() { update_state(); } }, state_updated{ state_updated_callback } {}
 
 void GameManager::set_needs_update() {
 	needs_update = true;
@@ -27,8 +27,11 @@ void GameManager::tick() {
 	set_needs_update();
 }
 
-void GameManager::finished_loading_data() {
-	map.generate_province_buildings(building_manager);
+return_t GameManager::setup() {
+	clock.reset();
+	today = { 1836 };
+	set_needs_update();
+	return map.generate_province_buildings(building_manager);
 }
 
 Date const& GameManager::get_today() const {

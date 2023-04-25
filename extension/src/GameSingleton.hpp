@@ -33,7 +33,7 @@ namespace OpenVic2 {
 		godot::Error load_water_province_file(godot::String const& file_path);
 		godot::Error load_region_file(godot::String const& file_path);
 		godot::Error load_province_shape_file(godot::String const& file_path);
-		void finished_loading_data();
+		godot::Error setup();
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 		godot::Dictionary get_province_info_from_index(int32_t index) const;

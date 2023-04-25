@@ -6,7 +6,7 @@
 #include "openvic2/Date.hpp"
 
 namespace OpenVic2 {
-	struct BuildingManager;
+	struct Province;
 	struct BuildingType;
 
 	/* REQUIREMENTS:
@@ -15,7 +15,7 @@ namespace OpenVic2 {
 	 * MAP-13, MAP-78, MAP-79
 	 */
 	struct Building : HasIdentifier {
-		friend struct BuildingManager;
+		friend struct Province;
 
 		using level_t = int8_t;
 
@@ -31,6 +31,8 @@ namespace OpenVic2 {
 
 		bool _can_expand() const;
 	public:
+		Building(Building&&) = default;
+
 		BuildingType const& get_type() const;
 		level_t get_level() const;
 		ExpansionState get_expansion_state() const;
@@ -43,26 +45,31 @@ namespace OpenVic2 {
 		void tick(Date const& today);
 	};
 
+	struct BuildingManager;
+
 	struct BuildingType : HasIdentifier {
 		friend struct BuildingManager;
 	private:
-		Building::level_t max_level;
-		Timespan build_time;
+		const Building::level_t max_level;
+		const Timespan build_time;
 
 		BuildingType(std::string const& new_identifier, Building::level_t new_max_level, Timespan new_build_time);
 	public:
+		BuildingType(BuildingType&&) = default;
+
 		Building::level_t get_max_level() const;
 		Timespan get_build_time() const;
 	};
 
 	struct BuildingManager {
 	private:
-		static const char building_types_name[];
-		IdentifierRegistry<BuildingType, building_types_name> building_types;
+		IdentifierRegistry<BuildingType> building_types;
 	public:
+		BuildingManager();
+
 		return_t add_building_type(std::string const& identifier, Building::level_t max_level, Timespan build_time);
 		void lock_building_types();
 		BuildingType const* get_building_type_by_identifier(std::string const& identifier) const;
-		void generate_province_buildings(std::vector<Building>& buildings) const;
+		return_t generate_province_buildings(Province& province) const;
 	};
 }

@@ -45,7 +45,6 @@ func show_save_dialog_button() -> void:
 # * SS-47
 # * UIFUN-69
 func _on_main_menu_confirmed() -> void:
-	# TODO - reset map when going back to main menu
 	get_tree().change_scene_to_packed(_main_menu_scene)
 
 # REQUIREMENTS:

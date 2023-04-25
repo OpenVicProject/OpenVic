@@ -12,8 +12,8 @@ namespace OpenVic2 {
 		using colour_func_t = std::function<Province::colour_t (Map const&, Province const&)>;
 		using index_t = size_t;
 	private:
-		index_t index;
-		colour_func_t colour_func;
+		const index_t index;
+		const colour_func_t colour_func;
 
 		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
 	public:
@@ -26,16 +26,17 @@ namespace OpenVic2 {
 	 */
 	struct Map {
 	private:
-		static const char provinces_name[], regions_name[], mapmodes_name[];
-		IdentifierRegistry<Province, provinces_name> provinces;
-		IdentifierRegistry<Region, regions_name> regions;
-		IdentifierRegistry<Mapmode, mapmodes_name> mapmodes;
+		IdentifierRegistry<Province> provinces;
+		IdentifierRegistry<Region> regions;
+		IdentifierRegistry<Mapmode> mapmodes;
 		bool water_provinces_locked = false;
 		size_t water_province_count = 0;
 
 		size_t width = 0, height = 0;
 		std::vector<Province::index_t> province_index_image;
 	public:
+		Map();
+
 		return_t add_province(std::string const& identifier, Province::colour_t colour);
 		void lock_provinces();
 		return_t set_water_province(std::string const& identifier);
@@ -67,7 +68,7 @@ namespace OpenVic2 {
 		Mapmode const* get_mapmode_by_identifier(std::string const& identifier) const;
 		return_t generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) const;
 
-		void generate_province_buildings(BuildingManager const& manager);
+		return_t generate_province_buildings(BuildingManager const& manager);
 
 		void update_state(Date const& today);
 		void tick(Date const& today);

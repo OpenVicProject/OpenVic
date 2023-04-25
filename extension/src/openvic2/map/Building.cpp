@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "openvic2/Logger.hpp"
+#include "openvic2/map/Province.hpp"
 
 using namespace OpenVic2;
 
@@ -87,9 +88,13 @@ Timespan BuildingType::get_build_time() const {
 	return build_time;
 }
 
-const char BuildingManager::building_types_name[] = "building types";
+BuildingManager::BuildingManager() : building_types{ "building types" } {}
 
 return_t BuildingManager::add_building_type(std::string const& identifier, Building::level_t max_level, Timespan build_time) {
+	if (identifier.empty()) {
+		Logger::error("Invalid building type identifier - empty!");
+		return FAILURE;
+	}
 	if (max_level < 0) {
 		Logger::error("Invalid building type max level: ", max_level);
 		return FAILURE;
@@ -109,7 +114,11 @@ BuildingType const* BuildingManager::get_building_type_by_identifier(std::string
 	return building_types.get_item_by_identifier(identifier);
 }
 
-void BuildingManager::generate_province_buildings(std::vector<Building>& buildings) const {
+return_t BuildingManager::generate_province_buildings(Province& province) const {
+	return_t ret = SUCCESS;
+	province.reset_buildings();
 	for (BuildingType const& type : building_types.get_items())
-		buildings.push_back(Building{ type });
+		if (province.add_building(type) != SUCCESS) ret = FAILURE;
+	province.lock_buildings();
+	return ret;
 }

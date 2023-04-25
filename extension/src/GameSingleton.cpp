@@ -18,7 +18,7 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_water_province_file", "file_path"), &GameSingleton::load_water_province_file);
 	ClassDB::bind_method(D_METHOD("load_region_file", "file_path"), &GameSingleton::load_region_file);
 	ClassDB::bind_method(D_METHOD("load_province_shape_file", "file_path"), &GameSingleton::load_province_shape_file);
-	ClassDB::bind_method(D_METHOD("finished_loading_data"), &GameSingleton::finished_loading_data);
+	ClassDB::bind_method(D_METHOD("setup"), &GameSingleton::setup);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);
 	ClassDB::bind_method(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
@@ -273,8 +273,8 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 	return err;
 }
 
-void GameSingleton::finished_loading_data() {
-	game_manager.finished_loading_data();
+godot::Error GameSingleton::setup() {
+	return ERR(game_manager.setup());
 }
 
 Error GameSingleton::load_water_province_file(String const& file_path) {
