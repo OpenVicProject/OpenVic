@@ -22,6 +22,9 @@ namespace OpenVic2 {
 	public:
 		HasIdentifier(HasIdentifier const&) = delete;
 		HasIdentifier(HasIdentifier&&) = default;
+		HasIdentifier& operator=(HasIdentifier const&) = delete;
+		HasIdentifier& operator=(HasIdentifier&&) = delete;
+
 		std::string const& get_identifier() const;
 	};
 

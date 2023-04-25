@@ -14,7 +14,8 @@ namespace OpenVic2 {
 
 		GameManager game_manager;
 
-		godot::Ref<godot::Image> province_index_image, province_colour_image;
+		static constexpr int image_width_divide = 2;
+		godot::Ref<godot::Image> province_index_image[image_width_divide], province_colour_image;
 		Mapmode::index_t mapmode_index = 0;
 
 		godot::Error _parse_province_identifier_entry(godot::String const& identifier, godot::Variant const& entry);
@@ -39,7 +40,7 @@ namespace OpenVic2 {
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 		int32_t get_width() const;
 		int32_t get_height() const;
-		godot::Ref<godot::Image> get_province_index_image() const;
+		godot::Array get_province_index_images() const;
 		godot::Ref<godot::Image> get_province_colour_image() const;
 
 		godot::Error update_colour_image();

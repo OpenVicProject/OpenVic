@@ -41,7 +41,6 @@ var _mouse_over_viewport : bool = true
 var _map_mesh : MapMesh
 var _map_shader_material : ShaderMaterial
 var _map_image_size : Vector2
-var _map_province_index_image : Image
 var _map_province_colour_image : Image
 var _map_province_colour_texture : ImageTexture
 var _map_mesh_corner : Vector2
@@ -77,12 +76,15 @@ func _ready():
 		return
 	_map_shader_material = map_material
 
-	# Province index texture
-	_map_province_index_image = GameSingleton.get_province_index_image()
-	if _map_province_index_image == null:
+	# Province index textures
+	var map_province_index_images := GameSingleton.get_province_index_images()
+	if map_province_index_images == null or map_province_index_images.is_empty():
 		push_error("Failed to get province index image!")
 		return
-	var province_index_texture := ImageTexture.create_from_image(_map_province_index_image)
+	var province_index_texture := Texture2DArray.new()
+	if province_index_texture.create_from_images(map_province_index_images) != OK:
+		push_error("Failed to generate province index texture array!")
+		return
 	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
 
 	# Province colour texture
