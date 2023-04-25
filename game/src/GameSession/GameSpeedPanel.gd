@@ -7,7 +7,6 @@ extends PanelContainer
 @export var _decrease_speed_button : Button
 @export var _increase_speed_button : Button
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	GameSingleton.state_updated.connect(_update_buttons)
 	_update_buttons()

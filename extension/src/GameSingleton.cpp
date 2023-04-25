@@ -18,13 +18,13 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_water_province_file", "file_path"), &GameSingleton::load_water_province_file);
 	ClassDB::bind_method(D_METHOD("load_region_file", "file_path"), &GameSingleton::load_region_file);
 	ClassDB::bind_method(D_METHOD("load_province_shape_file", "file_path"), &GameSingleton::load_province_shape_file);
-	ClassDB::bind_method(D_METHOD("finished_loading_data"), &GameSingleton::finished_loading_data);
+	ClassDB::bind_method(D_METHOD("setup"), &GameSingleton::setup);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);
 	ClassDB::bind_method(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
 	ClassDB::bind_method(D_METHOD("get_width"), &GameSingleton::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &GameSingleton::get_height);
-	ClassDB::bind_method(D_METHOD("get_province_index_image"), &GameSingleton::get_province_index_image);
+	ClassDB::bind_method(D_METHOD("get_province_index_images"), &GameSingleton::get_province_index_images);
 	ClassDB::bind_method(D_METHOD("get_province_colour_image"), &GameSingleton::get_province_colour_image);
 
 	ClassDB::bind_method(D_METHOD("update_colour_image"), &GameSingleton::update_colour_image);
@@ -79,6 +79,7 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	};
 	for (mapmode_t const& mapmode : mapmodes)
 		game_manager.map.add_mapmode(mapmode.first, mapmode.second);
+	game_manager.map.lock_mapmodes();
 
 	using building_type_t = std::tuple<std::string, Building::level_t, Timespan>;
 	const std::vector<building_type_t> building_types = {
@@ -86,6 +87,7 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 	};
 	for (building_type_t const& type : building_types)
 		game_manager.building_manager.add_building_type(std::get<0>(type), std::get<1>(type), std::get<2>(type));
+	game_manager.building_manager.lock_building_types();
 
 }
 
@@ -229,7 +231,7 @@ Error GameSingleton::load_region_file(String const& file_path) {
 }
 
 Error GameSingleton::load_province_shape_file(String const& file_path) {
-	if (province_index_image.is_valid()) {
+	if (province_index_image[0].is_valid()) {
 		UtilityFunctions::push_error("Province shape file has already been loaded, cannot load: ", file_path);
 		return FAILED;
 	}
@@ -240,10 +242,14 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 		UtilityFunctions::push_error("Failed to load province shape file: ", file_path);
 		return err;
 	}
-	int32_t width = province_shape_image->get_width();
-	int32_t height = province_shape_image->get_height();
+	const int32_t width = province_shape_image->get_width();
+	const int32_t height = province_shape_image->get_height();
 	if (width < 1 || height < 1) {
 		UtilityFunctions::push_error("Invalid dimensions (", width, "x", height, ") for province shape file: ", file_path);
+		err = FAILED;
+	}
+	if (width % image_width_divide != 0) {
+		UtilityFunctions::push_error("Invalid width ", width, " (must be divisible by ", image_width_divide, ") for province shape file: ", file_path);
 		err = FAILED;
 	}
 	static constexpr Image::Format expected_format = Image::FORMAT_RGB8;
@@ -255,15 +261,20 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 	if (err != OK) return err;
 	err = ERR(game_manager.map.generate_province_index_image(width, height, province_shape_image->get_data().ptr()));
 
-	PackedByteArray index_data_array;
-	index_data_array.resize(width * height * sizeof(Province::index_t));
 	std::vector<Province::index_t> const& province_index_data = game_manager.map.get_province_index_image();
-	memcpy(index_data_array.ptrw(), province_index_data.data(), province_index_data.size());
-
-	province_index_image = Image::create_from_data(width, height, false, Image::FORMAT_RG8, index_data_array);
-	if (province_index_image.is_null()) {
-		UtilityFunctions::push_error("Failed to create province ID image");
-		err = FAILED;
+	const int32_t divided_width = width / image_width_divide;
+	for (int32_t i = 0; i < image_width_divide; ++i) {
+		PackedByteArray index_data_array;
+		index_data_array.resize(divided_width * height * sizeof(Province::index_t));
+		for (int32_t y = 0; y < height; ++y)
+			memcpy(index_data_array.ptrw() + y * divided_width * sizeof(Province::index_t),
+				province_index_data.data() + y * width + i * divided_width,
+				divided_width * sizeof(Province::index_t));
+		province_index_image[i] = Image::create_from_data(divided_width, height, false, Image::FORMAT_RG8, index_data_array);
+		if (province_index_image[i].is_null()) {
+			UtilityFunctions::push_error("Failed to create province ID image #", i);
+			err = FAILED;
+		}
 	}
 
 	if (update_colour_image() != OK) err = FAILED;
@@ -271,8 +282,8 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 	return err;
 }
 
-void GameSingleton::finished_loading_data() {
-	game_manager.finished_loading_data();
+godot::Error GameSingleton::setup() {
+	return ERR(game_manager.setup());
 }
 
 Error GameSingleton::load_water_province_file(String const& file_path) {
@@ -332,7 +343,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 			
 			Dictionary building_dict;
 			Building const& building = buildings[idx];
-			building_dict[building_key] = building.get_type().get_identifier().c_str();
+			building_dict[building_key] = building.get_identifier().c_str();
 			building_dict[level_key] = static_cast<int32_t>(building.get_level());
 			building_dict[expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[start_date_key] = static_cast<std::string>(building.get_start_date()).c_str();
@@ -355,8 +366,11 @@ int32_t GameSingleton::get_height() const {
 	return game_manager.map.get_height();
 }
 
-Ref<Image> GameSingleton::get_province_index_image() const {
-	return province_index_image;
+Array GameSingleton::get_province_index_images() const {
+	Array ret;
+	for (int i = 0; i < image_width_divide; ++i)
+		ret.append(province_index_image[i]);
+	return ret;
 }
 
 Ref<Image> GameSingleton::get_province_colour_image() const {

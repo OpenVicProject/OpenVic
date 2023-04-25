@@ -13,7 +13,7 @@ namespace OpenVic2 {
 	private:
 		Date today;
 		state_updated_func_t state_updated;
-		bool needs_update = true;
+		bool needs_update;
 
 		void set_needs_update();
 		void update_state();
@@ -21,7 +21,7 @@ namespace OpenVic2 {
 	public:
 		GameManager(state_updated_func_t state_updated_callback);
 
-		void finished_loading_data();
+		return_t setup();
 
 		Date const& get_today() const;
 		return_t expand_building(Province::index_t province_index, std::string const& building_type_identifier);

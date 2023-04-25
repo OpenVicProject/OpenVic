@@ -69,6 +69,7 @@ DIALOG_SAVE_AND_QUIT,Save and Quit
 ,, Province Overview Panel
 province_MISSING,No Province
 region_MISSING,No Region
+LIFE_RATING_TOOLTIP,Liferating: %d
 building_MISSING,No Building
 building_fort,Fort
 building_naval_base,Naval Base

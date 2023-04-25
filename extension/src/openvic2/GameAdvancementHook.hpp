@@ -21,12 +21,12 @@ namespace OpenVic2 {
 		//A function pointer that advances the simulation, intended to be a capturing lambda or something similar. May need to be reworked later
 		AdvancementFunction triggerFunction;
 		RefreshFunction refreshFunction;
+		speed_t currentSpeed;
 
 		public:
 		bool isPaused;
-		speed_t currentSpeed;
 
-		GameAdvancementHook(AdvancementFunction tickFunction, RefreshFunction updateFunction, bool startPaused = false, speed_t startingSpeed = 0);
+		GameAdvancementHook(AdvancementFunction tickFunction, RefreshFunction updateFunction, bool startPaused = true, speed_t startingSpeed = 0);
 
 		void setSimulationSpeed(speed_t speed);
 		speed_t getSimulationSpeed() const;
@@ -37,5 +37,6 @@ namespace OpenVic2 {
 		GameAdvancementHook& operator++();
 		GameAdvancementHook& operator--();
 		void conditionallyAdvanceGame();
+		void reset();
 	};
 }

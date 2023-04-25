@@ -19,4 +19,3 @@ func _ready():
 		push_error("Failed to load regions")
 	if GameSingleton.load_province_shape_file(_province_shape_file) != OK:
 		push_error("Failed to load province shapes")
-	GameSingleton.finished_loading_data()

@@ -23,6 +23,8 @@ namespace OpenVic2 {
 	private:
 		Region(std::string const& new_identifier);
 	public:
+		Region(Region&&) = default;
+
 		Province::colour_t get_colour() const;
 	};
 }
