@@ -24,6 +24,7 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
 	ClassDB::bind_method(D_METHOD("get_width"), &GameSingleton::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &GameSingleton::get_height);
+	ClassDB::bind_method(D_METHOD("get_province_index_image_subdivisions"), &GameSingleton::get_province_index_image_subdivisions);
 	ClassDB::bind_method(D_METHOD("get_province_index_images"), &GameSingleton::get_province_index_images);
 	ClassDB::bind_method(D_METHOD("get_province_colour_image"), &GameSingleton::get_province_colour_image);
 
@@ -231,7 +232,7 @@ Error GameSingleton::load_region_file(String const& file_path) {
 }
 
 Error GameSingleton::load_province_shape_file(String const& file_path) {
-	if (province_index_image[0].is_valid()) {
+	if (!province_index_images.empty()) {
 		UtilityFunctions::push_error("Province shape file has already been loaded, cannot load: ", file_path);
 		return FAILED;
 	}
@@ -242,16 +243,15 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 		UtilityFunctions::push_error("Failed to load province shape file: ", file_path);
 		return err;
 	}
-	const int32_t width = province_shape_image->get_width();
-	const int32_t height = province_shape_image->get_height();
-	if (width < 1 || height < 1) {
-		UtilityFunctions::push_error("Invalid dimensions (", width, "x", height, ") for province shape file: ", file_path);
+	const Vector2i image_dims = province_shape_image->get_size();
+	if (image_dims.x < 1 || image_dims.y < 1) {
+		UtilityFunctions::push_error("Invalid dimensions (", image_dims.x, "x", image_dims.y, ") for province shape file: ", file_path);
 		err = FAILED;
 	}
-	if (width % image_width_divide != 0) {
-		UtilityFunctions::push_error("Invalid width ", width, " (must be divisible by ", image_width_divide, ") for province shape file: ", file_path);
-		err = FAILED;
-	}
+	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
+	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT
+	for (int i = 0; i < 2; ++i) for (image_subdivisions[i] = 1;
+		image_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || image_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i]);
 	static constexpr Image::Format expected_format = Image::FORMAT_RGB8;
 	const Image::Format format = province_shape_image->get_format();
 	if (format != expected_format) {
@@ -259,21 +259,27 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 		err = FAILED;
 	}
 	if (err != OK) return err;
-	err = ERR(game_manager.map.generate_province_index_image(width, height, province_shape_image->get_data().ptr()));
+	err = ERR(game_manager.map.generate_province_index_image(image_dims.x, image_dims.y, province_shape_image->get_data().ptr()));
 
 	std::vector<Province::index_t> const& province_index_data = game_manager.map.get_province_index_image();
-	const int32_t divided_width = width / image_width_divide;
-	for (int32_t i = 0; i < image_width_divide; ++i) {
-		PackedByteArray index_data_array;
-		index_data_array.resize(divided_width * height * sizeof(Province::index_t));
-		for (int32_t y = 0; y < height; ++y)
-			memcpy(index_data_array.ptrw() + y * divided_width * sizeof(Province::index_t),
-				province_index_data.data() + y * width + i * divided_width,
-				divided_width * sizeof(Province::index_t));
-		province_index_image[i] = Image::create_from_data(divided_width, height, false, Image::FORMAT_RG8, index_data_array);
-		if (province_index_image[i].is_null()) {
-			UtilityFunctions::push_error("Failed to create province ID image #", i);
-			err = FAILED;
+	const Vector2i divided_dims = image_dims / image_subdivisions;
+	province_index_images.resize(image_subdivisions.x * image_subdivisions.y);
+	for (int32_t v = 0; v < image_subdivisions.y; ++v) {
+		for (int32_t u = 0; u < image_subdivisions.x; ++u) {
+			PackedByteArray index_data_array;
+			index_data_array.resize(divided_dims.x * divided_dims.y * sizeof(Province::index_t));
+
+			for (int32_t y = 0; y < divided_dims.y; ++y)
+				memcpy(index_data_array.ptrw() + y * divided_dims.x * sizeof(Province::index_t),
+					province_index_data.data() + (v * divided_dims.y + y) * image_dims.x + u * divided_dims.x,
+					divided_dims.x * sizeof(Province::index_t));
+
+			const int32_t idx = u + v * image_subdivisions.x;
+			province_index_images[idx] = Image::create_from_data(divided_dims.x, divided_dims.y, false, Image::FORMAT_RG8, index_data_array);
+			if (province_index_images[idx].is_null()) {
+				UtilityFunctions::push_error("Failed to create province index image (", u, ", ", v, ")");
+				err = FAILED;
+			}
 		}
 	}
 
@@ -366,10 +372,14 @@ int32_t GameSingleton::get_height() const {
 	return game_manager.map.get_height();
 }
 
+Vector2i GameSingleton::get_province_index_image_subdivisions() const {
+	return image_subdivisions;
+}
+
 Array GameSingleton::get_province_index_images() const {
 	Array ret;
-	for (int i = 0; i < image_width_divide; ++i)
-		ret.append(province_index_image[i]);
+	for (Ref<Image> const& image : province_index_images)
+		ret.append(image);
 	return ret;
 }
 

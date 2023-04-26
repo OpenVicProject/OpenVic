@@ -6,6 +6,8 @@ render_mode unshaded;
 uniform sampler2D farmlands_tex: source_color, repeat_enable, filter_linear;
 // Province index texture
 uniform sampler2DArray province_index_tex : source_color, repeat_enable, filter_nearest;
+// Province index subdivisions
+uniform vec2 province_index_subdivisions;
 // Province colour texture
 uniform sampler2D province_colour_tex: source_color, repeat_enable, filter_nearest;
 // Index of the mouse over the map mesh
@@ -19,9 +21,9 @@ uvec2 vec2_to_uvec2(vec2 v) {
 	return uvec2(v * 255.0);
 }
 uvec2 read_uvec2(vec2 uv) {
-	float width_divisions = float(textureSize(province_index_tex, 0).z);
-	uv.x *= width_divisions;
-	float idx = mod(floor(uv.x),  width_divisions);
+	uv *= province_index_subdivisions;
+	vec2 subdivision_coords = mod(floor(uv),  province_index_subdivisions);
+	float idx = subdivision_coords.x + subdivision_coords.y * province_index_subdivisions.x;
 	return vec2_to_uvec2(texture(province_index_tex, vec3(uv, idx)).rg);
 }
 uint uvec2_to_uint(uvec2 v) {

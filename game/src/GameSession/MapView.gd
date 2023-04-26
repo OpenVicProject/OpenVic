@@ -13,6 +13,7 @@ const _action_drag : StringName = &"map_drag"
 const _action_click : StringName = &"map_click"
 
 const _shader_param_province_index : StringName = &"province_index_tex"
+const _shader_param_province_index_subdivisions : StringName = &"province_index_subdivisions"
 const _shader_param_province_colour : StringName = &"province_colour_tex"
 const _shader_param_hover_index : StringName = &"hover_index"
 const _shader_param_selected_index : StringName = &"selected_index"
@@ -86,6 +87,10 @@ func _ready():
 		push_error("Failed to generate province index texture array!")
 		return
 	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
+	var subdivisions := GameSingleton.get_province_index_image_subdivisions()
+	if subdivisions.x < 1 or subdivisions.y < 1:
+		push_error("Invalid province index image subdivision: ", subdivisions.x, "x", subdivisions.y)
+	_map_shader_material.set_shader_parameter(_shader_param_province_index_subdivisions, Vector2(subdivisions))
 
 	# Province colour texture
 	_map_province_colour_image = GameSingleton.get_province_colour_image()

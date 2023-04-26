@@ -7,7 +7,7 @@ namespace OpenVic2 {
 		GDCLASS(MapMesh, godot::PrimitiveMesh)
 
 		float aspect_ratio = 2.0f, repeat_proportion = 0.5f;
-		int subdivide_w = 0, subdivide_d = 0;
+		int32_t subdivide_w = 0, subdivide_d = 0;
 
 	protected:
 		static void _bind_methods();
@@ -20,11 +20,11 @@ namespace OpenVic2 {
 		void set_repeat_proportion(const float proportion);
 		float get_repeat_proportion() const;
 
-		void set_subdivide_width(const int divisions);
-		int get_subdivide_width() const;
+		void set_subdivide_width(const int32_t divisions);
+		int32_t get_subdivide_width() const;
 
-		void set_subdivide_depth(const int divisions);
-		int get_subdivide_depth() const;
+		void set_subdivide_depth(const int32_t divisions);
+		int32_t get_subdivide_depth() const;
 
 		godot::AABB get_core_aabb() const;
 		bool is_valid_uv_coord(godot::Vector2 const& uv) const;

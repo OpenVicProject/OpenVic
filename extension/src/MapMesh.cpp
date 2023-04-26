@@ -50,21 +50,21 @@ float MapMesh::get_repeat_proportion() const {
 	return repeat_proportion;
 }
 
-void MapMesh::set_subdivide_width(const int divisions) {
+void MapMesh::set_subdivide_width(const int32_t divisions) {
 	subdivide_w = divisions > 0 ? divisions : 0;
 	_request_update();
 }
 
-int MapMesh::get_subdivide_width() const {
+int32_t MapMesh::get_subdivide_width() const {
 	return subdivide_w;
 }
 
-void MapMesh::set_subdivide_depth(const int divisions) {
+void MapMesh::set_subdivide_depth(const int32_t divisions) {
 	subdivide_d = divisions > 0 ? divisions : 0;
 	_request_update();
 }
 
-int MapMesh::get_subdivide_depth() const {
+int32_t MapMesh::get_subdivide_depth() const {
 	return subdivide_d;
 }
 
@@ -81,8 +81,8 @@ Array MapMesh::_create_mesh_array() const {
 	Array arr;
 	arr.resize(Mesh::ARRAY_MAX);
 
-	const int vertex_count = (subdivide_w + 2) * (subdivide_d + 2);
-	const int indice_count = (subdivide_w + 1) * (subdivide_d + 1) * 6;
+	const int32_t vertex_count = (subdivide_w + 2) * (subdivide_d + 2);
+	const int32_t indice_count = (subdivide_w + 1) * (subdivide_d + 1) * 6;
 
 	PackedVector3Array points;
 	PackedVector3Array normals;
@@ -100,17 +100,17 @@ Array MapMesh::_create_mesh_array() const {
 	const Size2 uv_size{ 1.0f + 2.0f * repeat_proportion, 1.0f };
 	const Size2 size{ aspect_ratio * uv_size.x, uv_size.y }, start_pos = size * -0.5f;
 
-	int point_index = 0, thisrow = 0, prevrow = 0, indice_index = 0;
+	int32_t point_index = 0, thisrow = 0, prevrow = 0, indice_index = 0;
 	Vector2 subdivide_step{ 1.0f / (subdivide_w + 1.0f) , 1.0f / (subdivide_d + 1.0f) };
 	Vector3 point{ 0.0f, 0.0f, start_pos.y };
 	Vector2 point_step = subdivide_step * size;
 	Vector2 uv{}, uv_step = subdivide_step * uv_size;
 
-	for (int j = 0; j <= subdivide_d + 1; ++j) {
+	for (int32_t j = 0; j <= subdivide_d + 1; ++j) {
 		point.x = start_pos.x;
 		uv.x = -repeat_proportion;
 
-		for (int i = 0; i <= subdivide_w + 1; ++i) {
+		for (int32_t i = 0; i <= subdivide_w + 1; ++i) {
 			points[point_index] = point;
 			normals[point_index] = normal;
 			tangents[point_index * 4 + 0] = 1.0f;
