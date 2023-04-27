@@ -8,7 +8,7 @@
 using namespace godot;
 using namespace OpenVic2;
 
-LoadLocalisation *LoadLocalisation::singleton = nullptr;
+LoadLocalisation* LoadLocalisation::singleton = nullptr;
 
 void LoadLocalisation::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_file", "file_path", "locale"), &LoadLocalisation::load_file);
@@ -16,7 +16,7 @@ void LoadLocalisation::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_localisation_dir", "dir_path"), &LoadLocalisation::load_localisation_dir);
 }
 
-LoadLocalisation *LoadLocalisation::get_singleton() {
+LoadLocalisation* LoadLocalisation::get_singleton() {
 	return singleton;
 }
 
@@ -54,7 +54,7 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 }
 
 Ref<Translation> LoadLocalisation::_get_translation(String const& locale) {
-	TranslationServer *server = TranslationServer::get_singleton();
+	TranslationServer* server = TranslationServer::get_singleton();
 	Ref<Translation> translation = server->get_translation_object(locale);
 	if (translation.is_null() || translation->get_locale() != locale) {
 		translation.instantiate();
@@ -93,7 +93,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
  */
 Error LoadLocalisation::load_localisation_dir(String const& dir_path) {
 	if (DirAccess::dir_exists_absolute(dir_path)) {
-		TranslationServer *server = TranslationServer::get_singleton();
+		TranslationServer* server = TranslationServer::get_singleton();
 		Error err = OK;
 		for (String const& locale_name : DirAccess::get_directories_at(dir_path)) {
 			if (locale_name == server->standardize_locale(locale_name)) {

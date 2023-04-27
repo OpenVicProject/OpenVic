@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bp5n3mlu45ygw"]
+[gd_scene load_steps=6 format=3 uid="uid://bp5n3mlu45ygw"]
 
 [ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" path="res://src/MainMenu/MainMenu.gd" id="2_nm1fq"]
+[ext_resource type="Texture2D" uid="uid://dxys0wg0f0ic5" path="res://theme/assets/OpenVicFINALREALTRANS.png" id="3_58ess"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/LocaleButton.tscn" id="3_amonp"]
 [ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/MainMenu/ReleaseInfoBox.tscn" id="3_km0er"]
 
@@ -15,9 +16,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
-_new_game_button = NodePath("Panel/VBox/Margin/ButtonList/NewGameButton")
+_new_game_button = NodePath("MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="MenuPanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,31 +27,30 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"BackgroundPanel"
 
-[node name="VBox" type="VBoxContainer" parent="Panel"]
+[node name="MenuList" type="VBoxContainer" parent="MenuPanel"]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+[node name="TitleIcon" type="TextureRect" parent="MenuPanel/MenuList"]
 layout_mode = 2
-size_flags_vertical = 6
-size_flags_stretch_ratio = 1.5
-theme_type_variation = &"TitleLabel"
-text = "MAINMENU_TITLE"
-horizontal_alignment = 1
-vertical_alignment = 1
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.75
+texture = ExtResource("3_58ess")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Margin" type="MarginContainer" parent="Panel/VBox"]
+[node name="ButtonListMargin" type="MarginContainer" parent="MenuPanel/MenuList"]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_right = 12
 
-[node name="ButtonList" type="HBoxContainer" parent="Panel/VBox/Margin"]
+[node name="ButtonList" type="HBoxContainer" parent="MenuPanel/MenuList/ButtonListMargin"]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_type_variation = &"HBox_MainMenu_ButtonList"
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="NewGameButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -63,7 +63,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_NEW_GAME"
 clip_text = true
 
-[node name="ContinueButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="ContinueButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../NewGameButton")
@@ -75,7 +75,7 @@ disabled = true
 text = "MAINMENU_CONTINUE"
 clip_text = true
 
-[node name="MultiplayerButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="MultiplayerButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-27"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -87,7 +87,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_MULTIPLAYER"
 clip_text = true
 
-[node name="OptionsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="OptionsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-5"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -99,7 +99,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_OPTIONS"
 clip_text = true
 
-[node name="CreditsButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="CreditsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-32"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -111,7 +111,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_CREDITS"
 clip_text = true
 
-[node name="ExitButton" type="Button" parent="Panel/VBox/Margin/ButtonList"]
+[node name="ExitButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-3"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -123,28 +123,28 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_EXIT"
 clip_text = true
 
-[node name="BottomSpace" type="Control" parent="Panel/VBox"]
+[node name="BottomSpace" type="Control" parent="MenuPanel/MenuList"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.35
 
-[node name="BottomMargin" type="MarginContainer" parent="Panel/VBox"]
+[node name="BottomMargin" type="MarginContainer" parent="MenuPanel/MenuList"]
 layout_mode = 2
 theme_type_variation = &"BottomMargin"
 
-[node name="ReleaseInfoBox" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_km0er")]
+[node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_km0er")]
 layout_mode = 2
 
-[node name="LocaleButton" parent="Panel/VBox/BottomMargin" instance=ExtResource("3_amonp")]
+[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_amonp")]
 layout_mode = 2
 size_flags_horizontal = 8
 alignment = 0
 text_overrun_behavior = 4
 
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
-[connection signal="visibility_changed" from="Panel/VBox/Margin/ButtonList/NewGameButton" to="." method="_on_new_game_button_visibility_changed"]
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/CreditsButton" to="." method="_on_credits_button_pressed"]
-[connection signal="pressed" from="Panel/VBox/Margin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="visibility_changed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton" to="." method="_on_new_game_button_visibility_changed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/CreditsButton" to="." method="_on_credits_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]

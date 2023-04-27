@@ -3,14 +3,14 @@ extends Control
 @export var _game_session_menu : Control
 
 func _ready():
-	print("GameSession ready")
+	Events.Options.load_settings_from_file()
+	if GameSingleton.setup() != OK:
+		push_error("Failed to setup game")
+
+func _process(delta : float):
+	GameSingleton.try_tick()
 
 # REQUIREMENTS:
 # * SS-42
-func _on_game_session_menu_button_pressed():
+func _on_game_session_menu_button_pressed() -> void:
 	_game_session_menu.visible = !_game_session_menu.visible
-
-# REQUIREMENTS:
-# * SS-64
-func _on_game_session_menu_close_button_pressed():
-	_game_session_menu.hide()

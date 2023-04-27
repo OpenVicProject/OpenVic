@@ -36,7 +36,7 @@ func is_paused() -> bool:
 
 func toggle_play_pause() -> void:
 	$AudioStreamPlayer.stream_paused = !$AudioStreamPlayer.stream_paused
-	
+
 func start_current_song() -> void:
 	$AudioStreamPlayer.stream = _available_songs[_selected_track].song_stream
 	$AudioStreamPlayer.play()

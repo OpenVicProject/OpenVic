@@ -1,3 +1,4 @@
+
 ,, Main Menu
 MAINMENU_TITLE,OpenVic2
 MAINMENU_NEW_GAME,New Game
@@ -48,5 +49,29 @@ GAMELOBBY_START,Start Game
 GAMELOBBY_BACK,Back
 
 ,, Game Session Menu
-GAMESESSIONMENU_RESIGN,Resign
+GAMESESSIONMENU_SAVE,Save Game
+GAMESESSIONMENU_LOAD,Load Game
+GAMESESSIONMENU_OPTIONS,Options
+GAMESESSIONMENU_MAINMENU,Resign
+GAMESESSIONMENU_QUIT,Quit
 GAMESESSIONMENU_CLOSE,Close
+
+GAMESESSIONMENU_MAINMENU_DIALOG_TITLE,Resign Game
+GAMESESSIONMENU_MAINMENU_DIALOG_TEXT,Are you sure you want to resign and return to the main menu?
+GAMESESSIONMENU_QUIT_DIALOG_TITLE,Quit Game
+GAMESESSIONMENU_QUIT_DIALOG_TEXT,Are you sure you want to quit and return to desktop?
+
+DIALOG_OK,OK
+DIALOG_CANCEL,Cancel
+DIALOG_SAVE_AND_RESIGN,Save and Resign
+DIALOG_SAVE_AND_QUIT,Save and Quit
+
+,, Province Overview Panel
+province_MISSING,No Province
+region_MISSING,No Region
+LIFE_RATING_TOOLTIP,Liferating: %d
+building_MISSING,No Building
+building_fort,Fort
+building_naval_base,Naval Base
+building_railroad,Railroad
+EXPAND_PROVINCE_BUILDING,Expand

@@ -10,8 +10,6 @@ var _new_game_button : BaseButton
 # REQUIREMENTS:
 # * SS-3
 func _ready():
-	print("From GDScript")
-	TestSingleton.hello_singleton()
 	_on_new_game_button_visibility_changed()
 
 # REQUIREMENTS:

@@ -10,6 +10,12 @@ ARGUMENTS.pop('intermediate_delete', True)
 
 env = SConscript("godot-cpp/SConstruct")
 
+# Require C++20
+if env.get("is_msvc", False):
+    env.Replace(CXXFLAGS=["/std:c++20"])
+else:
+    env.Replace(CXXFLAGS=["-std=c++20"])
+
 ARGUMENTS = SAVED_ARGUMENTS
 
 # Custom options and profile flags.

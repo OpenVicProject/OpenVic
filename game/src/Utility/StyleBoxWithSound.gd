@@ -1,3 +1,4 @@
+## WARNING: This will not work with togglable UI elements, a special implementation is needed for them.
 @tool
 extends StyleBox
 class_name StyleBoxWithSound
