@@ -7,23 +7,13 @@
 using namespace OpenVic2;
 
 Province::Province(index_t new_index, std::string const& new_identifier, colour_t new_colour) :
-	HasIdentifier{ new_identifier }, index{ new_index }, colour{ new_colour }, buildings{ "buildings" } {
+	HasIdentifier{ new_identifier }, HasColour{ new_colour }, index{ new_index }, buildings{ "buildings" } {
 	assert(index != NULL_INDEX);
-	assert(colour != NULL_COLOUR);
+	assert(new_colour != NULL_COLOUR);
 }
 
-std::string Province::colour_to_hex_string(colour_t colour) {
-	std::ostringstream stream;
-	stream << std::hex << std::setfill('0') << std::setw(6) << colour;
-	return stream.str();
-}
-
-Province::index_t Province::get_index() const {
+index_t Province::get_index() const {
 	return index;
-}
-
-Province::colour_t Province::get_colour() const {
-	return colour;
 }
 
 Region* Province::get_region() const {
@@ -62,7 +52,7 @@ return_t Province::expand_building(std::string const& building_type_identifier) 
 
 std::string Province::to_string() const {
 	std::stringstream stream;
-	stream << "(#" << std::to_string(index) << ", " << get_identifier() << ", 0x" << colour_to_hex_string(colour) << ")";
+	stream << "(#" << std::to_string(index) << ", " << get_identifier() << ", 0x" << colour_to_hex_string() << ")";
 	return stream.str();
 }
 

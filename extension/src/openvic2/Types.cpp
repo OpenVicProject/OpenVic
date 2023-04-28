@@ -1,6 +1,9 @@
 #include "openvic2/Types.hpp"
 
 #include <cassert>
+#include <sstream>
+#include <iomanip>
+#include "Types.hpp"
 
 using namespace OpenVic2;
 
@@ -10,4 +13,20 @@ HasIdentifier::HasIdentifier(std::string const& new_identifier) : identifier{ ne
 
 std::string const& HasIdentifier::get_identifier() const {
 	return identifier;
+}
+
+HasColour::HasColour(colour_t const new_colour) : colour(new_colour) {
+	assert(colour <= MAX_COLOUR && colour != NULL_COLOUR);
+}
+
+colour_t HasColour::get_colour() const { return colour; }
+
+std::string OpenVic2::HasColour::colour_to_hex_string(colour_t const colour) {
+	std::ostringstream stream;
+	stream << std::hex << std::setfill('0') << std::setw(6) << colour;
+	return stream.str();
+}
+
+std::string HasColour::colour_to_hex_string() const {
+	return colour_to_hex_string(colour);
 }

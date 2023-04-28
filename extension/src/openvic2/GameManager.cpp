@@ -38,7 +38,7 @@ Date const& GameManager::get_today() const {
 	return today;
 }
 
-return_t GameManager::expand_building(Province::index_t province_index, std::string const& building_type_identifier) {
+return_t GameManager::expand_building(index_t province_index, std::string const& building_type_identifier) {
 	set_needs_update();
 	Province* province = map.get_province_by_index(province_index);
 	if (province == nullptr) return FAILURE;

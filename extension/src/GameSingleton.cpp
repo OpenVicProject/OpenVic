@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/json.hpp>
 
 #include "openvic2/Logger.hpp"
+#include "openvic2/Types.hpp"
 
 using namespace godot;
 using namespace OpenVic2;
@@ -63,16 +64,16 @@ GameSingleton::GameSingleton() : game_manager{ [this]() { emit_signal("state_upd
 
 	using mapmode_t = std::pair<std::string, Mapmode::colour_func_t>;
 	const std::vector<mapmode_t> mapmodes = {
-		{ "mapmode_province", [](Map const&, Province const& province) -> Province::colour_t { return province.get_colour(); } },
-		{ "mapmode_region", [](Map const&, Province const& province) -> Province::colour_t {
+		{ "mapmode_province", [](Map const&, Province const& province) -> colour_t { return province.get_colour(); } },
+		{ "mapmode_region", [](Map const&, Province const& province) -> colour_t {
 			Region const* region = province.get_region();
 			if (region != nullptr) return region->get_colour();
 			return province.get_colour();
 		} },
-		{ "mapmode_terrain", [](Map const&, Province const& province) -> Province::colour_t {
+		{ "mapmode_terrain", [](Map const&, Province const& province) -> colour_t {
 			return province.is_water() ? 0x4287F5 : 0x0D7017;
 		} },
-		{ "mapmode_index", [](Map const& map, Province const& province) -> Province::colour_t {
+		{ "mapmode_index", [](Map const& map, Province const& province) -> colour_t {
 			const uint8_t f = static_cast<float>(province.get_index()) / static_cast<float>(map.get_province_count()) * 255.0f;
 			return (f << 16) | (f << 8) | f;
 		} }
@@ -149,30 +150,31 @@ static Error parse_json_dictionary_file(String const& file_description, String c
 
 Error GameSingleton::_parse_province_identifier_entry(String const& identifier, Variant const& entry) {
 	const Variant::Type type = entry.get_type();
-	Province::colour_t colour = Province::NULL_COLOUR;
+	colour_t colour = NULL_COLOUR;
 	if (type == Variant::ARRAY) {
 		Array const& colour_array = entry;
 		if (colour_array.size() == 3) {
 			for (int jdx = 0; jdx < 3; ++jdx) {
 				Variant const& var = colour_array[jdx];
 				if (var.get_type() != Variant::FLOAT) {
-					colour = Province::NULL_COLOUR;
+					colour = NULL_COLOUR;
 					break;
 				}
 				const double colour_double = var;
 				if (std::trunc(colour_double) != colour_double) {
-					colour = Province::NULL_COLOUR;
+					colour = NULL_COLOUR;
 					break;
 				}
 				const int64_t colour_int = static_cast<int64_t>(colour_double);
 				if (colour_int < 0 || colour_int > 255) {
-					colour = Province::NULL_COLOUR;
+					colour = NULL_COLOUR;
 					break;
 				}
 				colour = (colour << 8) | colour_int;
 			}
 		}
-	} else if (type == Variant::STRING) {
+	}
+	else if (type == Variant::STRING) {
 		String const& colour_string = entry;
 		if (colour_string.is_valid_hex_number()) {
 			const int64_t colour_int = colour_string.hex_to_int();
@@ -180,7 +182,7 @@ Error GameSingleton::_parse_province_identifier_entry(String const& identifier, 
 				colour = colour_int;
 		}
 	}
-	if (colour == Province::NULL_COLOUR) {
+	if (colour == NULL_COLOUR) {
 		UtilityFunctions::push_error("Invalid colour for province identifier \"", identifier, "\": ", entry);
 		return FAILED;
 	}
@@ -208,7 +210,8 @@ Error GameSingleton::_parse_region_entry(String const& identifier, Variant const
 			if (type == Variant::STRING) {
 				String const& province_string = province_var;
 				province_identifiers.push_back(province_string.utf8().get_data());
-			} else {
+			}
+			else {
 				UtilityFunctions::push_error("Invalid province identifier for region \"", identifier, "\": ", entry);
 				err = FAILED;
 			}
@@ -261,15 +264,15 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 	if (err != OK) return err;
 	err = ERR(game_manager.map.generate_province_index_image(width, height, province_shape_image->get_data().ptr()));
 
-	std::vector<Province::index_t> const& province_index_data = game_manager.map.get_province_index_image();
+	std::vector<index_t> const& province_index_data = game_manager.map.get_province_index_image();
 	const int32_t divided_width = width / image_width_divide;
 	for (int32_t i = 0; i < image_width_divide; ++i) {
 		PackedByteArray index_data_array;
-		index_data_array.resize(divided_width * height * sizeof(Province::index_t));
+		index_data_array.resize(divided_width * height * sizeof(index_t));
 		for (int32_t y = 0; y < height; ++y)
-			memcpy(index_data_array.ptrw() + y * divided_width * sizeof(Province::index_t),
+			memcpy(index_data_array.ptrw() + y * divided_width * sizeof(index_t),
 				province_index_data.data() + y * width + i * divided_width,
-				divided_width * sizeof(Province::index_t));
+				divided_width * sizeof(index_t));
 		province_index_image[i] = Image::create_from_data(divided_width, height, false, Image::FORMAT_RG8, index_data_array);
 		if (province_index_image[i].is_null()) {
 			UtilityFunctions::push_error("Failed to create province ID image #", i);
@@ -295,7 +298,8 @@ Error GameSingleton::load_water_province_file(String const& file_path) {
 		UtilityFunctions::push_error("Invalid water province JSON: root has type ",
 			Variant::get_type_name(type), " (expected Array)");
 		err = FAILED;
-	} else {
+	}
+	else {
 		Array const& array = json_var;
 		for (int64_t idx = 0; idx < array.size(); ++idx) {
 			Variant const& entry = array[idx];
@@ -379,14 +383,14 @@ Ref<Image> GameSingleton::get_province_colour_image() const {
 
 Error GameSingleton::update_colour_image() {
 	static PackedByteArray colour_data_array;
-	static constexpr int64_t colour_data_array_size = (Province::MAX_INDEX + 1) * 4;
+	static constexpr int64_t colour_data_array_size = (MAX_INDEX + 1) * 4;
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
 	if (game_manager.map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()) != SUCCESS)
 		err = FAILED;
 
-	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
+	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(index_t) * 4);
 	if (province_colour_image.is_null())
 		province_colour_image.instantiate();
 	province_colour_image->set_data(PROVINCE_INDEX_SQRT, PROVINCE_INDEX_SQRT,

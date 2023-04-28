@@ -2,11 +2,22 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include "openvic2/Logger.hpp"
 
 namespace OpenVic2 {
+	//Represents a 24-bit RGB integer
+	using colour_t = uint32_t;
+	using index_t = uint16_t;
+
+	static constexpr colour_t NULL_COLOUR = 0, MAX_COLOUR = 0xFFFFFF;
+	static constexpr index_t NULL_INDEX = 0, MAX_INDEX = 0xFFFF;
+
+	//TODO: price_t must be changed to a fixed-point numeric type before multiplayer
+	using price_t = double;
 	using return_t = bool;
+
 	// This mirrors godot::Error, where `OK = 0` and `FAILED = 1`.
 	static constexpr return_t SUCCESS = false, FAILURE = true;
 
@@ -26,6 +37,24 @@ namespace OpenVic2 {
 		HasIdentifier& operator=(HasIdentifier&&) = delete;
 
 		std::string const& get_identifier() const;
+	};
+
+	/*
+	 * Base class for objects with associated colour information
+	 */
+	class HasColour {
+		const colour_t colour;
+	protected:
+		HasColour(colour_t const new_colour);
+	public:
+		HasColour(HasColour const&) = delete;
+		HasColour(HasColour&&) = default;
+		HasColour& operator=(HasColour const&) = delete;
+		HasColour& operator=(HasColour&&) = delete;
+
+		colour_t get_colour() const;
+		std::string colour_to_hex_string() const;
+		static std::string colour_to_hex_string(colour_t const colour);
 	};
 
 	/*
