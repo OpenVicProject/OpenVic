@@ -28,7 +28,7 @@ namespace OpenVic2 {
 	struct Map {
 		#pragma pack(push, 1)
 		struct shape_pixel_t {
-			Province::index_t index;
+			index_t index;
 			uint8_t terrain;
 		};
 		#pragma pack(pop)
