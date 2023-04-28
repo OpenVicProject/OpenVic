@@ -4,7 +4,14 @@ signal minimap_clicked(pos_clicked : Vector2)
 
 const _action_click : StringName = &"map_click"
 
+@export var _minimap_texture : Control
+
 var _viewport_points : PackedVector2Array
+
+func _ready():
+	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_aspect_ratio(), 1.0) * 150
+	if Events.ShaderManager.set_up_shader(_minimap_texture.get_material(), false) != OK:
+		push_error("Failed to set up minimap shader")
 
 # REQUIREMENTS
 # * SS-80

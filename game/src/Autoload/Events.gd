@@ -1,7 +1,9 @@
 extends Node
 
+var GameDebug = preload("Events/GameDebug.gd").new()
 var Options = preload("Events/Options.gd").new()
 var Localisation = preload("Events/Localisation.gd").new()
+var ShaderManager = preload("Events/ShaderManager.gd").new()
 
 const _province_identifier_file : String = "res://common/map/provinces.json"
 const _water_province_file : String = "res://common/map/water.json"

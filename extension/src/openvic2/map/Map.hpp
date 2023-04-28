@@ -25,6 +25,12 @@ namespace OpenVic2 {
 	 * MAP-4
 	 */
 	struct Map {
+		#pragma pack(push, 1)
+		struct shape_pixel_t {
+			Province::index_t index;
+			uint8_t terrain;
+		};
+		#pragma pack(pop)
 	private:
 		IdentifierRegistry<Province> provinces;
 		IdentifierRegistry<Region> regions;
@@ -33,7 +39,7 @@ namespace OpenVic2 {
 		size_t water_province_count = 0;
 
 		size_t width = 0, height = 0;
-		std::vector<Province::index_t> province_index_image;
+		std::vector<shape_pixel_t> province_shape_image;
 	public:
 		Map();
 
@@ -56,16 +62,17 @@ namespace OpenVic2 {
 		Region* get_region_by_identifier(std::string const& identifier);
 		Region const* get_region_by_identifier(std::string const& identifier) const;
 
-		return_t generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data);
+		return_t generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data);
 		size_t get_width() const;
 		size_t get_height() const;
-		std::vector<Province::index_t> const& get_province_index_image() const;
+		std::vector<shape_pixel_t> const& get_province_shape_image() const;
 
 		return_t add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func);
 		void lock_mapmodes();
 		size_t get_mapmode_count() const;
 		Mapmode const* get_mapmode_by_index(Mapmode::index_t index) const;
 		Mapmode const* get_mapmode_by_identifier(std::string const& identifier) const;
+		static constexpr size_t MAPMODE_COLOUR_SIZE = 3;
 		return_t generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) const;
 
 		return_t generate_province_buildings(BuildingManager const& manager);

@@ -1,7 +1,6 @@
 extends PanelContainer
 
 signal game_session_menu_button_pressed
-signal mapmode_changed
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal minimap_clicked(pos_clicked : Vector2)
 signal zoom_in_button_pressed
@@ -40,7 +39,7 @@ func _on_game_session_menu_button_pressed() -> void:
 # * UIFUN-129, UIFUN-133
 func _mapmode_pressed(button : BaseButton) -> void:
 	GameSingleton.set_mapmode(button.tooltip_text)
-	mapmode_changed.emit()
+	GameSingleton.update_colour_image()
 
 func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2) -> void:
 	map_view_camera_changed.emit(near_left, far_left, far_right, near_right)

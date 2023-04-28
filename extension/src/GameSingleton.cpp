@@ -24,9 +24,10 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
 	ClassDB::bind_method(D_METHOD("get_width"), &GameSingleton::get_width);
 	ClassDB::bind_method(D_METHOD("get_height"), &GameSingleton::get_height);
-	ClassDB::bind_method(D_METHOD("get_province_index_image_subdivisions"), &GameSingleton::get_province_index_image_subdivisions);
-	ClassDB::bind_method(D_METHOD("get_province_index_images"), &GameSingleton::get_province_index_images);
-	ClassDB::bind_method(D_METHOD("get_province_colour_image"), &GameSingleton::get_province_colour_image);
+	ClassDB::bind_method(D_METHOD("get_aspect_ratio"), &GameSingleton::get_aspect_ratio);
+	ClassDB::bind_method(D_METHOD("get_province_shape_image_subdivisions"), &GameSingleton::get_province_shape_image_subdivisions);
+	ClassDB::bind_method(D_METHOD("get_province_shape_texture"), &GameSingleton::get_province_shape_texture);
+	ClassDB::bind_method(D_METHOD("get_province_colour_texture"), &GameSingleton::get_province_colour_texture);
 
 	ClassDB::bind_method(D_METHOD("update_colour_image"), &GameSingleton::update_colour_image);
 	ClassDB::bind_method(D_METHOD("get_mapmode_count"), &GameSingleton::get_mapmode_count);
@@ -232,7 +233,7 @@ Error GameSingleton::load_region_file(String const& file_path) {
 }
 
 Error GameSingleton::load_province_shape_file(String const& file_path) {
-	if (!province_index_images.empty()) {
+	if (province_shape_texture.is_valid()) {
 		UtilityFunctions::push_error("Province shape file has already been loaded, cannot load: ", file_path);
 		return FAILED;
 	}
@@ -259,28 +260,35 @@ Error GameSingleton::load_province_shape_file(String const& file_path) {
 		err = FAILED;
 	}
 	if (err != OK) return err;
-	err = ERR(game_manager.map.generate_province_index_image(image_dims.x, image_dims.y, province_shape_image->get_data().ptr()));
+	err = ERR(game_manager.map.generate_province_shape_image(image_dims.x, image_dims.y, province_shape_image->get_data().ptr()));
 
-	std::vector<Province::index_t> const& province_index_data = game_manager.map.get_province_index_image();
+	std::vector<Map::shape_pixel_t> const& province_shape_data = game_manager.map.get_province_shape_image();
 	const Vector2i divided_dims = image_dims / image_subdivisions;
-	province_index_images.resize(image_subdivisions.x * image_subdivisions.y);
+	Array province_shape_images;
+	province_shape_images.resize(image_subdivisions.x * image_subdivisions.y);
 	for (int32_t v = 0; v < image_subdivisions.y; ++v) {
 		for (int32_t u = 0; u < image_subdivisions.x; ++u) {
 			PackedByteArray index_data_array;
-			index_data_array.resize(divided_dims.x * divided_dims.y * sizeof(Province::index_t));
+			index_data_array.resize(divided_dims.x * divided_dims.y * sizeof(Map::shape_pixel_t));
 
 			for (int32_t y = 0; y < divided_dims.y; ++y)
-				memcpy(index_data_array.ptrw() + y * divided_dims.x * sizeof(Province::index_t),
-					province_index_data.data() + (v * divided_dims.y + y) * image_dims.x + u * divided_dims.x,
-					divided_dims.x * sizeof(Province::index_t));
+				memcpy(index_data_array.ptrw() + y * divided_dims.x * sizeof(Map::shape_pixel_t),
+					province_shape_data.data() + (v * divided_dims.y + y) * image_dims.x + u * divided_dims.x,
+					divided_dims.x * sizeof(Map::shape_pixel_t));
 
-			const int32_t idx = u + v * image_subdivisions.x;
-			province_index_images[idx] = Image::create_from_data(divided_dims.x, divided_dims.y, false, Image::FORMAT_RG8, index_data_array);
-			if (province_index_images[idx].is_null()) {
+			const Ref<Image> province_index_subimage = Image::create_from_data(divided_dims.x, divided_dims.y, false, Image::FORMAT_RGB8, index_data_array);
+			if (province_index_subimage.is_null()) {
 				UtilityFunctions::push_error("Failed to create province index image (", u, ", ", v, ")");
 				err = FAILED;
 			}
+			province_shape_images[u + v * image_subdivisions.x] = province_index_subimage;
 		}
+	}
+
+	province_shape_texture.instantiate();
+	if (province_shape_texture->create_from_images(province_shape_images) != OK) {
+		UtilityFunctions::push_error("");
+		err = FAILED;
 	}
 
 	if (update_colour_image() != OK) err = FAILED;
@@ -372,24 +380,25 @@ int32_t GameSingleton::get_height() const {
 	return game_manager.map.get_height();
 }
 
-Vector2i GameSingleton::get_province_index_image_subdivisions() const {
+float GameSingleton::get_aspect_ratio() const {
+	return static_cast<float>(get_width()) / static_cast<float>(get_height());
+}
+
+Vector2i GameSingleton::get_province_shape_image_subdivisions() const {
 	return image_subdivisions;
 }
 
-Array GameSingleton::get_province_index_images() const {
-	Array ret;
-	for (Ref<Image> const& image : province_index_images)
-		ret.append(image);
-	return ret;
+Ref<Texture> GameSingleton::get_province_shape_texture() const {
+	return province_shape_texture;
 }
 
-Ref<Image> GameSingleton::get_province_colour_image() const {
-	return province_colour_image;
+Ref<Texture> GameSingleton::get_province_colour_texture() const {
+	return province_colour_texture;
 }
 
 Error GameSingleton::update_colour_image() {
 	static PackedByteArray colour_data_array;
-	static constexpr int64_t colour_data_array_size = (Province::MAX_INDEX + 1) * 4;
+	static constexpr int64_t colour_data_array_size = (Province::MAX_INDEX + 1) * Map::MAPMODE_COLOUR_SIZE;
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
@@ -397,14 +406,17 @@ Error GameSingleton::update_colour_image() {
 		err = FAILED;
 
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
-	if (province_colour_image.is_null())
-		province_colour_image.instantiate();
+	if (province_colour_image.is_null()) province_colour_image.instantiate();
 	province_colour_image->set_data(PROVINCE_INDEX_SQRT, PROVINCE_INDEX_SQRT,
-		false, Image::FORMAT_RGBA8, colour_data_array);
+		false, Image::FORMAT_RGB8, colour_data_array);
 	if (province_colour_image.is_null()) {
 		UtilityFunctions::push_error("Failed to update province colour image");
 		return FAILED;
 	}
+	if (province_colour_texture.is_null())
+		province_colour_texture = ImageTexture::create_from_image(province_colour_image);
+	else
+		province_colour_texture->update(province_colour_image);
 	return err;
 }
 

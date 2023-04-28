@@ -157,7 +157,7 @@ Province const* Map::get_province_by_colour(Province::colour_t colour) const {
 }
 
 Province::index_t Map::get_province_index_at(size_t x, size_t y) const {
-	if (x < width && y < height) return province_index_image[x + y * width];
+	if (x < width && y < height) return province_shape_image[x + y * width].index;
 	return Province::NULL_INDEX;
 }
 
@@ -173,8 +173,8 @@ static Province::colour_t colour_at(uint8_t const* colour_data, int32_t idx) {
 	return (colour_data[idx * 3] << 16) | (colour_data[idx * 3 + 1] << 8) | colour_data[idx * 3 + 2];
 }
 
-return_t Map::generate_province_index_image(size_t new_width, size_t new_height, uint8_t const* colour_data) {
-	if (!province_index_image.empty()) {
+return_t Map::generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data) {
+	if (!province_shape_image.empty()) {
 		Logger::error("Province index image has already been generated!");
 		return FAILURE;
 	}
@@ -192,7 +192,7 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 	}
 	width = new_width;
 	height = new_height;
-	province_index_image.resize(width * height);
+	province_shape_image.resize(width * height);
 
 	std::vector<bool> province_checklist(provinces.get_item_count());
 	return_t ret = SUCCESS;
@@ -205,22 +205,23 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 			if (x > 0) {
 				const int32_t jdx = idx - 1;
 				if (colour_at(colour_data, jdx) == colour) {
-					province_index_image[idx] = province_index_image[jdx];
+					province_shape_image[idx] = province_shape_image[jdx];
 					continue;
 				}
 			}
 			if (y > 0) {
 				const int32_t jdx = idx - width;
 				if (colour_at(colour_data, jdx) == colour) {
-					province_index_image[idx] = province_index_image[jdx];
+					province_shape_image[idx] = province_shape_image[jdx];
 					continue;
 				}
 			}
 			Province const* province = get_province_by_colour(colour);
 			if (province != nullptr) {
 				const Province::index_t index = province->get_index();
-				province_index_image[idx] = index;
 				province_checklist[index - 1] = true;
+				province_shape_image[idx].index = index;
+				province_shape_image[idx].terrain = !province->is_water();
 				continue;
 			}
 			if (unrecognised_colours.find(colour) == unrecognised_colours.end()) {
@@ -228,7 +229,8 @@ return_t Map::generate_province_index_image(size_t new_width, size_t new_height,
 				Logger::error("Unrecognised province colour ", Province::colour_to_hex_string(colour), " at (", x, ", ", y, ")");
 				ret = FAILURE;
 			}
-			province_index_image[idx] = Province::NULL_INDEX;
+			province_shape_image[idx].index = Province::NULL_INDEX;
+			province_shape_image[idx].terrain = 0;
 		}
 	}
 
@@ -249,8 +251,8 @@ size_t Map::get_height() const {
 	return height;
 }
 
-std::vector<Province::index_t> const& Map::get_province_index_image() const {
-	return province_index_image;
+std::vector<Map::shape_pixel_t> const& Map::get_province_shape_image() const {
+	return province_shape_image;
 }
 
 return_t Map::add_mapmode(std::string const& identifier, Mapmode::colour_func_t colour_func) {
@@ -291,13 +293,14 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) 
 		Logger::error("Invalid mapmode index: ", index);
 		return FAILURE;
 	}
-	target += 4; // Skip past Province::NULL_INDEX
+	// Skip past Province::NULL_INDEX
+	for (size_t i = 0; i < MAPMODE_COLOUR_SIZE; ++i)
+		*target++ = 0;
 	for (Province const& province : provinces.get_items()) {
 		const Province::colour_t colour = mapmode->get_colour(*this, province);
 		*target++ = (colour >> 16) & 0xFF;
 		*target++ = (colour >> 8) & 0xFF;
 		*target++ = colour & 0xFF;
-		*target++ = province.is_water() ? 0 : 255;
 	}
 	return SUCCESS;
 }
