@@ -1,25 +1,23 @@
 #pragma once
 
 #include <string>
-#include <godot_cpp/variant/string.hpp>
+#include "Types.hpp"
 
 namespace OpenVic2 {
-	class Good {
+	class Good : HasIdentifier {
 		public:
 			using price_t = float;
 
-			godot::String identifier;
-			godot::String category;
+			std::string category;
 			price_t cost;
-			godot::String colour;
-			bool isAvailableAtStart;
+			std::string colour;
+			bool isAvailable;
 			bool isTradable;
 			bool isMoney;
 			bool hasOverseasPenalty;
 
-			Good();
-			Good(const godot::String& identifier, const godot::String& category, price_t cost, const godot::String& colour,
-				bool isAvailable, bool isTradable, bool isMoney, bool hasOverseasPenalty);
-			~Good();
+			Good(std::string const& identifier,std::string const& category, price_t cost, std::string const& colour, 
+				bool isAvailable, bool isTradable, bool isMoney, bool hasOverseasPenalty) : HasIdentifier(identifier),
+				category(category), cost(cost), colour(colour), isAvailable(isAvailable), isMoney(isMoney), hasOverseasPenalty(hasOverseasPenalty) {};
 	};
 }
