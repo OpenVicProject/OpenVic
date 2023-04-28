@@ -7,6 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
 shader = ExtResource("1_upocn")
+shader_parameter/province_index_subdivisions = null
 shader_parameter/hover_index = null
 shader_parameter/selected_index = null
 shader_parameter/terrain_tile_factor = null
