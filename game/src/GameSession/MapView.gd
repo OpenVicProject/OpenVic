@@ -12,12 +12,6 @@ const _action_zoom_out : StringName = &"map_zoom_out"
 const _action_drag : StringName = &"map_drag"
 const _action_click : StringName = &"map_click"
 
-const _shader_param_province_index : StringName = &"province_index_tex"
-const _shader_param_province_colour : StringName = &"province_colour_tex"
-const _shader_param_hover_index : StringName = &"hover_index"
-const _shader_param_selected_index : StringName = &"selected_index"
-const _shader_param_terrain_tile_factor : StringName = &"terrain_tile_factor"
-
 @export var _camera : Camera3D
 
 @export var _cardinal_move_speed : float = 1.0
@@ -40,9 +34,6 @@ var _mouse_over_viewport : bool = true
 @export var _map_mesh_instance : MeshInstance3D
 var _map_mesh : MapMesh
 var _map_shader_material : ShaderMaterial
-var _map_image_size : Vector2
-var _map_province_colour_image : Image
-var _map_province_colour_texture : ImageTexture
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
@@ -68,32 +59,10 @@ func _ready():
 
 	# Shader Material
 	var map_material := _map_mesh_instance.get_active_material(0)
-	if map_material == null:
-		push_error("Map mesh is missing material!")
-		return
-	if not map_material is ShaderMaterial:
-		push_error("Invalid map mesh material class: ", map_material.get_class())
+	if Events.ShaderManager.set_up_shader(map_material, true) != OK:
+		push_error("Failed to set up map shader")
 		return
 	_map_shader_material = map_material
-
-	# Province index textures
-	var map_province_index_images := GameSingleton.get_province_index_images()
-	if map_province_index_images == null or map_province_index_images.is_empty():
-		push_error("Failed to get province index image!")
-		return
-	var province_index_texture := Texture2DArray.new()
-	if province_index_texture.create_from_images(map_province_index_images) != OK:
-		push_error("Failed to generate province index texture array!")
-		return
-	_map_shader_material.set_shader_parameter(_shader_param_province_index, province_index_texture)
-
-	# Province colour texture
-	_map_province_colour_image = GameSingleton.get_province_colour_image()
-	if _map_province_colour_image == null:
-		push_error("Failed to get province colour image!")
-		return
-	_map_province_colour_texture = ImageTexture.create_from_image(_map_province_colour_image)
-	_map_shader_material.set_shader_parameter(_shader_param_province_colour, _map_province_colour_texture)
 
 	if not _map_mesh_instance.mesh is MapMesh:
 		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
@@ -101,9 +70,8 @@ func _ready():
 	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	_map_image_size = Vector2(Vector2i(GameSingleton.get_width(), GameSingleton.get_height()))
-	_map_mesh.aspect_ratio = _map_image_size.x / _map_image_size.y
-	_map_shader_material.set_shader_parameter(_shader_param_terrain_tile_factor, _map_image_size.y / 64.0)
+	_map_mesh.aspect_ratio = GameSingleton.get_aspect_ratio()
+	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor, float(GameSingleton.get_height()) / 64.0)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
@@ -120,10 +88,6 @@ func _notification(what : int):
 			_on_mouse_entered_viewport()
 		NOTIFICATION_WM_MOUSE_EXIT: # Mouse out of window
 			_on_mouse_exited_viewport()
-
-func _update_colour_texture() -> void:
-	GameSingleton.update_colour_image()
-	_map_province_colour_texture.update(_map_province_colour_image)
 
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
@@ -154,7 +118,7 @@ func _unhandled_input(event : InputEvent):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
 			var selected_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
-			_map_shader_material.set_shader_parameter(_shader_param_selected_index, selected_index)
+			_map_shader_material.set_shader_parameter(Events.ShaderManager.param_selected_index, selected_index)
 			province_selected.emit(selected_index)
 		else:
 			print("Clicked outside the map!")
@@ -251,7 +215,7 @@ func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
 	var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 	if _mouse_over_viewport:
-		_map_shader_material.set_shader_parameter(_shader_param_hover_index, hover_index)
+		_map_shader_material.set_shader_parameter(Events.ShaderManager.param_hover_index, hover_index)
 
 func _on_mouse_entered_viewport():
 	_mouse_over_viewport = true

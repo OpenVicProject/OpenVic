@@ -62,7 +62,7 @@ func get_resolution_display_name(resolution_value : Vector2i) -> StringName:
 func get_resolution_value_from_string(resolution_string : String) -> Vector2i:
 	if not resolution_string.is_empty():
 		for resolution in _resolutions.values():
-			if resolution_string == resolution.get(name) or resolution_string == resolution.display_name:
+			if resolution_string == resolution.name or resolution_string == resolution.display_name:
 				return resolution.value
 		var result := _regex.search(resolution_string)
 		if result: return Vector2i(result.get_string(1).to_int(), result.get_string(2).to_int())

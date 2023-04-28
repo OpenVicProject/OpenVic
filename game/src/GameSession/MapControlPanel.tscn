@@ -1,9 +1,12 @@
 [gd_scene load_steps=7 format=3 uid="uid://g524p8lr574w"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
-[ext_resource type="Texture2D" uid="uid://c0sm1jfu4kyv3" path="res://art/ui/minimap.png" id="2_r613r"]
+[ext_resource type="Shader" path="res://src/GameSession/Minimap.gdshader" id="2_rinsg"]
 [ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="3_s4dml"]
-[ext_resource type="Texture2D" uid="uid://vr1hq2stk8ny" path="res://art/ui/minimap_frame.png" id="4_f1exl"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bhuqb"]
+shader = ExtResource("2_rinsg")
+shader_parameter/province_shape_subdivisions = null
 
 [sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
 action = &"ui_cancel"
@@ -41,28 +44,21 @@ columns = 11
 [node name="Minimap" type="PanelContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
 editor_description = "UI-549"
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 mouse_filter = 1
 
-[node name="MinimapTexture" type="TextureRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
+[node name="MinimapTexture" type="ColorRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
 editor_description = "UI-751, FS-338"
+material = SubResource("ShaderMaterial_bhuqb")
 layout_mode = 2
-texture = ExtResource("2_r613r")
+color = Color(0.921569, 0.835294, 0.701961, 1)
 
-[node name="ViewportQuad" type="Control" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
+[node name="ViewportQuad" type="Control" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap" node_paths=PackedStringArray("_minimap_texture")]
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("3_s4dml")
-
-[node name="Frame" type="NinePatchRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
-layout_mode = 2
-texture = ExtResource("4_f1exl")
-draw_center = false
-patch_margin_left = 10
-patch_margin_top = 10
-patch_margin_right = 10
-patch_margin_bottom = 10
-axis_stretch_horizontal = 1
-axis_stretch_vertical = 1
+_minimap_texture = NodePath("../MinimapTexture")
 
 [node name="AuxiliaryPanel" type="VBoxContainer" parent="MapPanelMargin/MapPanelList"]
 editor_description = "UI-761"
