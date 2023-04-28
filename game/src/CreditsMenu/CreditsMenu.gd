@@ -17,6 +17,9 @@ signal back_button_pressed
 @export_file("*.csv")
 var core_credits_path : String
 
+@export
+var godot_engine_scene : PackedScene
+
 @export_group("Label Variants", "label_variants_")
 @export
 var label_variants_project : StringName
@@ -114,10 +117,81 @@ func _add_project_credits(project : Dictionary) -> void:
 
 	credits_list.add_child(project_credits_list)
 
+func _add_godot_credits() -> void:
+	var godot_credits_list = VBoxContainer.new()
+	godot_credits_list.name = 'CreditsGodot'
+	var godot_engine = godot_engine_scene.instantiate()
+	godot_credits_list.add_child(godot_engine)
+	godot_credits_list.add_child(HSeparator.new())
+
+	var author_dict := Engine.get_author_info()
+	_add_label(godot_credits_list, "Contributors", label_variants_role)
+
+	for role in author_dict:
+		var role_parent = VBoxContainer.new()
+
+		for person in author_dict[role]:
+			_add_label(role_parent, person, label_variants_person)
+
+		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
+		godot_credits_list.add_child(role_parent)
+		godot_credits_list.add_child(HSeparator.new())
+
+	var donor_dict := Engine.get_donor_info()
+	_add_label(godot_credits_list, "Donors", label_variants_role)
+
+	for role in donor_dict:
+		if donor_dict[role].size() == 0 or donor_dict[role][0].begins_with("None"): continue
+		var role_parent = VBoxContainer.new()
+
+		for person in donor_dict[role]:
+			_add_label(role_parent, person, label_variants_person)
+
+		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
+		godot_credits_list.add_child(role_parent)
+		godot_credits_list.add_child(HSeparator.new())
+
+	credits_list.add_child(godot_credits_list)
+
+func _add_link_button(node : Node, text : String, url: String, type_variation : StringName) -> void:
+	var button := LinkButton.new()
+	button.name = 'LinkButton' + text
+	button.text = text
+	button.uri = url
+	button.size_flags_horizontal = SIZE_SHRINK_CENTER
+	button.theme_type_variation = type_variation
+	node.add_child(button)
+
+func _add_licenses() -> void:
+	var license_list = VBoxContainer.new()
+	license_list.name = 'Licenses'
+	_add_label(license_list, "Third-Party Licenses", label_variants_project)
+	license_list.add_child(HSeparator.new())
+
+	var license_info := {
+		"OpenVic2": ["GPLv3", "https://github.com/OpenVic2Project/OpenVic2/blob/main/LICENSE.md"],
+		"Godot": ["MIT", "https://github.com/godotengine/godot/blob/master/LICENSE.txt"],
+		"FreeType": ["FreeType License", "https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT"],
+		"ENet": ["MIT", "http://enet.bespin.org/License.html"],
+		"mbed TLS": ["APLv2", "https://github.com/Mbed-TLS/mbedtls/blob/development/LICENSE"]
+	}
+	# Add additional licenses required for attribution here
+	# These licenses should also either be displayed or exported alongside this project
+
+	for project in license_info:
+		_add_label(license_list, project, label_variants_role)
+		_add_link_button(license_list, license_info[project][0], license_info[project][1], label_variants_person)
+		license_list.add_child(HSeparator.new())
+
+	credits_list.add_child(license_list)
+
+
 # REQUIREMENTS:
 # * SS-17
 func _ready():
 	_add_project_credits(_load_credit_file(core_credits_path))
+	_add_godot_credits()
+	_add_licenses()
 
 # REQUIREMENTS:
 # * UI-38
