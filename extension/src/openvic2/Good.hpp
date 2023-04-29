@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "Types.hpp"
 
 namespace OpenVic2 {

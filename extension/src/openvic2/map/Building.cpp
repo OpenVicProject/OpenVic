@@ -1,9 +1,9 @@
-#include "openvic2/map/Building.hpp"
+#include "Building.hpp"
 
 #include <cassert>
 
-#include "openvic2/Logger.hpp"
-#include "openvic2/map/Province.hpp"
+#include "../Logger.hpp"
+#include "Province.hpp"
 
 using namespace OpenVic2;
 

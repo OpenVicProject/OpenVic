@@ -1,5 +1,7 @@
 extends PanelContainer
 
+signal province_deselected
+
 @export var _province_name_label : Label
 @export var _region_name_label : Label
 @export var _life_rating_bar : ProgressBar
@@ -92,4 +94,4 @@ func _on_province_selected(index : int) -> void:
 	_selected_index = index
 
 func _on_close_button_pressed() -> void:
-	_selected_index = 0
+	province_deselected.emit()

@@ -1,4 +1,4 @@
-#include "openvic2/GameAdvancementHook.hpp"
+#include "GameAdvancementHook.hpp"
 
 using namespace OpenVic2;
 

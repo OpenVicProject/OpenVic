@@ -1,6 +1,6 @@
-#include "openvic2/GameManager.hpp"
+#include "GameManager.hpp"
 
-#include "openvic2/Logger.hpp"
+#include "Logger.hpp"
 
 using namespace OpenVic2;
 

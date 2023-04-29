@@ -71,7 +71,8 @@ func _ready():
 
 	# Set map mesh size and get bounds
 	_map_mesh.aspect_ratio = GameSingleton.get_aspect_ratio()
-	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor, float(GameSingleton.get_height()) / 64.0)
+	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor,
+		float(GameSingleton.get_height()) / 128.0)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
@@ -111,15 +112,20 @@ func zoom_in() -> void:
 func zoom_out() -> void:
 	_zoom_target += _zoom_target_step
 
+func _select_province(index : int) -> void:
+	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_selected_index, index)
+	province_selected.emit(index)
+
+func _deselect_province() -> void:
+	_select_province(0)
+
 # REQUIREMENTS
 # * SS-31
 func _unhandled_input(event : InputEvent):
 	if _mouse_over_viewport and event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-			var selected_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
-			_map_shader_material.set_shader_parameter(Events.ShaderManager.param_selected_index, selected_index)
-			province_selected.emit(selected_index)
+			_select_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 		else:
 			print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):

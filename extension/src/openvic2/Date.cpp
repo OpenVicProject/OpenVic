@@ -1,9 +1,9 @@
-#include "openvic2/Date.hpp"
+#include "Date.hpp"
 
 #include <cctype>
 #include <algorithm>
 
-#include "openvic2/Logger.hpp"
+#include "Logger.hpp"
 
 using namespace OpenVic2;
 

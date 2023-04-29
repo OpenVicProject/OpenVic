@@ -3,18 +3,27 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 
-#include "openvic2/Logger.hpp"
+#include "Logger.hpp"
 
 namespace OpenVic2 {
-	//Represents a 24-bit RGB integer
+	// Represents a 24-bit RGB integer OR a 32-bit ARGB integer
 	using colour_t = uint32_t;
-	using index_t = uint16_t;
+	/* When colour_t is used as an identifier, NULL_COLOUR is disallowed
+	 * and should be reserved as an error value.
+	 * When colour_t is used in a purely graphical context, NULL_COLOUR
+	 * should be allowed.
+	 */
+	static constexpr colour_t NULL_COLOUR = 0, MAX_COLOUR_RGB = 0xFFFFFF;
+	constexpr colour_t to_alpha_value(float a) {
+		return static_cast<colour_t>(std::clamp(a, 0.0f, 1.0f) * 255.0f) << 24;
+	}
 
-	static constexpr colour_t NULL_COLOUR = 0, MAX_COLOUR = 0xFFFFFF;
+	using index_t = uint16_t;
 	static constexpr index_t NULL_INDEX = 0, MAX_INDEX = 0xFFFF;
 
-	//TODO: price_t must be changed to a fixed-point numeric type before multiplayer
+	// TODO: price_t must be changed to a fixed-point numeric type before multiplayer
 	using price_t = double;
 	using return_t = bool;
 

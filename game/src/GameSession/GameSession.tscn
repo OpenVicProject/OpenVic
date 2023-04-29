@@ -74,5 +74,6 @@ grow_horizontal = 0
 [connection signal="mouse_exited" from="MapControlPanel" to="MapView" method="_on_mouse_entered_viewport"]
 [connection signal="zoom_in_button_pressed" from="MapControlPanel" to="MapView" method="zoom_in"]
 [connection signal="zoom_out_button_pressed" from="MapControlPanel" to="MapView" method="zoom_out"]
+[connection signal="province_deselected" from="ProvinceOverviewPanel" to="MapView" method="_deselect_province"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="MapView" method="enable_processing"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="OptionsMenu" method="hide"]

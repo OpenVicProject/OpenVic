@@ -1,8 +1,7 @@
 #pragma once
 
-#include "openvic2/GameAdvancementHook.hpp"
-#include "openvic2/map/Map.hpp"
-#include "openvic2/Types.hpp"
+#include "GameAdvancementHook.hpp"
+#include "map/Map.hpp"
 
 namespace OpenVic2 {
 	struct GameManager {
