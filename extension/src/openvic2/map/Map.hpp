@@ -3,13 +3,14 @@
 #include <functional>
 
 #include "openvic2/map/Region.hpp"
+#include "openvic2/Types.hpp"
 
 namespace OpenVic2 {
 
 	struct Mapmode : HasIdentifier {
 		friend struct Map;
 
-		using colour_func_t = std::function<Province::colour_t (Map const&, Province const&)>;
+		using colour_func_t = std::function<colour_t (Map const&, Province const&)>;
 		using index_t = size_t;
 	private:
 		const index_t index;
@@ -18,7 +19,7 @@ namespace OpenVic2 {
 		Mapmode(index_t new_index, std::string const& new_identifier, colour_func_t new_colour_func);
 	public:
 		index_t get_index() const;
-		Province::colour_t get_colour(Map const& map, Province const& province) const;
+		colour_t get_colour(Map const& map, Province const& province) const;
 	};
 
 	/* REQUIREMENTS:
@@ -27,7 +28,7 @@ namespace OpenVic2 {
 	struct Map {
 		#pragma pack(push, 1)
 		struct shape_pixel_t {
-			Province::index_t index;
+			index_t index;
 			uint8_t terrain;
 		};
 		#pragma pack(pop)
@@ -43,7 +44,7 @@ namespace OpenVic2 {
 	public:
 		Map();
 
-		return_t add_province(std::string const& identifier, Province::colour_t colour);
+		return_t add_province(std::string const& identifier, colour_t colour);
 		void lock_provinces();
 		return_t set_water_province(std::string const& identifier);
 		void lock_water_provinces();
@@ -51,13 +52,13 @@ namespace OpenVic2 {
 		void lock_regions();
 
 		size_t get_province_count() const;
-		Province* get_province_by_index(Province::index_t index);
-		Province const* get_province_by_index(Province::index_t index) const;
+		Province* get_province_by_index(index_t index);
+		Province const* get_province_by_index(index_t index) const;
 		Province* get_province_by_identifier(std::string const& identifier);
 		Province const* get_province_by_identifier(std::string const& identifier) const;
-		Province* get_province_by_colour(Province::colour_t colour);
-		Province const* get_province_by_colour(Province::colour_t colour) const;
-		Province::index_t get_province_index_at(size_t x, size_t y) const;
+		Province* get_province_by_colour(colour_t colour);
+		Province const* get_province_by_colour(colour_t colour) const;
+		index_t get_province_index_at(size_t x, size_t y) const;
 
 		Region* get_region_by_identifier(std::string const& identifier);
 		Region const* get_region_by_identifier(std::string const& identifier) const;

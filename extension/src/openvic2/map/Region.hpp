@@ -3,6 +3,7 @@
 #include <set>
 
 #include "openvic2/map/Province.hpp"
+#include "openvic2/Types.hpp"
 
 namespace OpenVic2 {
 
@@ -25,6 +26,6 @@ namespace OpenVic2 {
 	public:
 		Region(Region&&) = default;
 
-		Province::colour_t get_colour() const;
+		colour_t get_colour() const;
 	};
 }

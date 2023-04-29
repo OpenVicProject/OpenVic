@@ -2,6 +2,7 @@
 
 #include "openvic2/GameAdvancementHook.hpp"
 #include "openvic2/map/Map.hpp"
+#include "openvic2/Types.hpp"
 
 namespace OpenVic2 {
 	struct GameManager {
@@ -24,6 +25,6 @@ namespace OpenVic2 {
 		return_t setup();
 
 		Date const& get_today() const;
-		return_t expand_building(Province::index_t province_index, std::string const& building_type_identifier);
+		return_t expand_building(index_t province_index, std::string const& building_type_identifier);
 	};
 }

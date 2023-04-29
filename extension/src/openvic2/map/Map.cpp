@@ -16,26 +16,26 @@ Mapmode::index_t Mapmode::get_index() const {
 	return index;
 }
 
-Province::colour_t Mapmode::get_colour(Map const& map, Province const& province) const {
-	return colour_func ? colour_func(map, province) : Province::NULL_COLOUR;
+colour_t Mapmode::get_colour(Map const& map, Province const& province) const {
+	return colour_func ? colour_func(map, province) : NULL_COLOUR;
 }
 
 Map::Map() : provinces{ "provinces" }, regions{ "regions" }, mapmodes{ "mapmodes" } {}
 
-return_t Map::add_province(std::string const& identifier, Province::colour_t colour) {
-	if (provinces.get_item_count() >= Province::MAX_INDEX) {
-		Logger::error("The map's province list is full - there can be at most ", Province::MAX_INDEX, " provinces");
+return_t Map::add_province(std::string const& identifier, colour_t colour) {
+	if (provinces.get_item_count() >= MAX_INDEX) {
+		Logger::error("The map's province list is full - there can be at most ", MAX_INDEX, " provinces");
 		return FAILURE;
 	}
 	if (identifier.empty()) {
 		Logger::error("Invalid province identifier - empty!");
 		return FAILURE;
 	}
-	if (colour == Province::NULL_COLOUR || colour > Province::MAX_COLOUR) {
+	if (colour == NULL_COLOUR || colour > MAX_COLOUR) {
 		Logger::error("Invalid province colour: ", Province::colour_to_hex_string(colour));
 		return FAILURE;
 	}
-	Province new_province{ static_cast<Province::index_t>(provinces.get_item_count() + 1), identifier, colour };
+	Province new_province{ static_cast<index_t>(provinces.get_item_count() + 1), identifier, colour };
 	Province const* old_province = get_province_by_colour(colour);
 	if (old_province != nullptr) {
 		Logger::error("Duplicate province colours: ", old_province->to_string(), " and ", new_province.to_string());
@@ -126,12 +126,12 @@ size_t Map::get_province_count() const {
 	return provinces.get_item_count();
 }
 
-Province* Map::get_province_by_index(Province::index_t index) {
-	return index != Province::NULL_INDEX ? provinces.get_item_by_index(index - 1) : nullptr;
+Province* Map::get_province_by_index(index_t index) {
+	return index != NULL_INDEX ? provinces.get_item_by_index(index - 1) : nullptr;
 }
 
-Province const* Map::get_province_by_index(Province::index_t index) const {
-	return index != Province::NULL_INDEX ? provinces.get_item_by_index(index - 1) : nullptr;
+Province const* Map::get_province_by_index(index_t index) const {
+	return index != NULL_INDEX ? provinces.get_item_by_index(index - 1) : nullptr;
 }
 
 Province* Map::get_province_by_identifier(std::string const& identifier) {
@@ -142,23 +142,25 @@ Province const* Map::get_province_by_identifier(std::string const& identifier) c
 	return provinces.get_item_by_identifier(identifier);
 }
 
-Province* Map::get_province_by_colour(Province::colour_t colour) {
-	if (colour != Province::NULL_COLOUR)
+Province* Map::get_province_by_colour(colour_t colour) {
+	if (colour != NULL_COLOUR)
 		for (Province& province : provinces.get_items())
 			if (province.get_colour() == colour) return &province;
 	return nullptr;
 }
 
-Province const* Map::get_province_by_colour(Province::colour_t colour) const {
-	if (colour != Province::NULL_COLOUR)
-		for (Province const& province : provinces.get_items())
-			if (province.get_colour() == colour) return &province;
+Province const* Map::get_province_by_colour(colour_t colour) const {
+	if (colour == NULL_COLOUR) { return nullptr; }
+	for (Province const& province : provinces.get_items()) {
+		if (province.get_colour() == colour)
+			return &province;
+	}
 	return nullptr;
 }
 
-Province::index_t Map::get_province_index_at(size_t x, size_t y) const {
+index_t Map::get_province_index_at(size_t x, size_t y) const {
 	if (x < width && y < height) return province_shape_image[x + y * width].index;
-	return Province::NULL_INDEX;
+	return NULL_INDEX;
 }
 
 Region* Map::get_region_by_identifier(std::string const& identifier) {
@@ -169,7 +171,7 @@ Region const* Map::get_region_by_identifier(std::string const& identifier) const
 	return regions.get_item_by_identifier(identifier);
 }
 
-static Province::colour_t colour_at(uint8_t const* colour_data, int32_t idx) {
+static colour_t colour_at(uint8_t const* colour_data, int32_t idx) {
 	return (colour_data[idx * 3] << 16) | (colour_data[idx * 3 + 1] << 8) | colour_data[idx * 3 + 2];
 }
 
@@ -196,12 +198,12 @@ return_t Map::generate_province_shape_image(size_t new_width, size_t new_height,
 
 	std::vector<bool> province_checklist(provinces.get_item_count());
 	return_t ret = SUCCESS;
-	std::unordered_set<Province::colour_t> unrecognised_colours;
+	std::unordered_set<colour_t> unrecognised_colours;
 
 	for (int32_t y = 0; y < height; ++y) {
 		for (int32_t x = 0; x < width; ++x) {
 			const int32_t idx = x + y * width;
-			const Province::colour_t colour = colour_at(colour_data, idx);
+			const colour_t colour = colour_at(colour_data, idx);
 			if (x > 0) {
 				const int32_t jdx = idx - 1;
 				if (colour_at(colour_data, jdx) == colour) {
@@ -218,7 +220,7 @@ return_t Map::generate_province_shape_image(size_t new_width, size_t new_height,
 			}
 			Province const* province = get_province_by_colour(colour);
 			if (province != nullptr) {
-				const Province::index_t index = province->get_index();
+				const index_t index = province->get_index();
 				province_checklist[index - 1] = true;
 				province_shape_image[idx].index = index;
 				province_shape_image[idx].terrain = !province->is_water();
@@ -229,7 +231,7 @@ return_t Map::generate_province_shape_image(size_t new_width, size_t new_height,
 				Logger::error("Unrecognised province colour ", Province::colour_to_hex_string(colour), " at (", x, ", ", y, ")");
 				ret = FAILURE;
 			}
-			province_shape_image[idx].index = Province::NULL_INDEX;
+			province_shape_image[idx].index = NULL_INDEX;
 			province_shape_image[idx].terrain = 0;
 		}
 	}
@@ -297,7 +299,7 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) 
 	for (size_t i = 0; i < MAPMODE_COLOUR_SIZE; ++i)
 		*target++ = 0;
 	for (Province const& province : provinces.get_items()) {
-		const Province::colour_t colour = mapmode->get_colour(*this, province);
+		const colour_t colour = mapmode->get_colour(*this, province);
 		*target++ = (colour >> 16) & 0xFF;
 		*target++ = (colour >> 8) & 0xFF;
 		*target++ = colour & 0xFF;

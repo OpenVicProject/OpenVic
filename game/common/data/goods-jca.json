@@ -15,7 +15,7 @@
         {"id": "precious_goods", "category": "Raw", "cost": 7.00, "colour": "247 241 61", "isAvailableAtStart": true, "isTradeable": false, "isMoney": true, "hasOverseasPenalty": false},
         {"id": "rubber", "category": "Raw", "cost": 7.00, "colour": "123 110 86", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
         {"id": "silk", "category": "Raw", "cost": 10.00, "colour": "125 158 43", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
-        {"id": "sulpher", "category": "Raw", "cost": 6.00, "colour": "181 228 102", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
+        {"id": "sulphur", "category": "Raw", "cost": 6.00, "colour": "181 228 102", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
         {"id": "timber", "category": "Raw", "cost": 0.90, "colour": "146 72 17", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
         {"id": "tropical_wood", "category": "Raw", "cost": 5.40, "colour": "213 177 118", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
         {"id": "wool", "category": "Raw", "cost": 0.70, "colour": "234 195 158", "isAvailableAtStart": true, "isTradeable": true, "isMoney": false, "hasOverseasPenalty": false},
