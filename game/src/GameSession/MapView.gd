@@ -228,6 +228,7 @@ func _on_mouse_entered_viewport():
 
 func _on_mouse_exited_viewport():
 	_mouse_over_viewport = false
+	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_hover_index, 0)
 
 func _on_minimap_clicked(pos_clicked : Vector2):
 	pos_clicked *= _map_mesh_dims

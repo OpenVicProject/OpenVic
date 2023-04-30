@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <unordered_map>
 
 #include "Region.hpp"
 
@@ -27,7 +26,8 @@ namespace OpenVic2 {
 	 */
 	struct Map {
 		using terrain_t = uint8_t;
-		using terrain_variant_map_t = std::unordered_map<colour_t, terrain_t>;
+		using terrain_variant_map_t = std::map<colour_t, terrain_t>;
+
 		#pragma pack(push, 1)
 		struct shape_pixel_t {
 			index_t index;
@@ -35,6 +35,8 @@ namespace OpenVic2 {
 		};
 		#pragma pack(pop)
 	private:
+		using colour_index_map_t = std::map<colour_t, index_t>;
+
 		IdentifierRegistry<Province> provinces;
 		IdentifierRegistry<Region> regions;
 		IdentifierRegistry<Mapmode> mapmodes;
@@ -43,6 +45,9 @@ namespace OpenVic2 {
 
 		size_t width = 0, height = 0;
 		std::vector<shape_pixel_t> province_shape_image;
+		colour_index_map_t colour_index_map;
+
+		index_t get_index_from_colour(colour_t colour) const;
 	public:
 		Map();
 
@@ -58,8 +63,6 @@ namespace OpenVic2 {
 		Province const* get_province_by_index(index_t index) const;
 		Province* get_province_by_identifier(std::string const& identifier);
 		Province const* get_province_by_identifier(std::string const& identifier) const;
-		Province* get_province_by_colour(colour_t colour);
-		Province const* get_province_by_colour(colour_t colour) const;
 		index_t get_province_index_at(size_t x, size_t y) const;
 
 		Region* get_region_by_identifier(std::string const& identifier);

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include <cstdint>
 #include <algorithm>
+#include <map>
 
 #include "Logger.hpp"
 
@@ -74,9 +74,12 @@ namespace OpenVic2 {
 	 */
 	template<class T, typename std::enable_if<std::is_base_of<HasIdentifier, T>::value>::type* = nullptr>
 	class IdentifierRegistry {
+		using identifier_index_map_t = std::map<std::string, size_t>;
+
 		const std::string name;
 		std::vector<T> items;
 		bool locked = false;
+		identifier_index_map_t identifier_index_map;
 	public:
 		IdentifierRegistry(std::string const& new_name) : name(new_name) {}
 		return_t add_item(T&& item) {
@@ -89,6 +92,7 @@ namespace OpenVic2 {
 				Logger::error("Cannot add item to the ", name, " registry - an item with the identifier \"", item.get_identifier(), "\" already exists!");
 				return FAILURE;
 			}
+			identifier_index_map[item.get_identifier()] = items.size();
 			items.push_back(std::move(item));
 			return SUCCESS;
 		}
@@ -104,6 +108,7 @@ namespace OpenVic2 {
 			return locked;
 		}
 		void reset() {
+			identifier_index_map.clear();
 			items.clear();
 			locked = false;
 		}
@@ -111,15 +116,13 @@ namespace OpenVic2 {
 			return items.size();
 		}
 		T* get_item_by_identifier(std::string const& identifier) {
-			if (!identifier.empty())
-				for (T& item : items)
-					if (item.get_identifier() == identifier) return &item;
+			const identifier_index_map_t::const_iterator it = identifier_index_map.find(identifier);
+			if (it != identifier_index_map.end()) return &items[it->second];
 			return nullptr;
 		}
 		T const* get_item_by_identifier(std::string const& identifier) const {
-			if (!identifier.empty())
-				for (T const& item : items)
-					if (item.get_identifier() == identifier) return &item;
+			const identifier_index_map_t::const_iterator it = identifier_index_map.find(identifier);
+			if (it != identifier_index_map.end()) return &items[it->second];
 			return nullptr;
 		}
 		T* get_item_by_index(size_t index) {

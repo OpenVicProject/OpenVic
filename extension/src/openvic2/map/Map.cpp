@@ -36,11 +36,12 @@ return_t Map::add_province(std::string const& identifier, colour_t colour) {
 		return FAILURE;
 	}
 	Province new_province{ static_cast<index_t>(provinces.get_item_count() + 1), identifier, colour };
-	Province const* old_province = get_province_by_colour(colour);
-	if (old_province != nullptr) {
-		Logger::error("Duplicate province colours: ", old_province->to_string(), " and ", new_province.to_string());
+	const index_t index = get_index_from_colour(colour);
+	if (index != NULL_INDEX) {
+		Logger::error("Duplicate province colours: ", get_province_by_index(index)->to_string(), " and ", new_province.to_string());
 		return FAILURE;
 	}
+	colour_index_map[new_province.get_colour()] = new_province.get_index();
 	return provinces.add_item(std::move(new_province));
 }
 
@@ -142,20 +143,10 @@ Province const* Map::get_province_by_identifier(std::string const& identifier) c
 	return provinces.get_item_by_identifier(identifier);
 }
 
-Province* Map::get_province_by_colour(colour_t colour) {
-	if (colour != NULL_COLOUR)
-		for (Province& province : provinces.get_items())
-			if (province.get_colour() == colour) return &province;
-	return nullptr;
-}
-
-Province const* Map::get_province_by_colour(colour_t colour) const {
-	if (colour == NULL_COLOUR) { return nullptr; }
-	for (Province const& province : provinces.get_items()) {
-		if (province.get_colour() == colour)
-			return &province;
-	}
-	return nullptr;
+index_t Map::get_index_from_colour(colour_t colour) const {
+	const colour_index_map_t::const_iterator it = colour_index_map.find(colour);
+	if (it != colour_index_map.end()) return it->second;
+	return NULL_INDEX;
 }
 
 index_t Map::get_province_index_at(size_t x, size_t y) const {
@@ -236,9 +227,8 @@ return_t Map::generate_province_shape_image(size_t new_width, size_t new_height,
 					continue;
 				}
 			}
-			Province const* province = get_province_by_colour(province_colour);
-			if (province != nullptr) {
-				const index_t index = province->get_index();
+			const index_t index = get_index_from_colour(province_colour);
+			if (index != NULL_INDEX) {
 				province_checklist[index - 1] = true;
 				province_shape_image[idx].index = index;
 				continue;
