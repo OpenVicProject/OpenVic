@@ -66,6 +66,7 @@ offset_right = 0.0
 grow_horizontal = 0
 
 [connection signal="map_view_camera_changed" from="MapView" to="MapControlPanel" method="_on_map_view_camera_changed"]
+[connection signal="province_selected" from="MapView" to="MapControlPanel" method="_on_province_selected"]
 [connection signal="province_selected" from="MapView" to="ProvinceOverviewPanel" method="_on_province_selected"]
 [connection signal="options_button_pressed" from="GameSessionMenu" to="OptionsMenu" method="show"]
 [connection signal="game_session_menu_button_pressed" from="MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
@@ -74,5 +75,6 @@ grow_horizontal = 0
 [connection signal="mouse_exited" from="MapControlPanel" to="MapView" method="_on_mouse_entered_viewport"]
 [connection signal="zoom_in_button_pressed" from="MapControlPanel" to="MapView" method="zoom_in"]
 [connection signal="zoom_out_button_pressed" from="MapControlPanel" to="MapView" method="zoom_out"]
+[connection signal="province_deselected" from="ProvinceOverviewPanel" to="MapView" method="_deselect_province"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="MapView" method="enable_processing"]
 [connection signal="back_button_pressed" from="OptionsMenu" to="OptionsMenu" method="hide"]

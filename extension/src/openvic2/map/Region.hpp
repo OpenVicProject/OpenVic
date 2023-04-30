@@ -2,8 +2,7 @@
 
 #include <set>
 
-#include "openvic2/map/Province.hpp"
-#include "openvic2/Types.hpp"
+#include "Province.hpp"
 
 namespace OpenVic2 {
 

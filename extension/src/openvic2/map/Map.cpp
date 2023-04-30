@@ -1,9 +1,9 @@
-#include "openvic2/map/Map.hpp"
+#include "Map.hpp"
 
 #include <cassert>
 #include <unordered_set>
 
-#include "openvic2/Logger.hpp"
+#include "../Logger.hpp"
 
 using namespace OpenVic2;
 
@@ -31,16 +31,17 @@ return_t Map::add_province(std::string const& identifier, colour_t colour) {
 		Logger::error("Invalid province identifier - empty!");
 		return FAILURE;
 	}
-	if (colour == NULL_COLOUR || colour > MAX_COLOUR) {
+	if (colour == NULL_COLOUR || colour > MAX_COLOUR_RGB) {
 		Logger::error("Invalid province colour: ", Province::colour_to_hex_string(colour));
 		return FAILURE;
 	}
 	Province new_province{ static_cast<index_t>(provinces.get_item_count() + 1), identifier, colour };
-	Province const* old_province = get_province_by_colour(colour);
-	if (old_province != nullptr) {
-		Logger::error("Duplicate province colours: ", old_province->to_string(), " and ", new_province.to_string());
+	const index_t index = get_index_from_colour(colour);
+	if (index != NULL_INDEX) {
+		Logger::error("Duplicate province colours: ", get_province_by_index(index)->to_string(), " and ", new_province.to_string());
 		return FAILURE;
 	}
+	colour_index_map[new_province.get_colour()] = new_province.get_index();
 	return provinces.add_item(std::move(new_province));
 }
 
@@ -142,20 +143,10 @@ Province const* Map::get_province_by_identifier(std::string const& identifier) c
 	return provinces.get_item_by_identifier(identifier);
 }
 
-Province* Map::get_province_by_colour(colour_t colour) {
-	if (colour != NULL_COLOUR)
-		for (Province& province : provinces.get_items())
-			if (province.get_colour() == colour) return &province;
-	return nullptr;
-}
-
-Province const* Map::get_province_by_colour(colour_t colour) const {
-	if (colour == NULL_COLOUR) { return nullptr; }
-	for (Province const& province : provinces.get_items()) {
-		if (province.get_colour() == colour)
-			return &province;
-	}
-	return nullptr;
+index_t Map::get_index_from_colour(colour_t colour) const {
+	const colour_index_map_t::const_iterator it = colour_index_map.find(colour);
+	if (it != colour_index_map.end()) return it->second;
+	return NULL_INDEX;
 }
 
 index_t Map::get_province_index_at(size_t x, size_t y) const {
@@ -175,7 +166,8 @@ static colour_t colour_at(uint8_t const* colour_data, int32_t idx) {
 	return (colour_data[idx * 3] << 16) | (colour_data[idx * 3 + 1] << 8) | colour_data[idx * 3 + 2];
 }
 
-return_t Map::generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data) {
+return_t Map::generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data,
+	uint8_t const* terrain_data, terrain_variant_map_t const& terrain_variant_map) {
 	if (!province_shape_image.empty()) {
 		Logger::error("Province index image has already been generated!");
 		return FAILURE;
@@ -192,47 +184,61 @@ return_t Map::generate_province_shape_image(size_t new_width, size_t new_height,
 		Logger::error("Province colour data pointer is null!");
 		return FAILURE;
 	}
+	if (terrain_data == nullptr) {
+		Logger::error("Province terrain data pointer is null!");
+		return FAILURE;
+	}
 	width = new_width;
 	height = new_height;
 	province_shape_image.resize(width * height);
 
 	std::vector<bool> province_checklist(provinces.get_item_count());
 	return_t ret = SUCCESS;
-	std::unordered_set<colour_t> unrecognised_colours;
+	std::unordered_set<colour_t> unrecognised_province_colours, unrecognised_terrain_colours;
 
 	for (int32_t y = 0; y < height; ++y) {
 		for (int32_t x = 0; x < width; ++x) {
 			const int32_t idx = x + y * width;
-			const colour_t colour = colour_at(colour_data, idx);
+
+			const colour_t terrain_colour = colour_at(terrain_data, idx);
+			const terrain_variant_map_t::const_iterator it = terrain_variant_map.find(terrain_colour);
+			if (it != terrain_variant_map.end()) province_shape_image[idx].terrain = it->second;
+			else {
+				if (unrecognised_terrain_colours.find(terrain_colour) == unrecognised_terrain_colours.end()) {
+					unrecognised_terrain_colours.insert(terrain_colour);
+					Logger::error("Unrecognised terrain colour ", Province::colour_to_hex_string(terrain_colour), " at (", x, ", ", y, ")");
+					ret = FAILURE;
+				}
+				province_shape_image[idx].terrain = 0;
+			}
+
+			const colour_t province_colour = colour_at(colour_data, idx);
 			if (x > 0) {
 				const int32_t jdx = idx - 1;
-				if (colour_at(colour_data, jdx) == colour) {
-					province_shape_image[idx] = province_shape_image[jdx];
+				if (colour_at(colour_data, jdx) == province_colour) {
+					province_shape_image[idx].index = province_shape_image[jdx].index;
 					continue;
 				}
 			}
 			if (y > 0) {
 				const int32_t jdx = idx - width;
-				if (colour_at(colour_data, jdx) == colour) {
-					province_shape_image[idx] = province_shape_image[jdx];
+				if (colour_at(colour_data, jdx) == province_colour) {
+					province_shape_image[idx].index = province_shape_image[jdx].index;
 					continue;
 				}
 			}
-			Province const* province = get_province_by_colour(colour);
-			if (province != nullptr) {
-				const index_t index = province->get_index();
+			const index_t index = get_index_from_colour(province_colour);
+			if (index != NULL_INDEX) {
 				province_checklist[index - 1] = true;
 				province_shape_image[idx].index = index;
-				province_shape_image[idx].terrain = !province->is_water();
 				continue;
 			}
-			if (unrecognised_colours.find(colour) == unrecognised_colours.end()) {
-				unrecognised_colours.insert(colour);
-				Logger::error("Unrecognised province colour ", Province::colour_to_hex_string(colour), " at (", x, ", ", y, ")");
+			if (unrecognised_province_colours.find(province_colour) == unrecognised_province_colours.end()) {
+				unrecognised_province_colours.insert(province_colour);
+				Logger::error("Unrecognised province colour ", Province::colour_to_hex_string(province_colour), " at (", x, ", ", y, ")");
 				ret = FAILURE;
 			}
 			province_shape_image[idx].index = NULL_INDEX;
-			province_shape_image[idx].terrain = 0;
 		}
 	}
 
@@ -303,6 +309,7 @@ return_t Map::generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) 
 		*target++ = (colour >> 16) & 0xFF;
 		*target++ = (colour >> 8) & 0xFF;
 		*target++ = colour & 0xFF;
+		*target++ = (colour >> 24) & 0xFF;
 	}
 	return SUCCESS;
 }

@@ -2,8 +2,7 @@
 
 #include <functional>
 
-#include "openvic2/map/Region.hpp"
-#include "openvic2/Types.hpp"
+#include "Region.hpp"
 
 namespace OpenVic2 {
 
@@ -26,13 +25,18 @@ namespace OpenVic2 {
 	 * MAP-4
 	 */
 	struct Map {
+		using terrain_t = uint8_t;
+		using terrain_variant_map_t = std::map<colour_t, terrain_t>;
+
 		#pragma pack(push, 1)
 		struct shape_pixel_t {
 			index_t index;
-			uint8_t terrain;
+			terrain_t terrain;
 		};
 		#pragma pack(pop)
 	private:
+		using colour_index_map_t = std::map<colour_t, index_t>;
+
 		IdentifierRegistry<Province> provinces;
 		IdentifierRegistry<Region> regions;
 		IdentifierRegistry<Mapmode> mapmodes;
@@ -41,6 +45,9 @@ namespace OpenVic2 {
 
 		size_t width = 0, height = 0;
 		std::vector<shape_pixel_t> province_shape_image;
+		colour_index_map_t colour_index_map;
+
+		index_t get_index_from_colour(colour_t colour) const;
 	public:
 		Map();
 
@@ -56,14 +63,13 @@ namespace OpenVic2 {
 		Province const* get_province_by_index(index_t index) const;
 		Province* get_province_by_identifier(std::string const& identifier);
 		Province const* get_province_by_identifier(std::string const& identifier) const;
-		Province* get_province_by_colour(colour_t colour);
-		Province const* get_province_by_colour(colour_t colour) const;
 		index_t get_province_index_at(size_t x, size_t y) const;
 
 		Region* get_region_by_identifier(std::string const& identifier);
 		Region const* get_region_by_identifier(std::string const& identifier) const;
 
-		return_t generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data);
+		return_t generate_province_shape_image(size_t new_width, size_t new_height, uint8_t const* colour_data,
+			uint8_t const* terrain_data, terrain_variant_map_t const& terrain_variant_map);
 		size_t get_width() const;
 		size_t get_height() const;
 		std::vector<shape_pixel_t> const& get_province_shape_image() const;
@@ -73,7 +79,7 @@ namespace OpenVic2 {
 		size_t get_mapmode_count() const;
 		Mapmode const* get_mapmode_by_index(Mapmode::index_t index) const;
 		Mapmode const* get_mapmode_by_identifier(std::string const& identifier) const;
-		static constexpr size_t MAPMODE_COLOUR_SIZE = 3;
+		static constexpr size_t MAPMODE_COLOUR_SIZE = 4;
 		return_t generate_mapmode_colours(Mapmode::index_t index, uint8_t* target) const;
 
 		return_t generate_province_buildings(BuildingManager const& manager);

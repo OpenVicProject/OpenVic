@@ -1,4 +1,4 @@
-#include "openvic2/Logger.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 

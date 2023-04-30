@@ -1,9 +1,8 @@
-#include "openvic2/Types.hpp"
+#include "Types.hpp"
 
 #include <cassert>
 #include <sstream>
 #include <iomanip>
-#include "Types.hpp"
 
 using namespace OpenVic2;
 
@@ -16,7 +15,7 @@ std::string const& HasIdentifier::get_identifier() const {
 }
 
 HasColour::HasColour(colour_t const new_colour) : colour(new_colour) {
-	assert(colour <= MAX_COLOUR && colour != NULL_COLOUR);
+	assert(colour != NULL_COLOUR && colour <= MAX_COLOUR_RGB);
 }
 
 colour_t HasColour::get_colour() const { return colour; }

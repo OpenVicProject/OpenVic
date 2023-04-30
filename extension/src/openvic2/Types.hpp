@@ -1,20 +1,29 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
+#include <map>
 
-#include "openvic2/Logger.hpp"
+#include "Logger.hpp"
 
 namespace OpenVic2 {
-	//Represents a 24-bit RGB integer
+	// Represents a 24-bit RGB integer OR a 32-bit ARGB integer
 	using colour_t = uint32_t;
-	using index_t = uint16_t;
+	/* When colour_t is used as an identifier, NULL_COLOUR is disallowed
+	 * and should be reserved as an error value.
+	 * When colour_t is used in a purely graphical context, NULL_COLOUR
+	 * should be allowed.
+	 */
+	static constexpr colour_t NULL_COLOUR = 0, MAX_COLOUR_RGB = 0xFFFFFF;
+	constexpr colour_t to_alpha_value(float a) {
+		return static_cast<colour_t>(std::clamp(a, 0.0f, 1.0f) * 255.0f) << 24;
+	}
 
-	static constexpr colour_t NULL_COLOUR = 0, MAX_COLOUR = 0xFFFFFF;
+	using index_t = uint16_t;
 	static constexpr index_t NULL_INDEX = 0, MAX_INDEX = 0xFFFF;
 
-	//TODO: price_t must be changed to a fixed-point numeric type before multiplayer
+	// TODO: price_t must be changed to a fixed-point numeric type before multiplayer
 	using price_t = double;
 	using return_t = bool;
 
@@ -65,9 +74,12 @@ namespace OpenVic2 {
 	 */
 	template<class T, typename std::enable_if<std::is_base_of<HasIdentifier, T>::value>::type* = nullptr>
 	class IdentifierRegistry {
+		using identifier_index_map_t = std::map<std::string, size_t>;
+
 		const std::string name;
 		std::vector<T> items;
 		bool locked = false;
+		identifier_index_map_t identifier_index_map;
 	public:
 		IdentifierRegistry(std::string const& new_name) : name(new_name) {}
 		return_t add_item(T&& item) {
@@ -80,6 +92,7 @@ namespace OpenVic2 {
 				Logger::error("Cannot add item to the ", name, " registry - an item with the identifier \"", item.get_identifier(), "\" already exists!");
 				return FAILURE;
 			}
+			identifier_index_map[item.get_identifier()] = items.size();
 			items.push_back(std::move(item));
 			return SUCCESS;
 		}
@@ -95,6 +108,7 @@ namespace OpenVic2 {
 			return locked;
 		}
 		void reset() {
+			identifier_index_map.clear();
 			items.clear();
 			locked = false;
 		}
@@ -102,15 +116,13 @@ namespace OpenVic2 {
 			return items.size();
 		}
 		T* get_item_by_identifier(std::string const& identifier) {
-			if (!identifier.empty())
-				for (T& item : items)
-					if (item.get_identifier() == identifier) return &item;
+			const identifier_index_map_t::const_iterator it = identifier_index_map.find(identifier);
+			if (it != identifier_index_map.end()) return &items[it->second];
 			return nullptr;
 		}
 		T const* get_item_by_identifier(std::string const& identifier) const {
-			if (!identifier.empty())
-				for (T const& item : items)
-					if (item.get_identifier() == identifier) return &item;
+			const identifier_index_map_t::const_iterator it = identifier_index_map.find(identifier);
+			if (it != identifier_index_map.end()) return &items[it->second];
 			return nullptr;
 		}
 		T* get_item_by_index(size_t index) {

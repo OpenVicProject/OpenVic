@@ -3,6 +3,7 @@ extends PanelContainer
 signal game_session_menu_button_pressed
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal minimap_clicked(pos_clicked : Vector2)
+signal province_selcted(index : int)
 signal zoom_in_button_pressed
 signal zoom_out_button_pressed
 
@@ -46,6 +47,9 @@ func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_ri
 
 func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	minimap_clicked.emit(pos_clicked)
+
+func _on_province_selected(index : int) -> void:
+	province_selcted.emit(index)
 
 # REQUIREMENTS:
 # * UIFUN-269

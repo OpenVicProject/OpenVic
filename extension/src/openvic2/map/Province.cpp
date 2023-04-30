@@ -1,4 +1,4 @@
-#include "openvic2/map/Province.hpp"
+#include "Province.hpp"
 
 #include <cassert>
 #include <sstream>

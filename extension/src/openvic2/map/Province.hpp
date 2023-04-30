@@ -1,7 +1,6 @@
 #pragma once
 
-#include "openvic2/map/Building.hpp"
-#include "openvic2/Types.hpp"
+#include "Building.hpp"
 
 namespace OpenVic2 {
 	struct Map;

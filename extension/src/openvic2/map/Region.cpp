@@ -1,7 +1,6 @@
-#include "openvic2/map/Region.hpp"
+#include "Region.hpp"
 
 #include <cassert>
-#include <algorithm>
 
 using namespace OpenVic2;
 

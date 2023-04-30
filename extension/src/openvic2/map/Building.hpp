@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "openvic2/Types.hpp"
-#include "openvic2/Date.hpp"
+#include "../Types.hpp"
+#include "../Date.hpp"
 
 namespace OpenVic2 {
 	struct Province;

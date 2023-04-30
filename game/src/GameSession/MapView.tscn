@@ -1,17 +1,15 @@
-[gd_scene load_steps=6 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene load_steps=5 format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" path="res://src/GameSession/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" path="res://src/GameSession/TerrainMap.gdshader" id="1_upocn"]
-[ext_resource type="Texture2D" uid="uid://ckf222w5usrsu" path="res://art/terrain/farmlands.png" id="3_47mq1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
 shader = ExtResource("1_upocn")
-shader_parameter/province_index_subdivisions = null
+shader_parameter/province_shape_subdivisions = null
 shader_parameter/hover_index = null
 shader_parameter/selected_index = null
 shader_parameter/terrain_tile_factor = null
-shader_parameter/farmlands_tex = ExtResource("3_47mq1")
 
 [sub_resource type="MapMesh" id="MapMesh_3gtsd"]
 
