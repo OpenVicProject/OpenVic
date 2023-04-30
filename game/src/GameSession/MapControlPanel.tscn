@@ -7,6 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bhuqb"]
 shader = ExtResource("2_rinsg")
 shader_parameter/province_shape_subdivisions = null
+shader_parameter/selected_index = null
 
 [sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
 action = &"ui_cancel"
@@ -56,7 +57,7 @@ color = Color(0.921569, 0.835294, 0.701961, 1)
 
 [node name="ViewportQuad" type="Control" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap" node_paths=PackedStringArray("_minimap_texture")]
 layout_mode = 2
-mouse_filter = 2
+mouse_filter = 1
 script = ExtResource("3_s4dml")
 _minimap_texture = NodePath("../MinimapTexture")
 
@@ -100,6 +101,7 @@ mouse_filter = 1
 text = "-"
 
 [connection signal="map_view_camera_changed" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
+[connection signal="province_selcted" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_province_selected"]
 [connection signal="minimap_clicked" from="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
