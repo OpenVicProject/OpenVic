@@ -70,9 +70,9 @@ func _ready():
 	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	_map_mesh.aspect_ratio = GameSingleton.get_aspect_ratio()
+	const pixels_per_terrain_tile : float = 64.0
 	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor,
-		float(GameSingleton.get_height()) / 128.0)
+		float(GameSingleton.get_height()) / pixels_per_terrain_tile)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
