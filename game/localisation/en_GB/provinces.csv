@@ -48,48 +48,48 @@ prov_ukraine,Ukraine
 prov_russia,Russia
 
 ,, North America
-prov_north_america_NAME,North America
-prov_cuba_NAME,Cuba
-prov_bermuda_NAME,Bermuda
-prov_jamaica_NAME,Jamaica
-prov_hispaniola_NAME,Hispaniola
-prov_aleutians_name,Aleutian Islands
-prov_bahamas_NAME,Bahamas
-prov_turks_and_caicos_NAME,Turks and Caicos
-prov_puerto_rico_NAME,Puerto Rico
-prov_barbados_NAME,Barbados
-prov_grenada_NAME,Grenada
-prov_st_vincent_NAME,St Vincent
-prov_st_lucia_NAME,St Lucia
-prov_martinique_NAME,Martinique
-prov_dominica_NAME,Dominica
-prov_guadeloupe_NAME,Guadeloupe
-prov_montserrat_NAME,Montserrat
-prov_antigua_NAME,Antigua
-prov_barbuda_NAME,Barbuda
-prov_st_kitts_NAME,St Kitts
-prov_west_virgin_islands_NAME,West Virgin Islands
-prov_east_virgin_islands_NAME,East Virgin Islands
-prov_cayman_islands_NAME,Cayman Islands
-prov_angulia_NAME,Angulia
-prov_central_america_NAME,Central America
-prov_mexico_NAME,Mexico
+prov_north_america,North America
+prov_cuba,Cuba
+prov_bermuda,Bermuda
+prov_jamaica,Jamaica
+prov_hispaniola,Hispaniola
+prov_aleutians,Aleutian Islands
+prov_bahamas,Bahamas
+prov_turks_and_caicos,Turks and Caicos
+prov_puerto_rico,Puerto Rico
+prov_barbados,Barbados
+prov_grenada,Grenada
+prov_st_vincent,St Vincent
+prov_st_lucia,St Lucia
+prov_martinique,Martinique
+prov_dominica,Dominica
+prov_guadeloupe,Guadeloupe
+prov_montserrat,Montserrat
+prov_antigua,Antigua
+prov_barbuda,Barbuda
+prov_st_kitts,St Kitts
+prov_west_virgin_islands,West Virgin Islands
+prov_east_virgin_islands,East Virgin Islands
+prov_cayman_islands,Cayman Islands
+prov_angulia,Angulia
+prov_central_america,Central America
+prov_mexico,Mexico
 
 ,, Canada
-prov_victoria_NAME,Victoria
-prov_calgary_NAME,Calgary
-prov_saskatoon_NAME,Saskatoon
-prov_winnipeg_NAME,Winnipeg
-prov_ottawa_NAME,Ottawa
-prov_quebec_NAME,Quebec
-prov_new_brunswick_NAME,New Brunswick
-prov_prince_edward_island_NAME,Prince Edward Island
-prov_nova_scotia_NAME,Nova Scotia
-prov_labrador_NAME,Labrador
-prov_newfoundland_NAME,Newfoundland
-prov_whitehorse_NAME,Whitehorse
-prov_yellowknife_NAME,Yellowknife
-prov_iqaluit_NAME,Iqaluit
+prov_victoria,Victoria
+prov_calgary,Calgary
+prov_saskatoon,Saskatoon
+prov_winnipeg,Winnipeg
+prov_ottawa,Ottawa
+prov_quebec,Quebec
+prov_new_brunswick,New Brunswick
+prov_prince_edward_island,Prince Edward Island
+prov_nova_scotia,Nova Scotia
+prov_labrador,Labrador
+prov_newfoundland,Newfoundland
+prov_whitehorse,Whitehorse
+prov_yellowknife,Yellowknife
+prov_iqaluit,Iqaluit
 
 ,, South America
 prov_south_america,South America
