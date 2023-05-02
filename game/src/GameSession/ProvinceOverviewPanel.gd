@@ -54,11 +54,13 @@ func _add_building(building : Dictionary) -> void:
 		progress_bar.max_value = 1
 		progress_bar.value = building.get(_expansion_progress_key, 0)
 		progress_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		progress_bar.mouse_filter = Control.MOUSE_FILTER_PASS
 		_buildings_container.add_child(progress_bar)
 	else:
 		var expand_button := Button.new()
 		expand_button.text = _expand_province_building
 		expand_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		expand_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		expand_button.disabled = expansion_state != CAN_EXPAND
 		expand_button.pressed.connect(func(): _expand_building(building_label.text))
 		_buildings_container.add_child(expand_button)

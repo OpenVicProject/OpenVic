@@ -10,6 +10,7 @@ anchor_bottom = 1.0
 offset_top = -300.0
 offset_right = 200.0
 grow_vertical = 0
+mouse_filter = 1
 script = ExtResource("1_3n8k5")
 _province_name_label = NodePath("PanelList/TopBarList/NameList/ProvinceName")
 _region_name_label = NodePath("PanelList/TopBarList/NameList/RegionName")
@@ -42,11 +43,13 @@ vertical_alignment = 1
 [node name="LifeRatingBar" type="ProgressBar" parent="PanelList/TopBarList/NameList"]
 editor_description = "UI-62"
 layout_mode = 2
+mouse_filter = 1
 
 [node name="CloseButton" type="Button" parent="PanelList/TopBarList"]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 size_flags_vertical = 0
+mouse_filter = 1
 text = "X"
 
 [node name="InteractList" type="VBoxContainer" parent="PanelList"]
@@ -55,6 +58,7 @@ size_flags_vertical = 3
 
 [node name="HSeparator" type="HSeparator" parent="PanelList/InteractList"]
 layout_mode = 2
+mouse_filter = 1
 
 [node name="BuildingsContainer" type="GridContainer" parent="PanelList/InteractList"]
 layout_mode = 2

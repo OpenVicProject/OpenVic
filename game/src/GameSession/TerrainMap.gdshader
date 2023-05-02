@@ -15,13 +15,16 @@ uniform sampler2DArray terrain_tex: source_color, repeat_enable, filter_linear;
 // The number of times the terrain textures should tile vertically
 uniform float terrain_tile_factor;
 
+const vec3 highlight_colour = vec3(1.0);
+
 vec3 get_terrain_colour(vec2 uv, vec2 corner, vec2 half_pixel_size, vec2 terrain_uv) {
 	uvec3 province_data = read_uvec3(fma(corner, half_pixel_size, uv));
 	vec4 province_colour = texelFetch(province_colour_tex, ivec2(province_data.rg), 0);
 	vec3 terrain_colour = texture(terrain_tex, vec3(terrain_uv, float(province_data.b))).rgb;
+	vec3 mixed_colour = mix(terrain_colour, province_colour.rgb, province_colour.a);
 	uint index = uvec2_to_uint(province_data.rg);
-	float mix_val = province_colour.a + float(index == hover_index) * 0.2 + float(index == selected_index) * 0.2;
-	return mix(terrain_colour, province_colour.rgb, mix_val);
+	float mix_val = 0.1 * (float(index == hover_index) + float(index == selected_index));
+	return mix(mixed_colour, highlight_colour, mix_val);
 }
 
 vec3 mix_terrain_colour(vec2 uv) {
