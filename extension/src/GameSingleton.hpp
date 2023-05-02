@@ -9,6 +9,7 @@ namespace OpenVic2 {
 	struct TerrainVariant : HasIdentifier, HasColour {
 	private:
 		const godot::Ref<godot::Image> image;
+
 	public:
 		TerrainVariant(std::string const& new_identfier, colour_t new_colour,
 			godot::Ref<godot::Image> const& new_image);
@@ -36,6 +37,7 @@ namespace OpenVic2 {
 		godot::Error _parse_region_entry(godot::String const& identifier, godot::Variant const& entry);
 		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry);
 		void _tick();
+
 	protected:
 		static void _bind_methods();
 

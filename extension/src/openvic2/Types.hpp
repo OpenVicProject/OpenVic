@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 #include <map>
+#include <vector>
 
 #include "Logger.hpp"
 
@@ -37,8 +37,10 @@ namespace OpenVic2 {
 	 */
 	class HasIdentifier {
 		const std::string identifier;
+
 	protected:
 		HasIdentifier(std::string const& new_identifier);
+
 	public:
 		HasIdentifier(HasIdentifier const&) = delete;
 		HasIdentifier(HasIdentifier&&) = default;
@@ -53,8 +55,10 @@ namespace OpenVic2 {
 	 */
 	class HasColour {
 		const colour_t colour;
+
 	protected:
 		HasColour(colour_t const new_colour);
+
 	public:
 		HasColour(HasColour const&) = delete;
 		HasColour(HasColour&&) = default;
@@ -80,6 +84,7 @@ namespace OpenVic2 {
 		std::vector<T> items;
 		bool locked = false;
 		identifier_index_map_t identifier_index_map;
+
 	public:
 		IdentifierRegistry(std::string const& new_name) : name(new_name) {}
 		return_t add_item(T&& item) {

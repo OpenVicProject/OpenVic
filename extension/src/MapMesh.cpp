@@ -69,8 +69,8 @@ int32_t MapMesh::get_subdivide_depth() const {
 }
 
 AABB MapMesh::get_core_aabb() const {
-	const Vector3 size{ aspect_ratio, 0.0f, 1.0f };
-	return AABB{ size * -0.5f, size };
+	const Vector3 size { aspect_ratio, 0.0f, 1.0f };
+	return AABB { size * -0.5f, size };
 }
 
 bool MapMesh::is_valid_uv_coord(godot::Vector2 const& uv) const {
@@ -96,15 +96,15 @@ Array MapMesh::_create_mesh_array() const {
 	uvs.resize(vertex_count);
 	indices.resize(indice_count);
 
-	static const Vector3 normal{ 0.0f, 1.0f, 0.0f };
-	const Size2 uv_size{ 1.0f + 2.0f * repeat_proportion, 1.0f };
-	const Size2 size{ aspect_ratio * uv_size.x, uv_size.y }, start_pos = size * -0.5f;
+	static const Vector3 normal { 0.0f, 1.0f, 0.0f };
+	const Size2 uv_size { 1.0f + 2.0f * repeat_proportion, 1.0f };
+	const Size2 size { aspect_ratio * uv_size.x, uv_size.y }, start_pos = size * -0.5f;
 
 	int32_t point_index = 0, thisrow = 0, prevrow = 0, indice_index = 0;
-	Vector2 subdivide_step{ 1.0f / (subdivide_w + 1.0f) , 1.0f / (subdivide_d + 1.0f) };
-	Vector3 point{ 0.0f, 0.0f, start_pos.y };
+	Vector2 subdivide_step { 1.0f / (subdivide_w + 1.0f), 1.0f / (subdivide_d + 1.0f) };
+	Vector3 point { 0.0f, 0.0f, start_pos.y };
 	Vector2 point_step = subdivide_step * size;
-	Vector2 uv{}, uv_step = subdivide_step * uv_size;
+	Vector2 uv {}, uv_step = subdivide_step * uv_size;
 
 	for (int32_t j = 0; j <= subdivide_d + 1; ++j) {
 		point.x = start_pos.x;

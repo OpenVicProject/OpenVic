@@ -3,15 +3,18 @@
 using namespace OpenVic2;
 
 const std::vector<std::chrono::milliseconds> GameAdvancementHook::GAME_SPEEDS = {
-	std::chrono::milliseconds{ 4000 },
-	std::chrono::milliseconds{ 3000 },
-	std::chrono::milliseconds{ 2000 },
-	std::chrono::milliseconds{ 1000 },
-	std::chrono::milliseconds{ 100 },
-	std::chrono::milliseconds{ 1 } };
+	std::chrono::milliseconds { 4000 },
+	std::chrono::milliseconds { 3000 },
+	std::chrono::milliseconds { 2000 },
+	std::chrono::milliseconds { 1000 },
+	std::chrono::milliseconds { 100 },
+	std::chrono::milliseconds { 1 }
+};
 
 GameAdvancementHook::GameAdvancementHook(AdvancementFunction tickFunction, RefreshFunction updateFunction, bool startPaused, speed_t startingSpeed)
-	: triggerFunction{ tickFunction }, refreshFunction{ updateFunction }, isPaused{ startPaused } {
+	: triggerFunction { tickFunction },
+	  refreshFunction { updateFunction },
+	  isPaused { startPaused } {
 	lastPolledTime = std::chrono::high_resolution_clock::now();
 	setSimulationSpeed(startingSpeed);
 }
