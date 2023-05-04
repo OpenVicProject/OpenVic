@@ -15,8 +15,8 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Run `scons` in the project root, you should see a libopenvic2 file in `game/bin/openvic2`.
 4. Open with Godot 4, click import and navigate to the `game` directory.
-5. Import and edit.
-6. Once loaded, click the play button at the top right, if you see `Hello GDExtension Singleton!` in the output at the bottom then it is working.
+5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
+6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
 
 ## Project Export
 1. Build the extension with `scons` or `scons target=template_debug`. (or `scons target=template_release` for release)

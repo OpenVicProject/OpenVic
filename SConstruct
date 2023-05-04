@@ -35,13 +35,16 @@ opts.Add(
 opts.Update(env)
 Help(opts.GenerateHelpText(env))
 
-def GlobRecursive(pattern, node='.'):
+def GlobRecursive(pattern, nodes=['.']):
     import SCons
     results = []
-    for f in Glob(str(node) + '/*', source=True):
-        if type(f) is SCons.Node.FS.Dir:
-            results += GlobRecursive(pattern, f)
-    results += Glob(str(node) + '/' + pattern, source=True)
+    for node in nodes:
+        nnodes = []
+        for f in Glob(str(node) + '/*', source=True):
+            if type(f) is SCons.Node.FS.Dir:
+                nnodes.append(f)
+        results += GlobRecursive(pattern, nnodes)
+        results += Glob(str(node) + '/' + pattern, source=True)
     return results
 
 # For the reference:
@@ -53,8 +56,9 @@ def GlobRecursive(pattern, node='.'):
 # - LINKFLAGS are for linking flags
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-env.Append(CPPPATH=["extension/src/"])
-sources = GlobRecursive("*.cpp", "extension/src")
+paths = ["extension/src/", "extension/deps/openvic2-simulation/src/"]
+env.Append(CPPPATH=paths)
+sources = GlobRecursive("*.cpp", paths)
 
 # Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
 if env["intermediate_delete"]:
@@ -63,18 +67,19 @@ if env["intermediate_delete"]:
         return file[:file.rindex(".")]
 
     found_one = False
-    for obj_file in [file[:-len(".os")] for file in glob("extension/src/*.os", recursive=True)]:
-        found = False
-        for source_file in sources:
-            if remove_extension(str(source_file)) == obj_file:
-                found = True
-                break
-        if not found:
-            if not found_one:
-                found_one = True
-                print("Unassociated intermediate files found...")
-            print("Removing "+obj_file+".os")
-            os.remove(obj_file+".os")
+    for path in paths:
+        for obj_file in [file[:-len(".os")] for file in glob(path + "*.os", recursive=True)]:
+            found = False
+            for source_file in sources:
+                if remove_extension(str(source_file)) == obj_file:
+                    found = True
+                    break
+            if not found:
+                if not found_one:
+                    found_one = True
+                    print("Unassociated intermediate files found...")
+                print("Removing "+obj_file+".os")
+                os.remove(obj_file+".os")
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(

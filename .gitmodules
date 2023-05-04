@@ -4,3 +4,6 @@
 [submodule "extension/deps/OV2-compiler"]
 	path = extension/deps/OV2-compiler
 	url = https://github.com/OpenVic2Project/OV2-compiler
+[submodule "extension/deps/openvic2-simulation"]
+	path = extension/deps/openvic2-simulation
+	url = https://github.com/OpenVic2Project/OpenVic2-Simulation
