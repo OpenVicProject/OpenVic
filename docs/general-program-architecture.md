@@ -18,8 +18,8 @@ UI ->> Player: Display Main Menu
 Player ->> UI: Press "New Game" or<br>"Load Game" button
 UI ->> Bridge: Begin new Game Session
 Bridge ->> Simulation: Start new Game Session
-Simulation -->> Dataloader: Load previous savegame<br>(If necessary)
-Dataloader -->> Simulation:
+Simulation -->> Dataloader: Load previous save game<br>(If necessary)
+Dataloader -->> Simulation: Save game loaded
 Simulation ->> Bridge: Provide information necessary<br>for UI and visual elements
 Bridge ->> UI: Signal that Game Session<br> is ready for interaction
 UI ->> Player: Present to Player
