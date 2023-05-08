@@ -3,7 +3,6 @@ extends PanelContainer
 signal game_session_menu_button_pressed
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal minimap_clicked(pos_clicked : Vector2)
-signal province_selcted(index : int)
 signal zoom_in_button_pressed
 signal zoom_out_button_pressed
 
@@ -12,7 +11,7 @@ signal zoom_out_button_pressed
 var _mapmode_button_group : ButtonGroup
 
 # REQUIREMENTS:
-# * UI-550, UI-554
+# * UI-550, UI-552, UI-554, UI-561
 func _add_mapmode_button(identifier : String) -> void:
 	var button := Button.new()
 	button.text = identifier
@@ -37,19 +36,15 @@ func _on_game_session_menu_button_pressed() -> void:
 
 # REQUIREMENTS:
 # * SS-76
-# * UIFUN-129, UIFUN-133
+# * UIFUN-129, UIFUN-131, UIFUN-133
 func _mapmode_pressed(button : BaseButton) -> void:
 	GameSingleton.set_mapmode(button.tooltip_text)
-	GameSingleton.update_colour_image()
 
 func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2) -> void:
 	map_view_camera_changed.emit(near_left, far_left, far_right, near_right)
 
 func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	minimap_clicked.emit(pos_clicked)
-
-func _on_province_selected(index : int) -> void:
-	province_selcted.emit(index)
 
 # REQUIREMENTS:
 # * UIFUN-269

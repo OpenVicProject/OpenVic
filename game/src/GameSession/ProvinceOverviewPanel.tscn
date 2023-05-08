@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/GameSession/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 
-[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_buildings_container")]
+[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_rgo_icon_texture_rect", "_rgo_name_label", "_buildings_container")]
 editor_description = "UI-56"
 anchors_preset = 2
 anchor_top = 1.0
@@ -15,6 +15,8 @@ script = ExtResource("1_3n8k5")
 _province_name_label = NodePath("PanelList/TopBarList/NameList/ProvinceName")
 _region_name_label = NodePath("PanelList/TopBarList/NameList/RegionName")
 _life_rating_bar = NodePath("PanelList/TopBarList/NameList/LifeRatingBar")
+_rgo_icon_texture_rect = NodePath("PanelList/InteractList/RGOInfo/RGOIcon")
+_rgo_name_label = NodePath("PanelList/InteractList/RGOInfo/RGOName")
 _buildings_container = NodePath("PanelList/InteractList/BuildingsContainer")
 
 [node name="PanelList" type="VBoxContainer" parent="."]
@@ -57,6 +59,23 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="HSeparator" type="HSeparator" parent="PanelList/InteractList"]
+layout_mode = 2
+mouse_filter = 1
+
+[node name="RGOInfo" type="HBoxContainer" parent="PanelList/InteractList"]
+editor_description = "UI-112"
+layout_mode = 2
+
+[node name="RGOIcon" type="TextureRect" parent="PanelList/InteractList/RGOInfo"]
+editor_description = "UI-100"
+layout_mode = 2
+
+[node name="RGOName" type="Label" parent="PanelList/InteractList/RGOInfo"]
+layout_mode = 2
+text = "rgo_MISSING"
+vertical_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="PanelList/InteractList"]
 layout_mode = 2
 mouse_filter = 1
 

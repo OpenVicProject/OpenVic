@@ -1,6 +1,5 @@
 extends Node3D
 
-signal province_selected(index : int)
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 
 const _action_north : StringName = &"map_north"
@@ -83,6 +82,8 @@ func _ready():
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
 
+	GameSingleton.province_selected.connect(_on_province_selected)
+
 func _notification(what : int):
 	match what:
 		NOTIFICATION_WM_MOUSE_ENTER: # Mouse inside window
@@ -112,12 +113,8 @@ func zoom_in() -> void:
 func zoom_out() -> void:
 	_zoom_target += _zoom_target_step
 
-func _select_province(index : int) -> void:
+func _on_province_selected(index : int) -> void:
 	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_selected_index, index)
-	province_selected.emit(index)
-
-func _deselect_province() -> void:
-	_select_province(0)
 
 # REQUIREMENTS
 # * SS-31
@@ -125,7 +122,7 @@ func _unhandled_input(event : InputEvent):
 	if _mouse_over_viewport and event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-			_select_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+			GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 		else:
 			print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):

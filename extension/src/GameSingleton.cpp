@@ -14,11 +14,7 @@ using namespace OpenVic2;
 GameSingleton* GameSingleton::singleton = nullptr;
 
 void GameSingleton::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("load_province_identifier_file", "file_path"), &GameSingleton::load_province_identifier_file);
-	ClassDB::bind_method(D_METHOD("load_water_province_file", "file_path"), &GameSingleton::load_water_province_file);
-	ClassDB::bind_method(D_METHOD("load_region_file", "file_path"), &GameSingleton::load_region_file);
-	ClassDB::bind_method(D_METHOD("load_terrain_file", "file_path"), &GameSingleton::load_terrain_file);
-	ClassDB::bind_method(D_METHOD("load_map_images", "province_image_path", "terrain_image_path"), &GameSingleton::load_map_images);
+	ClassDB::bind_method(D_METHOD("load_defines", "file_dict"), &GameSingleton::load_defines);
 	ClassDB::bind_method(D_METHOD("setup"), &GameSingleton::setup);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);
@@ -35,8 +31,11 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mapmode_count"), &GameSingleton::get_mapmode_count);
 	ClassDB::bind_method(D_METHOD("get_mapmode_identifier", "index"), &GameSingleton::get_mapmode_identifier);
 	ClassDB::bind_method(D_METHOD("set_mapmode", "identifier"), &GameSingleton::set_mapmode);
+	ClassDB::bind_method(D_METHOD("get_selected_province_index"), &GameSingleton::get_selected_province_index);
+	ClassDB::bind_method(D_METHOD("set_selected_province", "index"), &GameSingleton::set_selected_province);
 
 	ClassDB::bind_method(D_METHOD("expand_building", "province_index", "building_type_identifier"), &GameSingleton::expand_building);
+	ClassDB::bind_method(D_METHOD("get_good_icon_texture", "identifier"), &GameSingleton::get_good_icon_texture);
 
 	ClassDB::bind_method(D_METHOD("set_paused", "paused"), &GameSingleton::set_paused);
 	ClassDB::bind_method(D_METHOD("toggle_paused"), &GameSingleton::toggle_paused);
@@ -49,16 +48,45 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("try_tick"), &GameSingleton::try_tick);
 
 	ADD_SIGNAL(MethodInfo("state_updated"));
+	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
+
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_identifier_file_key"), &GameSingleton::get_province_identifier_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_water_province_file_key"), &GameSingleton::get_water_province_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_region_file_key"), &GameSingleton::get_region_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_terrain_variant_file_key"), &GameSingleton::get_terrain_variant_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_image_file_key"), &GameSingleton::get_province_image_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_terrain_image_file_key"), &GameSingleton::get_terrain_image_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_goods_file_key"), &GameSingleton::get_goods_file_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_good_icons_dir_key"), &GameSingleton::get_good_icons_dir_key);
+
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_province_key"), &GameSingleton::get_province_info_province_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_region_key"), &GameSingleton::get_province_info_region_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_life_rating_key"), &GameSingleton::get_province_info_life_rating_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_rgo_key"), &GameSingleton::get_province_info_rgo_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_buildings_key"), &GameSingleton::get_province_info_buildings_key);
+
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_building_key"), &GameSingleton::get_building_info_building_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_level_key"), &GameSingleton::get_building_info_level_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_expansion_state_key"), &GameSingleton::get_building_info_expansion_state_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_start_date_key"), &GameSingleton::get_building_info_start_date_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_end_date_key"), &GameSingleton::get_building_info_end_date_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_expansion_progress_key"), &GameSingleton::get_building_info_expansion_progress_key);
 }
 
 GameSingleton* GameSingleton::get_singleton() {
 	return singleton;
 }
 
+
+void GameSingleton::_on_state_updated() {
+	update_colour_image();
+	emit_signal("state_updated");
+}
+
 /* REQUIREMENTS:
- * MAP-21, MAP-25
+ * MAP-21, MAP-23, MAP-25
  */
-GameSingleton::GameSingleton() : game_manager { [this]() { emit_signal("state_updated"); } },
+GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); } },
 								 terrain_variants { "terrain variants" } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
@@ -66,8 +94,8 @@ GameSingleton::GameSingleton() : game_manager { [this]() { emit_signal("state_up
 	Logger::set_info_func([](std::string&& str) { UtilityFunctions::print(str.c_str()); });
 	Logger::set_error_func([](std::string&& str) { UtilityFunctions::push_error(str.c_str()); });
 
-	static constexpr colour_t HIGH_ALPHA_VALUE = to_alpha_value(0.5f);
-	static constexpr colour_t LOW_ALPHA_VALUE = to_alpha_value(0.2f);
+	static constexpr colour_t LOW_ALPHA_VALUE = float_to_alpha_value(0.4f);
+	static constexpr colour_t HIGH_ALPHA_VALUE = float_to_alpha_value(0.7f);
 	using mapmode_t = std::pair<std::string, Mapmode::colour_func_t>;
 	const std::vector<mapmode_t> mapmodes = {
 		{ "mapmode_terrain",
@@ -81,13 +109,33 @@ GameSingleton::GameSingleton() : game_manager { [this]() { emit_signal("state_up
 		{ "mapmode_region",
 			[](Map const&, Province const& province) -> colour_t {
 				Region const* region = province.get_region();
-				if (region != nullptr) return (0xCC << 24) | region->get_colour();
+				if (region != nullptr) return HIGH_ALPHA_VALUE | region->get_colour();
 				return NULL_COLOUR;
 			} },
 		{ "mapmode_index",
 			[](Map const& map, Province const& province) -> colour_t {
-				const uint8_t f = static_cast<float>(province.get_index()) / static_cast<float>(map.get_province_count()) * 255.0f;
+				const colour_t f = fraction_to_colour_byte(province.get_index(), map.get_province_count());
 				return HIGH_ALPHA_VALUE | (f << 16) | (f << 8) | f;
+			} },
+		{ "mapmode_rgo",
+			[](Map const& map, Province const& province) -> colour_t {
+				Good const* rgo = province.get_rgo();
+				if (rgo != nullptr) return HIGH_ALPHA_VALUE | rgo->get_colour();
+				return NULL_COLOUR;
+			} },
+		{ "mapmode_infrastructure",
+			[](Map const& map, Province const& province) -> colour_t {
+				Building const* railroad = province.get_building_by_identifier("building_railroad");
+				if (railroad != nullptr) {
+					colour_t val = fraction_to_colour_byte(railroad->get_level(), railroad->get_type().get_max_level(), 0.5f, 1.0f);
+					switch (railroad->get_expansion_state()) {
+					case Building::ExpansionState::CannotExpand: val <<= 16; break;
+					case Building::ExpansionState::CanExpand: break;
+					default: val <<= 8; break;
+					}
+					return HIGH_ALPHA_VALUE | val;
+				}
+				return HIGH_ALPHA_VALUE;
 			} }
 	};
 	for (mapmode_t const& mapmode : mapmodes)
@@ -129,7 +177,7 @@ static Error _load_json_file(String const& file_description, String const& file_
 	return err;
 }
 
-using parse_json_entry_func_t = std::function<godot::Error(godot::String const&, godot::Variant const&)>;
+using parse_json_entry_func_t = std::function<Error(String const&, Variant const&)>;
 
 static Error _parse_json_dictionary_file(String const& file_description, String const& file_path,
 	String const& identifier_prefix, parse_json_entry_func_t parse_entry) {
@@ -189,7 +237,7 @@ static colour_t _parse_colour(Variant const& var) {
 
 Error GameSingleton::_parse_province_identifier_entry(String const& identifier, Variant const& entry) {
 	const colour_t colour = _parse_colour(entry);
-	if (colour == NULL_COLOUR) {
+	if (colour == NULL_COLOUR || colour > MAX_COLOUR_RGB) {
 		UtilityFunctions::push_error("Invalid colour for province identifier \"", identifier, "\": ", entry);
 		return FAILED;
 	}
@@ -248,7 +296,7 @@ Ref<Image> TerrainVariant::get_image() const { return image; }
 
 Error GameSingleton::_parse_terrain_entry(String const& identifier, Variant const& entry) {
 	const colour_t colour = _parse_colour(entry);
-	if (colour == NULL_COLOUR) {
+	if (colour == NULL_COLOUR || colour > MAX_COLOUR_RGB) {
 		UtilityFunctions::push_error("Invalid colour for terrain texture \"", identifier, "\": ", entry);
 		return FAILED;
 	}
@@ -264,7 +312,7 @@ Error GameSingleton::_parse_terrain_entry(String const& identifier, Variant cons
 	return ERR(terrain_variants.add_item({ identifier.utf8().get_data(), colour, terrain_image }));
 }
 
-Error GameSingleton::load_terrain_file(String const& file_path) {
+Error GameSingleton::load_terrain_variant_file(String const& file_path) {
 	Error parse_err = _parse_json_dictionary_file("terrain variants", file_path, "",
 		[this](String const& identifier, Variant const& entry) -> Error {
 			return _parse_terrain_entry(identifier, entry);
@@ -339,8 +387,7 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT
 	for (int i = 0; i < 2; ++i)
 		for (image_subdivisions[i] = 1;
-			 province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || province_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i])
-			;
+			 province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || province_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i]);
 
 	Map::shape_pixel_t const* province_shape_data = game_manager.map.get_province_shape_image().data();
 	const Vector2i divided_dims = province_dims / image_subdivisions;
@@ -367,7 +414,7 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 
 	province_shape_texture.instantiate();
 	if (province_shape_texture->create_from_images(province_shape_images) != OK) {
-		UtilityFunctions::push_error("");
+		UtilityFunctions::push_error("Failed to create terrain texture array!");
 		err = FAILED;
 	}
 
@@ -376,7 +423,151 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 	return err;
 }
 
-godot::Error GameSingleton::setup() {
+Error GameSingleton::_parse_good_entry(String const& identifier, Variant const& entry) {
+	if (entry.get_type() != Variant::DICTIONARY) {
+		UtilityFunctions::push_error("Invalid good entry for ", identifier, ": ", entry);
+		return FAILED;
+	}
+	Dictionary const& dict = entry;
+
+	static const String key_category = "category";
+	Variant const& var_category = dict.get(key_category, "");
+	String category;
+	if (var_category.get_type() == Variant::STRING) category = var_category;
+	else UtilityFunctions::push_error("Invalid good category for ", identifier, ": ", var_category);
+
+	static const String key_base_price = "base_price";
+	Variant const& var_base_price = dict.get(key_base_price, NULL_PRICE);
+	price_t base_price = NULL_PRICE;
+	if (var_base_price.get_type() == Variant::FLOAT) base_price = var_base_price;
+	else UtilityFunctions::push_error("Invalid good base price for ", identifier, ": ", var_base_price);
+
+	static const String key_colour = "colour";
+	Variant const& var_colour = dict.get(key_colour, "");
+	const colour_t colour = _parse_colour(var_colour);
+	if (colour > MAX_COLOUR_RGB) {
+		UtilityFunctions::push_error("Invalid good colour for ", identifier, ": ", var_colour);
+		return FAILED;
+	}
+
+	static const String key_default_available = "default_available";
+	Variant const& var_default_available = dict.get(key_default_available, true);
+	bool default_available = false;
+	if (var_default_available.get_type() == Variant::BOOL) default_available = var_default_available;
+	else UtilityFunctions::push_error("Invalid good available default bool value for ", identifier, ": ", var_default_available);
+
+	static const String key_tradeable = "tradeable";
+	Variant const& var_tradeable = dict.get(key_tradeable, true);
+	bool tradeable = false;
+	if (var_tradeable.get_type() == Variant::BOOL) tradeable = var_tradeable;
+	else UtilityFunctions::push_error("Invalid good tradeable bool value for ", identifier, ": ", var_tradeable);
+
+	static const String key_currency = "currency";
+	Variant const& var_currency = dict.get(key_currency, true);
+	bool currency = false;
+	if (var_currency.get_type() == Variant::BOOL) currency = var_currency;
+	else UtilityFunctions::push_error("Invalid good currency bool value for ", identifier, ": ", var_currency);
+
+	static const String key_overseas_maintenance = "overseas_maintenance";
+	Variant const& var_overseas_maintenance = dict.get(key_overseas_maintenance, true);
+	bool overseas_maintenance = false;
+	if (var_overseas_maintenance.get_type() == Variant::BOOL) overseas_maintenance = var_overseas_maintenance;
+	else UtilityFunctions::push_error("Invalid good overseas maintenance bool value for ", identifier, ": ", var_overseas_maintenance);
+
+	return ERR(game_manager.good_manager.add_good(identifier.utf8().get_data(), category.utf8().get_data(),
+		colour, base_price, default_available, tradeable, currency, overseas_maintenance));
+}
+
+Error GameSingleton::load_goods(String const& defines_path, String const& icons_dir_path) {
+	Error err = _parse_json_dictionary_file("good", defines_path, "good_",
+		[this](String const& identifier, Variant const& entry) -> Error {
+			return _parse_good_entry(identifier, entry);
+		});
+	game_manager.good_manager.lock_goods();
+	for (Good const& good : game_manager.good_manager.get_goods()) {
+		Ref<Image> image;
+		image.instantiate();
+		const String path = icons_dir_path + String{ "/" } + good.get_identifier().c_str() + ".png";
+		const Error good_err = image->load(path);
+		if (good_err || image.is_null()) {
+			UtilityFunctions::push_error("Failed to load good icon image: ", path);
+			err = FAILED;
+			continue;
+		}
+		Ref<Texture> tex = ImageTexture::create_from_image(image);
+		if (tex.is_null()) {
+			UtilityFunctions::push_error("Failed to generate good icon texture: ", path);
+			err = FAILED;
+			continue;
+		}
+		good_icons[good.get_identifier().c_str()] = tex;
+	}
+	return err;
+}
+
+StringName const& GameSingleton::get_province_identifier_file_key() {
+	static const StringName key = "province_identifiers";
+	return key;
+}
+StringName const& GameSingleton::get_water_province_file_key() {
+	static const StringName key = "water_provinces";
+	return key;
+}
+StringName const& GameSingleton::get_region_file_key() {
+	static const StringName key = "regions";
+	return key;
+}
+StringName const& GameSingleton::get_terrain_variant_file_key() {
+	static const StringName key = "terrain_variants";
+	return key;
+}
+StringName const& GameSingleton::get_province_image_file_key() {
+	static const StringName key = "province_image";
+	return key;
+}
+StringName const& GameSingleton::get_terrain_image_file_key() {
+	static const StringName key = "terrain_image";
+	return key;
+}
+StringName const& GameSingleton::get_goods_file_key() {
+	static const StringName key = "goods";
+	return key;
+}
+StringName const& GameSingleton::get_good_icons_dir_key() {
+	static const StringName key = "good_icons";
+	return key;
+}
+
+Error GameSingleton::load_defines(Dictionary const& file_dict) {
+	Error err = OK;
+	if (load_province_identifier_file(file_dict.get(get_province_identifier_file_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load province identifiers!");
+		err = FAILED;
+	}
+	if (load_water_province_file(file_dict.get(get_water_province_file_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load water provinces!");
+		err = FAILED;
+	}
+	if (load_region_file(file_dict.get(get_region_file_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load regions!");
+		err = FAILED;
+	}
+	if (load_terrain_variant_file(file_dict.get(get_terrain_variant_file_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load terrain variants!");
+		err = FAILED;
+	}
+	if (load_map_images(file_dict.get(get_province_image_file_key(), ""), file_dict.get(get_terrain_image_file_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load map images!");
+		err = FAILED;
+	}
+	if (load_goods(file_dict.get(get_goods_file_key(), ""), file_dict.get(get_good_icons_dir_key(), "")) != OK) {
+		UtilityFunctions::push_error("Failed to load goods!");
+		err = FAILED;
+	}
+	return err;
+}
+
+Error GameSingleton::setup() {
 	return ERR(game_manager.setup());
 }
 
@@ -414,51 +605,88 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 	return game_manager.map.get_province_index_at(x_mod_w, y_mod_h);
 }
 
-#define KEY(x) static const StringName x##_key = #x
+StringName const& GameSingleton::get_province_info_province_key() {
+	static const StringName key = "province";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_region_key() {
+	static const StringName key = "region";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_life_rating_key() {
+	static const StringName key = "life_rating";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_rgo_key() {
+	static const StringName key = "rgo";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_buildings_key() {
+	static const StringName key = "buildings";
+	return key;
+}
+
+StringName const& GameSingleton::get_building_info_building_key() {
+	static const StringName key = "building";
+	return key;
+}
+StringName const& GameSingleton::get_building_info_level_key() {
+	static const StringName key = "level";
+	return key;
+}
+StringName const& GameSingleton::get_building_info_expansion_state_key() {
+	static const StringName key = "expansion_state";
+	return key;
+}
+StringName const& GameSingleton::get_building_info_start_date_key() {
+	static const StringName key = "start_date";
+	return key;
+}
+StringName const& GameSingleton::get_building_info_end_date_key() {
+	static const StringName key = "end_date";
+	return key;
+}
+StringName const& GameSingleton::get_building_info_expansion_progress_key() {
+	static const StringName key = "expansion_progress";
+	return key;
+}
+
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	Province const* province = game_manager.map.get_province_by_index(index);
 	if (province == nullptr) return {};
-	KEY(province);
-	KEY(region);
-	KEY(life_rating);
-	KEY(buildings);
 	Dictionary ret;
 
-	ret[province_key] = province->get_identifier().c_str();
+	ret[get_province_info_province_key()] = province->get_identifier().c_str();
 
 	Region const* region = province->get_region();
-	if (region != nullptr) ret[region_key] = region->get_identifier().c_str();
+	if (region != nullptr) ret[get_province_info_region_key()] = region->get_identifier().c_str();
 
-	ret[life_rating_key] = province->get_life_rating();
+	Good const* rgo = province->get_rgo();
+	if (rgo != nullptr) ret[get_province_info_rgo_key()] = rgo->get_identifier().c_str();
+
+	ret[get_province_info_life_rating_key()] = province->get_life_rating();
 
 	std::vector<Building> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {
 		Array buildings_array;
 		buildings_array.resize(buildings.size());
 		for (size_t idx = 0; idx < buildings.size(); ++idx) {
-			KEY(building);
-			KEY(level);
-			KEY(expansion_state);
-			KEY(start_date);
-			KEY(end_date);
-			KEY(expansion_progress);
+			Building const& building = buildings[idx];
 
 			Dictionary building_dict;
-			Building const& building = buildings[idx];
-			building_dict[building_key] = building.get_identifier().c_str();
-			building_dict[level_key] = static_cast<int32_t>(building.get_level());
-			building_dict[expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
-			building_dict[start_date_key] = static_cast<std::string>(building.get_start_date()).c_str();
-			building_dict[end_date_key] = static_cast<std::string>(building.get_end_date()).c_str();
-			building_dict[expansion_progress_key] = building.get_expansion_progress();
+			building_dict[get_building_info_building_key()] = building.get_identifier().c_str();
+			building_dict[get_building_info_level_key()] = static_cast<int32_t>(building.get_level());
+			building_dict[get_building_info_expansion_state_key()] = static_cast<int32_t>(building.get_expansion_state());
+			building_dict[get_building_info_start_date_key()] = static_cast<std::string>(building.get_start_date()).c_str();
+			building_dict[get_building_info_end_date_key()] = static_cast<std::string>(building.get_end_date()).c_str();
+			building_dict[get_building_info_expansion_progress_key()] = building.get_expansion_progress();
 
 			buildings_array[idx] = building_dict;
 		}
-		ret[buildings_key] = buildings_array;
+		ret[get_province_info_buildings_key()] = buildings_array;
 	}
 	return ret;
 }
-#undef KEY
 
 int32_t GameSingleton::get_width() const {
 	return game_manager.map.get_width();
@@ -523,14 +751,25 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 	return String {};
 }
 
-Error GameSingleton::set_mapmode(godot::String const& identifier) {
+Error GameSingleton::set_mapmode(String const& identifier) {
 	Mapmode const* mapmode = game_manager.map.get_mapmode_by_identifier(identifier.utf8().get_data());
 	if (mapmode == nullptr) {
 		UtilityFunctions::push_error("Failed to set mapmode to: ", identifier);
 		return FAILED;
 	}
 	mapmode_index = mapmode->get_index();
+	update_colour_image();
 	return OK;
+}
+
+int32_t GameSingleton::get_selected_province_index() const {
+	return game_manager.map.get_selected_province_index();
+}
+
+void GameSingleton::set_selected_province(int32_t index) {
+	game_manager.map.set_selected_province(index);
+	update_colour_image();
+	emit_signal("province_selected", index);
 }
 
 Error GameSingleton::expand_building(int32_t province_index, String const& building_type_identifier) {
@@ -539,6 +778,10 @@ Error GameSingleton::expand_building(int32_t province_index, String const& build
 		return FAILED;
 	}
 	return OK;
+}
+
+Ref<Texture> GameSingleton::get_good_icon_texture(String const& identifier) const {
+	return good_icons.get(identifier, {});
 }
 
 void GameSingleton::set_paused(bool paused) {

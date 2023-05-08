@@ -101,7 +101,6 @@ mouse_filter = 1
 text = "-"
 
 [connection signal="map_view_camera_changed" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
-[connection signal="province_selcted" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_province_selected"]
 [connection signal="minimap_clicked" from="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]

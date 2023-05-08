@@ -71,6 +71,7 @@ DIALOG_SAVE_AND_QUIT,Save and Quit
 province_MISSING,No Province
 region_MISSING,No Region
 LIFE_RATING_TOOLTIP,Liferating: %d
+rgo_MISSING,No RGO
 building_MISSING,No Building
 building_fort,Fort
 building_naval_base,Naval Base

@@ -32,11 +32,21 @@ namespace OpenVic2 {
 		IdentifierRegistry<TerrainVariant> terrain_variants;
 		Map::terrain_variant_map_t terrain_variant_map;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
+		godot::Dictionary good_icons;
 
 		godot::Error _parse_province_identifier_entry(godot::String const& identifier, godot::Variant const& entry);
 		godot::Error _parse_region_entry(godot::String const& identifier, godot::Variant const& entry);
 		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry);
-		void _tick();
+		godot::Error _parse_good_entry(godot::String const& identifier, godot::Variant const& entry);
+
+		godot::Error load_province_identifier_file(godot::String const& file_path);
+		godot::Error load_water_province_file(godot::String const& file_path);
+		godot::Error load_region_file(godot::String const& file_path);
+		godot::Error load_terrain_variant_file(godot::String const& file_path);
+		godot::Error load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path);
+		godot::Error load_goods(godot::String const& defines_path, godot::String const& icons_dir_path);
+
+		void _on_state_updated();
 
 	protected:
 		static void _bind_methods();
@@ -47,11 +57,19 @@ namespace OpenVic2 {
 		GameSingleton();
 		~GameSingleton();
 
-		godot::Error load_province_identifier_file(godot::String const& file_path);
-		godot::Error load_water_province_file(godot::String const& file_path);
-		godot::Error load_region_file(godot::String const& file_path);
-		godot::Error load_terrain_file(godot::String const& file_path);
-		godot::Error load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path);
+		static godot::StringName const& get_province_identifier_file_key();
+		static godot::StringName const& get_water_province_file_key();
+		static godot::StringName const& get_region_file_key();
+		static godot::StringName const& get_terrain_variant_file_key();
+		static godot::StringName const& get_province_image_file_key();
+		static godot::StringName const& get_terrain_image_file_key();
+		static godot::StringName const& get_goods_file_key();
+		static godot::StringName const& get_good_icons_dir_key();
+
+		/* Load the game's defines from the filepaths listed as Strings
+		 * in a Dictionary, using the StringNames above as keys.
+		 */
+		godot::Error load_defines(godot::Dictionary const& file_dict);
 
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.
@@ -59,7 +77,25 @@ namespace OpenVic2 {
 		godot::Error setup();
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
+
+		static godot::StringName const& get_province_info_province_key();
+		static godot::StringName const& get_province_info_region_key();
+		static godot::StringName const& get_province_info_life_rating_key();
+		static godot::StringName const& get_province_info_rgo_key();
+		static godot::StringName const& get_province_info_buildings_key();
+
+		static godot::StringName const& get_building_info_building_key();
+		static godot::StringName const& get_building_info_level_key();
+		static godot::StringName const& get_building_info_expansion_state_key();
+		static godot::StringName const& get_building_info_start_date_key();
+		static godot::StringName const& get_building_info_end_date_key();
+		static godot::StringName const& get_building_info_expansion_progress_key();
+
+		/* Get info to display in Province Overview Panel, packaged in
+		 * a Dictionary using the StringNames above as keys.
+		 */
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
+
 		int32_t get_width() const;
 		int32_t get_height() const;
 		float get_aspect_ratio() const;
@@ -92,8 +128,11 @@ namespace OpenVic2 {
 		int32_t get_mapmode_count() const;
 		godot::String get_mapmode_identifier(int32_t index) const;
 		godot::Error set_mapmode(godot::String const& identifier);
+		int32_t get_selected_province_index() const;
+		void set_selected_province(int32_t index);
 
 		godot::Error expand_building(int32_t province_index, godot::String const& building_type_identifier);
+		godot::Ref<godot::Texture> get_good_icon_texture(godot::String const& identifier) const;
 
 		void set_paused(bool paused);
 		void toggle_paused();

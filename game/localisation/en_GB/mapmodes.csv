@@ -1,6 +1,8 @@
 
 ,, Test Mapmodes
-mapmode_province,Province Mapmode
-mapmode_region,Region Mapmode
-mapmode_terrain,Terrain Mapmode
-mapmode_index,Index Mapmode
+mapmode_province,Province
+mapmode_region,Region
+mapmode_terrain,Terrain
+mapmode_index,Index
+mapmode_rgo,RGO
+mapmode_infrastructure,Infrastructure

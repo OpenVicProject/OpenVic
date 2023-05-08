@@ -16,6 +16,7 @@ func _ready():
 		push_error("Failed to set up minimap shader")
 	else:
 		_minimap_shader = minimap_material
+	GameSingleton.province_selected.connect(_on_province_selected)
 
 func _on_province_selected(index : int) -> void:
 	if _minimap_shader != null:
