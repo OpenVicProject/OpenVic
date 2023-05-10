@@ -1,5 +1,9 @@
 extends SettingOptionButton
 
+# REQUIREMENTS
+# * UIFUN-24
+# * UIFUN-31
+
 @export
 var default_value : float = GuiScale.error_guiscale
 
@@ -9,7 +13,7 @@ func _find_guiscale_index_by_value(value : float) -> int:
 			return item_index
 	return -1
 
-func _sync_guiscales(to_select:float=GuiScale.get_current_guiscale()) -> void:
+func _sync_guiscales(to_select : float = GuiScale.get_current_guiscale()) -> void:
 	clear()
 	default_selected = -1
 	selected = -1
@@ -30,12 +34,9 @@ func _sync_guiscales(to_select:float=GuiScale.get_current_guiscale()) -> void:
 		selected = default_selected
 	
 func _setup_button():
-	print("Setup Gui scales Button")
 	if default_value <= 0:
-		#TODO: verify this project setting is what we actually want
-		#print("get default from project settings, default was %f",default_value)
 		default_value = ProjectSettings.get_setting("display/window/stretch/scale")
-	GuiScale.add_guiscale(default_value,&"default")
+	GuiScale.add_guiscale(default_value, &"default")
 	_sync_guiscales()
 
 func _get_value_for_file(select_value : int):
@@ -45,20 +46,18 @@ func _get_value_for_file(select_value : int):
 		return null
 
 func _set_value_from_file(load_value):
-	#no need to match types like resolution does since we don't 
-	#intend on supporting strings
-	var target_guiscale = load_value
-	selected = _find_guiscale_index_by_value(target_guiscale)
-	if selected != -1:return
-	if GuiScale.add_guiscale(target_guiscale):
-		_sync_guiscales(target_guiscale)
-		return
+	if typeof(load_value) == TYPE_FLOAT:
+		var target_guiscale : float = load_value
+		selected = _find_guiscale_index_by_value(target_guiscale)
+		if selected != -1: return
+		if GuiScale.add_guiscale(target_guiscale):
+			_sync_guiscales(target_guiscale)
+			return
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	selected = default_selected
 
 func _on_item_selected(index:int):
 	if _valid_index(index):
-		print("Change GUI scale on selector index: %d" % index)
 		GuiScale.set_guiscale(get_item_metadata(index))
 	else:
 		push_error("Invalid GuiScaleSelector index: %d" % index)

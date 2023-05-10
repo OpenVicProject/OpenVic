@@ -1,17 +1,16 @@
 extends Node
 
-#the default value
-const error_guiscale : float = 1
+const error_guiscale : float = -1.0
 
 @export
 var minimum_guiscale : float = 0.1
 
 const _starting_guiscales : Dictionary = {
-	float(0.5): &"0.5x",
+	float(0.5) : &"0.5x",
 	float(0.75): &"0.75x",
-	float(1): &"1x",
-	float(1.5): &"1.5x",
-	float(2): &"2x",
+	float(1)   : &"1x",
+	float(1.5) : &"1.5x",
+	float(2)   : &"2x",
 }
 
 var _guiscales: Dictionary
@@ -31,13 +30,12 @@ func has_guiscale(guiscale_value : float) -> bool:
 func add_guiscale(guiscale_value: float, guiscale_name: StringName=&"") -> bool:
 	if has_guiscale(guiscale_value): return true
 	var scale_dict := { value = guiscale_value }
-	var display_name := "%sx" % [guiscale_value]
 	if not guiscale_name.is_empty():
-		scale_dict.name = guiscale_name
-		#don't need to change the display name
-	scale_dict.display_name = StringName(display_name)
+		scale_dict.display_name = guiscale_name
+	else:
+		scale_dict.display_name = StringName("%sx" % guiscale_value)
 	if guiscale_value < minimum_guiscale:
-		push_error("GUI scale %s is smaller than the minimum %s" % [scale_dict.display_name,minimum_guiscale])
+		push_error("GUI scale %s is smaller than the minimum %s" % [scale_dict.display_name, minimum_guiscale])
 		return false
 	_guiscales[guiscale_value] = scale_dict
 	return true
@@ -62,4 +60,3 @@ func set_guiscale(guiscale:float) -> void:
 	
 func reset_guiscale() -> void:
 	set_guiscale(get_current_guiscale())
-	

@@ -9,13 +9,13 @@ const _starting_resolutions : Dictionary = {
 	Vector2i(3840,2160): &"4K",
 	Vector2i(2560,1080): &"UW1080p",
 	Vector2i(1920,1080): &"1080p",
-	Vector2i(1366,768): &"",
-	Vector2i(1536,864): &"",
-	Vector2i(1280,720): &"720p",
-	Vector2i(1440,900): &"",
-	Vector2i(1600,900): &"",
-	Vector2i(1024,600): &"",
-	Vector2i(800,600): &""
+	Vector2i(1366,768) : &"",
+	Vector2i(1536,864) : &"",
+	Vector2i(1280,720) : &"720p",
+	Vector2i(1440,900) : &"",
+	Vector2i(1600,900) : &"",
+	Vector2i(1024,600) : &"",
+	Vector2i(800,600)  : &""
 }
 
 var _resolutions : Dictionary
