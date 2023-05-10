@@ -26,6 +26,7 @@ Resolution="*res://src/Autoload/Resolution.gd"
 SoundManager="*res://src/Autoload/SoundManager.gd"
 MusicConductor="*res://src/MusicConductor/MusicConductor.tscn"
 Keychain="*res://addons/keychain/Keychain.gd"
+GuiScale="*res://src/Autoload/GuiScale.gd"
 
 [display]
 

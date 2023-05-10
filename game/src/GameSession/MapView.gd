@@ -175,7 +175,7 @@ func _movement_process(delta : float) -> void:
 func _edge_scrolling_vector() -> Vector2:
 	if not _mouse_over_viewport:
 		return Vector2()
-	var mouse_vector := _mouse_pos_viewport / _viewport_dims - Vector2(0.5, 0.5)
+	var mouse_vector := _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims - Vector2(0.5, 0.5)
 	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
 		mouse_vector *= 0
 	return mouse_vector * _edge_move_speed

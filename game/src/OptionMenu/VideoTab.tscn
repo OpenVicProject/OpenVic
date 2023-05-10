@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bq3awxxjn1tuw"]
+[gd_scene load_steps=8 format=3 uid="uid://bq3awxxjn1tuw"]
 
 [ext_resource type="Script" path="res://src/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
 [ext_resource type="Script" path="res://src/OptionMenu/VideoTab.gd" id="1_jvv62"]
 [ext_resource type="Script" path="res://src/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
+[ext_resource type="Script" path="res://src/OptionMenu/GuiScaleSelector.gd" id="3_pgc5d"]
 [ext_resource type="Script" path="res://src/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
 [ext_resource type="Script" path="res://src/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
 [ext_resource type="Script" path="res://src/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
@@ -41,6 +42,22 @@ popup/item_0/id = 0
 script = ExtResource("1_i8nro")
 section_name = "video"
 setting_name = "resolution"
+
+[node name="GuiScaleLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_GUI_SCALE"
+
+[node name="GuiScaleSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+editor_description = "UI-23"
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../ScreenModeSelector")
+item_count = 1
+selected = 0
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("3_pgc5d")
+section_name = "video"
+setting_name = "gui_scale"
 
 [node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-44"
@@ -138,5 +155,6 @@ setting_name = "quality_preset"
 default_selected = 1
 
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/GridContainer/GuiScaleSelector" to="VBoxContainer/GridContainer/GuiScaleSelector" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ScreenModeSelector" to="VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/MonitorDisplaySelector" to="VBoxContainer/GridContainer/MonitorDisplaySelector" method="_on_item_selected"]
