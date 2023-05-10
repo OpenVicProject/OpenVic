@@ -28,7 +28,7 @@ func _notification(what : int):
 			_update_checksum_label_text()
 
 func _update_checksum_label_text() -> void:
-	_checksum_label.tooltip_text = tr("MAINMENU_CHECKSUM") % _checksum
+	_checksum_label.tooltip_text = tr("MAINMENU_CHECKSUM").format({ "checksum": _checksum })
 	_checksum_label.text = "(%s)" % _checksum.substr(0, 4)
 
 func _on_version_label_pressed():

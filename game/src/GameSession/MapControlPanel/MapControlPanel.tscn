@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://g524p8lr574w"]
 
-[ext_resource type="Script" path="res://src/GameSession/MapControlPanel.gd" id="1_ign64"]
-[ext_resource type="Shader" path="res://src/GameSession/Minimap.gdshader" id="2_rinsg"]
-[ext_resource type="Script" path="res://src/GameSession/Minimap.gd" id="3_s4dml"]
+[ext_resource type="Script" path="res://src/GameSession/MapControlPanel/MapControlPanel.gd" id="1_ign64"]
+[ext_resource type="Shader" path="res://src/GameSession/MapControlPanel/Minimap.gdshader" id="2_rinsg"]
+[ext_resource type="Script" path="res://src/GameSession/MapControlPanel/Minimap.gd" id="3_s4dml"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bhuqb"]
 shader = ExtResource("2_rinsg")

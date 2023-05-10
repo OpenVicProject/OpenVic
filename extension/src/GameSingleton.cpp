@@ -313,12 +313,15 @@ Error GameSingleton::_parse_terrain_entry(String const& identifier, Variant cons
 }
 
 Error GameSingleton::load_terrain_variant_file(String const& file_path) {
-	Error parse_err = _parse_json_dictionary_file("terrain variants", file_path, "",
+	const Error err = _parse_json_dictionary_file("terrain variants", file_path, "",
 		[this](String const& identifier, Variant const& entry) -> Error {
 			return _parse_terrain_entry(identifier, entry);
 		});
 	terrain_variants.lock();
-	if (terrain_variants.get_item_count() == 0) parse_err = FAILED;
+	if (err != OK || terrain_variants.get_item_count() == 0) {
+		UtilityFunctions::push_error("Failed to load terrain textures!");
+		return FAILED;
+	}
 
 	Array terrain_images;
 	for (TerrainVariant const& var : terrain_variants.get_items()) {
@@ -327,12 +330,11 @@ Error GameSingleton::load_terrain_variant_file(String const& file_path) {
 	}
 
 	terrain_texture.instantiate();
-	const Error texturearray_err = terrain_texture->create_from_images(terrain_images);
-	if (texturearray_err != OK) {
+	if (terrain_texture->create_from_images(terrain_images) != OK) {
 		UtilityFunctions::push_error("Failed to create terrain texture array!");
-		return texturearray_err;
+		return FAILED;
 	}
-	return parse_err;
+	return OK;
 }
 
 Error GameSingleton::load_map_images(String const& province_image_path, String const& terrain_image_path) {
