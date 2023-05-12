@@ -7,7 +7,7 @@ MAINMENU_MULTIPLAYER,Multiplayer
 MAINMENU_OPTIONS,Options
 MAINMENU_CREDITS,Credits
 MAINMENU_EXIT,Exit
-MAINMENU_CHECKSUM,Checksum %s
+MAINMENU_CHECKSUM,Checksum {checksum}
 
 ,, Options
 OPTIONS_RESET,R
@@ -70,7 +70,8 @@ DIALOG_SAVE_AND_QUIT,Save and Quit
 ,, Province Overview Panel
 province_MISSING,No Province
 region_MISSING,No Region
-LIFE_RATING_TOOLTIP,Liferating: %d
+LIFE_RATING_TOOLTIP,Liferating: {life_rating}
+rgo_MISSING,No RGO
 building_MISSING,No Building
 building_fort,Fort
 building_naval_base,Naval Base

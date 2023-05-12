@@ -7,7 +7,7 @@ MAINMENU_MULTIPLAYER,Multijouer
 MAINMENU_OPTIONS,Options
 MAINMENU_CREDITS,Credits
 MAINMENU_EXIT,Quitter
-MAINMENU_CHECKSUM,Somme de contrôle %s
+MAINMENU_CHECKSUM,Somme de contrôle {checksum}
 
 ,, Options
 OPTIONS_RESET,R

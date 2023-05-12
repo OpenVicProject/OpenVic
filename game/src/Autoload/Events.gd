@@ -5,23 +5,22 @@ var Options = preload("Events/Options.gd").new()
 var Localisation = preload("Events/Localisation.gd").new()
 var ShaderManager = preload("Events/ShaderManager.gd").new()
 
-const _province_identifier_file : String = "res://common/map/provinces.json"
-const _water_province_file : String = "res://common/map/water.json"
-const _region_file : String = "res://common/map/regions.json"
-const _terrain_file : String = "res://common/map/terrain.json"
-const _province_image_file : String = "res://common/map/provinces.png"
-const _terrain_image_file : String = "res://common/map/terrain.png"
+var _define_filepaths_dict : Dictionary = {
+	GameSingleton.get_province_identifier_file_key(): "res://common/map/provinces.json",
+	GameSingleton.get_water_province_file_key(): "res://common/map/water.json",
+	GameSingleton.get_region_file_key(): "res://common/map/regions.json",
+	GameSingleton.get_terrain_variant_file_key(): "res://common/map/terrain.json",
+	GameSingleton.get_province_image_file_key(): "res://common/map/provinces.png",
+	GameSingleton.get_terrain_image_file_key(): "res://common/map/terrain.png",
+	GameSingleton.get_goods_file_key(): "res://common/goods.json",
+	GameSingleton.get_good_icons_dir_key(): "res://art/economy/goods"
+}
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
 func _ready():
-	if GameSingleton.load_province_identifier_file(_province_identifier_file) != OK:
-		push_error("Failed to load province identifiers")
-	if GameSingleton.load_water_province_file(_water_province_file) != OK:
-		push_error("Failed to load water provinces")
-	if GameSingleton.load_region_file(_region_file) != OK:
-		push_error("Failed to load regions")
-	if GameSingleton.load_terrain_file(_terrain_file) != OK:
-		push_error("Failed to load terrain variants")
-	if GameSingleton.load_map_images(_province_image_file, _terrain_image_file) != OK:
-		push_error("Failed to load map images")
+	var start := Time.get_ticks_usec()
+	if GameSingleton.load_defines(_define_filepaths_dict) != OK:
+		push_error("Failed to load game defines!")
+	var end := Time.get_ticks_usec()
+	print("Loading took ", float(end - start) / 1000000, " seconds")

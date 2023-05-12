@@ -2,7 +2,7 @@ shader_type spatial;
 
 render_mode unshaded;
 
-#include "ProvinceIndexSampler.gdshaderinc"
+#include "res://src/GameSession/ProvinceIndexSampler.gdshaderinc"
 
 // Province colour texture
 uniform sampler2D province_colour_tex: source_color, repeat_enable, filter_nearest;

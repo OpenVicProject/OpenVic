@@ -1,0 +1,107 @@
+[gd_scene load_steps=7 format=3 uid="uid://g524p8lr574w"]
+
+[ext_resource type="Script" path="res://src/GameSession/MapControlPanel/MapControlPanel.gd" id="1_ign64"]
+[ext_resource type="Shader" path="res://src/GameSession/MapControlPanel/Minimap.gdshader" id="2_rinsg"]
+[ext_resource type="Script" path="res://src/GameSession/MapControlPanel/Minimap.gd" id="3_s4dml"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bhuqb"]
+shader = ExtResource("2_rinsg")
+shader_parameter/province_shape_subdivisions = null
+shader_parameter/selected_index = null
+
+[sub_resource type="InputEventAction" id="InputEventAction_5nck3"]
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_fc1tk"]
+events = [SubResource("InputEventAction_5nck3")]
+
+[node name="MapControlPanel" type="PanelContainer" node_paths=PackedStringArray("_mapmodes_grid")]
+editor_description = "SS-103"
+mouse_filter = 1
+script = ExtResource("1_ign64")
+_mapmodes_grid = NodePath("MapPanelMargin/MapPanelList/MapDisplayList/MapmodesGrid")
+
+[node name="MapPanelMargin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="MapPanelList" type="HBoxContainer" parent="MapPanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="MapDisplayList" type="VBoxContainer" parent="MapPanelMargin/MapPanelList"]
+layout_mode = 2
+alignment = 1
+
+[node name="MapmodesGrid" type="GridContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
+editor_description = "UI-750"
+layout_mode = 2
+columns = 11
+
+[node name="Minimap" type="PanelContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
+editor_description = "UI-549"
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+
+[node name="MinimapTexture" type="ColorRect" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap"]
+editor_description = "UI-751, FS-338"
+material = SubResource("ShaderMaterial_bhuqb")
+layout_mode = 2
+color = Color(0.921569, 0.835294, 0.701961, 1)
+
+[node name="ViewportQuad" type="Control" parent="MapPanelMargin/MapPanelList/MapDisplayList/Minimap" node_paths=PackedStringArray("_minimap_texture")]
+layout_mode = 2
+mouse_filter = 1
+script = ExtResource("3_s4dml")
+_minimap_texture = NodePath("../MinimapTexture")
+
+[node name="AuxiliaryPanel" type="VBoxContainer" parent="MapPanelMargin/MapPanelList"]
+editor_description = "UI-761"
+layout_mode = 2
+
+[node name="GameSessionMenuButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
+editor_description = "UI-9"
+layout_mode = 2
+mouse_filter = 1
+shortcut = SubResource("Shortcut_fc1tk")
+text = "ESC"
+
+[node name="LedgerButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
+editor_description = "UI-860"
+layout_mode = 2
+mouse_filter = 1
+text = "L"
+
+[node name="FindButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
+editor_description = "UI-861"
+layout_mode = 2
+mouse_filter = 1
+text = "F"
+
+[node name="ZoomButtonsContainer" type="HBoxContainer" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="ZoomInButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
+editor_description = "UI-862"
+layout_mode = 2
+mouse_filter = 1
+text = "+"
+
+[node name="ZoomOutButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
+editor_description = "UI-863"
+layout_mode = 2
+mouse_filter = 1
+text = "-"
+
+[connection signal="map_view_camera_changed" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
+[connection signal="minimap_clicked" from="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]
