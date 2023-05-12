@@ -10,6 +10,8 @@ var _main_menu_save_separator : Control
 var _quit_save_button : Button
 var _quit_save_separator : Control
 
+signal save_button_pressed
+signal load_button_pressed
 signal options_button_pressed
 
 func _ready() -> void:
@@ -45,6 +47,8 @@ func show_save_dialog_button() -> void:
 # * SS-47
 # * UIFUN-69
 func _on_main_menu_confirmed() -> void:
+	SaveManager.current_session_tag = ""
+	SaveManager.current_save = null
 	get_tree().change_scene_to_packed(_main_menu_scene)
 
 # REQUIREMENTS:
@@ -68,3 +72,9 @@ func _on_quit_dialog_custom_action(action : StringName) -> void:
 	match action:
 		&"save_and_quit":
 			_on_quit_confirmed()
+
+func _on_save_button_pressed():
+	save_button_pressed.emit()
+
+func _on_load_button_pressed():
+	load_button_pressed.emit()

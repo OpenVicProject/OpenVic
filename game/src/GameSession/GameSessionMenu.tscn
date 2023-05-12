@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dvdynl6eir40o"]
 
-[ext_resource type="Theme" uid="uid://dndova5cw036e" path="res://theme/game_session_menu.tres" id="1_2onog"]
+[ext_resource type="Theme" uid="uid://cqrfmjt5yeti7" path="res://theme/game_session_menu.tres" id="1_2onog"]
 [ext_resource type="Script" path="res://src/GameSession/GameSessionMenu.gd" id="1_usq6o"]
 [ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="2_xi6a4"]
 
@@ -79,6 +79,8 @@ ok_button_text = "DIALOG_OK"
 dialog_text = "GAMESESSIONMENU_QUIT_DIALOG_TEXT"
 cancel_button_text = "DIALOG_CANCEL"
 
+[connection signal="pressed" from="ButtonListMargin/ButtonList/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="ButtonListMargin/ButtonList/LoadButton" to="." method="_on_load_button_pressed"]
 [connection signal="pressed" from="ButtonListMargin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="ButtonListMargin/ButtonList/MainMenuButton" to="MainMenuDialog" method="popup_centered"]
 [connection signal="pressed" from="ButtonListMargin/ButtonList/QuitButton" to="QuitDialog" method="popup_centered"]
