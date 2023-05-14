@@ -24,6 +24,8 @@ func filter_for_tag(tag : StringName) -> void:
 			else:
 				child.hide()
 
+# Requirements
+# * UIFUN-78
 func show_for_load() -> void:
 	_label.text = "SAVELOADMENU_LOAD_TITLE"
 	_save_load_button.text = "SAVELOADMENU_LOAD_BUTTON"
@@ -31,6 +33,8 @@ func show_for_load() -> void:
 	is_save_menu = false
 	show()
 
+# Requirements
+# * UIFUN-77
 func show_for_save() -> void:
 	_label.text = "SAVELOADMENU_SAVE_TITLE"
 	_save_load_button.text = "SAVELOADMENU_SAVE_BUTTON"
@@ -72,7 +76,7 @@ func _on_delete_dialog_confirmed() -> void:
 	_requested_node_to_delete.queue_free()
 
 # REQUIREMENTS:
-# * UIFUNC-83
+# * UIFUN-83
 func _on_overwrite_dialog_confirmed() -> void:
 	SaveManager.add_or_replace_save(SaveManager.make_new_save(_submitted_text))
 	_on_close_button_pressed()
