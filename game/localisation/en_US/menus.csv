@@ -36,6 +36,8 @@ OPTIONS_VIDEO_REFRESH_RATE,Refresh Rate
 OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP,Only change from VSYNC if you are having issues with screen tearing.
 OPTIONS_VIDEO_QUALITY,Quality Preset
 OPTIONS_VIDEO_GUI_SCALE,Gui Scaling Factor
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE,Keep Resolution?
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT,Reverting resolution in ({time})
 
 ,, Sound Tab
 MASTER_BUS,Master Volume
