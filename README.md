@@ -1,5 +1,5 @@
-# OpenVic2
-Main Repo for the OpenVic2 Project
+# OpenVic
+Main Repo for the OpenVic Project
 
 ## Quickstart Guide
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
