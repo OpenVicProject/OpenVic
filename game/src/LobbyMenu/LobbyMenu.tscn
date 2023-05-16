@@ -30,6 +30,7 @@ size_flags_horizontal = 3
 layout_mode = 2
 
 [node name="GameSelectScroll" type="ScrollContainer" parent="GameSelectPanel/VBoxContainer"]
+editor_description = "UI-39"
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0

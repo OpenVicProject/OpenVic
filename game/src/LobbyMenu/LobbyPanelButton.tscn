@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/LobbyMenu/LobbyPanelButton.gd" id="1_327u2"]
 
 [node name="LobbyPanelButton" type="Container" node_paths=PackedStringArray("background_button", "name_label")]
+editor_description = "UI-41"
 offset_right = 113.0
 offset_bottom = 48.0
 script = ExtResource("1_327u2")

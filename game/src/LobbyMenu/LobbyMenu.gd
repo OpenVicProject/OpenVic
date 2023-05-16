@@ -41,6 +41,9 @@ func _build_date_list() -> void:
 	game_select_start_date.add_child(start_date)
 
 var _id_to_tag : Array[StringName] = []
+
+# Requirements
+# * FS-8
 func _build_save_list() -> void:
 	game_select_save_tab.add_tab("GAMELOBBY_SELECT_ALL")
 	for save_name in SaveManager._save_dictionary:
