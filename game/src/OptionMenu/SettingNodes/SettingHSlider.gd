@@ -20,12 +20,15 @@ func load_setting(file : ConfigFile):
 	var load_value = file.get_value(section_name, setting_name, default_value)
 	match typeof(load_value):
 		TYPE_FLOAT, TYPE_INT:
+			if value == load_value: value_changed.emit(value)
 			value = load_value
 			return
 		TYPE_STRING, TYPE_STRING_NAME:
 			var load_string := load_value as String
 			if load_string.is_valid_float():
-				value = load_string.to_float()
+				load_value = load_string.to_float()
+				if value == load_value: value_changed.emit(value)
+				value = load_value
 				return
 	push_error("Setting value '%s' invalid for setting [%s] \"%s\"" % [load_value, section_name, setting_name])
 	value = default_value
