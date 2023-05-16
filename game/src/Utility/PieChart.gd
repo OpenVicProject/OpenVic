@@ -1,13 +1,17 @@
 @tool
-extends Node2D
+extends Control
 
 class_name PieChart
 
 @export var radius:float = 80
 @export var num_pts:int = 32
+@export var trim_size:float = 1
+@export var trim_colour:Color = Color(0.1,0.1,0.1)
 
 #a data class for the pie chart
 class SliceData:
+	#primary properties, change these to change
+	#the displayed piechart
 	var colour:Color = Color(1.0,0.0,0.0):
 		get:
 			return colour
@@ -23,17 +27,29 @@ class SliceData:
 			return quantity
 		set(value):
 			quantity = value
+	#derived properties, don't set from an external
+	#script
+	var final_angle:float = -1:
+		get:
+			return final_angle
+		set(value):
+			final_angle = value
+	var percentage:float = 0:
+		get:
+			return percentage
+		set(value):
+			percentage = clampf(value,0,1)
 
 	func _init(quantityIn:float,tooltipIn:String,colourIn:Color):
 		colour = colourIn
 		tooltip = tooltipIn
 		quantity = quantityIn
-		
+
 
 var slices: Dictionary = {
-	"label1":SliceData.new(5,"Test",Color(1.0,0.0,0.0)),
-	"label2":SliceData.new(3,"Test2",Color(0.0,1.0,0.0)),
-	"label3":SliceData.new(1,"Test3",Color(0.0,0.0,1.0))
+	"label1":SliceData.new(5,"Conservative",Color(0.0,0.0,1.0)),
+	"label2":SliceData.new(3,"Liberal",Color(1.0,1.0,0.0)),
+	"label3":SliceData.new(1,"Reactionary",Color(0.1,0.0,0.6))
 }
 
 #These functions are the interface a developer will use to update the piechart
@@ -55,7 +71,6 @@ func updateLabelColour(labelName:String,colour:Color) -> void:
 func updateLabelTooltip(labelName:String,tooltip:String) -> void:
 	if slices.has(labelName):
 		slices[labelName].tooltip = tooltip
-	queue_redraw()
 
 func RemoveLabel(labelName:String) -> bool:
 	var out = slices.erase(labelName)
@@ -64,8 +79,18 @@ func RemoveLabel(labelName:String) -> bool:
 
 #Perhaps in the future, a method to reorder the labels?
 
+var center = Vector2(radius, radius)
+
+#TODO: Stylize the pie chart so it doesn't look "flat"
+#thoughts: gradient biased to be darker at edge
+# second: gradient to create spotlight somewhere
+# 3rd: border trim
+
+#think of this as an update function that is only called
+#when a slice or label is updated
 func _draw():
-	var center = Vector2(radius, radius)
+	center = Vector2(radius, radius)
+	size = 2*center
 	
 	var total:float = 0
 	for slice in slices.values():
@@ -75,8 +100,10 @@ func _draw():
 	var current_arc_finish:int = 0
 
 	for slice in slices.values():
-		var degrees_to_cover:float = (slice.quantity / total) * 360
+		slice.percentage = slice.quantity / total
+		var degrees_to_cover:float = slice.percentage * 360
 		current_arc_finish = current_arc_start + degrees_to_cover
+		slice.final_angle = current_arc_finish
 		draw_circle_arc_poly(center,radius,current_arc_start,current_arc_finish,slice.colour)
 		current_arc_start = current_arc_finish
 
@@ -90,3 +117,32 @@ func draw_circle_arc_poly(center, radius, angle_from, angle_to, color):
 		var angle_point = deg_to_rad(angle_from + i * (angle_to - angle_from) / num_pts - 90)
 		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
 	draw_polygon(points_arc, colours)
+
+func _gui_input(event:InputEvent):
+	if event is InputEventMouse:
+		var pos = event.position
+		#is it within the circle?
+		if center.distance_to(pos) <= radius:
+			var angle = convertAngle(rad_to_deg(center.angle_to_point(pos)))
+			for slice in slices.values():
+				if angle <= slice.final_angle:
+					var formatted_percent = formatpercent(slice.percentage)
+					tooltip_text = "{name} {percentage}%".format({"name":slice.tooltip,"percentage":formatted_percent})
+					break
+		else:
+			#Technically the corners of the bounding box
+			#are part of the chart, but we don't want a tooltip there
+			tooltip_text = ""
+
+#angle from center.angle_to_point is +x, but the chart is from +y
+#the input angle is also -180 to 180, where we want 0 to 359
+func convertAngle(angleIn:float) -> float:
+	#make the angle start from +y, range is now -90 to 270
+	var angle = angleIn + 90
+	#adjust range to be 0 to 360
+	if angle < 0:
+		angle = 360 + angle
+	return angle
+	
+func formatpercent(percentIn:float) -> float:
+	return snappedf((percentIn * 100),0.1)	

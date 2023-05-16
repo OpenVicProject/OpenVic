@@ -2,5 +2,10 @@
 
 [ext_resource type="Script" path="res://src/Utility/PieChart.gd" id="1_3xp84"]
 
-[node name="PieChart" type="Node2D"]
+[node name="PieChart" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 160.0
+offset_bottom = 160.0
+tooltip_text = "Test"
 script = ExtResource("1_3xp84")
