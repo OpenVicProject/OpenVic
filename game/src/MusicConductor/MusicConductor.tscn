@@ -8,6 +8,6 @@ music_directory = "res://audio/music"
 first_song_name = "The_Crown"
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-bus = &"Music"
+bus = &"MUSIC_BUS"
 
 [connection signal="finished" from="AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
