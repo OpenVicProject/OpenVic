@@ -50,17 +50,17 @@
 
 # Project Setup
 
-1. [Go to the main repository](https://github.com/OpenVic2Project/OpenVic2) page on Github
+1. [Go to the main repository](https://github.com/OpenVic2Project/OpenVic) page on Github
 
 2. Get the link to clone the repo
 
 ![](images/proj-setup/01-git-clone-link.png)
 
-3. Using Git, clone the repo: `git clone git@github.com:OpenVic2Project/OpenVic2.git`
+3. Using Git, clone the repo: `git clone https://github.com/OpenVicProject/OpenVic.git`
 
 ![](images/proj-setup/02-git-clone.png)
 
-4. Move into the OpenVic2 directory: `cd OpenVic2`
+4. Move into the OpenVic2 directory: `cd OpenVic`
 
 5. Retrieve submodules: `git submodule update --init --recursive`
 
@@ -82,7 +82,7 @@
 
 ![](images/proj-setup/06-import.png)
 
-10. Navigate to the `OpenVic2/game/` directory and select the `project.godot` file
+10. Navigate to the `OpenVic/game/` directory and select the `project.godot` file
 
 ![](images/proj-setup/07-select-project.png)
 

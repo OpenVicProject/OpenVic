@@ -34,9 +34,9 @@ Source code files should adhere to the following:
 - Any `#include` directives should be at the top of the file
 - Any header files have the `.hpp` file extension
 - Any implementation files have the `.cpp` file extension
-- Code should be within the `OpenVic2` namespace (or a nested namespace)
-- Any submodules or third-party utilities should be in the `OpenVic2/extension/deps` directory
-- Groups of related source files should be kept in a sub-directory of `OpenVic2/extension/src`
+- Code should be within the `OpenVic` namespace (or a nested namespace)
+- Any submodules or third-party utilities should be in the `OpenVic/extension/deps` directory
+- Groups of related source files should be kept in a sub-directory of `OpenVic/extension/src`
 - Any lines that are longer than 120 characters in length should be split across multiple lines
 
 ## 2. Conventions

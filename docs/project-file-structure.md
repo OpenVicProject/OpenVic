@@ -2,13 +2,13 @@
 
 ## CPP Structure
 
-All C++ files are in the OpenVic2/extension/ directory
+All C++ files are in the OpenVic/extension/ directory
 
 Please see the [C++ Styleguide](./styleguide-cpp.md) for more details
 
 ## Godot Structure
 
-All godot files are in the OpenVic2/game directory
+All godot files are in the OpenVic/game directory
 
 ### Directories
 
@@ -16,9 +16,9 @@ All godot files are in the OpenVic2/game directory
     * The root directory of the Godot Project
 * u/, user/, user://
     * The user directory used by the project (Platform specific)
-    * Windows u/ - %APPDATA%/OpenVic2/
-    * MacOS u/ - ~/Library/Application Support/OpenVic2/
-    * Linux u/ - ~/.local/share/OpenVic2/
+    * Windows u/ - %APPDATA%/OpenVic/
+    * MacOS u/ - ~/Library/Application Support/OpenVic/
+    * Linux u/ - ~/.local/share/OpenVic/
 * d/, data/, common/ - The data directory used to store data files
     * can be a subdirectory of root/ - root/common/
     * can be a subdirectory of user/ - user/common/
@@ -26,8 +26,8 @@ All godot files are in the OpenVic2/game directory
 
 ### Definitions
 
-* core - OpenVic2 without modification
-* mod - OpenVic2 with changes in files to modify the gameplay experience
+* core - OpenVic without modification
+* mod - OpenVic with changes in files to modify the gameplay experience
 * scene - godot engine scene object
 * script - godot engine gdscript object
 * resource - godot engine resource object
@@ -36,8 +36,8 @@ All godot files are in the OpenVic2/game directory
 
 ### OpenVic2 File Extensions
 
-* ov2d - OpenVic2 data file
-* ov2b - OpenVic2 binary file
+* ov2d - OpenVic data file
+* ov2b - OpenVic binary file
 
 ### When to use root/
 
