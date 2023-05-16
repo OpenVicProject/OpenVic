@@ -1,7 +1,7 @@
 @tool
 extends Node
 
-const argument_setting_path := &"openvic2/data/arguments"
+const argument_setting_path := &"openvic/data/arguments"
 
 @export var option_array : Array[ArgumentOption] = [
 	ArgumentOption.new(
@@ -215,7 +215,7 @@ func _print_help():
 	var project_name : StringName = ProjectSettings.get_setting_with_override(&"application/config/name")
 	var project_version : String = _GIT_INFO_.tag
 	var project_hash : String = _GIT_INFO_.short_hash
-	var project_website : String = "https://openvic2.com"
+	var project_website : String = "https://openvic.com"
 	var project_description : String = ProjectSettings.get_setting_with_override(&"application/config/description")
 	print_rich(
 """

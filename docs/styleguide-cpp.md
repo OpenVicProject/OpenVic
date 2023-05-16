@@ -1,4 +1,4 @@
-# OpenVic2 C++ Style Guidelines
+# OpenVic C++ Style Guidelines
 
 ## Table of Contents
  1. [Why Style?](styleguide-cpp.md#1-why-style)
@@ -298,22 +298,22 @@ Source code files should adhere to the following:
 		return true;
 	}
 	```
--  The include order should be: C++ standard headers, followed by Godot headers, then OpenVic2 headers
+-  The include order should be: C++ standard headers, followed by Godot headers, then OpenVic headers
 	- C++ standard headers and Godot headers should be enclosed by angle brackets `<>`
-	- OpenVic2 headers should be enclosed by double quotes `""`
+	- OpenVic headers should be enclosed by double quotes `""`
 	```c++
 	//Correct
 	#include <vector>
 	#include <string>
 	#include <godot_cpp/classes/object.hpp>
 	#include <godot_cpp/core/class_db.hpp>
-	#include "openvic2/src/SampleHeader.hpp"
-	#include "openvic2/src/SampleHeader2.hpp"
+	#include "openvic/src/SampleHeader.hpp"
+	#include "openvic/src/SampleHeader2.hpp"
 
 	//Incorrect
-	#include "openvic2/src/SampleHeader.hpp"
+	#include "openvic/src/SampleHeader.hpp"
 	#include <godot_cpp/classes/object.hpp>
-	#include "openvic2/src/SampleHeader2.hpp"
+	#include "openvic/src/SampleHeader2.hpp"
 	#include <godot_cpp/core/class_db.hpp>
 	#include <vector>
 	#include <string>

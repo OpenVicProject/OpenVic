@@ -56,7 +56,7 @@ def GlobRecursive(pattern, nodes=['.']):
 # - LINKFLAGS are for linking flags
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-paths = ["extension/src/", "extension/deps/openvic2-simulation/src/"]
+paths = ["extension/src/", "extension/deps/openvic-simulation/src/"]
 env.Append(CPPPATH=paths)
 sources = GlobRecursive("*.cpp", paths)
 
@@ -83,7 +83,7 @@ if env["intermediate_delete"]:
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "game/bin/openvic2/libopenvic2.{}.{}.framework/libopenvic2.{}.{}".format(
+        "game/bin/openvic/libopenvic.{}.{}.framework/libopenvic.{}.{}".format(
             env["platform"], env["target"], env["platform"], env["target"]
         ),
         source=sources,
@@ -91,7 +91,7 @@ if env["platform"] == "macos":
 else:
     suffix = ".{}.{}.{}".format(env["platform"], env["target"], env["arch"])
     library = env.SharedLibrary(
-        "game/bin/openvic2/libopenvic2{}{}".format(suffix, env["SHLIBSUFFIX"]),
+        "game/bin/openvic/libopenvic{}{}".format(suffix, env["SHLIBSUFFIX"]),
         source=sources,
     )
 

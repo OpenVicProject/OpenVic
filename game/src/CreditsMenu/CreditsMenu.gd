@@ -169,7 +169,7 @@ func _add_licenses() -> void:
 	license_list.add_child(HSeparator.new())
 
 	var license_info := {
-		"OpenVic2": ["GPLv3", "https://github.com/OpenVic2Project/OpenVic2/blob/main/LICENSE.md"],
+		"OpenVic": ["GPLv3", "https://github.com/OpenVicProject/OpenVic/blob/main/LICENSE.md"],
 		"Godot": ["MIT", "https://github.com/godotengine/godot/blob/master/LICENSE.txt"],
 		"FreeType": ["FreeType License", "https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT"],
 		"ENet": ["MIT", "http://enet.bespin.org/License.html"],

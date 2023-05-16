@@ -14,8 +14,8 @@ func _init():
 				set_debug_mode(true)
 
 func set_debug_mode(value : bool) -> void:
-	ProjectSettings.set_setting("openvic2/debug/enabled", value)
+	ProjectSettings.set_setting("openvic/debug/enabled", value)
 	print("Set debug mode to: ", value)
 
 func is_debug_mode() -> bool:
-	return ProjectSettings.get_setting("openvic2/debug/enabled", false)
+	return ProjectSettings.get_setting("openvic/debug/enabled", false)

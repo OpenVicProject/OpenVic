@@ -1,9 +1,9 @@
 [submodule "godot-cpp"]
 	path = godot-cpp
 	url = https://github.com/godotengine/godot-cpp
-[submodule "extension/deps/OV2-compiler"]
-	path = extension/deps/OV2-compiler
-	url = https://github.com/OpenVic2Project/OV2-compiler
-[submodule "extension/deps/openvic2-simulation"]
-	path = extension/deps/openvic2-simulation
-	url = https://github.com/OpenVic2Project/OpenVic2-Simulation
+[submodule "extension/deps/OV-compiler"]
+	path = extension/deps/OV-compiler
+	url = https://github.com/OpenVicProject/OV-compiler
+[submodule "extension/deps/openvic-simulation"]
+	path = extension/deps/openvic-simulation
+	url = https://github.com/OpenVicProject/OpenVic-Simulation

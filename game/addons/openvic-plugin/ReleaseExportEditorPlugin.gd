@@ -6,7 +6,7 @@ var _repo_tag : StringName = "<tag missing>"
 var _repo_release_name : StringName =  "<release name missing>"
 
 func _get_name():
-	return "OpenVic2-ReleaseExportEditorPlugin"
+	return "OpenVic-ReleaseExportEditorPlugin"
 
 func _export_file(path: String, type: String, features: PackedStringArray) -> void:
 	if path != "res://src/Utility/GIT_INFO.gd": return
@@ -29,7 +29,7 @@ var _cached_hash : StringName = &""
 func _get_commit_hash() -> StringName:
 	if not _cached_hash.is_empty(): return _cached_hash
 
-	var git_hash := OS.get_environment("OPENVIC2_COMMIT")
+	var git_hash := OS.get_environment("OPENVIC_COMMIT")
 	if not git_hash.is_empty():
 		_cached_hash = git_hash
 		return git_hash
@@ -69,7 +69,7 @@ func _get_commit_hash() -> StringName:
 	return git_hash
 
 func _try_get_tag() -> StringName:
-	var result : StringName = OS.get_environment("OPENVIC2_TAG")
+	var result : StringName = OS.get_environment("OPENVIC_TAG")
 	if result.is_empty():
 		var git_output := []
 		if OS.execute("git", ["describe", "--tags", "--abbrev=0"], git_output) == -1:
@@ -97,7 +97,7 @@ func _get_tag():
 	print("Tag: " + _repo_tag)
 
 func _get_release_name():
-	var result : StringName = OS.get_environment("OPENVIC2_RELEASE")
+	var result : StringName = OS.get_environment("OPENVIC_RELEASE")
 	if result.is_empty():
 		result = _try_get_tag()
 	if not result.is_empty():

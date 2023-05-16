@@ -1,8 +1,8 @@
-# OpenVic2 Ideologies
+# OpenVic Ideologies
 
 ## Victoria 2
 
-## OpenVic2
+## OpenVic
 
 ```mermaid
 classDiagram

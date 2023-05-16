@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/primitive_mesh.hpp>
 
-namespace OpenVic2 {
+namespace OpenVic {
 	class MapMesh : public godot::PrimitiveMesh {
 		GDCLASS(MapMesh, godot::PrimitiveMesh)
 

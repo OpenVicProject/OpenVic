@@ -53,7 +53,7 @@ IncludeCategories:
     Priority: 2
   - Regex: ^<godot_cpp/
     Priority: 3
-  - Regex: ^"openvic2/
+  - Regex: ^"openvic/
     Priority: 4
   - Regex: .*
     Priority: 5

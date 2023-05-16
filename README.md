@@ -13,7 +13,7 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
 ## Build/Run Instructions
 1. Install [Godot 4.0.2](https://github.com/godotengine/godot/releases/tag/4.0.2-stable) and [scons](https://scons.org/) for your system.
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
-3. Run `scons` in the project root, you should see a libopenvic2 file in `game/bin/openvic2`.
+3. Run `scons` in the project root, you should see a libopenvic file in `game/bin/openvic`.
 4. Open with Godot 4, click import and navigate to the `game` directory.
 5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
 6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
@@ -27,8 +27,8 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
     * If you built with the default or debug target you must export with `Debug`.
     * If you built with the release target you must export `Release`.
 6. Files will be found in platform specific directories in `game/export`:
-    * On Windows run `game/export/Windows/OpenVic2.exe`.
-    * On Linux x86_64 run `game/export/Linux-x86_64/OpenVic2.sh`.
+    * On Windows run `game/export/Windows/OpenVic.exe`.
+    * On Linux x86_64 run `game/export/Linux-x86_64/OpenVic.sh`.
 
 ## Extension Debugging
 1. If in a clean build, build the extension with `scons`.

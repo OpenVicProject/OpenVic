@@ -2,7 +2,7 @@ extends Node
 
 # Requirements
 # * FS-28
-const save_directory_setting := &"openvic2/data/saves_directory"
+const save_directory_setting := &"openvic/data/saves_directory"
 
 var current_save : SaveResource
 var current_session_tag : StringName

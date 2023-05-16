@@ -34,10 +34,10 @@ All godot files are in the OpenVic/game directory
 * asset - static file generally used as is within the project - art, music etc.
 * data file - static file that holds data or information that needs to be processed to be used - economy good information, province names etc.
 
-### OpenVic2 File Extensions
+### OpenVic File Extensions
 
-* ov2d - OpenVic data file
-* ov2b - OpenVic binary file
+* ovd - OpenVic data file
+* ovb - OpenVic binary file
 
 ### When to use root/
 
@@ -180,9 +180,9 @@ root/common/technology/
 root/common/pop/
 ```
 
-Data files that are plain text should have the ov2d file extension.
+Data files that are plain text should have the ovd file extension.
 ```
-root/common/pop/soldier.ov2d
+root/common/pop/soldier.ovd
 ```
 
 Data files that are complex data like a bitmap should make use of the standard file extension for that data
@@ -192,7 +192,7 @@ root/common/map/provinces.bmp
 
 Data files can be further organized by subdirectory.
 ```
-root/common/economy/goods/Coal.ov2d
+root/common/economy/goods/Coal.ovd
 ```
 
 #### Naming Convention

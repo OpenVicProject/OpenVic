@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="OpenVic2"
+config/name="OpenVic"
 config/description="A faithful recreation of Victoria 2: Heart of Darkness with a focus on enhancing performance, multiplayer stability, and modability for modern machines."
 run/main_scene="res://src/GameStart.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
@@ -40,7 +40,7 @@ window/stretch/aspect="ignore"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic2-plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
 
 [gui]
 
@@ -110,7 +110,7 @@ locale/localisation_path="res://localisation"
 
 limits/message_queue/max_size_kb=16384
 
-[openvic2]
+[openvic]
 
 settings/settings_file_path="user://settings.cfg"
 data/saves_directory="user://saves"

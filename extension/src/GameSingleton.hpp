@@ -3,9 +3,9 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
-#include "openvic2/GameManager.hpp"
+#include "openvic/GameManager.hpp"
 
-namespace OpenVic2 {
+namespace OpenVic {
 	struct TerrainVariant : HasIdentifier, HasColour {
 	private:
 		const godot::Ref<godot::Image> image;

@@ -1,4 +1,4 @@
-### IMPORTANT: IF LOCATION IS CHANGED, PLEASE UPDATE IN addon/openvic2-plugin/ReleaseExportEditorPlugin
+### IMPORTANT: IF LOCATION IS CHANGED, PLEASE UPDATE IN addon/openvic-plugin/ReleaseExportEditorPlugin
 class_name _GIT_INFO_
 extends RefCounted
 

@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace OpenVic2 {
+namespace OpenVic {
 	class Checksum : public godot::Object {
 		GDCLASS(Checksum, godot::Object)
 

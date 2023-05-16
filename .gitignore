@@ -44,7 +44,7 @@
 
 # Godot 4+ specific ignores
 .godot/
-game/bin/openvic2/*
+game/bin/openvic/*
 .sconsign*.dblite
 
 # Binaries

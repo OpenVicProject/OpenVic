@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/translation.hpp>
 
-namespace OpenVic2 {
+namespace OpenVic {
 	class LoadLocalisation : public godot::Object {
 
 		GDCLASS(LoadLocalisation, godot::Object)

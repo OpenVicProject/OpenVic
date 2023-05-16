@@ -61,7 +61,7 @@ jobs:
           submodules: recursive
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic2-env
+        uses: ./.github/actions/openvic-env
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -97,28 +97,28 @@ jobs:
       - name: Delete compilation files
         if: ${{ matrix.platform == 'windows' }}
         run: |
-          Remove-Item game/bin/openvic2/* -Include *.exp,*.lib,*.pdb -Force
+          Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
 
       - name: Upload extension artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-extension
           path: |
-            ${{ github.workspace }}/game/bin/openvic2/*
+            ${{ github.workspace }}/game/bin/openvic/*
 
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.1
         with:
           type: 'zip'
-          filename: 'libopenvic2.${{ matrix.platform }}.${{ matrix.arch }}.zip'
-          path: '${{ github.workspace }}/game/bin/openvic2/'
+          filename: 'libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip'
+          path: '${{ github.workspace }}/game/bin/openvic/'
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
       - name: Create and upload asset
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: "libopenvic2.${{ matrix.platform }}.${{ matrix.arch }}.zip"
+          artifacts: "libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip"
           omitNameDuringUpdate: true
           omitBodyDuringUpdate: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -135,13 +135,13 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic2-env
+        uses: ./.github/actions/openvic-env
 
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-extension
-          path: game/bin/openvic2
+          path: game/bin/openvic
 
       - name: Export pack file
         id: export_game
@@ -154,7 +154,7 @@ jobs:
           export_debug: true
           relative_export_path: ./game/export
 
-      - run: mv "./game/export/LinuxX11 x86_64/OpenVic2.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
+      - run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
 
       - name: Upload pack artifact
         uses: actions/upload-artifact@v3
@@ -176,13 +176,13 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic2-env
+        uses: ./.github/actions/openvic-env
 
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-extension
-          path: game/bin/openvic2
+          path: game/bin/openvic
 
       - name: Install WINE
         id: wine_install

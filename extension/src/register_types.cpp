@@ -8,13 +8,13 @@
 #include "MapMesh.hpp"
 
 using namespace godot;
-using namespace OpenVic2;
+using namespace OpenVic;
 
 static Checksum* _checksum;
 static LoadLocalisation* _load_localisation;
 static GameSingleton* _map_singleton;
 
-void initialize_openvic2_types(ModuleInitializationLevel p_level) {
+void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
@@ -34,7 +34,7 @@ void initialize_openvic2_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MapMesh>();
 }
 
-void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
+void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
@@ -51,11 +51,11 @@ void uninitialize_openvic2_types(ModuleInitializationLevel p_level) {
 
 extern "C" {
 	// Initialization.
-	GDExtensionBool GDE_EXPORT openvic2_library_init(GDExtensionInterface const* p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization* r_initialization) {
+	GDExtensionBool GDE_EXPORT openvic_library_init(GDExtensionInterface const* p_interface, const GDExtensionClassLibraryPtr p_library, GDExtensionInitialization* r_initialization) {
 		GDExtensionBinding::InitObject init_obj(p_interface, p_library, r_initialization);
 
-		init_obj.register_initializer(initialize_openvic2_types);
-		init_obj.register_terminator(uninitialize_openvic2_types);
+		init_obj.register_initializer(initialize_openvic_types);
+		init_obj.register_terminator(uninitialize_openvic_types);
 		init_obj.set_minimum_library_initialization_level(MODULE_INITIALIZATION_LEVEL_SCENE);
 
 		return init_obj.init();
