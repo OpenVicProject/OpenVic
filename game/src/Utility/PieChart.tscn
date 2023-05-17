@@ -9,3 +9,6 @@ offset_right = 160.0
 offset_bottom = 160.0
 tooltip_text = "Test"
 script = ExtResource("1_3xp84")
+trim_size = 3.0
+donut = true
+donut_do_inner_trim = true

@@ -3,10 +3,18 @@ extends Control
 
 class_name PieChart
 
+var min_trim_size:float = 0.5
+
 @export var radius:float = 80
 @export var num_pts:int = 32
 @export var trim_size:float = 1
 @export var trim_colour:Color = Color(0.1,0.1,0.1)
+
+@export var donut:bool = false
+@export var donut_inner_radius:float = 40
+@export var donut_do_inner_trim:bool = false
+
+var center = Vector2(radius, radius)
 
 #a data class for the pie chart
 class SliceData:
@@ -79,7 +87,7 @@ func RemoveLabel(labelName:String) -> bool:
 
 #Perhaps in the future, a method to reorder the labels?
 
-var center = Vector2(radius, radius)
+
 
 #TODO: Stylize the pie chart so it doesn't look "flat"
 #thoughts: gradient biased to be darker at edge
@@ -104,20 +112,33 @@ func _draw():
 		var degrees_to_cover:float = slice.percentage * 360
 		current_arc_finish = current_arc_start + degrees_to_cover
 		slice.final_angle = current_arc_finish
-		draw_circle_arc_poly(center,radius,current_arc_start,current_arc_finish,slice.colour)
+		if donut and donut_do_inner_trim:
+			#inner trim
+			draw_donut_arc_poly(center,donut_inner_radius,donut_inner_radius+trim_size,current_arc_start,current_arc_finish,trim_colour)
+			#donut
+			draw_donut_arc_poly(center,donut_inner_radius+trim_size,radius-trim_size,current_arc_start,current_arc_finish,slice.colour)
+		elif donut:
+			#donut
+			draw_donut_arc_poly(center,donut_inner_radius,radius-trim_size,current_arc_start,current_arc_finish,slice.colour)
+		else:
+			#circle
+			draw_circle_arc_poly(center,radius-trim_size,current_arc_start,current_arc_finish,slice.colour)
+		#outer trim
+		draw_donut_arc_poly(center,radius-trim_size,radius,current_arc_start,current_arc_finish,trim_colour)
+		
 		current_arc_start = current_arc_finish
+	#if !slices.is_empty():
+	#	draw_circle_arc(center,radius,0,360,trim_colour)
+	
+func validate() -> bool:
+	if trim_size >= radius - min_trim_size:
+		return false
+	if donut and trim_size >= radius - 2*min_trim_size - donut_inner_radius:
+		return false
+	
+	return true
 
-#taken from the godot tutorials
-func draw_circle_arc_poly(center, radius, angle_from, angle_to, color):
-	var points_arc = PackedVector2Array()
-	points_arc.push_back(center)
-	var colours = PackedColorArray([color])
-
-	for i in range(num_pts + 1):
-		var angle_point = deg_to_rad(angle_from + i * (angle_to - angle_from) / num_pts - 90)
-		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
-	draw_polygon(points_arc, colours)
-
+#Process mouse to select the appropriate tooltip for the slice
 func _gui_input(event:InputEvent):
 	if event is InputEventMouse:
 		var pos = event.position
@@ -134,8 +155,9 @@ func _gui_input(event:InputEvent):
 			#are part of the chart, but we don't want a tooltip there
 			tooltip_text = ""
 
-#angle from center.angle_to_point is +x, but the chart is from +y
-#the input angle is also -180 to 180, where we want 0 to 359
+#angle from center.angle_to_point is measured from the +x axis
+#, but the chart starts from +y
+#the input angle is also -180 to 180, where we want 0 to 360
 func convertAngle(angleIn:float) -> float:
 	#make the angle start from +y, range is now -90 to 270
 	var angle = angleIn + 90
@@ -146,3 +168,42 @@ func convertAngle(angleIn:float) -> float:
 	
 func formatpercent(percentIn:float) -> float:
 	return snappedf((percentIn * 100),0.1)	
+
+
+
+#taken from the godot tutorials
+#draw a filled arc
+func draw_circle_arc_poly(center:Vector2, radius:float, angle_from:float, angle_to:float, color:Color) -> void:
+	var points_arc = PackedVector2Array()
+	points_arc.push_back(center)
+	var colours = PackedColorArray([color])
+
+	for i in range(num_pts + 1):
+		var angle_point = deg_to_rad(angle_from + i * (angle_to - angle_from) / num_pts - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
+	draw_polygon(points_arc, colours)
+	
+#again taken from the tutorials
+#draw an unfilled arc
+func draw_circle_arc(center:Vector2, radius:float, angle_from:float, angle_to:float, color:Color) -> void:
+	var points_arc = PackedVector2Array()
+
+	for i in range(num_pts + 1):
+		var angle_point = deg_to_rad(angle_from + i * (angle_to-angle_from) / num_pts - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
+
+	for index_point in range(num_pts):
+		draw_line(points_arc[index_point], points_arc[index_point + 1], color)
+		
+#draw a filled donut arc, used for trim and donut chart
+func draw_donut_arc_poly(center:Vector2, radius_inner:float, radius_outer:float, angle_from:float, angle_to:float, color:Color) -> void:
+	var points_arc = PackedVector2Array()
+	var colours = PackedColorArray([color])
+	for i in range(num_pts + 1):
+		var angle_point = deg_to_rad(angle_from + i * (angle_to - angle_from) / num_pts - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius_outer)
+	for i in range(num_pts + 1): 
+		var j = num_pts - i
+		var angle_point = deg_to_rad(angle_from + j * (angle_to - angle_from) / num_pts - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius_inner)
+	draw_polygon(points_arc, colours)
