@@ -6,7 +6,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 using namespace godot;
-using namespace OpenVic2;
+using namespace OpenVic;
 
 LoadLocalisation* LoadLocalisation::singleton = nullptr;
 

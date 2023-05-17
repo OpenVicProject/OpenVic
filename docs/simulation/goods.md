@@ -1,8 +1,8 @@
-# OpenVic2 Goods
+# OpenVic Goods
 
 ## Victoria 2 Structure
 
-## OpenVic2 Structure
+## OpenVic Structure
 
 ```mermaid
 classDiagram

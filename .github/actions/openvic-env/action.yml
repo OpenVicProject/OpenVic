@@ -1,5 +1,5 @@
-name: Setup OpenVic2 Environment
-description: Setup OpenVic2 Environment
+name: Setup OpenVic Environment
+description: Setup OpenVic Environment
 runs:
     using: "composite"
     steps:
@@ -7,9 +7,9 @@ runs:
           uses: actions/github-script@v6
           with:
             script: |
-                const commit_name = 'OPENVIC2_COMMIT';
-                const tag_name = 'OPENVIC2_TAG';
-                const release_name = 'OPENVIC2_RELEASE';
+                const commit_name = 'OPENVIC_COMMIT';
+                const tag_name = 'OPENVIC_TAG';
+                const release_name = 'OPENVIC_RELEASE';
                 var commit_sha = process.env["GITHUB_SHA"];
                 if(context.eventName === 'pull_request') {
                     commit_sha = context.payload.pull_request.head.sha;

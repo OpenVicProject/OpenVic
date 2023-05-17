@@ -50,17 +50,17 @@
 
 # Project Setup
 
-1. [Go to the main repository](https://github.com/OpenVic2Project/OpenVic) page on Github
+1. [Go to the main repository](https://github.com/OpenVicProject/OpenVic) page on Github
 
 2. Get the link to clone the repo
 
 ![](images/proj-setup/01-git-clone-link.png)
 
-3. Using Git, clone the repo: `git clone https://github.com/OpenVicProject/OpenVic.git`
+3. Using Git, clone the repo: `git clone https://github.com/OpenVicProject/OpenVic`
 
 ![](images/proj-setup/02-git-clone.png)
 
-4. Move into the OpenVic2 directory: `cd OpenVic`
+4. Move into the OpenVic directory: `cd OpenVic`
 
 5. Retrieve submodules: `git submodule update --init --recursive`
 

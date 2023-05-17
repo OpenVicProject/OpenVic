@@ -16,7 +16,7 @@ func save_settings_to_file() -> void:
 func try_reset_settings() -> void:
 	reset_settings.emit()
 
-const settings_file_path_setting : String = "openvic2/settings/settings_file_path"
+const settings_file_path_setting : String = "openvic/settings/settings_file_path"
 const settings_file_path_default : String = "user://settings.cfg"
 
 var _settings_file_path : String = ProjectSettings.get_setting(settings_file_path_setting, settings_file_path_default)

@@ -3,7 +3,7 @@
 #include <godot_cpp/templates/vector.hpp>
 
 using namespace godot;
-using namespace OpenVic2;
+using namespace OpenVic;
 
 void MapMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_aspect_ratio", "ratio"), &MapMesh::set_aspect_ratio);

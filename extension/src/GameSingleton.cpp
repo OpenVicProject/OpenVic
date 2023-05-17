@@ -4,10 +4,10 @@
 #include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic2/Logger.hpp"
+#include "openvic/Logger.hpp"
 
 using namespace godot;
-using namespace OpenVic2;
+using namespace OpenVic;
 
 #define ERR(x) ((x) == SUCCESS ? OK : FAILED)
 

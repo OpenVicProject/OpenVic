@@ -1,10 +1,10 @@
-# OpenVic2 <Document Name>
+# OpenVic <Document Name>
 
 ## Victoria 2 Structure
 
 ```UML DIAGRAM```
 
-## OpenVic2 Structure
+## OpenVic Structure
 
 ```UML DIAGRAM```
 

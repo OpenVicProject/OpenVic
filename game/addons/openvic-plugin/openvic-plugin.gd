@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const ReleaseExportEditorPlugin := preload("res://addons/openvic2-plugin/ReleaseExportEditorPlugin.gd")
+const ReleaseExportEditorPlugin := preload("res://addons/openvic-plugin/ReleaseExportEditorPlugin.gd")
 var release_export_editor_plugin := ReleaseExportEditorPlugin.new()
 
 func _enter_tree() -> void:

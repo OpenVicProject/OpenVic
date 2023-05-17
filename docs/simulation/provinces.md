@@ -1,6 +1,6 @@
-# OpenVic2 Provinces
+# OpenVic Provinces
 
-## OpenVic2 Structure
+## OpenVic Structure
 
 ```mermaid
 classDiagram
