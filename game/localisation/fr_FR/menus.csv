@@ -36,6 +36,8 @@ OPTIONS_VIDEO_REFRESH_RATE,Taux de Rafraîchissement
 OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP,Ne changez de VSYNC que si vous rencontrez des problèmes de déchirement d'écran.
 OPTIONS_VIDEO_QUALITY,Préréglage de la Qualité
 OPTIONS_VIDEO_GUI_SCALE,Mise à échelle de l'Interface Graphique
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE,Maintenir la résolution?
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT,Reverserai la résolution en ({time})
 
 ,, Sound Tab
 MASTER_BUS,Volume Principal

@@ -31,7 +31,7 @@ columns = 2
 layout_mode = 2
 text = "OPTIONS_VIDEO_RESOLUTION"
 
-[node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer" node_paths=PackedStringArray("revert_dialog", "timer")]
 editor_description = "UI-19"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../ScreenModeSelector")
@@ -40,8 +40,22 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("1_i8nro")
+revert_dialog = NodePath("ConfirmationDialog")
+timer = NodePath("Timer")
 section_name = "video"
 setting_name = "resolution"
+
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="VBoxContainer/GridContainer/ResolutionSelector"]
+editor_description = "UI-873"
+disable_3d = true
+title = "OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE"
+size = Vector2i(730, 100)
+ok_button_text = "DIALOG_OK"
+cancel_button_text = "DIALOG_CANCEL"
+
+[node name="Timer" type="Timer" parent="VBoxContainer/GridContainer/ResolutionSelector"]
+wait_time = 5.0
+one_shot = true
 
 [node name="GuiScaleLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
@@ -155,6 +169,9 @@ setting_name = "quality_preset"
 default_selected = 1
 
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
+[connection signal="canceled" from="VBoxContainer/GridContainer/ResolutionSelector/ConfirmationDialog" to="VBoxContainer/GridContainer/ResolutionSelector" method="_cancel_changes"]
+[connection signal="confirmed" from="VBoxContainer/GridContainer/ResolutionSelector/ConfirmationDialog" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_confirmed"]
+[connection signal="timeout" from="VBoxContainer/GridContainer/ResolutionSelector/Timer" to="VBoxContainer/GridContainer/ResolutionSelector" method="_cancel_changes"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/GuiScaleSelector" to="VBoxContainer/GridContainer/GuiScaleSelector" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/ScreenModeSelector" to="VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/GridContainer/MonitorDisplaySelector" to="VBoxContainer/GridContainer/MonitorDisplaySelector" method="_on_item_selected"]

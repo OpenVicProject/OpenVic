@@ -3,9 +3,15 @@ extends SettingOptionButton
 # REQUIREMENTS
 # * UIFUN-21
 # * UIFUN-28
+# * UIFUN-301
+# * UIFUN-302
 
 @export
 var default_value : Vector2i = Resolution.error_resolution
+
+var previous_resolution : Vector2i = Resolution.error_resolution
+@export var revert_dialog : ConfirmationDialog
+@export var timer : Timer
 
 func _find_resolution_index_by_value(value : Vector2i) -> int:
 	for item_index in item_count:
@@ -63,7 +69,31 @@ func _set_value_from_file(load_value):
 
 func _on_item_selected(index : int):
 	if _valid_index(index):
+		previous_resolution = Resolution.get_current_resolution()
 		Resolution.set_resolution(get_item_metadata(index))
+		var new_resolution = get_item_metadata(index)
+		
+		#has_focus() indicates the user is calling _on_item_selected, not some other function
+		if has_focus() and previous_resolution != new_resolution:
+			print("Start Revert Countdown!")
+			start_revert_countdown()
 	else:
 		push_error("Invalid ResolutionSelector index: %d" % index)
 		reset_setting()
+
+func _process(_delta):
+	revert_dialog.dialog_text = tr("OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT").format({"time":round(timer.time_left)})
+
+func start_revert_countdown() -> void:
+	timer.start()
+	revert_dialog.popup_centered(Vector2(1,1))
+	
+func _on_confirmed() -> void:
+	timer.stop()
+
+func _cancel_changes() -> void:
+	Resolution.set_resolution(previous_resolution)
+	_sync_resolutions()
+	print("Resolution reset to (%dx%d)" % [previous_resolution.x,previous_resolution.y])
+	timer.stop()
+	revert_dialog.hide()
