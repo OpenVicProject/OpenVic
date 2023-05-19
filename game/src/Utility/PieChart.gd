@@ -143,7 +143,8 @@ func _gui_input(event:InputEvent):
 	if event is InputEventMouse:
 		var pos = event.position
 		#is it within the circle?
-		if center.distance_to(pos) <= radius:
+		var distance = center.distance_to(pos)
+		if distance <= radius and (not donut or distance >= donut_inner_radius):
 			var angle = convertAngle(rad_to_deg(center.angle_to_point(pos)))
 			for slice in slices.values():
 				if angle <= slice.final_angle:
