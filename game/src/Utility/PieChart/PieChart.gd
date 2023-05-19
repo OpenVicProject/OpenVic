@@ -3,7 +3,6 @@ extends TextureRect
 
 class_name PieChart
 
-
 @export var donut:bool = false
 @export_range(0.0,1.0) var donut_inner_radius:float = 0.5
 
@@ -91,26 +90,13 @@ func _ready():
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	recalculate()
 
-#TODO:
-#-make sure inputs are passed when over tranparent part
-#-lock the size to be square?
-#-Fix the material to be available whenever the chart is instanced
-#-make sure each chart is unique when instanced
-#-validate inputs
-#-check the programming interface works
-#-make draft pr
-
 #Update the slice angles based on the new slice data
 func recalculate() -> void:
-	#center = Vector2(radius, radius)
-	#size = 2*center
-	
 	#where the slices are the public interface, these are the actual paramters
 	#which will be sent to the shader
 	var angles: Array = []
 	var colours: Array = []
 	
-	#var inner_rad_shader = donut_inner_radius / (2.0*size.x);
 	material.set_shader_parameter("donut_inner_radius",donut_inner_radius/2.0)
 	material.set_shader_parameter("donut",donut)
 	
