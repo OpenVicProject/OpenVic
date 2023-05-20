@@ -33,7 +33,7 @@
 
 ![](images/installation/scons-install.png)
 
-## 4. [Godot](https://downloads.tuxfamily.org/godotengine/4.0/rc3/)
+## 4. [Godot](https://github.com/godotengine/godot/releases/latest)
 - Download Godot 4. The current version for the project will be on the [main README](../README.md) page.
 
 ![](images/installation/godot-dl-page.png)
