@@ -147,8 +147,8 @@ jobs:
         id: export_game
         uses: Spartan322/godot-export@master
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.2/Godot_v4.0.2-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.2/Godot_v4.0.2-stable_export_templates.tpz
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.3/Godot_v4.0.3-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.3/Godot_v4.0.3-stable_export_templates.tpz
           relative_project_path: ./game
           export_as_pack: true
           export_debug: true
@@ -195,8 +195,8 @@ jobs:
         id: export_game
         uses: Spartan322/godot-export@master
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.2/Godot_v4.0.2-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.2/Godot_v4.0.2-stable_export_templates.tpz
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0.3/Godot_v4.0.3-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0.3/Godot_v4.0.3-stable_export_templates.tpz
           relative_project_path: ./game
           archive_output: true
           wine_path: ${{ steps.wine_install.outputs.WINE_PATH }}
