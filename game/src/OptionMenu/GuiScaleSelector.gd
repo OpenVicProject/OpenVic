@@ -56,9 +56,9 @@ func _set_value_from_file(load_value):
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	selected = default_selected
 
-func _on_item_selected(index:int):
+func _on_option_selected(index : int, by_user : bool):
 	if _valid_index(index):
 		GuiScale.set_guiscale(get_item_metadata(index))
 	else:
 		push_error("Invalid GuiScaleSelector index: %d" % index)
-		reset_setting()
+		reset_setting(not by_user)

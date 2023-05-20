@@ -1,5 +1,9 @@
 extends Node
 
+signal resolution_added(value : Vector2i, name : StringName, display_name : StringName)
+signal resolution_changed(value : Vector2i)
+signal window_mode_changed(value : Window.Mode)
+
 const error_resolution : Vector2i = Vector2i(-1,-1)
 
 @export
@@ -39,7 +43,7 @@ func has_resolution(resolution_value : Vector2i) -> bool:
 
 func add_resolution(resolution_value : Vector2i, resolution_name : StringName = &"") -> bool:
 	if has_resolution(resolution_value): return true
-	var res_dict := { value = resolution_value }
+	var res_dict := { value = resolution_value, name = &"" }
 	var display_name := "%sx%s" % [resolution_value.x, resolution_value.y]
 	if not resolution_name.is_empty():
 		res_dict.name = resolution_name
@@ -48,6 +52,7 @@ func add_resolution(resolution_value : Vector2i, resolution_name : StringName = 
 	if resolution_value.x < minimum_resolution.x or resolution_value.y < minimum_resolution.y:
 		push_error("Resolution %s is smaller than minimum (%sx%s)" % [res_dict.display_name, minimum_resolution.x, minimum_resolution.y])
 		return false
+	resolution_added.emit(resolution_value, resolution_name, display_name)
 	_resolutions[resolution_value] = res_dict
 	return true
 
@@ -55,6 +60,9 @@ func get_resolution_value_list() -> Array:
 	var list := _resolutions.keys()
 	list.sort_custom(func(a, b): return a > b)
 	return list
+
+func get_resolution_name(resolution_value : Vector2i) -> StringName:
+	return _resolutions.get(resolution_value, { name = &"unknown resolution" }).name
 
 func get_resolution_display_name(resolution_value : Vector2i) -> StringName:
 	return _resolutions.get(resolution_value, { display_name = &"unknown resolution" }).display_name
@@ -80,6 +88,8 @@ func set_resolution(resolution : Vector2i) -> void:
 	if not has_resolution(resolution):
 		push_warning("Setting resolution to non-standard value %sx%s" % [resolution.x, resolution.y])
 	var window := get_viewport().get_window()
+	if get_current_resolution() != resolution:
+		resolution_changed.emit(resolution)
 	match window.mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
 			window.content_scale_size = resolution

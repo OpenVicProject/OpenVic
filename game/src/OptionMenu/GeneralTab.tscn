@@ -46,7 +46,6 @@ default_selected = 0
 [node name="AutosaveIntervalLabel" type="Label" parent="VBoxContainer/GridContainer"]
 layout_mode = 2
 text = "OPTIONS_GENERAL_AUTOSAVE"
-horizontal_alignment = 1
 
 [node name="AutosaveIntervalSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
 editor_description = "UI-15"

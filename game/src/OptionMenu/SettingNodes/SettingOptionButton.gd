@@ -1,6 +1,8 @@
 extends OptionButton
 class_name SettingOptionButton
 
+signal option_selected(index : int, by_user : bool)
+
 @export
 var section_name : String = "setting"
 
@@ -52,20 +54,24 @@ func _ready():
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 	Events.Options.reset_settings.connect(reset_setting)
+	item_selected.connect(func(index : int): option_selected.emit(index, true))
 	_setup_button()
 	if not _valid_index(default_selected) or selected == -1:
-		OS.alert("Failed to generate %s %s options." % [setting_name, section_name], "%s Options Error" % section_name)
+		var msg := "Failed to generate %s %s options." % [setting_name, section_name]
+		push_error(msg)
+		OS.alert(msg, "%s Options Error" % section_name)
 		get_tree().quit()
 
 func load_setting(file : ConfigFile) -> void:
 	if file == null: return
 	_set_value_from_file(file.get_value(section_name, setting_name, _get_value_for_file(default_selected)))
-	item_selected.emit(selected)
+	option_selected.emit(selected, false)
 
 func save_setting(file : ConfigFile) -> void:
 	if file == null: return
 	file.set_value(section_name, setting_name, _get_value_for_file(selected))
 
-func reset_setting() -> void:
+func reset_setting(no_emit : bool = false) -> void:
 	selected = default_selected
-	item_selected.emit(selected)
+	if not no_emit:
+		option_selected.emit(selected, false)

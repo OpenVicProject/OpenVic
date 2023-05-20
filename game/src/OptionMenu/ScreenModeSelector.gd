@@ -1,4 +1,4 @@
-extends SettingOptionButton
+extends SettingRevertButton
 
 # REQUIREMENTS
 # * UIFUN-42
@@ -31,12 +31,18 @@ func _setup_button():
 	default_selected = get_screen_mode_from_window_mode(get_viewport().get_window().mode)
 	selected = default_selected
 
-func _on_item_selected(index : int):
+func _on_option_selected(index : int, by_user : bool) -> void:
 	if _valid_index(index):
-		var window := get_viewport().get_window()
+		if by_user:
+			print("Start Revert Countdown!")
+			revert_dialog.show_dialog.call_deferred(self)
+			previous_index = get_screen_mode_from_window_mode(get_viewport().get_window().mode)
+
 		var current_resolution := Resolution.get_current_resolution()
-		window.mode = get_window_mode_from_screen_mode(index)
+		var window_mode := get_window_mode_from_screen_mode(index)
+		Resolution.window_mode_changed.emit(window_mode)
+		get_viewport().get_window().mode = window_mode
 		Resolution.set_resolution(current_resolution)
 	else:
 		push_error("Invalid ScreenModeSelector index: %d" % index)
-		reset_setting()
+		reset_setting(not by_user)
