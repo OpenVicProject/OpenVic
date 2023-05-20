@@ -1,4 +1,4 @@
-extends SettingOptionButton
+extends SettingRevertButton
 
 # REQUIREMENTS
 # * UIFUN-21
@@ -6,12 +6,7 @@ extends SettingOptionButton
 # * UIFUN-301
 # * UIFUN-302
 
-@export
-var default_value : Vector2i = Resolution.error_resolution
-
-var previous_resolution : Vector2i = Resolution.error_resolution
-@export var revert_dialog : ConfirmationDialog
-@export var timer : Timer
+@export var default_value : Vector2i = Resolution.error_resolution
 
 func _find_resolution_index_by_value(value : Vector2i) -> int:
 	for item_index in item_count:
@@ -19,18 +14,31 @@ func _find_resolution_index_by_value(value : Vector2i) -> int:
 			return item_index
 	return -1
 
-func _sync_resolutions(to_select : Vector2i = Resolution.get_current_resolution()) -> void:
+func _sync_resolutions(
+	value : Vector2i = Resolution.error_resolution,
+	_resolution_name = null,
+	_resolution_display_name = null
+) -> void:
 	clear()
 	default_selected = -1
 	selected = -1
-	for resolution_value in Resolution.get_resolution_value_list():
-		add_item(Resolution.get_resolution_display_name(resolution_value))
+	var resolution_list := Resolution.get_resolution_value_list()
+	if value != Resolution.error_resolution:
+		resolution_list.append(value)
+	for resolution_value in resolution_list:
+		var display_name := "%sx%s" % [resolution_value.x, resolution_value.y]
+		var resolution_name := Resolution.get_resolution_name(resolution_value)
+		if resolution_name == &"Default":
+			display_name = "Default (%s)" % resolution_name
+		if not resolution_name.is_empty():
+			display_name = "%s (%s)" % [display_name, resolution_name + (", Default" if resolution_value == default_value else "")]
+		add_item(display_name)
 		set_item_metadata(item_count - 1, resolution_value)
 
 		if resolution_value == default_value:
 			default_selected = item_count - 1
 
-		if resolution_value == to_select:
+		if resolution_value == Resolution.get_current_resolution():
 			selected = item_count - 1
 
 	if default_selected == -1:
@@ -39,21 +47,24 @@ func _sync_resolutions(to_select : Vector2i = Resolution.get_current_resolution(
 	if selected == -1:
 		selected = default_selected
 
-func _setup_button():
+func _setup_button() -> void:
+	Resolution.resolution_added.connect(_sync_resolutions)
 	if default_value.x <= 0:
 		default_value.x = ProjectSettings.get_setting("display/window/size/viewport_width")
 	if default_value.y <= 0:
 		default_value.y = ProjectSettings.get_setting("display/window/size/viewport_height")
-	Resolution.add_resolution(default_value, &"default")
-	_sync_resolutions()
+	if not Resolution.has_resolution(default_value):
+		Resolution.add_resolution(default_value, &"Default")
+	else:
+		_sync_resolutions()
 
-func _get_value_for_file(select_value : int):
+func _get_value_for_file(select_value : int) -> Variant:
 	if _valid_index(select_value):
 		return get_item_metadata(select_value)
 	else:
 		return null
 
-func _set_value_from_file(load_value):
+func _set_value_from_file(load_value) -> void:
 	var target_resolution := Resolution.error_resolution
 	match typeof(load_value):
 		TYPE_VECTOR2I: target_resolution = load_value
@@ -62,38 +73,19 @@ func _set_value_from_file(load_value):
 		selected = _find_resolution_index_by_value(target_resolution)
 		if selected != -1: return
 		if Resolution.add_resolution(target_resolution):
-			_sync_resolutions(target_resolution)
+			Resolution.set_resolution(target_resolution)
 			return
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	selected = default_selected
 
-func _on_item_selected(index : int):
+func _on_option_selected(index : int, by_user : bool) -> void:
 	if _valid_index(index):
-		previous_resolution = Resolution.get_current_resolution()
-		Resolution.set_resolution(get_item_metadata(index))
-		var new_resolution = get_item_metadata(index)
-		
-		#has_focus() indicates the user is calling _on_item_selected, not some other function
-		if has_focus() and previous_resolution != new_resolution:
+		if by_user:
 			print("Start Revert Countdown!")
-			start_revert_countdown()
+			revert_dialog.show_dialog.call_deferred(self)
+			previous_index = _find_resolution_index_by_value(Resolution.get_current_resolution())
+
+		Resolution.set_resolution(get_item_metadata(index))
 	else:
 		push_error("Invalid ResolutionSelector index: %d" % index)
-		reset_setting()
-
-func _process(_delta):
-	revert_dialog.dialog_text = tr("OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT").format({"time":round(timer.time_left)})
-
-func start_revert_countdown() -> void:
-	timer.start()
-	revert_dialog.popup_centered(Vector2(1,1))
-	
-func _on_confirmed() -> void:
-	timer.stop()
-
-func _cancel_changes() -> void:
-	Resolution.set_resolution(previous_resolution)
-	_sync_resolutions()
-	print("Resolution reset to (%dx%d)" % [previous_resolution.x,previous_resolution.y])
-	timer.stop()
-	revert_dialog.hide()
+		reset_setting(not by_user)

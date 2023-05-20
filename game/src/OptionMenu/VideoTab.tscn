@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bq3awxxjn1tuw"]
+[gd_scene load_steps=9 format=3 uid="uid://bq3awxxjn1tuw"]
 
 [ext_resource type="Script" path="res://src/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
 [ext_resource type="Script" path="res://src/OptionMenu/VideoTab.gd" id="1_jvv62"]
@@ -7,31 +7,32 @@
 [ext_resource type="Script" path="res://src/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
 [ext_resource type="Script" path="res://src/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
 [ext_resource type="Script" path="res://src/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
+[ext_resource type="Script" path="res://src/OptionMenu/ResolutionRevertDialog.gd" id="8_802cr"]
 
 [node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-46"
 alignment = 1
 script = ExtResource("1_jvv62")
-initial_focus = NodePath("VBoxContainer/GridContainer/ResolutionSelector")
+initial_focus = NodePath("VideoSettingList/VideoSettingGrid/ResolutionSelector")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VideoSettingList" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="VBoxContainer"]
+[node name="Control" type="Control" parent="VideoSettingList"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+[node name="VideoSettingGrid" type="GridContainer" parent="VideoSettingList"]
 layout_mode = 2
 size_flags_vertical = 3
 columns = 2
 
-[node name="ResolutionLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="ResolutionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 text = "OPTIONS_VIDEO_RESOLUTION"
 
-[node name="ResolutionSelector" type="OptionButton" parent="VBoxContainer/GridContainer" node_paths=PackedStringArray("revert_dialog", "timer")]
+[node name="ResolutionSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
 editor_description = "UI-19"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../ScreenModeSelector")
@@ -40,28 +41,15 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("1_i8nro")
-revert_dialog = NodePath("ConfirmationDialog")
-timer = NodePath("Timer")
+revert_dialog = NodePath("../../../ResolutionRevertDialog")
 section_name = "video"
 setting_name = "resolution"
 
-[node name="ConfirmationDialog" type="ConfirmationDialog" parent="VBoxContainer/GridContainer/ResolutionSelector"]
-editor_description = "UI-873"
-disable_3d = true
-title = "OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE"
-size = Vector2i(730, 100)
-ok_button_text = "DIALOG_OK"
-cancel_button_text = "DIALOG_CANCEL"
-
-[node name="Timer" type="Timer" parent="VBoxContainer/GridContainer/ResolutionSelector"]
-wait_time = 5.0
-one_shot = true
-
-[node name="GuiScaleLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="GuiScaleLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 text = "OPTIONS_VIDEO_GUI_SCALE"
 
-[node name="GuiScaleSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="GuiScaleSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
 editor_description = "UI-23"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../ScreenModeSelector")
@@ -73,12 +61,12 @@ script = ExtResource("3_pgc5d")
 section_name = "video"
 setting_name = "gui_scale"
 
-[node name="ScreenModeLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="ScreenModeLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 editor_description = "UI-44"
 layout_mode = 2
 text = "OPTIONS_VIDEO_SCREEN_MODE"
 
-[node name="ScreenModeSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="ScreenModeSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResolutionSelector")
 focus_neighbor_bottom = NodePath("../MonitorDisplaySelector")
@@ -91,14 +79,15 @@ popup/item_1/id = 1
 popup/item_2/text = "OPTIONS_VIDEO_WINDOWED"
 popup/item_2/id = 2
 script = ExtResource("2_wa7vw")
+revert_dialog = NodePath("../../../ResolutionRevertDialog")
 section_name = "video"
 setting_name = "mode_selected"
 
-[node name="MonitorSelectionLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="MonitorSelectionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 text = "OPTIONS_VIDEO_MONITOR_SELECTION"
 
-[node name="MonitorDisplaySelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ScreenModeSelector")
 focus_neighbor_bottom = NodePath("../RefreshRateSelector")
@@ -110,11 +99,11 @@ script = ExtResource("3_y6lyb")
 section_name = "video"
 setting_name = "current_screen"
 
-[node name="RefreshRateLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="RefreshRateLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 text = "OPTIONS_VIDEO_REFRESH_RATE"
 
-[node name="RefreshRateSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="RefreshRateSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
 editor_description = "UI-18"
 layout_mode = 2
 tooltip_text = "OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP"
@@ -143,11 +132,11 @@ section_name = "video"
 setting_name = "refresh_rate"
 default_selected = 0
 
-[node name="QualityPresetLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="QualityPresetLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
 layout_mode = 2
 text = "OPTIONS_VIDEO_QUALITY"
 
-[node name="QualityPresetSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="QualityPresetSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
 editor_description = "UI-21"
 layout_mode = 2
 focus_neighbor_top = NodePath("../RefreshRateSelector")
@@ -168,10 +157,25 @@ section_name = "video"
 setting_name = "quality_preset"
 default_selected = 1
 
-[connection signal="item_selected" from="VBoxContainer/GridContainer/ResolutionSelector" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_item_selected"]
-[connection signal="canceled" from="VBoxContainer/GridContainer/ResolutionSelector/ConfirmationDialog" to="VBoxContainer/GridContainer/ResolutionSelector" method="_cancel_changes"]
-[connection signal="confirmed" from="VBoxContainer/GridContainer/ResolutionSelector/ConfirmationDialog" to="VBoxContainer/GridContainer/ResolutionSelector" method="_on_confirmed"]
-[connection signal="timeout" from="VBoxContainer/GridContainer/ResolutionSelector/Timer" to="VBoxContainer/GridContainer/ResolutionSelector" method="_cancel_changes"]
-[connection signal="item_selected" from="VBoxContainer/GridContainer/GuiScaleSelector" to="VBoxContainer/GridContainer/GuiScaleSelector" method="_on_item_selected"]
-[connection signal="item_selected" from="VBoxContainer/GridContainer/ScreenModeSelector" to="VBoxContainer/GridContainer/ScreenModeSelector" method="_on_item_selected"]
-[connection signal="item_selected" from="VBoxContainer/GridContainer/MonitorDisplaySelector" to="VBoxContainer/GridContainer/MonitorDisplaySelector" method="_on_item_selected"]
+[node name="ResolutionRevertDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("timer")]
+editor_description = "UI-873"
+disable_3d = true
+title = "OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE"
+size = Vector2i(730, 100)
+ok_button_text = "DIALOG_OK"
+cancel_button_text = "DIALOG_CANCEL"
+script = ExtResource("8_802cr")
+timer = NodePath("ResolutionRevertTimer")
+
+[node name="ResolutionRevertTimer" type="Timer" parent="ResolutionRevertDialog"]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/ResolutionSelector" to="VideoSettingList/VideoSettingGrid/ResolutionSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/GuiScaleSelector" to="VideoSettingList/VideoSettingGrid/GuiScaleSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/ScreenModeSelector" to="VideoSettingList/VideoSettingGrid/ScreenModeSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" to="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" method="_on_option_selected"]
+[connection signal="canceled" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="close_requested" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="confirmed" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_confirmed"]
+[connection signal="timeout" from="ResolutionRevertDialog/ResolutionRevertTimer" to="ResolutionRevertDialog" method="_on_resolution_revert_timer_timeout"]
