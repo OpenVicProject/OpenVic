@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/Utility/PieChart/chart_test.gd" id="1_o07pg"]
 [ext_resource type="Script" path="res://src/Utility/PieChart/PieChart.gd" id="2_ed73j"]
 
-[sub_resource type="Shader" id="Shader_63w1h"]
+[sub_resource type="Shader" id="Shader_54gr8"]
 code = "shader_type canvas_item;
 
 //The center in UV coordinates, which will always
@@ -78,9 +78,9 @@ void fragment() {
 	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_2pxuj"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_80e35"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_63w1h")
+shader = SubResource("Shader_54gr8")
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -91,9 +91,9 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_16clm"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_fhi2d"]
 
-[sub_resource type="Shader" id="Shader_p7a4d"]
+[sub_resource type="Shader" id="Shader_n3y8m"]
 code = "shader_type canvas_item;
 
 //The center in UV coordinates, which will always
@@ -168,9 +168,9 @@ void fragment() {
 	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_40tfd"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fka8i"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_p7a4d")
+shader = SubResource("Shader_n3y8m")
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -181,9 +181,9 @@ shader_parameter/donut = true
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.18
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_6rmsm"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_3ki2t"]
 
-[sub_resource type="Shader" id="Shader_apbll"]
+[sub_resource type="Shader" id="Shader_tt2i5"]
 code = "shader_type canvas_item;
 
 //The center in UV coordinates, which will always
@@ -258,9 +258,9 @@ void fragment() {
 	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_p20v2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pcnia"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_apbll")
+shader = SubResource("Shader_tt2i5")
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -271,7 +271,7 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_6l56f"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_wrjt2"]
 
 [node name="chart_test" type="Control"]
 layout_mode = 3
@@ -283,31 +283,31 @@ grow_vertical = 2
 script = ExtResource("1_o07pg")
 
 [node name="PieChart3" type="TextureRect" parent="."]
-material = SubResource("ShaderMaterial_2pxuj")
+material = SubResource("ShaderMaterial_80e35")
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_right = 50.0
 offset_bottom = 50.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = SubResource("CanvasTexture_16clm")
+texture = SubResource("CanvasTexture_fhi2d")
 script = ExtResource("2_ed73j")
 
 [node name="PieChart" type="TextureRect" parent="."]
-material = SubResource("ShaderMaterial_40tfd")
+material = SubResource("ShaderMaterial_fka8i")
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_right = 50.0
 offset_bottom = 50.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = SubResource("CanvasTexture_6rmsm")
+texture = SubResource("CanvasTexture_3ki2t")
 script = ExtResource("2_ed73j")
 donut = true
 donut_inner_radius = 0.36
 
 [node name="PieChart2" type="TextureRect" parent="."]
-material = SubResource("ShaderMaterial_p20v2")
+material = SubResource("ShaderMaterial_pcnia")
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_left = 59.0
@@ -315,5 +315,5 @@ offset_right = 129.0
 offset_bottom = 70.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = SubResource("CanvasTexture_6l56f")
+texture = SubResource("CanvasTexture_wrjt2")
 script = ExtResource("2_ed73j")

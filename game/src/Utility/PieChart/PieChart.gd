@@ -6,6 +6,10 @@ class_name PieChart
 @export var donut:bool = false
 @export_range(0.0,1.0) var donut_inner_radius:float = 0.5
 
+@onready
+var tooltipLabel:RichTextLabel = $RichToolTip/RichTextLabel
+@onready
+var tooltipPanel:RichToolTip = $RichToolTip
 #a data class for the pie chart
 class SliceData:
 	#primary properties, change these to change
@@ -77,7 +81,12 @@ func RemoveLabel(labelName:String) -> bool:
 
 #Perhaps in the future, a method to reorder the labels?
 
+#TODO:
+#Create the system for parent pie charts to handle the tooltips of 
+#child pie charts
 
+#TODO: for extra performance, should probably remove this
+#or make it editor only
 func _draw():
 	recalculate()
 
@@ -89,6 +98,7 @@ func _ready():
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	recalculate()
+
 
 #Update the slice angles based on the new slice data
 func recalculate() -> void:
@@ -139,15 +149,36 @@ func _gui_input(event:InputEvent):
 		var real_donut_inner_radius:float = radius * donut_inner_radius
 		if distance <= radius and (not donut or distance >= real_donut_inner_radius):
 			var angle = convertAngle(center.angle_to_point(pos))
-			for slice in slices.values():
+			for label in slices.keys():
+				var slice = slices.get(label)
 				if angle <= slice.final_angle:
-					var formatted_percent = formatpercent(slice.percentage)
-					tooltip_text = "{name} {percentage}%".format({"name":slice.tooltip,"percentage":formatted_percent})
+					tooltipPanel.visible = true
+					tooltipPanel.position = pos + Vector2(5,5)
+					tooltipPanel.updateText(createTooltip(label),10)
 					break
 		else:
 			#Technically the corners of the bounding box
 			#are part of the chart, but we don't want a tooltip there
-			tooltip_text = ""
+			tooltipPanel.visible = false
+
+func _on_mouse_exited():
+	tooltipPanel.visible = false
+
+#create a list of all the values and percentages
+# but with the hovered one on top and highlighted
+func createTooltip(labelHovered:String) -> String:
+	var tooltip:String = ""
+	var hoveredSlice = slices.get(labelHovered)
+	var formatted_percent = formatpercent(hoveredSlice.percentage)
+	tooltip += "[i][u][b]>> {name} {percentage}% <<[/b][/u][/i]".format({"name":hoveredSlice.tooltip,"percentage":formatted_percent})
+	
+	for label in slices.keys():
+		if label == labelHovered: continue
+		var slice = slices.get(label)
+		var percent = formatpercent(slice.percentage)
+		tooltip += "\n{name} {percentage}%".format({"name":slice.tooltip,"percentage":percent})
+	
+	return tooltip
 
 #angle from center.angle_to_point is measured from the +x axis
 #, but the chart starts from +y
@@ -162,3 +193,6 @@ func convertAngle(angleIn:float) -> float:
 	
 func formatpercent(percentIn:float) -> float:
 	return snappedf((percentIn * 100),0.1)	
+
+
+
