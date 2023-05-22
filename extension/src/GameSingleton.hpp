@@ -11,6 +11,8 @@ namespace OpenVic {
 		const godot::Ref<godot::Image> image;
 
 	public:
+		static constexpr size_t MAX_INDEX = 1 << (8 * sizeof(Map::terrain_t));
+
 		TerrainVariant(std::string const& new_identfier, colour_t new_colour,
 			godot::Ref<godot::Image> const& new_image)
 			: HasIdentifier { new_identfier },
@@ -42,12 +44,16 @@ namespace OpenVic {
 		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry, godot::String const& terrain_texture_dir_path);
 		godot::Error _parse_good_entry(godot::String const& identifier, godot::Variant const& entry);
 
-		godot::Error load_province_identifier_file(godot::String const& file_path);
-		godot::Error load_water_province_file(godot::String const& file_path);
-		godot::Error load_region_file(godot::String const& file_path);
-		godot::Error load_terrain_variants(godot::String const& terrain_identifiers_path, godot::String const& terrain_texture_dir_path);
-		godot::Error load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path);
-		godot::Error load_goods(godot::String const& defines_path, godot::String const& icons_dir_path);
+		godot::Error _load_province_identifier_file(godot::String const& file_path);
+		godot::Error _load_water_province_file(godot::String const& file_path);
+		godot::Error _load_region_file(godot::String const& file_path);
+		godot::Error _load_terrain_variants(godot::String const& terrain_identifiers_path, godot::String const& terrain_texture_dir_path);
+		godot::Error _generate_terrain_texture_array();
+		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
+		godot::Error _load_goods(godot::String const& defines_path, godot::String const& icons_dir_path);
+
+		godot::Error _load_province_identifier_file_compatibility_mode(godot::String const& file_path);
+		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_image_path, godot::String const& terrain_texturesheet_path);
 
 		/* Hardcoded data for defining things for which parsing from files has
 		 * not been implemented, currently mapmodes and building types.
@@ -82,6 +88,11 @@ namespace OpenVic {
 		 * in a Dictionary, using the StringNames above as keys.
 		 */
 		godot::Error load_defines(godot::Dictionary const& file_dict);
+
+		/* Load the game's defines in compatiblity mode from the filepath
+		 * pointing to the defines folder.
+		 */
+		godot::Error load_defines_compatibility_mode(godot::String const& file_path);
 
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.

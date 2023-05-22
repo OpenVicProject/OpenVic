@@ -2,7 +2,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic/Logger.hpp"
+#include "openvic/utility/Logger.hpp"
 
 #include "Utilities.hpp"
 
@@ -13,6 +13,7 @@ GameSingleton* GameSingleton::singleton = nullptr;
 
 void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_defines", "file_dict"), &GameSingleton::load_defines);
+	ClassDB::bind_method(D_METHOD("load_defines_compatibility_mode", "file_path"), &GameSingleton::load_defines_compatibility_mode);
 	ClassDB::bind_method(D_METHOD("setup"), &GameSingleton::setup);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);

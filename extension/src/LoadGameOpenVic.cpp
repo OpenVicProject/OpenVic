@@ -97,7 +97,7 @@ Error GameSingleton::_parse_province_identifier_entry(String const& identifier, 
 	return ERR(game_manager.map.add_province(godot_to_std_string(identifier), colour));
 }
 
-Error GameSingleton::load_province_identifier_file(String const& file_path) {
+Error GameSingleton::_load_province_identifier_file(String const& file_path) {
 	const Error err = _parse_json_dictionary_file("province identifier", file_path, "prov_",
 		[this](String const& identifier, Variant const& entry) -> Error {
 			return _parse_province_identifier_entry(identifier, entry);
@@ -106,7 +106,7 @@ Error GameSingleton::load_province_identifier_file(String const& file_path) {
 	return err;
 }
 
-Error GameSingleton::load_water_province_file(String const& file_path) {
+Error GameSingleton::_load_water_province_file(String const& file_path) {
 	Variant json_var;
 	Error err = _load_json_file("water province", file_path, json_var);
 	if (err != OK) return err;
@@ -159,7 +159,7 @@ Error GameSingleton::_parse_region_entry(String const& identifier, Variant const
 	return ERR(game_manager.map.add_region(godot_to_std_string(identifier), province_identifiers));
 }
 
-Error GameSingleton::load_region_file(String const& file_path) {
+Error GameSingleton::_load_region_file(String const& file_path) {
 	const Error err = _parse_json_dictionary_file("region", file_path, "region_",
 		[this](String const& identifier, Variant const& entry) -> Error {
 			return _parse_region_entry(identifier, entry);
@@ -185,20 +185,32 @@ Error GameSingleton::_parse_terrain_entry(String const& identifier, Variant cons
 	return ERR(terrain_variants.add_item({ godot_to_std_string(identifier), colour, terrain_image }));
 }
 
-Error GameSingleton::load_terrain_variants(String const& terrain_identifiers_path, String const& terrain_texture_dir_path) {
-	const Error err = _parse_json_dictionary_file("terrain variants", terrain_identifiers_path, "",
+Error GameSingleton::_load_terrain_variants(String const& terrain_identifiers_path, String const& terrain_texture_dir_path) {
+	Error err = _parse_json_dictionary_file("terrain variants", terrain_identifiers_path, "",
 		[this, terrain_texture_dir_path](String const& identifier, Variant const& entry) -> Error {
 			return _parse_terrain_entry(identifier, entry, terrain_texture_dir_path + String { "/" });
 		});
 	terrain_variants.lock();
+	if (_generate_terrain_texture_array() != OK) return FAILED;
+	return err;
+}
+
+Error GameSingleton::_generate_terrain_texture_array() {
+	Error err = OK;
 	if (terrain_variants.get_item_count() == 0) {
 		UtilityFunctions::push_error("Failed to load terrain textures!");
 		return FAILED;
 	}
+	// TerrainVariant count is limited by the data type representing it in the map image
+	if (terrain_variants.get_item_count() > TerrainVariant::MAX_INDEX) {
+		UtilityFunctions::push_error("Too many terrain textures - all after the first ", MAX_INDEX, " will be ignored");
+		err = FAILED;
+	}
 
 	Array terrain_images;
-	for (TerrainVariant const& var : terrain_variants.get_items()) {
-		terrain_variant_map[var.get_colour()] = terrain_images.size();
+	for (size_t i = 0; i < terrain_variants.get_item_count() && i < TerrainVariant::MAX_INDEX; ++i) {
+		TerrainVariant const& var = *terrain_variants.get_item_by_index(i);
+		terrain_variant_map[var.get_colour()] = i;
 		terrain_images.append(var.get_image());
 	}
 
@@ -210,7 +222,7 @@ Error GameSingleton::load_terrain_variants(String const& terrain_identifiers_pat
 	return err;
 }
 
-Error GameSingleton::load_map_images(String const& province_image_path, String const& terrain_image_path) {
+Error GameSingleton::_load_map_images(String const& province_image_path, String const& terrain_image_path, bool flip_vertical) {
 	if (province_shape_texture.is_valid()) {
 		UtilityFunctions::push_error("Map images have already been loaded, cannot load: ", province_image_path, " and ", terrain_image_path);
 		return FAILED;
@@ -231,6 +243,11 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 		return err;
 	}
 
+	if (flip_vertical) {
+		province_image->flip_y();
+		terrain_image->flip_y();
+	}
+
 	// Validate dimensions and format
 	const Vector2i province_dims = province_image->get_size(), terrain_dims = terrain_image->get_size();
 	if (province_dims.x < 1 || province_dims.y < 1) {
@@ -243,13 +260,14 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 		err = FAILED;
 	}
 	static constexpr Image::Format expected_format = Image::FORMAT_RGB8;
-	const Image::Format province_format = province_image->get_format(), terrain_format = terrain_image->get_format();
-	if (province_format != expected_format) {
-		UtilityFunctions::push_error("Invalid format (", province_format, ", should be ", expected_format, ") for province image: ", province_image_path);
+	if (province_image->get_format() == Image::FORMAT_RGBA8) province_image->convert(expected_format);
+	if (terrain_image->get_format() == Image::FORMAT_RGBA8) terrain_image->convert(expected_format);
+	if (province_image->get_format() != expected_format) {
+		UtilityFunctions::push_error("Invalid format (", province_image->get_format(), ", should be ", expected_format, ") for province image: ", province_image_path);
 		err = FAILED;
 	}
-	if (terrain_format != expected_format) {
-		UtilityFunctions::push_error("Invalid format (", terrain_format, ", should be ", expected_format, ") for terrain image: ", terrain_image_path);
+	if (terrain_image->get_format() != expected_format) {
+		UtilityFunctions::push_error("Invalid format (", terrain_image->get_format(), ", should be ", expected_format, ") for terrain image: ", terrain_image_path);
 		err = FAILED;
 	}
 	if (err != OK) return err;
@@ -292,6 +310,8 @@ Error GameSingleton::load_map_images(String const& province_image_path, String c
 		UtilityFunctions::push_error("Failed to create terrain texture array!");
 		err = FAILED;
 	}
+
+	if (_update_colour_image() != OK) err = FAILED;
 
 	return err;
 }
@@ -351,7 +371,7 @@ Error GameSingleton::_parse_good_entry(String const& identifier, Variant const& 
 		colour, base_price, default_available, tradeable, currency, overseas_maintenance));
 }
 
-Error GameSingleton::load_goods(String const& defines_path, String const& icons_dir_path) {
+Error GameSingleton::_load_goods(String const& defines_path, String const& icons_dir_path) {
 	Error err = _parse_json_dictionary_file("good", defines_path, "good_",
 		[this](String const& identifier, Variant const& entry) -> Error {
 			return _parse_good_entry(identifier, entry);
@@ -417,28 +437,28 @@ StringName const& GameSingleton::get_good_icons_dir_key() {
 
 Error GameSingleton::load_defines(Dictionary const& file_dict) {
 	Error err = OK;
-	if (load_province_identifier_file(file_dict.get(get_province_identifier_file_key(), "")) != OK) {
+	if (_load_province_identifier_file(file_dict.get(get_province_identifier_file_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load province identifiers!");
 		err = FAILED;
 	}
-	if (load_water_province_file(file_dict.get(get_water_province_file_key(), "")) != OK) {
+	if (_load_water_province_file(file_dict.get(get_water_province_file_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load water provinces!");
 		err = FAILED;
 	}
-	if (load_region_file(file_dict.get(get_region_file_key(), "")) != OK) {
+	if (_load_region_file(file_dict.get(get_region_file_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load regions!");
 		err = FAILED;
 	}
-	if (load_terrain_variants(file_dict.get(get_terrain_variant_file_key(), ""),
+	if (_load_terrain_variants(file_dict.get(get_terrain_variant_file_key(), ""),
 		file_dict.get(get_terrain_texture_dir_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
 	}
-	if (load_map_images(file_dict.get(get_province_image_file_key(), ""), file_dict.get(get_terrain_image_file_key(), "")) != OK) {
+	if (_load_map_images(file_dict.get(get_province_image_file_key(), ""), file_dict.get(get_terrain_image_file_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}
-	if (load_goods(file_dict.get(get_goods_file_key(), ""), file_dict.get(get_good_icons_dir_key(), "")) != OK) {
+	if (_load_goods(file_dict.get(get_goods_file_key(), ""), file_dict.get(get_good_icons_dir_key(), "")) != OK) {
 		UtilityFunctions::push_error("Failed to load goods!");
 		err = FAILED;
 	}
