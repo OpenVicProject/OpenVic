@@ -69,7 +69,7 @@ func _ready():
 	_map_mesh = _map_mesh_instance.mesh
 
 	# Set map mesh size and get bounds
-	const pixels_per_terrain_tile : float = 64.0
+	const pixels_per_terrain_tile : float = 32.0
 	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor,
 		float(GameSingleton.get_height()) / pixels_per_terrain_tile)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform

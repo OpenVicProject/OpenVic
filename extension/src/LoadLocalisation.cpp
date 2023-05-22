@@ -31,7 +31,7 @@ LoadLocalisation::~LoadLocalisation() {
 }
 
 Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref<Translation> translation) {
-	Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
+	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	if (err != OK || file.is_null()) {
 		UtilityFunctions::push_error("Failed to load localisation file: ", file_path);
@@ -42,15 +42,18 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 		PackedStringArray line = file->get_csv_line();
 		line_number++;
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
-			if (!line[0].is_empty())
+			if (!line[0].is_empty()) {
 				UtilityFunctions::push_warning("Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path);
-			else if (line.size() >= 2 && !line[1].is_empty())
+				err = FAILED;
+			} else if (line.size() >= 2 && !line[1].is_empty()) {
 				UtilityFunctions::push_warning("Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path);
+				err = FAILED;
+			}
 			continue;
 		}
 		translation->add_message(line[0], line[1].c_unescape());
 	}
-	return OK;
+	return err;
 }
 
 Ref<Translation> LoadLocalisation::_get_translation(String const& locale) {
@@ -72,40 +75,38 @@ Error LoadLocalisation::load_file(String const& file_path, String const& locale)
  * FS-18, FS-24, FS-25
  */
 Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) {
-	Ref<Translation> translation = _get_translation(locale);
-	if (DirAccess::dir_exists_absolute(dir_path)) {
-		Error err = OK;
-		for (String const& file_name : DirAccess::get_files_at(dir_path)) {
-			if (file_name.get_extension().to_lower() == "csv") {
-				String file_path = dir_path.path_join(file_name);
-				if (_load_file_into_translation(file_path, translation) != OK)
-					err = FAILED;
-			}
-		}
-		return err;
+	if (!DirAccess::dir_exists_absolute(dir_path)) {
+		UtilityFunctions::push_error("Locale directory does not exist: ", dir_path);
+		return FAILED;
 	}
-	UtilityFunctions::push_error("Locale directory does not exist: ", dir_path);
-	return FAILED;
+	Ref<Translation> translation = _get_translation(locale);
+	Error err = OK;
+	for (String const& file_name : DirAccess::get_files_at(dir_path)) {
+		if (file_name.get_extension().to_lower() == "csv") {
+			String file_path = dir_path.path_join(file_name);
+			if (_load_file_into_translation(file_path, translation) != OK)
+				err = FAILED;
+		}
+	}
+	return err;
 }
 
 /* REQUIREMENTS
  * FS-23
  */
 Error LoadLocalisation::load_localisation_dir(String const& dir_path) {
-	if (DirAccess::dir_exists_absolute(dir_path)) {
-		TranslationServer* server = TranslationServer::get_singleton();
-		Error err = OK;
-		for (String const& locale_name : DirAccess::get_directories_at(dir_path)) {
-			if (locale_name == server->standardize_locale(locale_name)) {
-				if (load_locale_dir(dir_path.path_join(locale_name), locale_name) != OK)
-					err = FAILED;
-			} else {
-				err = FAILED;
-				UtilityFunctions::push_error("Invalid locale directory name: ", locale_name);
-			}
-		}
-		return err;
+	if(!DirAccess::dir_exists_absolute(dir_path)) {
+		UtilityFunctions::push_error("Localisation directory does not exist: ", dir_path);
+		return FAILED;
 	}
-	UtilityFunctions::push_error("Localisation directory does not exist: ", dir_path);
-	return FAILED;
+	TranslationServer* server = TranslationServer::get_singleton();
+	Error err = OK;
+	for (String const& locale_name : DirAccess::get_directories_at(dir_path)) {
+		if (locale_name != server->standardize_locale(locale_name))
+			UtilityFunctions::push_error("Invalid locale directory name: ", locale_name);
+		else if (load_locale_dir(dir_path.path_join(locale_name), locale_name) == OK)
+			continue;
+		err = FAILED;
+	}
+	return err;
 }
