@@ -12,10 +12,13 @@ namespace OpenVic {
 
 	public:
 		TerrainVariant(std::string const& new_identfier, colour_t new_colour,
-			godot::Ref<godot::Image> const& new_image);
+			godot::Ref<godot::Image> const& new_image)
+			: HasIdentifier { new_identfier },
+			  HasColour { new_colour },
+			  image { new_image } {}
 		TerrainVariant(TerrainVariant&&) = default;
 
-		godot::Ref<godot::Image> get_image() const;
+		godot::Ref<godot::Image> get_image() const { return image; }
 	};
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
@@ -36,16 +39,24 @@ namespace OpenVic {
 
 		godot::Error _parse_province_identifier_entry(godot::String const& identifier, godot::Variant const& entry);
 		godot::Error _parse_region_entry(godot::String const& identifier, godot::Variant const& entry);
-		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry);
+		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry, godot::String const& terrain_texture_dir_path);
 		godot::Error _parse_good_entry(godot::String const& identifier, godot::Variant const& entry);
 
 		godot::Error load_province_identifier_file(godot::String const& file_path);
 		godot::Error load_water_province_file(godot::String const& file_path);
 		godot::Error load_region_file(godot::String const& file_path);
-		godot::Error load_terrain_variant_file(godot::String const& file_path);
+		godot::Error load_terrain_variants(godot::String const& terrain_identifiers_path, godot::String const& terrain_texture_dir_path);
 		godot::Error load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path);
 		godot::Error load_goods(godot::String const& defines_path, godot::String const& icons_dir_path);
 
+		/* Hardcoded data for defining things for which parsing from files has
+		 * not been implemented, currently mapmodes and building types.
+		 */
+		godot::Error _load_hardcoded_defines();
+
+		/* Generate the province_colour_texture from the current mapmode.
+		 */
+		godot::Error _update_colour_image();
 		void _on_state_updated();
 
 	protected:
@@ -61,6 +72,7 @@ namespace OpenVic {
 		static godot::StringName const& get_water_province_file_key();
 		static godot::StringName const& get_region_file_key();
 		static godot::StringName const& get_terrain_variant_file_key();
+		static godot::StringName const& get_terrain_texture_dir_key();
 		static godot::StringName const& get_province_image_file_key();
 		static godot::StringName const& get_terrain_image_file_key();
 		static godot::StringName const& get_goods_file_key();
@@ -120,10 +132,6 @@ namespace OpenVic {
 		 * index order into a 256x256 RGB8 texture.
 		 */
 		godot::Ref<godot::Texture> get_province_colour_texture() const;
-
-		/* Generate the province_colour_texture from the current mapmode.
-		 */
-		godot::Error update_colour_image();
 
 		int32_t get_mapmode_count() const;
 		godot::String get_mapmode_identifier(int32_t index) const;
