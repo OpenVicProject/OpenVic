@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://dlqk1fobuy2pd"
+path="res://.godot/imported/good_coal.png-dd9ac68e2f68640bcc4557fcbaf0b3da.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_coal.png"
+dest_files=["res://.godot/imported/good_coal.png-dd9ac68e2f68640bcc4557fcbaf0b3da.image"]
+
+[params]
+

@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://cyvflc8knuia3"
+path="res://.godot/imported/good_cement.png-0a1e1f3c8aaf7c59a8fcac3864c43060.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_cement.png"
+dest_files=["res://.godot/imported/good_cement.png-0a1e1f3c8aaf7c59a8fcac3864c43060.image"]
+
+[params]
+

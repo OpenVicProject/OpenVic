@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://d5yfj0lreiix"
+path="res://.godot/imported/good_steel.png-d26fd1ae635591a88191df8360c4a3a3.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_steel.png"
+dest_files=["res://.godot/imported/good_steel.png-d26fd1ae635591a88191df8360c4a3a3.image"]
+
+[params]
+

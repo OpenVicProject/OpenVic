@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://5ri2aw6okdnf"
+path="res://.godot/imported/good_furniture.png-1adf5a4de61619dcbfb263bbd777fe6c.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_furniture.png"
+dest_files=["res://.godot/imported/good_furniture.png-1adf5a4de61619dcbfb263bbd777fe6c.image"]
+
+[params]
+

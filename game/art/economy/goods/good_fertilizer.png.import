@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://b8cca7k8p7ix4"
+path="res://.godot/imported/good_fertilizer.png-dc4654b14c0533f03b171c40b4c9fd0a.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_fertilizer.png"
+dest_files=["res://.godot/imported/good_fertilizer.png-dc4654b14c0533f03b171c40b4c9fd0a.image"]
+
+[params]
+

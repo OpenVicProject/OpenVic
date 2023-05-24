@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://dngxh4ai77636"
+path="res://.godot/imported/good_fish.png-b121aa8c24a6034978a21e30aa911543.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_fish.png"
+dest_files=["res://.godot/imported/good_fish.png-b121aa8c24a6034978a21e30aa911543.image"]
+
+[params]
+

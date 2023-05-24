@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://6d3hi21re7vu"
+path="res://.godot/imported/good_rubber.png-80a5757539b9a9b429e7c78c60e2430a.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_rubber.png"
+dest_files=["res://.godot/imported/good_rubber.png-80a5757539b9a9b429e7c78c60e2430a.image"]
+
+[params]
+

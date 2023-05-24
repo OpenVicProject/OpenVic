@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://gkjpiul6248l"
+path="res://.godot/imported/good_cattle.png-089bb1aba8f91888c577c6cb83992c61.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_cattle.png"
+dest_files=["res://.godot/imported/good_cattle.png-089bb1aba8f91888c577c6cb83992c61.image"]
+
+[params]
+

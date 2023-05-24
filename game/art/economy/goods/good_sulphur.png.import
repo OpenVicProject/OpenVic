@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://pil6cifo50ct"
+path="res://.godot/imported/good_sulphur.png-2ae7d484191682b90b52d0946f580557.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_sulphur.png"
+dest_files=["res://.godot/imported/good_sulphur.png-2ae7d484191682b90b52d0946f580557.image"]
+
+[params]
+

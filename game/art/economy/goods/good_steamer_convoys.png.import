@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://dwiw10uxdqq3h"
+path="res://.godot/imported/good_steamer_convoys.png-53cc329d4c29c6e2538c3c4356a67c39.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_steamer_convoys.png"
+dest_files=["res://.godot/imported/good_steamer_convoys.png-53cc329d4c29c6e2538c3c4356a67c39.image"]
+
+[params]
+

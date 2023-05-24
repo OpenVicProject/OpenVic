@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://pxi8v6bqsmn2"
+path="res://.godot/imported/good_tropical_wood.png-227a307b3f13efd1924da53194d4b1f7.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_tropical_wood.png"
+dest_files=["res://.godot/imported/good_tropical_wood.png-227a307b3f13efd1924da53194d4b1f7.image"]
+
+[params]
+

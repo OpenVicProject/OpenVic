@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://cyyjk8jki0c1k"
+path="res://.godot/imported/good_regular_clothes.png-e5e0e3499731529e3240bd5b4aceb543.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_regular_clothes.png"
+dest_files=["res://.godot/imported/good_regular_clothes.png-e5e0e3499731529e3240bd5b4aceb543.image"]
+
+[params]
+

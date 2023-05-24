@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://mdsbfb1kx2yr"
+path="res://.godot/imported/good_ammunition.png-ab17c8b5b6f699fce3dd4d8842555fcc.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_ammunition.png"
+dest_files=["res://.godot/imported/good_ammunition.png-ab17c8b5b6f699fce3dd4d8842555fcc.image"]
+
+[params]
+

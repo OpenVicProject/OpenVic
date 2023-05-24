@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://dfh6rux8hrly5"
+path="res://.godot/imported/good_wine.png-6bfb1d83a0cd9e755399ce4ce576edae.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_wine.png"
+dest_files=["res://.godot/imported/good_wine.png-6bfb1d83a0cd9e755399ce4ce576edae.image"]
+
+[params]
+

@@ -113,6 +113,7 @@ func update_info() -> void:
 		show()
 	else:
 		hide()
+		mouse_exited.emit()
 
 func _on_province_selected(index : int) -> void:
 	_selected_index = index
