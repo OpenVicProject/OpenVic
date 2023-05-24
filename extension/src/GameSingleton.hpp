@@ -74,6 +74,8 @@ namespace OpenVic {
 		GameSingleton();
 		~GameSingleton();
 
+		static void setup_logger();
+
 		static godot::StringName const& get_province_identifier_file_key();
 		static godot::StringName const& get_water_province_file_key();
 		static godot::StringName const& get_region_file_key();
@@ -97,7 +99,7 @@ namespace OpenVic {
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.
 		 */
-		godot::Error setup();
+		godot::Error setup_game();
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 
