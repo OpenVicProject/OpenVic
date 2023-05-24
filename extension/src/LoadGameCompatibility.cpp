@@ -76,7 +76,7 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& terrain_image_path, String const& terrain_texturesheet_path) {
 	// Read BMP's palette to determine terrain variant colours which texture they're associated with
 	BMP bmp;
-	if (bmp.open(godot_to_c_string(terrain_image_path)) != SUCCESS || bmp.read_header() != SUCCESS || bmp.read_palette() != SUCCESS) {
+	if (bmp.open(godot_to_std_string(terrain_image_path).c_str()) != SUCCESS || bmp.read_header() != SUCCESS || bmp.read_palette() != SUCCESS) {
 		UtilityFunctions::push_error("Failed to read BMP palette from compatibility mode terrain image: ", terrain_image_path);
 		return FAILED;
 	}

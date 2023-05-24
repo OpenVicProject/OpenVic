@@ -4,7 +4,7 @@ extends Control
 
 func _ready():
 	Events.Options.load_settings_from_file()
-	if GameSingleton.setup() != OK:
+	if GameSingleton.setup_game() != OK:
 		push_error("Failed to setup game")
 
 func _process(delta : float):

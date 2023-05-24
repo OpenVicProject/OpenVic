@@ -25,6 +25,8 @@ const _compatibility_mode_path : String = ""
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
 func _ready():
+	GameSingleton.setup_logger()
+
 	var start := Time.get_ticks_usec()
 
 	if _compatibility_mode_path:

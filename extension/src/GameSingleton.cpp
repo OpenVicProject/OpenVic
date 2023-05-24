@@ -12,9 +12,10 @@ using namespace OpenVic;
 GameSingleton* GameSingleton::singleton = nullptr;
 
 void GameSingleton::_bind_methods() {
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("setup_logger"), &GameSingleton::setup_logger);
 	ClassDB::bind_method(D_METHOD("load_defines", "file_dict"), &GameSingleton::load_defines);
 	ClassDB::bind_method(D_METHOD("load_defines_compatibility_mode", "file_path"), &GameSingleton::load_defines_compatibility_mode);
-	ClassDB::bind_method(D_METHOD("setup"), &GameSingleton::setup);
+	ClassDB::bind_method(D_METHOD("setup_game"), &GameSingleton::setup_game);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);
 	ClassDB::bind_method(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
@@ -88,7 +89,9 @@ GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); 
 								 terrain_variants { "terrain variants" } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
+}
 
+void GameSingleton::setup_logger() {
 	Logger::set_info_func([](std::string&& str) { UtilityFunctions::print(std_to_godot_string(str)); });
 	Logger::set_error_func([](std::string&& str) { UtilityFunctions::push_error(std_to_godot_string(str)); });
 }
@@ -162,7 +165,7 @@ GameSingleton::~GameSingleton() {
 	singleton = nullptr;
 }
 
-Error GameSingleton::setup() {
+Error GameSingleton::setup_game() {
 	return ERR(game_manager.setup());
 }
 
