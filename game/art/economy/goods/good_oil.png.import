@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://blgngx1k43uww"
+path="res://.godot/imported/good_oil.png-9671b03425abaa4486f2531ff41d265b.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_oil.png"
+dest_files=["res://.godot/imported/good_oil.png-9671b03425abaa4486f2531ff41d265b.image"]
+
+[params]
+

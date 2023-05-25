@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://b4ra6msfwd8fd"
+path="res://.godot/imported/farmlands.png-821213ab9dba19cea6f6c966b3a3760b.image"
+
+[deps]
+
+source_file="res://art/terrain/farmlands.png"
+dest_files=["res://.godot/imported/farmlands.png-821213ab9dba19cea6f6c966b3a3760b.image"]
+
+[params]
+

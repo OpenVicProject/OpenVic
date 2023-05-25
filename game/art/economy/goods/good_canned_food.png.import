@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://1uru8eufge1w"
+path="res://.godot/imported/good_canned_food.png-c83bafca536c627868b367290d5be590.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_canned_food.png"
+dest_files=["res://.godot/imported/good_canned_food.png-c83bafca536c627868b367290d5be590.image"]
+
+[params]
+

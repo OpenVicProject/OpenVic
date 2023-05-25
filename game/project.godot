@@ -21,6 +21,7 @@ config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
 
+ArgumentParser="*res://src/Autoload/Arguments/ArgumentParser.tscn"
 Events="*res://src/Autoload/Events.gd"
 Resolution="*res://src/Autoload/Resolution.gd"
 SoundManager="*res://src/Autoload/SoundManager.gd"

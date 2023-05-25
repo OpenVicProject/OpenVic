@@ -53,11 +53,18 @@ func _parse_value(arg_name : StringName, value_string : String, type : Variant.T
 				return true
 			if value_string == "false" or value_string == "f" or value_string == "no" or value_string == "n":
 				return false
-			return true
+			push_error("'%s' must be a valid boolean, '%s' is an invalid value." % [arg_name, value_string])
+			return null
 		TYPE_INT:
-			return value_string.to_int()
+			if value_string.is_valid_int():
+				return value_string.to_int()
+			push_error("'%s' must be a valid integer, '%s' is an invalid value." % [arg_name, value_string])
+			return null
 		TYPE_FLOAT:
-			return value_string.to_float()
+			if value_string.is_valid_float():
+				return value_string.to_float()
+			push_error("'%s' must be a valid float, '%s' is an invalid value." % [arg_name, value_string])
+			return null
 		TYPE_STRING, TYPE_STRING_NAME:
 			return value_string
 		TYPE_COLOR:
@@ -204,10 +211,11 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 				continue
 
 			current_key = key
-			var arg_result = _parse_value(key, value, current_option.type)
-			if arg_result != null:
-				dictionary[current_option.name] = arg_result
-				current_option = null
+			if first_equal > -1:
+				var arg_result = _parse_value(key, value, current_option.type)
+				if arg_result != null:
+					dictionary[current_option.name] = arg_result
+					current_option = null
 
 	return dictionary
 

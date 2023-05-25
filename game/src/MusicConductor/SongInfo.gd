@@ -1,4 +1,4 @@
-extends Node
+extends Resource
 class_name SongInfo
 
 var song_path : String = ""

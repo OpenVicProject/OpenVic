@@ -88,9 +88,8 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 	}
 
 	// Load the terrain texture sheet and prepare to slice it up
-	Ref<Image> terrain_sheet;
-	terrain_sheet.instantiate();
-	if (terrain_sheet->load(terrain_texturesheet_path) != OK) {
+	Ref<Image> terrain_sheet = load_godot_image(terrain_texturesheet_path);
+	if (terrain_sheet.is_null()) {
 		UtilityFunctions::push_error("Failed to load terrain texture sheet: ", terrain_texturesheet_path);
 		return FAILED;
 	}

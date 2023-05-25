@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://b08wotf623gt1"
+path="res://.godot/imported/good_explosives.png-a66d3b6c0368d11d0a481ad963f9a327.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_explosives.png"
+dest_files=["res://.godot/imported/good_explosives.png-a66d3b6c0368d11d0a481ad963f9a327.image"]
+
+[params]
+

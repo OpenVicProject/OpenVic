@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://1udsn4mggep2"]
+[gd_scene load_steps=6 format=3 uid="uid://1udsn4mggep2"]
 
-[ext_resource type="PackedScene" uid="uid://dayjmgc34tqo6" path="res://src/ArgumentParser.tscn" id="1_oe61r"]
 [ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="1_wlojq"]
 [ext_resource type="Script" path="res://src/SplashContainer.gd" id="2_xmcgv"]
 [ext_resource type="Texture2D" uid="uid://deef5hufq0j61" path="res://splash_assets/splash_end.png" id="3_qfv12"]
@@ -14,8 +13,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="ArgumentParser" parent="." instance=ExtResource("1_oe61r")]
 
 [node name="GameMenu" parent="." instance=ExtResource("1_wlojq")]
 visible = false

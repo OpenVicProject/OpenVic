@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://grn8ijhdoh1o"
+path="res://.godot/imported/good_machine_parts.png-93ac404571481e2cf14b4227f7a1bc65.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_machine_parts.png"
+dest_files=["res://.godot/imported/good_machine_parts.png-93ac404571481e2cf14b4227f7a1bc65.image"]
+
+[params]
+

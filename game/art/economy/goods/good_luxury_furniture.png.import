@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://cwa4cp7rw52se"
+path="res://.godot/imported/good_luxury_furniture.png-775415357561e5fd19efde9571063447.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_luxury_furniture.png"
+dest_files=["res://.godot/imported/good_luxury_furniture.png-775415357561e5fd19efde9571063447.image"]
+
+[params]
+

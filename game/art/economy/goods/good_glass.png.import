@@ -1,3 +1,14 @@
 [remap]
 
-importer="keep"
+importer="image"
+type="Image"
+uid="uid://c8ee8mt7d18xn"
+path="res://.godot/imported/good_glass.png-c295705ce9a627d363e1ca2001dde23a.image"
+
+[deps]
+
+source_file="res://art/economy/goods/good_glass.png"
+dest_files=["res://.godot/imported/good_glass.png-c295705ce9a627d363e1ca2001dde23a.image"]
+
+[params]
+

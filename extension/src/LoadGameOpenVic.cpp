@@ -19,14 +19,15 @@ static Error _load_json_file(String const& file_description, String const& file_
 		return err == OK ? FAILED : err;
 	}
 	const String json_string = file->get_as_text();
-	JSON json;
-	err = json.parse(json_string);
+	Ref<JSON> json;
+	json.instantiate();
+	err = json->parse(json_string);
 	if (err != OK) {
 		UtilityFunctions::push_error("Failed to parse ", file_description, " file as JSON: ", file_path,
-			"\nError at line ", json.get_error_line(), ": ", json.get_error_message());
+			"\nError at line ", json->get_error_line(), ": ", json->get_error_message());
 		return err;
 	}
-	result = json.get_data();
+	result = json->get_data();
 	return err;
 }
 
@@ -175,12 +176,10 @@ Error GameSingleton::_parse_terrain_entry(String const& identifier, Variant cons
 		return FAILED;
 	}
 	const String terrain_path = terrain_texture_dir_path + identifier;
-	Ref<Image> terrain_image;
-	terrain_image.instantiate();
-	const Error err = terrain_image->load(terrain_path);
-	if (err != OK) {
+	const Ref<Image> terrain_image = load_godot_image(terrain_path);
+	if (terrain_image.is_null()) {
 		UtilityFunctions::push_error("Failed to load terrain image: ", terrain_path);
-		return err;
+		return FAILED;
 	}
 	return ERR(terrain_variants.add_item({ godot_to_std_string(identifier), colour, terrain_image }));
 }
@@ -229,18 +228,15 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 	}
 
 	// Load images
-	Ref<Image> province_image, terrain_image;
-	province_image.instantiate();
-	terrain_image.instantiate();
-	Error err = province_image->load(province_image_path);
-	if (err != OK) {
+	Ref<Image> province_image = load_godot_image(province_image_path);
+	if (province_image.is_null()) {
 		UtilityFunctions::push_error("Failed to load province image: ", province_image_path);
-		return err;
+		return FAILED;
 	}
-	err = terrain_image->load(terrain_image_path);
-	if (err != OK) {
+	Ref<Image> terrain_image = load_godot_image(terrain_image_path);
+	if (terrain_image.is_null()) {
 		UtilityFunctions::push_error("Failed to load terrain image: ", terrain_image_path);
-		return err;
+		return FAILED;
 	}
 
 	if (flip_vertical) {
@@ -249,6 +245,7 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 	}
 
 	// Validate dimensions and format
+	Error err = OK;
 	const Vector2i province_dims = province_image->get_size(), terrain_dims = terrain_image->get_size();
 	if (province_dims.x < 1 || province_dims.y < 1) {
 		UtilityFunctions::push_error("Invalid dimensions (", province_dims.x, "x", province_dims.y, ") for province image: ", province_image_path);
@@ -378,16 +375,14 @@ Error GameSingleton::_load_goods(String const& defines_path, String const& icons
 		});
 	game_manager.good_manager.lock_goods();
 	for (Good const& good : game_manager.good_manager.get_goods()) {
-		Ref<Image> image;
-		image.instantiate();
 		const String path = icons_dir_path + String { "/" } + std_to_godot_string(good.get_identifier()) + ".png";
-		const Error good_err = image->load(path);
-		if (good_err || image.is_null()) {
+		const Ref<Image> image = load_godot_image(path);
+		if (image.is_null()) {
 			UtilityFunctions::push_error("Failed to load good icon image: ", path);
 			err = FAILED;
 			continue;
 		}
-		Ref<Texture> tex = ImageTexture::create_from_image(image);
+		const Ref<Texture> tex = ImageTexture::create_from_image(image);
 		if (tex.is_null()) {
 			UtilityFunctions::push_error("Failed to generate good icon texture: ", path);
 			err = FAILED;
