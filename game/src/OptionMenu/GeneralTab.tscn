@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://src/OptionMenu/AutosaveIntervalSelector.gd" id="2_t06tb"]
 
 [node name="GeneralTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
-editor_description = "UI-48"
+editor_description = "UI-48, UIFUN-45"
 alignment = 1
 script = ExtResource("1_gbutn")
 initial_focus = NodePath("VBoxContainer/GridContainer/SavegameFormatSelector")
@@ -48,7 +48,7 @@ layout_mode = 2
 text = "OPTIONS_GENERAL_AUTOSAVE"
 
 [node name="AutosaveIntervalSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
-editor_description = "UI-15"
+editor_description = "UI-15, UIFUN-19"
 layout_mode = 2
 focus_neighbor_top = NodePath("../SavegameFormatSelector")
 focus_neighbor_bottom = NodePath("../LocaleButton")
