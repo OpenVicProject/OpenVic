@@ -1,0 +1,11 @@
+
+# Goods Icons Completed Requirements
+
+## Icon Art
+- UI-137, UI-141, UI-154, UI-155, UI-156, UI-160, UI-179
+
+## File Loading
+- FS-39, FS-40, FS-41, FS-42, FS-43, FS-44, FS-45, FS-46, FS-47, FS-48, FS-49, FS-50,
+- FS-51, FS-52, FS-53, FS-54, FS-55, FS-56, FS-57, FS-58, FS-59, FS-60, FS-61, FS-62,
+- FS-63, FS-64, FS-65, FS-66, FS-67, FS-68, FS-69, FS-70, FS-71, FS-72, FS-73, FS-74,
+- FS-75, FS-76, FS-77, FS-78, FS-79, FS-80, FS-81, FS-82, FS-83, FS-84, FS-85, FS-86

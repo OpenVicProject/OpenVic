@@ -27,6 +27,9 @@ namespace OpenVic {
 		}
 		// END BOILERPLATE
 
+		/* REQUIREMENTS:
+		 * DAT-8
+		 */
 		inline godot::String get_checksum_text() {
 			return godot::String("1234abcd");
 		}

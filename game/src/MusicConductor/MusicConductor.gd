@@ -1,6 +1,7 @@
 extends Node
 
-# SS-67
+# REQUIREMENTS
+# * SS-67
 @export_dir var music_directory : String
 @export var first_song_name : String
 
@@ -41,12 +42,14 @@ func start_current_song() -> void:
 	$AudioStreamPlayer.stream = _available_songs[_selected_track].song_stream
 	$AudioStreamPlayer.play()
 
-# SS-70
+# REQUIREMENTS
+# * SS-70
 func start_song_by_index(id: int) -> void:
 	_selected_track = id
 	start_current_song()
 
-# SS-69
+# REQUIREMENTS
+# * SS-69
 func select_next_song() -> void:
 	_selected_track = (_selected_track + 1) % len(_available_songs)
 	start_current_song()
@@ -55,6 +58,8 @@ func select_previous_song() -> void:
 	_selected_track = (len(_available_songs) - 1) if (_selected_track == 0) else (_selected_track - 1)
 	start_current_song()
 
+# REQUIREMENTS
+# * SND-2
 func _ready():
 	var dir = DirAccess.open(music_directory)
 	for fname in dir.get_files():

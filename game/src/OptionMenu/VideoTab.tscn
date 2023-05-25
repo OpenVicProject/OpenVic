@@ -104,7 +104,7 @@ layout_mode = 2
 text = "OPTIONS_VIDEO_REFRESH_RATE"
 
 [node name="RefreshRateSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
-editor_description = "UI-18"
+editor_description = "UI-18, UIFUN-20"
 layout_mode = 2
 tooltip_text = "OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP"
 focus_neighbor_top = NodePath("../MonitorDisplaySelector")
@@ -137,7 +137,7 @@ layout_mode = 2
 text = "OPTIONS_VIDEO_QUALITY"
 
 [node name="QualityPresetSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
-editor_description = "UI-21"
+editor_description = "UI-21, UIFUN-22"
 layout_mode = 2
 focus_neighbor_top = NodePath("../RefreshRateSelector")
 item_count = 5

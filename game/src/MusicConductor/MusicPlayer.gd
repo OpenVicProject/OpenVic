@@ -41,8 +41,9 @@ func _on_previous_song_button_pressed():
 	_update_song_name_visual()
 	_update_play_pause_button()
 
+# REQUIREMENTS
+# * UIFUN-92
 func _on_option_button_item_selected(index):
-	# UIFUN-92
 	MusicConductor.start_song_by_index(index)
 	_update_song_name_visual()
 	_update_play_pause_button()
@@ -66,5 +67,7 @@ func _set_music_player_visible(is_player_visible : bool) -> void:
 	_play_pause_button.visible = is_player_visible
 	_next_song_button.visible = is_player_visible
 
+# REQUIREMENTS
+# * UIFUN-91
 func _on_music_ui_visibility_button_pressed():
 	_set_music_player_visible(not MusicConductor.is_music_player_visible)
