@@ -19,14 +19,15 @@ static Error _load_json_file(String const& file_description, String const& file_
 		return err == OK ? FAILED : err;
 	}
 	const String json_string = file->get_as_text();
-	JSON json;
-	err = json.parse(json_string);
+	Ref<JSON> json;
+	json.instantiate();
+	err = json->parse(json_string);
 	if (err != OK) {
 		UtilityFunctions::push_error("Failed to parse ", file_description, " file as JSON: ", file_path,
-			"\nError at line ", json.get_error_line(), ": ", json.get_error_message());
+			"\nError at line ", json->get_error_line(), ": ", json->get_error_message());
 		return err;
 	}
-	result = json.get_data();
+	result = json->get_data();
 	return err;
 }
 
