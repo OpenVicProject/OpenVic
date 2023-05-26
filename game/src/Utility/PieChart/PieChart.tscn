@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/Utility/PieChart/PieChart.gd" id="2_0yqe3"]
 [ext_resource type="Script" path="res://src/Utility/PieChart/RichToolTip.gd" id="2_expfc"]
 
-[sub_resource type="Shader" id="Shader_snadx"]
+[sub_resource type="Shader" id="Shader_kt47x"]
 code = "shader_type canvas_item;
 
 //The center in UV coordinates, which will always
@@ -78,9 +78,9 @@ void fragment() {
 	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hqbf2"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_407mq"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_snadx")
+shader = SubResource("Shader_kt47x")
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -91,16 +91,16 @@ shader_parameter/donut = true
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.1
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_hosve"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_1ksid"]
 
 [node name="PieChart" type="TextureRect"]
-material = SubResource("ShaderMaterial_hqbf2")
+material = SubResource("ShaderMaterial_407mq")
 custom_minimum_size = Vector2(50, 50)
 offset_right = 80.0
 offset_bottom = 80.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = SubResource("CanvasTexture_hosve")
+texture = SubResource("CanvasTexture_1ksid")
 script = ExtResource("2_0yqe3")
 donut = true
 donut_inner_radius = 0.2

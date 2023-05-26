@@ -132,7 +132,6 @@ func _gui_input(event:InputEvent):
 
 func _on_mouse_exited():
 	tooltipPanel.visible = false
-	print("mouse exited chart")
 
 #takes a mouse position, and sets an appropriate tooltip for the slice the mouse
 #is hovered over. Returns a boolean on whether the tooltip was handled.

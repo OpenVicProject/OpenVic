@@ -24,7 +24,7 @@ func updateTextWidth(font_size:int, max_text_len:int, lines:int) -> void:
 
 	#the 0.8, -27 and 2.5 are magic numbers
 	#-27 subtracts the bb code formatting text from the length
-	custom_minimum_size = Vector2( 0.8 *(max_text_len - 27) * font_ratio * font_size, lines*2.5*font_size*font_ratio)
+	custom_minimum_size = Vector2( 15.0*pow(max_text_len,0.8) * font_ratio , 20.0*(lines+1)*font_ratio)
 
 func updateText(textIn:String, font_size:int = -1) -> void:
 	var text:String = textIn
