@@ -15,14 +15,14 @@ func _gui_input(event:InputEvent):
 		var handled:bool = false
 		var x = overlapping_charts.size()
 		#process the charts in reverse order (overlying charts first)
-		#as you can't actually make the inner chart(s) smaller
+		#as you can't actually make the inner chart(s) smaller with a centerContainer
 		for i in range(x):
 			var chart = overlapping_charts[x-(i+1)]
 			if not handled:
 				handled = chart.handleTooltip(pos)
 			else:
-				chart.tooltipPanel.visible = false
+				chart.RichTooltip.visible = false
 
 func _on_mouse_exited():
 	for chart in overlapping_charts:
-		chart.tooltipPanel.visible = false
+		chart.RichTooltip.visible = false

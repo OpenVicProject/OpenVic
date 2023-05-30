@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://d1ovecukckt5c"]
+[gd_scene load_steps=5 format=3 uid="uid://d1ovecukckt5c"]
 
 [ext_resource type="Script" path="res://src/Utility/PieChart/PieChart.gd" id="2_0yqe3"]
-[ext_resource type="Script" path="res://src/Utility/PieChart/RichToolTip.gd" id="2_expfc"]
 
-[sub_resource type="Shader" id="Shader_kt47x"]
+[sub_resource type="Shader" id="Shader_fhfk0"]
 code = "shader_type canvas_item;
 
 //The center in UV coordinates, which will always
@@ -78,9 +77,9 @@ void fragment() {
 	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_407mq"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_diml0"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_kt47x")
+shader = SubResource("Shader_fhfk0")
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -91,33 +90,35 @@ shader_parameter/donut = true
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.1
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_1ksid"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_8ruuk"]
 
 [node name="PieChart" type="TextureRect"]
-material = SubResource("ShaderMaterial_407mq")
+material = SubResource("ShaderMaterial_diml0")
 custom_minimum_size = Vector2(50, 50)
 offset_right = 80.0
 offset_bottom = 80.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = SubResource("CanvasTexture_1ksid")
+texture = SubResource("CanvasTexture_8ruuk")
 script = ExtResource("2_0yqe3")
 donut = true
 donut_inner_radius = 0.2
 
-[node name="RichToolTip" type="Panel" parent="."]
-visible = false
+[node name="RichToolTip" type="RichTextLabel" parent="."]
 top_level = true
-layout_mode = 0
-mouse_filter = 2
-script = ExtResource("2_expfc")
-
-[node name="RichTextLabel" type="RichTextLabel" parent="RichToolTip"]
-layout_mode = 0
-offset_right = 1.0
+layout_mode = 2
 mouse_filter = 2
 bbcode_enabled = true
 fit_content = true
 autowrap_mode = 0
+
+[node name="Panel" type="Panel" parent="RichToolTip"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

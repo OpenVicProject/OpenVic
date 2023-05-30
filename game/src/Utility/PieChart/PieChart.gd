@@ -7,7 +7,7 @@ class_name PieChart
 @export_range(0.0,1.0) var donut_inner_radius:float = 0.5
 
 @onready
-var tooltipPanel:RichToolTip = $RichToolTip
+var RichTooltip:RichTextLabel = $RichToolTip
 
 #a data class for the pie chart
 class SliceData:
@@ -131,7 +131,7 @@ func _gui_input(event:InputEvent):
 		var handled:bool = handleTooltip(pos)
 
 func _on_mouse_exited():
-	tooltipPanel.visible = false
+	RichTooltip.visible = false
 
 #takes a mouse position, and sets an appropriate tooltip for the slice the mouse
 #is hovered over. Returns a boolean on whether the tooltip was handled.
@@ -147,14 +147,17 @@ func handleTooltip(pos:Vector2) -> bool:
 		for label in slices.keys():
 			var slice = slices.get(label)
 			if angle <= slice.final_angle:
-				tooltipPanel.visible = true
-				tooltipPanel.position = get_global_rect().position + pos + Vector2(5,5)
-				tooltipPanel.updateText(createTooltip(label),10)
+				var textlabel:RichTextLabel = $RichTextLabel
+				RichTooltip.visible = true
+				RichTooltip.text = createTooltip(label)
+				RichTooltip.position =  pos + Vector2(5,5) + get_global_rect().position #get_global_rect().position +
+				RichTooltip.reset_size()
+				
 				return true
 	else:
 		#Technically the corners of the bounding box
 		#are part of the chart, but we don't want a tooltip there
-		tooltipPanel.visible = false
+		RichTooltip.visible = false
 	return false
 
 #create a list of all the values and percentages
@@ -163,7 +166,8 @@ func createTooltip(labelHovered:String) -> String:
 	var tooltip:String = ""
 	var hoveredSlice = slices.get(labelHovered)
 	var formatted_percent = formatpercent(hoveredSlice.percentage)
-	tooltip += "[i][u][b]>> {name} {percentage}% <<[/b][/u][/i]".format(
+	#TOOD: perhaps this is a bit much, but final feedback should determine this
+	tooltip += "[font_size=10][i][u][b]>> {name} {percentage}% <<[/b][/u][/i]".format(
 		{"name":hoveredSlice.tooltip,"percentage":formatted_percent})
 	
 	for label in slices.keys():
@@ -172,7 +176,7 @@ func createTooltip(labelHovered:String) -> String:
 		var percent = formatpercent(slice.percentage)
 		tooltip += "\n{name} {percentage}%".format(
 			{"name":slice.tooltip,"percentage":percent})
-	
+	tooltip += "[/font_size]"
 	return tooltip
 
 #angle from center.angle_to_point is measured from the +x axis
