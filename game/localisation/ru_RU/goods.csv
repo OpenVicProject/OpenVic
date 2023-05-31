@@ -1,0 +1,59 @@
+
+,, Good Categories
+good_category_military,Военные товары
+good_category_raw,Сырье
+good_category_industrial,Промышленные товары
+good_category_consumer,Потребительские товары
+
+,, Goods
+good_ammunition,Боеприпасы
+good_small_arms,Стрелковое оружие
+good_artillery,Артиллерия
+good_canned_food,Консервы
+good_tanks,Танки
+good_aeroplanes,Самолеты
+
+good_coal,Уголь
+good_cotton,Хлопок
+good_dye,Красители
+good_iron,Железо
+good_oil,ГСМ
+good_precious_metal,Драгоценные металлы
+good_rubber,Резина
+good_silk,Шелк
+good_sulphur,Сера
+good_timber,Древесина
+good_tropical_wood,Тропическое дерево
+good_wool,Шерсть
+
+good_steel,Сталь
+good_cement,Цемент
+good_machine_parts,Механические детали
+good_glass,Стекло
+good_fuel,Топливо
+good_fertilizer,Удобрения
+good_explosives,Взрывчатка
+good_clipper_convoys,Конвои Клипперов
+good_steamer_convoys,Конвои Пароходов
+good_electric_gears,Электродетали
+good_fabric,Ткань
+good_lumber,Пиломатериалы
+
+good_paper,Бумага
+good_cattle,Скот
+good_fish,Рыба
+good_fruit,Фрукты
+good_grain,Зерно
+good_tobacco,Табак
+good_tea,Чай
+good_coffee,Кофе
+good_opium,Опиум
+good_automobiles,Автомобили
+good_telephones,Телефоны
+good_wine,Вино
+good_liquor,Спирт
+good_regular_clothes,Обычная одежда
+good_luxury_clothes,Роскошная одежда
+good_furniture,Мебель
+good_luxury_furniture,Роскошная мебель
+good_radios,Радио

@@ -1,0 +1,102 @@
+
+,, Main Menu
+MAINMENU_TITLE,OpenVic
+MAINMENU_NEW_GAME,Новая игра
+MAINMENU_CONTINUE,Продолжить
+MAINMENU_MULTIPLAYER,Сетевая игра
+MAINMENU_OPTIONS,Настройки
+MAINMENU_CREDITS,Титры
+MAINMENU_EXIT,Выйти из игры
+MAINMENU_CHECKSUM,Контрольная сумма {checksum}
+
+,, Options
+OPTIONS_RESET,R
+OPTIONS_BACK,X
+
+,, General Tab
+OPTIONS_GENERAL_SAVEFORMAT,Формат игровых сохранений
+OPTIONS_GENERAL_BINARY,Двоичный код
+OPTIONS_GENERAL_TEXT,Текст
+OPTIONS_GENERAL_AUTOSAVE,Частота автосохранений
+OPTIONS_GENERAL_AUTOSAVE_MONTHLY,Каждый месяц
+OPTIONS_GENERAL_AUTOSAVE_BIMONTHLY,Каждые два месяца 
+OPTIONS_GENERAL_AUTOSAVE_YEARLY,Раз в год
+OPTIONS_GENERAL_AUTOSAVE_BIYEARLY,Каждые два года 
+OPTIONS_GENERAL_AUTOSAVE_NEVER,Никогда
+OPTIONS_GENERAL_LANGUAGE,Язык
+
+,, Video Tab
+OPTIONS_VIDEO_RESOLUTION,Разрешение экрана
+OPTIONS_VIDEO_SCREEN_MODE,Экранный режим
+OPTIONS_VIDEO_FULLSCREEN,Полноэкранный
+OPTIONS_VIDEO_BORDERLESS,Окно без рамок
+OPTIONS_VIDEO_WINDOWED,Оконный
+OPTIONS_VIDEO_MONITOR_SELECTION,Выбор монитора
+OPTIONS_VIDEO_REFRESH_RATE,Частота обновления
+OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP,Изменяйте данный параметр с VSYNC, только в том случае, если вы наблюдаете проблемы с разрывом экрана.
+OPTIONS_VIDEO_QUALITY,Заданные настройки качества
+OPTIONS_VIDEO_GUI_SCALE,Масштабирование графического интерфейса
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE,Сохранить данное разрешение?
+OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT,Возврат к предыдущей настройке через ({time})
+
+,, Sound Tab
+MASTER_BUS,Общая громкость
+MUSIC_BUS,Громкость музыки
+SFX_BUS,Громкость звуковых эффектов
+
+,, Credits Menu
+CREDITS_BACK,Вернуться в главное меню
+
+,, Game Lobby
+GAMELOBBY_START,Начать игру
+GAMELOBBY_BACK,Назад
+GAMELOBBY_SESSION_TAG,Тэг сессии
+GAMELOBBY_SELECT_ALL,Все
+GAMELOBBY_DELETE_DIALOG_TITLE,Удалить {file_name}
+GAMELOBBY_DELETE_DIALOG_TEXT,Вы уверены, что хотите удалить {file_name}?
+GAMELOBBY_SESSIONTAG_DIALOG_TITLE,Переопределить {session_tag}
+GAMELOBBY_SESSIONTAG_DIALOG_TEXT,Вы хотите переопределить {session_tag} как предыдущий сеанс?
+
+,, Game Session Menu
+GAMESESSIONMENU_SAVE,Сохранить игру
+GAMESESSIONMENU_LOAD,Загрузить игру
+GAMESESSIONMENU_OPTIONS,Найстройки
+GAMESESSIONMENU_MAINMENU,Выйти в главное меню
+GAMESESSIONMENU_QUIT,Завершить игру
+GAMESESSIONMENU_CLOSE,Закрыть
+
+GAMESESSIONMENU_MAINMENU_DIALOG_TITLE,Выйти в главное меню
+GAMESESSIONMENU_MAINMENU_DIALOG_TEXT,Вы действительно хотите выйти из текущего сценария в главное меню игры?
+GAMESESSIONMENU_QUIT_DIALOG_TITLE,Завершить игру
+GAMESESSIONMENU_QUIT_DIALOG_TEXT,Вы уверены, что хотите выйти на рабочий стол?
+
+,, Save Load Menu
+SAVELOADMENU_SAVE_TITLE,Сохранить игру
+SAVELOADMENU_LOAD_TITLE,Загрузить игру
+SAVELOADMENU_SAVE_BUTTON,Сохранить
+SAVELOADMENU_LOAD_BUTTON,Загрузить
+
+SAVELOADMENU_DELETE_DIALOG_TITLE,Удалить {file_name}
+SAVELOADMENU_DELETE_DIALOG_TEXT,Вы уверены, что хотите удалить {file_name}?
+SAVELOADMENU_OVERWRITE_DIALOG_TITLE,Перезаписать {file_name}
+SAVELOADMENU_OVERWRITE_DIALOG_TEXT,Вы уверены, что хотите перезаписать {file_name}?
+
+SAVELOADMENU_SESSION,Session:
+
+SAVELOADMENU_TABSELECTIONTABBAR_ALL,Все
+
+DIALOG_OK,Ок
+DIALOG_CANCEL,Отменить
+DIALOG_SAVE_AND_RESIGN,Сохраниться и выйти в главное меню
+DIALOG_SAVE_AND_QUIT,Сохраниться и выйти из игры
+
+,, Province Overview Panel
+province_MISSING,Нет провинции
+region_MISSING,Нет региона
+LIFE_RATING_TOOLTIP,Уровень жизни: {life_rating}
+rgo_MISSING,Нет ДП
+building_MISSING,Нет здания
+building_fort,Форт
+building_naval_base,Морская база
+building_railroad,Железная дорога
+EXPAND_PROVINCE_BUILDING,Расширить
