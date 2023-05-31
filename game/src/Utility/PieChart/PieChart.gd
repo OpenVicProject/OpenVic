@@ -147,7 +147,6 @@ func handleTooltip(pos:Vector2) -> bool:
 		for label in slices.keys():
 			var slice = slices.get(label)
 			if angle <= slice.final_angle:
-				var textlabel:RichTextLabel = $RichTextLabel
 				RichTooltip.visible = true
 				RichTooltip.text = createTooltip(label)
 				RichTooltip.position =  pos + Vector2(5,5) + get_global_rect().position #get_global_rect().position +
