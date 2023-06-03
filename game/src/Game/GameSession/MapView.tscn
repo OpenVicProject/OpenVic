@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dkehmdnuxih2r"]
 
-[ext_resource type="Script" path="res://src/GameSession/MapView.gd" id="1_exccw"]
-[ext_resource type="Shader" path="res://src/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
+[ext_resource type="Shader" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0

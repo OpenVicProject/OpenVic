@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://k71f5gibwmtc"]
 
-[ext_resource type="Script" path="res://src/LobbyMenu/LobbyPanelButton.gd" id="1_327u2"]
+[ext_resource type="Script" path="res://src/Game/Menu/LobbyMenu/LobbyPanelButton.gd" id="1_327u2"]
 
 [node name="LobbyPanelButton" type="Container" node_paths=PackedStringArray("background_button", "name_label")]
 editor_description = "UI-41"

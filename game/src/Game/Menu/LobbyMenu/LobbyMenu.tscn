@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://do60kx0d3nrh4"]
 
-[ext_resource type="Script" path="res://src/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
-[ext_resource type="PackedScene" uid="uid://k71f5gibwmtc" path="res://src/LobbyMenu/LobbyPanelButton.tscn" id="2_exh17"]
-[ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/SaveLoadMenu/SavePanelButton.tscn" id="3_4otj7"]
+[ext_resource type="Script" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
+[ext_resource type="PackedScene" uid="uid://k71f5gibwmtc" path="res://src/Game/Menu/LobbyMenu/LobbyPanelButton.tscn" id="2_exh17"]
+[ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.tscn" id="3_4otj7"]
 
 [node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("game_select_start_date", "game_select_save_tab", "game_select_save_list", "start_button", "session_tag_line_edit", "session_tag_dialog", "delete_dialog")]
 editor_description = "UI-36"

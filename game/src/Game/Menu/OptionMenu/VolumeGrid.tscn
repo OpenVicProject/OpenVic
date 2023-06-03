@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dy4si8comamnv"]
 
-[ext_resource type="Script" path="res://src/OptionMenu/VolumeGrid.gd" id="1_wb64h"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/VolumeGrid.gd" id="1_wb64h"]
 
 [node name="VolumeGrid" type="GridContainer"]
 size_flags_vertical = 0

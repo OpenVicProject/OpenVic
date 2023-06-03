@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dd8k3p7r3huwc"]
 
-[ext_resource type="Script" path="res://src/GameSession/GameSpeedPanel.gd" id="1_pfs8t"]
+[ext_resource type="Script" path="res://src/Game/GameSession/GameSpeedPanel.gd" id="1_pfs8t"]
 
 [node name="GameSpeedPanel" type="PanelContainer" node_paths=PackedStringArray("_longform_date_button", "_play_pause_display_button", "_decrease_speed_button", "_increase_speed_button")]
 script = ExtResource("1_pfs8t")

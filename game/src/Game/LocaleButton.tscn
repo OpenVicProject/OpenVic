@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b7oncobnacxmt"]
 
-[ext_resource type="Script" path="res://src/LocaleButton.gd" id="1_ganev"]
+[ext_resource type="Script" path="res://src/Game/LocaleButton.gd" id="1_ganev"]
 
 [node name="LocaleButton" type="OptionButton"]
 custom_minimum_size = Vector2(150, 0)

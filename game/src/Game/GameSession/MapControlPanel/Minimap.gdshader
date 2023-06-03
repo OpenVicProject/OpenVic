@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
-#include "res://src/GameSession/ProvinceIndexSampler.gdshaderinc"
+#include "res://src/Game/GameSession/ProvinceIndexSampler.gdshaderinc"
 
 // Index of the currently selected province
 uniform uint selected_index;

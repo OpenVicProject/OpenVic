@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://1udsn4mggep2"]
 
-[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/GameMenu.tscn" id="1_wlojq"]
-[ext_resource type="Script" path="res://src/SplashContainer.gd" id="2_xmcgv"]
+[ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/Game/GameMenu.tscn" id="1_vadki"]
+[ext_resource type="Script" path="res://src/Game/SplashContainer.gd" id="2_xmcgv"]
 [ext_resource type="Texture2D" uid="uid://deef5hufq0j61" path="res://splash_assets/splash_end.png" id="3_qfv12"]
 [ext_resource type="Texture2D" uid="uid://cgdnixsyh7bja" path="res://splash_assets/splash_image.png" id="4_5b6yq"]
 [ext_resource type="VideoStream" path="res://splash_assets/splash_startup.ogv" id="5_8euyy"]
@@ -14,7 +14,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GameMenu" parent="." instance=ExtResource("1_wlojq")]
+[node name="GameMenu" parent="." instance=ExtResource("1_vadki")]
 visible = false
 layout_mode = 1
 

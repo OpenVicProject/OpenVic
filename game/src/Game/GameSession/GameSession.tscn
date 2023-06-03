@@ -1,14 +1,14 @@
 [gd_scene load_steps=10 format=3 uid="uid://bgnupcshe1m7r"]
 
-[ext_resource type="Script" path="res://src/GameSession/GameSession.gd" id="1_eklvp"]
-[ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
-[ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/GameSession/MapControlPanel/MapControlPanel.tscn" id="3_afh6d"]
-[ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
-[ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/GameSession/MapView.tscn" id="4_xkg5j"]
-[ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/GameSession/ProvinceOverviewPanel/ProvinceOverviewPanel.tscn" id="5_osjnn"]
-[ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
-[ext_resource type="PackedScene" uid="uid://dd8k3p7r3huwc" path="res://src/GameSession/GameSpeedPanel.tscn" id="7_myy4q"]
-[ext_resource type="PackedScene" uid="uid://d3g6wbvwflmyk" path="res://src/SaveLoadMenu/SaveLoadMenu.tscn" id="8_4g7ko"]
+[ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
+[ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
+[ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/Game/GameSession/MapControlPanel/MapControlPanel.tscn" id="3_afh6d"]
+[ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/Game/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
+[ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_xkg5j"]
+[ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/Game/GameSession/ProvinceOverviewPanel/ProvinceOverviewPanel.tscn" id="5_osjnn"]
+[ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/Game/Menu/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
+[ext_resource type="PackedScene" uid="uid://dd8k3p7r3huwc" path="res://src/Game/GameSession/GameSpeedPanel.tscn" id="7_myy4q"]
+[ext_resource type="PackedScene" uid="uid://d3g6wbvwflmyk" path="res://src/Game/Menu/SaveLoadMenu/SaveLoadMenu.tscn" id="8_4g7ko"]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_game_session_menu")]
 editor_description = "SS-102, UI-546"

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cbtgwpx2wxi33"]
 
-[ext_resource type="Script" path="res://src/OptionMenu/SoundTab.gd" id="1_a7k0s"]
-[ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/OptionMenu/VolumeGrid.tscn" id="1_okpft"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SoundTab.gd" id="1_a7k0s"]
+[ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/Game/Menu/OptionMenu/VolumeGrid.tscn" id="1_okpft"]
 
 [node name="Sound" type="HBoxContainer"]
 alignment = 1

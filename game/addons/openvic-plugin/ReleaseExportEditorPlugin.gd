@@ -9,7 +9,7 @@ func _get_name():
 	return "OpenVic-ReleaseExportEditorPlugin"
 
 func _export_file(path: String, type: String, features: PackedStringArray) -> void:
-	if path != "res://src/Utility/GIT_INFO.gd": return
+	if path != "res://src/GIT_INFO.gd": return
 	var GitInfoScript : String = ""
 	_get_commit_long()
 	_get_commit_short()

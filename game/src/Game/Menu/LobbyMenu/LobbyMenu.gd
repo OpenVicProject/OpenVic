@@ -116,7 +116,7 @@ func _on_session_tag_edit_text_submitted(new_text):
 	_on_start_button_pressed()
 
 func _on_session_tag_dialog_confirmed():
-	get_tree().change_scene_to_file("res://src/GameSession/GameSession.tscn")
+	get_tree().change_scene_to_file("res://src/Game/GameSession/GameSession.tscn")
 
 var _requested_node_to_delete : Control
 func _on_save_node_delete_requested(node : Control) -> void:

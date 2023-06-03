@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://cnbfxjy1m6wja"]
 
 [ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://theme/options_menu.tres" id="1_0up1d"]
-[ext_resource type="Script" path="res://src/OptionMenu/OptionsMenu.gd" id="1_tlein"]
-[ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
-[ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/OptionMenu/SoundTab.tscn" id="3_4w35t"]
-[ext_resource type="PackedScene" uid="uid://duwjal7sd7p6w" path="res://src/OptionMenu/GeneralTab.tscn" id="3_6gvf6"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/OptionsMenu.gd" id="1_tlein"]
+[ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/Game/Menu/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
+[ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/Game/Menu/OptionMenu/SoundTab.tscn" id="3_4w35t"]
+[ext_resource type="PackedScene" uid="uid://duwjal7sd7p6w" path="res://src/Game/Menu/OptionMenu/GeneralTab.tscn" id="3_6gvf6"]
 [ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="4_vdhjp"]
-[ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/OptionMenu/OtherTab.tscn" id="5_ahefp"]
+[ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/Game/Menu/OptionMenu/OtherTab.tscn" id="5_ahefp"]
 
 [node name="OptionsMenu" type="PanelContainer"]
 editor_description = "UI-25"

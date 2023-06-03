@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cen7wkmn6og66"]
 
-[ext_resource type="Script" path="res://src/MainMenu/ReleaseInfoBox.gd" id="1_y2djw"]
+[ext_resource type="Script" path="res://src/Game/Menu/MainMenu/ReleaseInfoBox.gd" id="1_y2djw"]
 
 [node name="ReleaseInfoBox" type="HBoxContainer" node_paths=PackedStringArray("_version_label", "_commit_label", "_checksum_label")]
 editor_description = "UI-31"

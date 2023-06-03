@@ -12,7 +12,7 @@ config_version=5
 
 config/name="OpenVic"
 config/description="A faithful recreation of Victoria 2: Heart of Darkness with a focus on enhancing performance, multiplayer stability, and modability for modern machines."
-run/main_scene="res://src/GameStart.tscn"
+run/main_scene="res://src/Game/GameStart.tscn"
 config/features=PackedStringArray("4.0", "Forward Plus")
 boot_splash/bg_color=Color(0.380392, 0.145098, 0.14902, 1)
 boot_splash/image="res://splash_assets/splash_image.png"
@@ -21,14 +21,14 @@ config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
 
-ArgumentParser="*res://src/Autoload/Arguments/ArgumentParser.tscn"
-Events="*res://src/Autoload/Events.gd"
-Resolution="*res://src/Autoload/Resolution.gd"
-SoundManager="*res://src/Autoload/SoundManager.gd"
-MusicConductor="*res://src/MusicConductor/MusicConductor.tscn"
+ArgumentParser="*res://src/Game/Autoload/Argument/ArgumentParser.tscn"
+Events="*res://src/Game/Autoload/Events.gd"
+Resolution="*res://src/Game/Autoload/Resolution.gd"
+SoundManager="*res://src/Game/Autoload/SoundManager.gd"
+MusicConductor="*res://src/Game/MusicConductor/MusicConductor.tscn"
 Keychain="*res://addons/keychain/Keychain.gd"
-GuiScale="*res://src/Autoload/GuiScale.gd"
-SaveManager="*res://src/Autoload/SaveManager.gd"
+GuiScale="*res://src/Game/Autoload/GuiScale.gd"
+SaveManager="*res://src/Game/Autoload/SaveManager.gd"
 
 [display]
 

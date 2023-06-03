@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ddjbee5gj6bkv"]
 
-[ext_resource type="Texture2D" uid="uid://rh7l4xuh4ali" path="res://src/CreditsMenu/logo_vertical_color_dark.svg" id="1_b0brk"]
-[ext_resource type="Script" path="res://src/CreditsMenu/GodotEngineButton.gd" id="3_gi8fv"]
+[ext_resource type="Texture2D" uid="uid://rh7l4xuh4ali" path="res://src/Game/Menu/CreditsMenu/logo_vertical_color_dark.svg" id="1_b0brk"]
+[ext_resource type="Script" path="res://src/Game/Menu/CreditsMenu/GodotEngineButton.gd" id="3_gi8fv"]
 
 [node name="GodotEngineButton" type="Button"]
 custom_minimum_size = Vector2(0, 200)
