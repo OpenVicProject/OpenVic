@@ -1,0 +1,138 @@
+[gd_scene load_steps=4 format=3 uid="uid://do60kx0d3nrh4"]
+
+[ext_resource type="Script" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
+[ext_resource type="PackedScene" uid="uid://k71f5gibwmtc" path="res://src/Game/Menu/LobbyMenu/LobbyPanelButton.tscn" id="2_exh17"]
+[ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.tscn" id="3_4otj7"]
+
+[node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("game_select_start_date", "game_select_save_tab", "game_select_save_list", "start_button", "session_tag_line_edit", "session_tag_dialog", "delete_dialog")]
+editor_description = "UI-36"
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cvwum")
+lobby_panel_button = ExtResource("2_exh17")
+save_scene = ExtResource("3_4otj7")
+game_select_start_date = NodePath("GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList/GameSelectStartDate")
+game_select_save_tab = NodePath("GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList/GameSelectSaveTab")
+game_select_save_list = NodePath("GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList/GameSelectSaveList")
+start_button = NodePath("GameStartPanel/VBoxContainer/StartButton")
+session_tag_line_edit = NodePath("GameStartPanel/VBoxContainer/SessionTagEdit")
+session_tag_dialog = NodePath("SessionTagDialog")
+delete_dialog = NodePath("DeleteDialog")
+
+[node name="GameSelectPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameSelectPanel"]
+layout_mode = 2
+
+[node name="GameSelectScroll" type="ScrollContainer" parent="GameSelectPanel/VBoxContainer"]
+editor_description = "UI-39"
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="GameSelectList" type="VBoxContainer" parent="GameSelectPanel/VBoxContainer/GameSelectScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GameSelectStartDate" type="VBoxContainer" parent="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList"]
+layout_mode = 2
+
+[node name="GameSelectSaveTab" type="TabBar" parent="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList"]
+layout_mode = 2
+tab_count = 1
+tab_0/title = "GAMELOBBY_SELECT_ALL"
+
+[node name="GameSelectSaveList" type="VBoxContainer" parent="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GameSelectList" type="ItemList" parent="GameSelectPanel/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 2
+item_0/text = "1836"
+item_1/text = "1863"
+
+[node name="Spacer" type="Control" parent="GameSelectPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
+editor_description = "UI-37"
+layout_mode = 2
+text = "GAMELOBBY_BACK"
+
+[node name="Spacer2" type="Control" parent="GameSelectPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.75
+mouse_filter = 2
+
+[node name="GameStartPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameStartPanel"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="SelectedCountryNameLabel" type="Label" parent="GameStartPanel/VBoxContainer"]
+layout_mode = 2
+text = "France"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SessionTagEdit" type="LineEdit" parent="GameStartPanel/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "GAMELOBBY_SESSION_TAG"
+
+[node name="StartButton" type="Button" parent="GameStartPanel/VBoxContainer"]
+editor_description = "UI-43"
+layout_mode = 2
+disabled = true
+text = "GAMELOBBY_START"
+
+[node name="Spacer3" type="Control" parent="GameStartPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 33)
+layout_mode = 2
+
+[node name="SessionTagDialog" type="ConfirmationDialog" parent="."]
+disable_3d = true
+title = "GAMELOBBY_SESSIONTAG_DIALOG_TITLE"
+ok_button_text = "DIALOG_OK"
+dialog_text = "GAMELOBBY_SESSIONTAG_DIALOG_TEXT"
+cancel_button_text = "DIALOG_CANCEL"
+
+[node name="DeleteDialog" type="ConfirmationDialog" parent="."]
+disable_3d = true
+title = "GAMELOBBY_DELETE_DIALOG_TITLE"
+ok_button_text = "DIALOG_OK"
+dialog_text = "GAMELOBBY_DELETE_DIALOG_TEXT"
+cancel_button_text = "DIALOG_CANCEL"
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="tab_changed" from="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList/GameSelectSaveTab" to="." method="_on_game_select_save_tab_tab_changed"]
+[connection signal="button_down" from="GameSelectPanel/VBoxContainer/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="text_submitted" from="GameStartPanel/VBoxContainer/SessionTagEdit" to="." method="_on_session_tag_edit_text_submitted"]
+[connection signal="pressed" from="GameStartPanel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="confirmed" from="SessionTagDialog" to="." method="_on_session_tag_dialog_confirmed"]
+[connection signal="confirmed" from="DeleteDialog" to="." method="_on_delete_dialog_confirmed"]

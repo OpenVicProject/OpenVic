@@ -1,12 +1,12 @@
 [gd_resource type="Theme" load_steps=32 format=3 uid="uid://qoi3oec48jp0"]
 
-[ext_resource type="Script" path="res://src/Utility/StyleBoxCombinedTexture.gd" id="1_axke7"]
-[ext_resource type="Script" path="res://src/Utility/TextureSetting.gd" id="2_7bwl2"]
+[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
+[ext_resource type="Script" path="res://src/Game/Theme/TextureSetting.gd" id="2_7bwl2"]
 [ext_resource type="Texture2D" uid="uid://dapuqgpjs56bs" path="res://theme/assets/main_menu_background.png" id="3_cpatd"]
 [ext_resource type="Texture2D" uid="uid://q25s41oavuxw" path="res://theme/assets/main_menu_border_paper.png" id="4_sl60o"]
 [ext_resource type="Texture2D" uid="uid://c0p34i3d3b0pw" path="res://theme/assets/main_menu_button.png" id="5_xj7ql"]
 [ext_resource type="StyleBox" uid="uid://blwilunhmyvpq" path="res://theme/assets/main_menu_button_normal.tres" id="6_dx0aj"]
-[ext_resource type="Script" path="res://src/Utility/StyleBoxWithSound.gd" id="7_qo00e"]
+[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxWithSound.gd" id="7_qo00e"]
 [ext_resource type="AudioStream" uid="uid://bsldcs3l8s7ug" path="res://addons/kenney_ui_audio/click3.wav" id="8_etuft"]
 
 [sub_resource type="Resource" id="Resource_hxpog"]

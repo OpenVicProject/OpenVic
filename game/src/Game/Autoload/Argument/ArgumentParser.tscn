@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://dayjmgc34tqo6"]
+
+[ext_resource type="Script" path="res://src/Game/Autoload/Argument/ArgumentParser.gd" id="1_pc7xr"]
+[ext_resource type="Script" path="res://src/Game/Autoload/Argument/ArgumentOption.gd" id="2_4hguj"]
+
+[sub_resource type="Resource" id="Resource_tq3y4"]
+script = ExtResource("2_4hguj")
+name = &"help"
+aliases = Array[StringName]([&"h"])
+type = 1
+description = "Displays help and quits."
+default_value = false
+
+[sub_resource type="Resource" id="Resource_j1to4"]
+script = ExtResource("2_4hguj")
+name = &"game-debug"
+aliases = Array[StringName]([&"d", &"-debug", &"-debug-mode"])
+type = 1
+description = "Start in debug mode."
+default_value = false
+
+[sub_resource type="Resource" id="Resource_tiax1"]
+script = ExtResource("2_4hguj")
+name = &"compatibility-mode"
+aliases = Array[StringName]([&"-compat"])
+type = 4
+description = "Load Victoria 2 assets from this path."
+default_value = ""
+
+[node name="ArgumentParser" type="Node"]
+script = ExtResource("1_pc7xr")
+option_array = Array[ExtResource("2_4hguj")]([SubResource("Resource_tq3y4"), SubResource("Resource_j1to4"), SubResource("Resource_tiax1")])

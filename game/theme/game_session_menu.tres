@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=11 format=3 uid="uid://cqrfmjt5yeti7"]
 
 [ext_resource type="StyleBox" uid="uid://blwilunhmyvpq" path="res://theme/assets/main_menu_button_normal.tres" id="1_7med2"]
-[ext_resource type="Script" path="res://src/Utility/StyleBoxWithSound.gd" id="2_oj3dv"]
+[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxWithSound.gd" id="2_oj3dv"]
 [ext_resource type="AudioStream" uid="uid://bsldcs3l8s7ug" path="res://addons/kenney_ui_audio/click3.wav" id="3_j823n"]
 [ext_resource type="Texture2D" uid="uid://c0p34i3d3b0pw" path="res://theme/assets/main_menu_button.png" id="4_lno5s"]
 

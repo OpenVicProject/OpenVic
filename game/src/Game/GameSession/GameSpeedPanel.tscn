@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://dd8k3p7r3huwc"]
+
+[ext_resource type="Script" path="res://src/Game/GameSession/GameSpeedPanel.gd" id="1_pfs8t"]
+
+[node name="GameSpeedPanel" type="PanelContainer" node_paths=PackedStringArray("_longform_date_button", "_play_pause_display_button", "_decrease_speed_button", "_increase_speed_button")]
+script = ExtResource("1_pfs8t")
+_longform_date_button = NodePath("ButtonList/LongformDateButton")
+_play_pause_display_button = NodePath("ButtonList/PlayPauseDisplayButton")
+_decrease_speed_button = NodePath("ButtonList/DecreaseSpeedButton")
+_increase_speed_button = NodePath("ButtonList/IncreaseSpeedButton")
+
+[node name="ButtonList" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LongformDateButton" type="Button" parent="ButtonList"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "LONGFORM DATE"
+
+[node name="PlayPauseDisplayButton" type="Button" parent="ButtonList"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "⏸  "
+
+[node name="DecreaseSpeedButton" type="Button" parent="ButtonList"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "-"
+
+[node name="IncreaseSpeedButton" type="Button" parent="ButtonList"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "+"
+
+[connection signal="pressed" from="ButtonList/LongformDateButton" to="." method="_on_longform_date_label_pressed"]
+[connection signal="pressed" from="ButtonList/PlayPauseDisplayButton" to="." method="_on_play_pause_display_button_pressed"]
+[connection signal="pressed" from="ButtonList/DecreaseSpeedButton" to="." method="_on_decrease_speed_button_pressed"]
+[connection signal="pressed" from="ButtonList/IncreaseSpeedButton" to="." method="_on_increase_speed_button_pressed"]

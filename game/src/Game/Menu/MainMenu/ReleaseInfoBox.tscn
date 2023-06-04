@@ -1,0 +1,38 @@
+[gd_scene load_steps=2 format=3 uid="uid://cen7wkmn6og66"]
+
+[ext_resource type="Script" path="res://src/Game/Menu/MainMenu/ReleaseInfoBox.gd" id="1_y2djw"]
+
+[node name="ReleaseInfoBox" type="HBoxContainer" node_paths=PackedStringArray("_version_label", "_commit_label", "_checksum_label")]
+editor_description = "UI-31"
+script = ExtResource("1_y2djw")
+_version_label = NodePath("VersionLabel")
+_commit_label = NodePath("CommitLabel")
+_checksum_label = NodePath("ChecksumLabel")
+
+[node name="VersionLabel" type="Button" parent="."]
+layout_mode = 2
+tooltip_text = "VERSION_MISSING"
+theme_type_variation = &"VersionLabel"
+text = "VERSION_MISSING"
+flat = true
+alignment = 0
+
+[node name="CommitLabel" type="Button" parent="."]
+layout_mode = 2
+theme_type_variation = &"CommitLabel"
+text = "????????"
+flat = true
+alignment = 0
+
+[node name="ChecksumLabel" type="Button" parent="."]
+editor_description = "UI-111"
+layout_mode = 2
+tooltip_text = "CHECKSUM_MISSING"
+theme_type_variation = &"ChecksumLabel"
+text = "(????)"
+flat = true
+alignment = 0
+
+[connection signal="pressed" from="VersionLabel" to="." method="_on_version_label_pressed"]
+[connection signal="pressed" from="CommitLabel" to="." method="_on_commit_label_pressed"]
+[connection signal="pressed" from="ChecksumLabel" to="." method="_on_checksum_label_pressed"]

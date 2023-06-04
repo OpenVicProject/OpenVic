@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7oncobnacxmt"]
+
+[ext_resource type="Script" path="res://src/Game/LocaleButton.gd" id="1_ganev"]
+
+[node name="LocaleButton" type="OptionButton"]
+custom_minimum_size = Vector2(150, 0)
+alignment = 2
+text_overrun_behavior = 2
+fit_to_longest_item = false
+script = ExtResource("1_ganev")
+
+[connection signal="item_selected" from="." to="." method="_on_item_selected"]

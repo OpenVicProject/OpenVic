@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=3 uid="uid://cnbfxjy1m6wja"]
+
+[ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://theme/options_menu.tres" id="1_0up1d"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/OptionsMenu.gd" id="1_tlein"]
+[ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/Game/Menu/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
+[ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/Game/Menu/OptionMenu/SoundTab.tscn" id="3_4w35t"]
+[ext_resource type="PackedScene" uid="uid://duwjal7sd7p6w" path="res://src/Game/Menu/OptionMenu/GeneralTab.tscn" id="3_6gvf6"]
+[ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="4_vdhjp"]
+[ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/Game/Menu/OptionMenu/OtherTab.tscn" id="5_ahefp"]
+
+[node name="OptionsMenu" type="PanelContainer"]
+editor_description = "UI-25"
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_0up1d")
+theme_type_variation = &"BackgroundPanel"
+script = ExtResource("1_tlein")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"TabMargin"
+
+[node name="Tab" type="TabContainer" parent="Margin"]
+editor_description = "UI-45"
+layout_mode = 2
+tab_alignment = 1
+use_hidden_tabs_for_min_size = true
+
+[node name="General" parent="Margin/Tab" instance=ExtResource("3_6gvf6")]
+layout_mode = 2
+
+[node name="Video" parent="Margin/Tab" instance=ExtResource("2_ji8xr")]
+editor_description = "UI-46, UIFUN-43"
+visible = false
+layout_mode = 2
+
+[node name="Sound" parent="Margin/Tab" instance=ExtResource("3_4w35t")]
+editor_description = "UI-47, UIFUN-44"
+visible = false
+layout_mode = 2
+
+[node name="Controls" parent="Margin/Tab" instance=ExtResource("4_vdhjp")]
+editor_description = "SS-27, UI-49, UIFUN-46"
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="Other" parent="Margin/Tab" instance=ExtResource("5_ahefp")]
+layout_mode = 2
