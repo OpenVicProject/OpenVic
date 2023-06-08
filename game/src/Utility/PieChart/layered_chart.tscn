@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/Utility/PieChart/LayeredChart.gd" id="1_6rkob"]
 [ext_resource type="PackedScene" uid="uid://d1ovecukckt5c" path="res://src/Utility/PieChart/PieChart.tscn" id="2_8hpuw"]
 
-[sub_resource type="Shader" id="Shader_ldoim"]
+[sub_resource type="Shader" id="Shader_l0sum"]
 code = "shader_type canvas_item;
 
 // The center in UV coordinates, which will always
@@ -92,13 +92,13 @@ void fragment() {
 	}
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_7apkb"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cif4e"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_ldoim")
+shader = SubResource("Shader_l0sum")
 shader_parameter/radius = 0.4
-shader_parameter/shadow_displacement = Vector2(0.6, 0.6)
-shader_parameter/shadow_tightness = 1.487
-shader_parameter/shadow_radius = 0.5
+shader_parameter/shadow_displacement = Vector2(0.55, 0.55)
+shader_parameter/shadow_tightness = 1.9
+shader_parameter/shadow_radius = 0.53
 shader_parameter/shadow_thickness = 2.29
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
@@ -110,9 +110,9 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_4w45o"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_n38tq"]
 
-[sub_resource type="Shader" id="Shader_30n4b"]
+[sub_resource type="Shader" id="Shader_uwpul"]
 code = "shader_type canvas_item;
 
 // The center in UV coordinates, which will always
@@ -201,11 +201,11 @@ void fragment() {
 	}
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ryh8o"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jjby2"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_30n4b")
+shader = SubResource("Shader_uwpul")
 shader_parameter/radius = 0.4
-shader_parameter/shadow_displacement = Vector2(0.75, 0.75)
+shader_parameter/shadow_displacement = Vector2(0.6, 0.6)
 shader_parameter/shadow_tightness = 10.0
 shader_parameter/shadow_radius = 0.8
 shader_parameter/shadow_thickness = 0.0
@@ -219,7 +219,7 @@ shader_parameter/donut = true
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.2
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_gl3w4"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_qtvmm"]
 
 [node name="LayeredChart" type="CenterContainer"]
 offset_right = 50.0
@@ -227,26 +227,26 @@ offset_bottom = 50.0
 script = ExtResource("1_6rkob")
 
 [node name="InnerPieChart" parent="." instance=ExtResource("2_8hpuw")]
-material = SubResource("ShaderMaterial_7apkb")
+material = SubResource("ShaderMaterial_cif4e")
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("CanvasTexture_4w45o")
+texture = SubResource("CanvasTexture_n38tq")
 donut_inner_radius = 0.5
 radius = 0.4
-shadow_displacement = Vector2(0.6, 0.6)
-shadow_focus = 1.487
-shadow_radius = 0.5
+shadow_displacement = Vector2(0.55, 0.55)
+shadow_focus = 1.9
+shadow_radius = 0.53
 shadow_thickness = 2.29
 
 [node name="OuterPieChart" parent="." instance=ExtResource("2_8hpuw")]
-material = SubResource("ShaderMaterial_ryh8o")
+material = SubResource("ShaderMaterial_jjby2")
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("CanvasTexture_gl3w4")
+texture = SubResource("CanvasTexture_qtvmm")
 donut = true
 donut_inner_radius = 0.4
 radius = 0.4
-shadow_displacement = Vector2(0.75, 0.75)
+shadow_displacement = Vector2(0.6, 0.6)
 shadow_radius = 0.8
 shadow_thickness = 0.0
 
