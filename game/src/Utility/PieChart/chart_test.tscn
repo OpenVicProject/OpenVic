@@ -1,37 +1,44 @@
-[gd_scene load_steps=13 format=3 uid="uid://ddns6vjdxq4t"]
+[gd_scene load_steps=20 format=3 uid="uid://ddns6vjdxq4t"]
 
 [ext_resource type="Script" path="res://src/Utility/PieChart/chart_test.gd" id="1_o07pg"]
 [ext_resource type="PackedScene" uid="uid://crhqik1qoon22" path="res://src/Utility/PieChart/layered_chart.tscn" id="2_4ptnh"]
 [ext_resource type="PackedScene" uid="uid://d1ovecukckt5c" path="res://src/Utility/PieChart/PieChart.tscn" id="2_il0dq"]
+[ext_resource type="Script" path="res://src/Utility/PieChart/PieChart.gd" id="2_t0kkh"]
 
-[sub_resource type="Shader" id="Shader_y4eo0"]
+[sub_resource type="Shader" id="Shader_opn52"]
 code = "shader_type canvas_item;
 
-//The center in UV coordinates, which will always
+// The center in UV coordinates, which will always
 //be 0.5, the actual radius will be controlled by the control node
-const vec2 center = vec2(0.5,0.5);
-const float radius = 0.5;
+//const vec2 center = vec2(0.5,0.5);
+uniform float radius = 0.4;
 
-//Control of the slices
+//shadow
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
+
+// Control of the slices
 uniform float stopAngles[5];
 uniform vec3 colours[5];
 
-//Trim
+// Trim
 uniform vec3 trim_colour;
 uniform float trim_size = 0.05;
 
-//The center is spotlighted by the gradient,
-// control its size and falloff with these
+// The center is spotlighted by the gradient,
+//control its size and falloff with these
 uniform float gradient_falloff = 3.6;
 uniform float gradient_base = 3.1;
 
-//control whether this is a donut instead of a pie chart
+// control whether this is a donut instead of a pie chart
 uniform bool donut = false;
 uniform bool donut_inner_trim = false;
 uniform float donut_inner_radius = 0.15;
 
-//get the polar coordinates of a pixel relative to the center
-vec2 getPolar(vec2 UVin){
+// get the polar coordinates of a pixel relative to the center
+vec2 getPolar(vec2 UVin, vec2 center){
 	vec2 relcoord = (UVin-center);
 	float dist = length(relcoord);
 	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
@@ -41,47 +48,60 @@ vec2 getPolar(vec2 UVin){
 	return vec2(dist,theta);
 }
 
-//from thebookofshaders, returns a gradient falloff
-float parabola( float x, float k ){
-    return pow( gradient_base*x*(1.0-x), k );
+// from thebookofshaders, returns a gradient falloff
+float parabola( float base, float x, float k ){
+    return pow( base*x*(1.0-x), k );
+}
+
+float parabola_shadow(float base, float x){
+	return base*x*x;
 }
 
 void fragment() {
-	vec2 coords = getPolar(UV);
+	vec2 coords = getPolar(UV,vec2(0.5,0.5));
 	float dist = coords.x;
 	float theta = coords.y;
-	//inner hole of the donut => make it trasparent
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
+	
+	// inner hole of the donut => make it transparent
 	if(donut && dist <= donut_inner_radius){
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	//inner trim
+	// inner trim
 	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//interior
+	// interior
 	else if(dist <= radius-trim_size){ 
 		for(int i=0;i<stopAngles.length();i++){
 			if(theta <= stopAngles[i]){
-				float gradient = parabola(dist,gradient_falloff);
+				float gradient = parabola(gradient_base,dist,gradient_falloff);
 				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
 				break;
 			}
 		}
 	}
-	//outer trim
+	// outer trim
 	else if(dist <= radius){ 
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//outside the circle => make it transparent
-	else { 
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_x7q7g"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trnf5"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_y4eo0")
+shader = SubResource("Shader_opn52")
+shader_parameter/radius = 0.4
+shader_parameter/shadow_displacement = Vector2(0.628, 0.625)
+shader_parameter/shadow_tightness = 1.391
+shader_parameter/shadow_radius = 0.579
+shader_parameter/shadow_thickness = 1.083
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -92,36 +112,42 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_6nv2y"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_ijv0n"]
 
-[sub_resource type="Shader" id="Shader_dn26c"]
+[sub_resource type="Shader" id="Shader_jvxgf"]
 code = "shader_type canvas_item;
 
-//The center in UV coordinates, which will always
+// The center in UV coordinates, which will always
 //be 0.5, the actual radius will be controlled by the control node
-const vec2 center = vec2(0.5,0.5);
-const float radius = 0.5;
+//const vec2 center = vec2(0.5,0.5);
+uniform float radius = 0.4;
 
-//Control of the slices
+//shadow
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
+
+// Control of the slices
 uniform float stopAngles[5];
 uniform vec3 colours[5];
 
-//Trim
+// Trim
 uniform vec3 trim_colour;
 uniform float trim_size = 0.05;
 
-//The center is spotlighted by the gradient,
-// control its size and falloff with these
+// The center is spotlighted by the gradient,
+//control its size and falloff with these
 uniform float gradient_falloff = 3.6;
 uniform float gradient_base = 3.1;
 
-//control whether this is a donut instead of a pie chart
+// control whether this is a donut instead of a pie chart
 uniform bool donut = false;
 uniform bool donut_inner_trim = false;
 uniform float donut_inner_radius = 0.15;
 
-//get the polar coordinates of a pixel relative to the center
-vec2 getPolar(vec2 UVin){
+// get the polar coordinates of a pixel relative to the center
+vec2 getPolar(vec2 UVin, vec2 center){
 	vec2 relcoord = (UVin-center);
 	float dist = length(relcoord);
 	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
@@ -131,47 +157,60 @@ vec2 getPolar(vec2 UVin){
 	return vec2(dist,theta);
 }
 
-//from thebookofshaders, returns a gradient falloff
-float parabola( float x, float k ){
-    return pow( gradient_base*x*(1.0-x), k );
+// from thebookofshaders, returns a gradient falloff
+float parabola( float base, float x, float k ){
+    return pow( base*x*(1.0-x), k );
+}
+
+float parabola_shadow(float base, float x){
+	return base*x*x;
 }
 
 void fragment() {
-	vec2 coords = getPolar(UV);
+	vec2 coords = getPolar(UV,vec2(0.5,0.5));
 	float dist = coords.x;
 	float theta = coords.y;
-	//inner hole of the donut => make it trasparent
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
+	
+	// inner hole of the donut => make it transparent
 	if(donut && dist <= donut_inner_radius){
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	//inner trim
+	// inner trim
 	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//interior
+	// interior
 	else if(dist <= radius-trim_size){ 
 		for(int i=0;i<stopAngles.length();i++){
 			if(theta <= stopAngles[i]){
-				float gradient = parabola(dist,gradient_falloff);
+				float gradient = parabola(gradient_base,dist,gradient_falloff);
 				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
 				break;
 			}
 		}
 	}
-	//outer trim
+	// outer trim
 	else if(dist <= radius){ 
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//outside the circle => make it transparent
-	else { 
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_xhug4"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pw66i"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_dn26c")
+shader = SubResource("Shader_jvxgf")
+shader_parameter/radius = 0.381
+shader_parameter/shadow_displacement = Vector2(0.591, 0.589)
+shader_parameter/shadow_tightness = 1.425
+shader_parameter/shadow_radius = 0.6
+shader_parameter/shadow_thickness = 1.026
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -182,36 +221,42 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_i6iy8"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_bdkoe"]
 
-[sub_resource type="Shader" id="Shader_iux6q"]
+[sub_resource type="Shader" id="Shader_fqb3c"]
 code = "shader_type canvas_item;
 
-//The center in UV coordinates, which will always
+// The center in UV coordinates, which will always
 //be 0.5, the actual radius will be controlled by the control node
-const vec2 center = vec2(0.5,0.5);
-const float radius = 0.5;
+//const vec2 center = vec2(0.5,0.5);
+uniform float radius = 0.4;
 
-//Control of the slices
+//shadow
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
+
+// Control of the slices
 uniform float stopAngles[5];
 uniform vec3 colours[5];
 
-//Trim
+// Trim
 uniform vec3 trim_colour;
 uniform float trim_size = 0.05;
 
-//The center is spotlighted by the gradient,
-// control its size and falloff with these
+// The center is spotlighted by the gradient,
+//control its size and falloff with these
 uniform float gradient_falloff = 3.6;
 uniform float gradient_base = 3.1;
 
-//control whether this is a donut instead of a pie chart
+// control whether this is a donut instead of a pie chart
 uniform bool donut = false;
 uniform bool donut_inner_trim = false;
 uniform float donut_inner_radius = 0.15;
 
-//get the polar coordinates of a pixel relative to the center
-vec2 getPolar(vec2 UVin){
+// get the polar coordinates of a pixel relative to the center
+vec2 getPolar(vec2 UVin, vec2 center){
 	vec2 relcoord = (UVin-center);
 	float dist = length(relcoord);
 	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
@@ -221,47 +266,60 @@ vec2 getPolar(vec2 UVin){
 	return vec2(dist,theta);
 }
 
-//from thebookofshaders, returns a gradient falloff
-float parabola( float x, float k ){
-    return pow( gradient_base*x*(1.0-x), k );
+// from thebookofshaders, returns a gradient falloff
+float parabola( float base, float x, float k ){
+    return pow( base*x*(1.0-x), k );
+}
+
+float parabola_shadow(float base, float x){
+	return base*x*x;
 }
 
 void fragment() {
-	vec2 coords = getPolar(UV);
+	vec2 coords = getPolar(UV,vec2(0.5,0.5));
 	float dist = coords.x;
 	float theta = coords.y;
-	//inner hole of the donut => make it trasparent
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
+	
+	// inner hole of the donut => make it transparent
 	if(donut && dist <= donut_inner_radius){
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	//inner trim
+	// inner trim
 	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//interior
+	// interior
 	else if(dist <= radius-trim_size){ 
 		for(int i=0;i<stopAngles.length();i++){
 			if(theta <= stopAngles[i]){
-				float gradient = parabola(dist,gradient_falloff);
+				float gradient = parabola(gradient_base,dist,gradient_falloff);
 				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
 				break;
 			}
 		}
 	}
-	//outer trim
+	// outer trim
 	else if(dist <= radius){ 
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//outside the circle => make it transparent
-	else { 
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
-	
 }"
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ty8g"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m7jg4"]
 resource_name = "Piechart_shader"
-shader = SubResource("Shader_iux6q")
+shader = SubResource("Shader_fqb3c")
+shader_parameter/radius = 0.4
+shader_parameter/shadow_displacement = Vector2(0.633, 0.646)
+shader_parameter/shadow_tightness = 1.5
+shader_parameter/shadow_radius = 0.6
+shader_parameter/shadow_thickness = 1.0
 shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
 shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
 shader_parameter/trim_colour = null
@@ -272,7 +330,225 @@ shader_parameter/donut = false
 shader_parameter/donut_inner_trim = true
 shader_parameter/donut_inner_radius = 0.25
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_1gct2"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_qpc87"]
+
+[sub_resource type="Shader" id="Shader_u4iwa"]
+code = "shader_type canvas_item;
+
+// The center in UV coordinates, which will always
+//be 0.5, the actual radius will be controlled by the control node
+//const vec2 center = vec2(0.5,0.5);
+uniform float radius = 0.4;
+
+//shadow
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
+
+// Control of the slices
+uniform float stopAngles[5];
+uniform vec3 colours[5];
+
+// Trim
+uniform vec3 trim_colour;
+uniform float trim_size = 0.05;
+
+// The center is spotlighted by the gradient,
+//control its size and falloff with these
+uniform float gradient_falloff = 3.6;
+uniform float gradient_base = 3.1;
+
+// control whether this is a donut instead of a pie chart
+uniform bool donut = false;
+uniform bool donut_inner_trim = false;
+uniform float donut_inner_radius = 0.15;
+
+// get the polar coordinates of a pixel relative to the center
+vec2 getPolar(vec2 UVin, vec2 center){
+	vec2 relcoord = (UVin-center);
+	float dist = length(relcoord);
+	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
+	if(UVin.x < 0.5){
+		theta += PI;
+	}
+	return vec2(dist,theta);
+}
+
+// from thebookofshaders, returns a gradient falloff
+float parabola( float base, float x, float k ){
+    return pow( base*x*(1.0-x), k );
+}
+
+float parabola_shadow(float base, float x){
+	return base*x*x;
+}
+
+void fragment() {
+	vec2 coords = getPolar(UV,vec2(0.5,0.5));
+	float dist = coords.x;
+	float theta = coords.y;
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
+	
+	// inner hole of the donut => make it transparent
+	if(donut && dist <= donut_inner_radius){
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
+	}
+	// inner trim
+	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
+		COLOR = vec4(trim_colour,1.0);
+	}
+	// interior
+	else if(dist <= radius-trim_size){ 
+		for(int i=0;i<stopAngles.length();i++){
+			if(theta <= stopAngles[i]){
+				float gradient = parabola(gradient_base,dist,gradient_falloff);
+				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
+				break;
+			}
+		}
+	}
+	// outer trim
+	else if(dist <= radius){ 
+		COLOR = vec4(trim_colour,1.0);
+	}
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ap6g5"]
+resource_name = "Piechart_shader"
+shader = SubResource("Shader_u4iwa")
+shader_parameter/radius = 0.4
+shader_parameter/shadow_displacement = Vector2(0.677, 0.662)
+shader_parameter/shadow_tightness = 5.764
+shader_parameter/shadow_radius = 0.649
+shader_parameter/shadow_thickness = 1.515
+shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
+shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
+shader_parameter/trim_colour = null
+shader_parameter/trim_size = 0.021
+shader_parameter/gradient_falloff = 3.6
+shader_parameter/gradient_base = 3.1
+shader_parameter/donut = false
+shader_parameter/donut_inner_trim = true
+shader_parameter/donut_inner_radius = 0.25
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_ruk5q"]
+
+[sub_resource type="Shader" id="Shader_i0uus"]
+code = "shader_type canvas_item;
+
+// The center in UV coordinates, which will always
+//be 0.5, the actual radius will be controlled by the control node
+//const vec2 center = vec2(0.5,0.5);
+uniform float radius = 0.4;
+
+//shadow
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
+
+// Control of the slices
+uniform float stopAngles[5];
+uniform vec3 colours[5];
+
+// Trim
+uniform vec3 trim_colour;
+uniform float trim_size = 0.05;
+
+// The center is spotlighted by the gradient,
+//control its size and falloff with these
+uniform float gradient_falloff = 3.6;
+uniform float gradient_base = 3.1;
+
+// control whether this is a donut instead of a pie chart
+uniform bool donut = false;
+uniform bool donut_inner_trim = false;
+uniform float donut_inner_radius = 0.15;
+
+// get the polar coordinates of a pixel relative to the center
+vec2 getPolar(vec2 UVin, vec2 center){
+	vec2 relcoord = (UVin-center);
+	float dist = length(relcoord);
+	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
+	if(UVin.x < 0.5){
+		theta += PI;
+	}
+	return vec2(dist,theta);
+}
+
+// from thebookofshaders, returns a gradient falloff
+float parabola( float base, float x, float k ){
+    return pow( base*x*(1.0-x), k );
+}
+
+float parabola_shadow(float base, float x){
+	return base*x*x;
+}
+
+void fragment() {
+	vec2 coords = getPolar(UV,vec2(0.5,0.5));
+	float dist = coords.x;
+	float theta = coords.y;
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
+	
+	// inner hole of the donut => make it transparent
+	if(donut && dist <= donut_inner_radius){
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
+	}
+	// inner trim
+	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
+		COLOR = vec4(trim_colour,1.0);
+	}
+	// interior
+	else if(dist <= radius-trim_size){ 
+		for(int i=0;i<stopAngles.length();i++){
+			if(theta <= stopAngles[i]){
+				float gradient = parabola(gradient_base,dist,gradient_falloff);
+				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
+				break;
+			}
+		}
+	}
+	// outer trim
+	else if(dist <= radius){ 
+		COLOR = vec4(trim_colour,1.0);
+	}
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8lgn5"]
+resource_name = "Piechart_shader"
+shader = SubResource("Shader_i0uus")
+shader_parameter/radius = 0.4
+shader_parameter/shadow_displacement = Vector2(0.648, 0.673)
+shader_parameter/shadow_tightness = 10.0
+shader_parameter/shadow_radius = 0.0
+shader_parameter/shadow_thickness = 1.0
+shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
+shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
+shader_parameter/trim_colour = null
+shader_parameter/trim_size = 0.021
+shader_parameter/gradient_falloff = 3.6
+shader_parameter/gradient_base = 3.1
+shader_parameter/donut = true
+shader_parameter/donut_inner_trim = true
+shader_parameter/donut_inner_radius = 0.25
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_j6gb6"]
 
 [node name="chart_test" type="Control"]
 layout_mode = 3
@@ -283,40 +559,56 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_o07pg")
 
-[node name="LayeredChart" parent="." instance=ExtResource("2_4ptnh")]
+[node name="PieChart3" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_trnf5")
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
-offset_left = 93.0
-offset_top = 116.0
-offset_right = 143.0
-offset_bottom = 166.0
+offset_left = 117.0
+offset_top = 10.0
+offset_right = 167.0
+offset_bottom = 60.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource("CanvasTexture_ijv0n")
+script = ExtResource("2_t0kkh")
 
-[node name="PieChart3" parent="." instance=ExtResource("2_il0dq")]
-material = SubResource("ShaderMaterial_x7q7g")
+[node name="PieChart4" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_pw66i")
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
-offset_left = 85.0
-offset_right = 165.0
-texture = SubResource("CanvasTexture_6nv2y")
-donut = false
-donut_inner_radius = 0.5
-
-[node name="PieChart4" parent="." instance=ExtResource("2_il0dq")]
-material = SubResource("ShaderMaterial_xhug4")
-layout_mode = 0
-offset_left = 157.0
-offset_top = 103.0
-offset_right = 237.0
-offset_bottom = 183.0
-texture = SubResource("CanvasTexture_i6iy8")
-donut = false
-donut_inner_radius = 0.5
+offset_left = 173.0
+offset_top = 90.0
+offset_right = 273.0
+offset_bottom = 190.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = SubResource("CanvasTexture_bdkoe")
+script = ExtResource("2_t0kkh")
 
 [node name="PieChart5" parent="." instance=ExtResource("2_il0dq")]
-material = SubResource("ShaderMaterial_5ty8g")
+material = SubResource("ShaderMaterial_m7jg4")
 layout_mode = 0
 offset_left = 93.0
 offset_top = 190.0
 offset_right = 123.0
 offset_bottom = 220.0
-texture = SubResource("CanvasTexture_1gct2")
+texture = SubResource("CanvasTexture_qpc87")
 donut = false
 donut_inner_radius = 0.5
+
+[node name="LayeredChart" parent="." instance=ExtResource("2_4ptnh")]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 85.0
+offset_right = 88.0
+offset_bottom = 135.0
+
+[node name="InnerPieChart" parent="LayeredChart" index="0"]
+material = SubResource("ShaderMaterial_ap6g5")
+texture = SubResource("CanvasTexture_ruk5q")
+
+[node name="OuterPieChart" parent="LayeredChart" index="1"]
+material = SubResource("ShaderMaterial_8lgn5")
+texture = SubResource("CanvasTexture_j6gb6")
+
+[editable path="LayeredChart"]

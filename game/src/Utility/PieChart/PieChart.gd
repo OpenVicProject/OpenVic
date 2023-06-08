@@ -84,9 +84,14 @@ func RemoveLabel(labelName:String) -> bool:
 #TODO: for extra performance, should probably remove this
 #or make it editor only
 func _draw():
+	if not material:
+		reset_material()
 	recalculate()
 
 func _ready():
+	reset_material()
+
+func reset_material():
 	texture = CanvasTexture.new()
 	var mat_res = load("res://src/Utility/PieChart/PieChartMat.tres")
 	material = mat_res.duplicate(true)

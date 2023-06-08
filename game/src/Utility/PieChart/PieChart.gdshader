@@ -6,10 +6,10 @@ shader_type canvas_item;
 uniform float radius = 0.4;
 
 //shadow
-uniform vec2 shadow_displacement = vec2(0.03,0.05);
-uniform float shadow_rel_size = 0.43;
-uniform float shadow_falloff = 0.5;
-uniform float shadow_base = 2;
+uniform vec2 shadow_displacement = vec2(0.75,0.75);
+uniform float shadow_tightness = 10;
+uniform float shadow_radius = 0.7;
+uniform float shadow_thickness = 1.0;
 
 // Control of the slices
 uniform float stopAngles[5];
@@ -45,31 +45,22 @@ float parabola( float base, float x, float k ){
     return pow( base*x*(1.0-x), k );
 }
 
-//lets try to make a new, proper parabola
-
-bool isShadow(){
-	return false;
+float parabola_shadow(float base, float x){
+	return base*x*x;
 }
 
-uniform float xyz = 1.0;
-//(radius-donut_inner_radius)/2.0
 void fragment() {
 	vec2 coords = getPolar(UV,vec2(0.5,0.5));
 	float dist = coords.x;
 	float theta = coords.y;
+
+	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
+	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
+	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
 	
-	vec2 shadow_polar = getPolar(UV,vec2(0.5+shadow_displacement.x,0.5+shadow_displacement.y));
-	float shadow_gradient = 0.5*(0.7*parabola(shadow_base,
-	(shadow_polar.x-xyz),-shadow_falloff)); //+ 0.3*parabola((shadow_polar.x),shadow_falloff));
-	// inner hole of the donut => make it trasparent
+	// inner hole of the donut => make it transparent
 	if(donut && dist <= donut_inner_radius){
-		if(shadow_polar.x < shadow_rel_size * radius && shadow_polar.x > shadow_rel_size * donut_inner_radius){
-			COLOR = vec4(0.1,0.1,0.1,0.7*shadow_gradient);
-		}
-		else{
-			COLOR = vec4(0.0,0.0,0.0,0.0);
-		}
-		
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
 	// inner trim
 	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
@@ -89,16 +80,8 @@ void fragment() {
 	else if(dist <= radius){ 
 		COLOR = vec4(trim_colour,1.0);
 	}
-	//outside the circle, check if we want a drop shadow
-	else if(shadow_polar.x < shadow_rel_size * radius){
-		if(donut && shadow_polar.x > shadow_rel_size * donut_inner_radius){
-			COLOR = vec4(0.1,0.1,0.1,0.7*shadow_gradient);
-		}
-		else{
-			COLOR = vec4(0.0,0.0,0.0,0.0);
-		}
-	}
-	else{ //outside and don't want a dropshadow
-		COLOR = vec4(0.0,0.0,0.0,0.0);
+	//outside the circle
+	else{
+		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
 	}
 }
