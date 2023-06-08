@@ -5,6 +5,17 @@ class_name PieChart
 
 @export var donut:bool = false
 @export_range(0.0,1.0) var donut_inner_radius:float = 0.5
+@export_range(0.0,0.5) var radius:float = 0.5
+@export var shadow_displacement:Vector2 = Vector2(0.75,0.75)
+@export var shadow_focus:float = 10.0
+@export var shadow_radius:float = 0.8
+@export var shadow_thickness:float = 1.0
+
+@export var trim_colour:Color = Color(0.0,0.0,0.0)
+@export_range(0.0,1.0) var trim_size:float = 0.02
+@export var donut_inner_trim:bool = true
+@export var slice_gradient_falloff:float = 3.6
+@export var slice_gradient_base:float = 3.1
 
 @onready
 var RichTooltip:RichTextLabel = $RichToolTip
@@ -86,6 +97,7 @@ func RemoveLabel(labelName:String) -> bool:
 func _draw():
 	if not material:
 		reset_material()
+	setShaderParams()
 	recalculate()
 
 func _ready():
@@ -100,15 +112,29 @@ func reset_material():
 	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	recalculate()
 
+func setShaderParams():
+	material.set_shader_parameter("donut",donut)
+	material.set_shader_parameter("donut_inner_trim",donut_inner_trim)
+	material.set_shader_parameter("radius",radius)
+	material.set_shader_parameter("donut_inner_radius",donut_inner_radius/2.0)
+	
+	material.set_shader_parameter("trim_colour",Vector3(trim_colour.r,trim_colour.g,trim_colour.b))
+	material.set_shader_parameter("trim_size",trim_size)
+	material.set_shader_parameter("gradient_falloff",slice_gradient_falloff)
+	material.set_shader_parameter("gradient_base",slice_gradient_base)
+	
+	material.set_shader_parameter("shadow_displacement",shadow_displacement)
+	material.set_shader_parameter("shadow_tightness",shadow_focus)
+	material.set_shader_parameter("shadow_radius",shadow_radius)
+	material.set_shader_parameter("shadow_thickness",shadow_thickness)
+
+
 #Update the slice angles based on the new slice data
 func recalculate() -> void:
 	#where the slices are the public interface, these are the actual paramters
 	#which will be sent to the shader
 	var angles: Array = []
 	var colours: Array = []
-	
-	material.set_shader_parameter("donut_inner_radius",donut_inner_radius/2.0)
-	material.set_shader_parameter("donut",donut)
 	
 	var total:float = 0
 	for slice in slices.values():
