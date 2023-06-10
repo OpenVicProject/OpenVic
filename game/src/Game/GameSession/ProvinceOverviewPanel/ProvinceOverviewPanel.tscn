@@ -51,6 +51,7 @@ mouse_filter = 1
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 size_flags_vertical = 0
+focus_mode = 0
 mouse_filter = 1
 text = "X"
 

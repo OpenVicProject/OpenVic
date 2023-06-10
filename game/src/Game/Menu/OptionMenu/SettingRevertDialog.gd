@@ -1,8 +1,10 @@
 extends ConfirmationDialog
-class_name ResolutionRevertDialog
+class_name SettingRevertDialog
 
 signal dialog_accepted(button : SettingRevertButton)
 signal dialog_reverted(button : SettingRevertButton)
+
+@export var dialog_text_key : String = "< reverting in {time} seconds >"
 
 @export_group("Nodes")
 @export var timer : Timer
@@ -20,7 +22,7 @@ func _notification(what):
 		if not visible: _revert_node = null
 
 func _process(_delta) -> void:
-	dialog_text = tr("OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT").format({ "time": int(timer.time_left) })
+	dialog_text = tr(dialog_text_key).format({ "time": Events.Localisation.tr_number(int(timer.time_left)) })
 
 func _on_canceled_or_close_requested() -> void:
 	timer.stop()

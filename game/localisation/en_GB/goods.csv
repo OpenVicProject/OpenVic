@@ -1,59 +1,59 @@
 
-,, Good Categories
-good_category_military,Military
-good_category_raw,Raw
-good_category_industrial,Industrial
-good_category_consumer,Consumer
+;; Good Categories
+good_category_military;Military
+good_category_raw;Raw
+good_category_industrial;Industrial
+good_category_consumer;Consumer
 
-,, Goods
-good_ammunition,Ammunition
-good_small_arms,Small Arms
-good_artillery,Artillery
-good_canned_food,Canned Food
-good_tanks,Tanks
-good_aeroplanes,Aeroplanes
+;; Goods
+good_ammunition;Ammunition
+good_small_arms;Small Arms
+good_artillery;Artillery
+good_canned_food;Canned Food
+good_tanks;Tanks
+good_aeroplanes;Aeroplanes
 
-good_coal,Coal
-good_cotton,Cotton
-good_dye,Dye
-good_iron,Iron
-good_oil,Oil
-good_precious_metal,Precious Metal
-good_rubber,Rubber
-good_silk,Silk
-good_sulphur,Sulphur
-good_timber,Timber
-good_tropical_wood,Tropical Wood
-good_wool,Wool
+good_coal;Coal
+good_cotton;Cotton
+good_dye;Dye
+good_iron;Iron
+good_oil;Oil
+good_precious_metal;Precious Metal
+good_rubber;Rubber
+good_silk;Silk
+good_sulphur;Sulphur
+good_timber;Timber
+good_tropical_wood;Tropical Wood
+good_wool;Wool
 
-good_steel,Steel
-good_cement,Cement
-good_machine_parts,Machine Parts
-good_glass,Glass
-good_fuel,Fuel
-good_fertilizer,Fertilizer
-good_explosives,Explosives
-good_clipper_convoys,Clipper Convoys
-good_steamer_convoys,Steamer Convoys
-good_electric_gears,Electric Gears
-good_fabric,Fabric
-good_lumber,Lumber
+good_steel;Steel
+good_cement;Cement
+good_machine_parts;Machine Parts
+good_glass;Glass
+good_fuel;Fuel
+good_fertilizer;Fertilizer
+good_explosives;Explosives
+good_clipper_convoys;Clipper Convoys
+good_steamer_convoys;Steamer Convoys
+good_electric_gears;Electric Gears
+good_fabric;Fabric
+good_lumber;Lumber
 
-good_paper,Paper
-good_cattle,Cattle
-good_fish,Fish
-good_fruit,Fruit
-good_grain,Grain
-good_tobacco,Tobacco
-good_tea,Tea
-good_coffee,Coffee
-good_opium,Opium
-good_automobiles,Automobiles
-good_telephones,Telephones
-good_wine,Wine
-good_liquor,Liquor
-good_regular_clothes,Regular Clothes
-good_luxury_clothes,Luxury Clothes
-good_furniture,Furniture
-good_luxury_furniture,Luxury Furniture
-good_radios,Radio
+good_paper;Paper
+good_cattle;Cattle
+good_fish;Fish
+good_fruit;Fruit
+good_grain;Grain
+good_tobacco;Tobacco
+good_tea;Tea
+good_coffee;Coffee
+good_opium;Opium
+good_automobiles;Automobiles
+good_telephones;Telephones
+good_wine;Wine
+good_liquor;Liquor
+good_regular_clothes;Regular Clothes
+good_luxury_clothes;Luxury Clothes
+good_furniture;Furniture
+good_luxury_furniture;Luxury Furniture
+good_radios;Radio

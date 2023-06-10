@@ -15,21 +15,25 @@ layout_mode = 2
 [node name="LongformDateButton" type="Button" parent="ButtonList"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+focus_mode = 0
 text = "LONGFORM DATE"
 
 [node name="PlayPauseDisplayButton" type="Button" parent="ButtonList"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+focus_mode = 0
 text = "⏸  "
 
 [node name="DecreaseSpeedButton" type="Button" parent="ButtonList"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+focus_mode = 0
 text = "-"
 
 [node name="IncreaseSpeedButton" type="Button" parent="ButtonList"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+focus_mode = 0
 text = "+"
 
 [connection signal="pressed" from="ButtonList/LongformDateButton" to="." method="_on_longform_date_label_pressed"]

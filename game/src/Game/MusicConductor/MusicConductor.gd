@@ -5,6 +5,8 @@ extends Node
 @export_dir var music_directory : String
 @export var first_song_name : String
 
+@export var _audio_stream_player : AudioStreamPlayer
+
 var _selected_track = 0
 var _available_songs : Array[SongInfo] = []
 var _auto_play_next_song : bool = true
@@ -12,6 +14,8 @@ var _auto_play_next_song : bool = true
 ## True if music player should be visible.
 ## Used to keep keep consistency between scene changes
 var is_music_player_visible : bool = true
+
+var _has_startup_happened : bool = false
 
 func get_all_song_names() -> Array[String]:
 	var songNames : Array[String] = []
@@ -26,21 +30,24 @@ func get_current_song_name() -> String:
 	return _available_songs[_selected_track].song_name
 
 func scrub_song_by_percentage(percentage: float) -> void:
-	var percentInSeconds : float = (percentage / 100.0) * $AudioStreamPlayer.stream.get_length()
-	$AudioStreamPlayer.play(percentInSeconds)
+	var percentInSeconds : float = (percentage / 100.0) * _audio_stream_player.stream.get_length()
+	_audio_stream_player.play(percentInSeconds)
 
 func get_current_song_progress_percentage() -> float:
-	return 100 * ($AudioStreamPlayer.get_playback_position() / $AudioStreamPlayer.stream.get_length())
+	return 100 * (_audio_stream_player.get_playback_position() / _audio_stream_player.stream.get_length())
 
 func is_paused() -> bool:
-	return $AudioStreamPlayer.stream_paused
+	return _audio_stream_player.stream_paused
+
+func set_paused(paused : bool) -> void:
+	_audio_stream_player.stream_paused = paused
 
 func toggle_play_pause() -> void:
-	$AudioStreamPlayer.stream_paused = !$AudioStreamPlayer.stream_paused
+	_audio_stream_player.stream_paused = !_audio_stream_player.stream_paused
 
 func start_current_song() -> void:
-	$AudioStreamPlayer.stream = _available_songs[_selected_track].song_stream
-	$AudioStreamPlayer.play()
+	_audio_stream_player.stream = _available_songs[_selected_track].song_stream
+	_audio_stream_player.play()
 
 # REQUIREMENTS
 # * SS-70
@@ -69,7 +76,12 @@ func _ready():
 				_selected_track = _available_songs.size()
 			_available_songs.append(SongInfo.new(music_directory, fname))
 	start_current_song()
+	set_paused(true)
 
+func set_startup_music(play : bool) -> void:
+	if not _has_startup_happened:
+		_has_startup_happened = true
+		set_paused(not play)
 
 func _on_audio_stream_player_finished():
 	if _auto_play_next_song:

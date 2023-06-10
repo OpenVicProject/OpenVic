@@ -68,6 +68,7 @@ layout_mode = 2
 [node name="GameSessionMenuButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-9"
 layout_mode = 2
+focus_mode = 0
 mouse_filter = 1
 shortcut = SubResource("Shortcut_fc1tk")
 text = "ESC"
@@ -75,12 +76,14 @@ text = "ESC"
 [node name="LedgerButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-860"
 layout_mode = 2
+focus_mode = 0
 mouse_filter = 1
 text = "L"
 
 [node name="FindButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-861"
 layout_mode = 2
+focus_mode = 0
 mouse_filter = 1
 text = "F"
 
@@ -91,12 +94,14 @@ alignment = 1
 [node name="ZoomInButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
 editor_description = "UI-862"
 layout_mode = 2
+focus_mode = 0
 mouse_filter = 1
 text = "+"
 
 [node name="ZoomOutButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer"]
 editor_description = "UI-863"
 layout_mode = 2
+focus_mode = 0
 mouse_filter = 1
 text = "-"
 

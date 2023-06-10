@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbtgwpx2wxi33"]
+[gd_scene load_steps=4 format=3 uid="uid://cbtgwpx2wxi33"]
 
 [ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SoundTab.gd" id="1_a7k0s"]
 [ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/Game/Menu/OptionMenu/VolumeGrid.tscn" id="1_okpft"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SettingNodes/SettingCheckBox.gd" id="2_f3aj4"]
 
-[node name="Sound" type="HBoxContainer"]
+[node name="Sound" type="HBoxContainer" node_paths=PackedStringArray("_startup_music_button")]
 alignment = 1
 script = ExtResource("1_a7k0s")
+_startup_music_button = NodePath("VBoxContainer/ButtonGrid/EarExploder")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -27,8 +29,9 @@ columns = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="EarExploder" type="CheckButton" parent="VBoxContainer/ButtonGrid"]
+[node name="EarExploder" type="CheckBox" parent="VBoxContainer/ButtonGrid"]
 layout_mode = 2
-text = "Explode Eardrums on Startup?"
-
-[connection signal="toggled" from="VBoxContainer/ButtonGrid/EarExploder" to="." method="_on_ear_exploder_toggled"]
+text = "OPTIONS_SOUND_EXPLODE_EARS"
+script = ExtResource("2_f3aj4")
+section_name = "audio"
+setting_name = "startup_music"

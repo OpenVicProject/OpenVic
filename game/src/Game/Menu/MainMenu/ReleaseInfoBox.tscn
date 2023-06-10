@@ -12,6 +12,7 @@ _checksum_label = NodePath("ChecksumLabel")
 [node name="VersionLabel" type="Button" parent="."]
 layout_mode = 2
 tooltip_text = "VERSION_MISSING"
+focus_mode = 0
 theme_type_variation = &"VersionLabel"
 text = "VERSION_MISSING"
 flat = true
@@ -19,6 +20,7 @@ alignment = 0
 
 [node name="CommitLabel" type="Button" parent="."]
 layout_mode = 2
+focus_mode = 0
 theme_type_variation = &"CommitLabel"
 text = "????????"
 flat = true
@@ -28,6 +30,7 @@ alignment = 0
 editor_description = "UI-111"
 layout_mode = 2
 tooltip_text = "CHECKSUM_MISSING"
+focus_mode = 0
 theme_type_variation = &"ChecksumLabel"
 text = "(????)"
 flat = true

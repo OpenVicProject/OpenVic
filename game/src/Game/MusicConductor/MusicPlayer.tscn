@@ -20,6 +20,7 @@ _visbility_button = NodePath("MusicUIVisibilityButton")
 editor_description = "UI-107"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+focus_mode = 0
 alignment = 1
 text_overrun_behavior = 3
 fit_to_longest_item = false
@@ -28,6 +29,7 @@ fit_to_longest_item = false
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 1
+focus_mode = 0
 
 [node name="ButtonList" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -36,21 +38,25 @@ mouse_filter = 2
 
 [node name="PreviousSongButton" type="Button" parent="ButtonList"]
 layout_mode = 2
+focus_mode = 0
 text = "<"
 
 [node name="PlayPauseButton" type="Button" parent="ButtonList"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
+focus_mode = 0
 text = "▶"
 
 [node name="NextSongButton" type="Button" parent="ButtonList"]
 layout_mode = 2
+focus_mode = 0
 text = ">"
 
 [node name="MusicUIVisibilityButton" type="Button" parent="."]
 editor_description = "UI-106"
 layout_mode = 2
 size_flags_horizontal = 4
+focus_mode = 0
 toggle_mode = true
 text = "⬆"
 

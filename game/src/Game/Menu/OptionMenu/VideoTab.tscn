@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
 [ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
 [ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/ResolutionRevertDialog.gd" id="8_802cr"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SettingRevertDialog.gd" id="8_ug5mo"]
 
 [node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-46"
@@ -41,7 +41,7 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("1_i8nro")
-revert_dialog = NodePath("../../../ResolutionRevertDialog")
+revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "resolution"
 
@@ -79,7 +79,7 @@ popup/item_1/id = 1
 popup/item_2/text = "OPTIONS_VIDEO_WINDOWED"
 popup/item_2/id = 2
 script = ExtResource("2_wa7vw")
-revert_dialog = NodePath("../../../ResolutionRevertDialog")
+revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "mode_selected"
 
@@ -87,7 +87,7 @@ setting_name = "mode_selected"
 layout_mode = 2
 text = "OPTIONS_VIDEO_MONITOR_SELECTION"
 
-[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ScreenModeSelector")
 focus_neighbor_bottom = NodePath("../RefreshRateSelector")
@@ -96,6 +96,7 @@ selected = 0
 popup/item_0/text = "MISSING"
 popup/item_0/id = 0
 script = ExtResource("3_y6lyb")
+revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "current_screen"
 
@@ -142,32 +143,33 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../RefreshRateSelector")
 item_count = 5
 selected = 1
-popup/item_0/text = "Low"
+popup/item_0/text = "OPTIONS_VIDEO_QUALITY_LOW"
 popup/item_0/id = 0
-popup/item_1/text = "Medium"
+popup/item_1/text = "OPTIONS_VIDEO_QUALITY_MEDIUM"
 popup/item_1/id = 1
-popup/item_2/text = "High"
+popup/item_2/text = "OPTIONS_VIDEO_QUALITY_HIGH"
 popup/item_2/id = 2
-popup/item_3/text = "Ultra"
+popup/item_3/text = "OPTIONS_VIDEO_QUALITY_ULTRA"
 popup/item_3/id = 3
-popup/item_4/text = "Custom"
+popup/item_4/text = "OPTIONS_VIDEO_QUALITY_CUSTOM"
 popup/item_4/id = 4
 script = ExtResource("5_srg4v")
 section_name = "video"
 setting_name = "quality_preset"
 default_selected = 1
 
-[node name="ResolutionRevertDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("timer")]
+[node name="VideoRevertDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("timer")]
 editor_description = "UI-873"
 disable_3d = true
-title = "OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE"
+title = "OPTIONS_VIDEO_REVERT_DIALOG_TITLE"
 size = Vector2i(730, 100)
 ok_button_text = "DIALOG_OK"
 cancel_button_text = "DIALOG_CANCEL"
-script = ExtResource("8_802cr")
-timer = NodePath("ResolutionRevertTimer")
+script = ExtResource("8_ug5mo")
+dialog_text_key = "OPTIONS_VIDEO_REVERT_DIALOG_TEXT"
+timer = NodePath("VideoRevertTimer")
 
-[node name="ResolutionRevertTimer" type="Timer" parent="ResolutionRevertDialog"]
+[node name="VideoRevertTimer" type="Timer" parent="VideoRevertDialog"]
 wait_time = 5.0
 one_shot = true
 
@@ -175,7 +177,7 @@ one_shot = true
 [connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/GuiScaleSelector" to="VideoSettingList/VideoSettingGrid/GuiScaleSelector" method="_on_option_selected"]
 [connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/ScreenModeSelector" to="VideoSettingList/VideoSettingGrid/ScreenModeSelector" method="_on_option_selected"]
 [connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" to="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" method="_on_option_selected"]
-[connection signal="canceled" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_canceled_or_close_requested"]
-[connection signal="close_requested" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_canceled_or_close_requested"]
-[connection signal="confirmed" from="ResolutionRevertDialog" to="ResolutionRevertDialog" method="_on_confirmed"]
-[connection signal="timeout" from="ResolutionRevertDialog/ResolutionRevertTimer" to="ResolutionRevertDialog" method="_on_resolution_revert_timer_timeout"]
+[connection signal="canceled" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="close_requested" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="confirmed" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_confirmed"]
+[connection signal="timeout" from="VideoRevertDialog/VideoRevertTimer" to="VideoRevertDialog" method="_on_resolution_revert_timer_timeout"]

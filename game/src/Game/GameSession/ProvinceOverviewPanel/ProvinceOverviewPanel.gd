@@ -13,13 +13,18 @@ var _selected_index : int:
 	get: return _selected_index
 	set(v):
 		_selected_index = v
-		update_info()
+		_update_info()
 var _province_info : Dictionary
 
 func _ready():
 	GameSingleton.province_selected.connect(_on_province_selected)
-	GameSingleton.state_updated.connect(update_info)
-	update_info()
+	GameSingleton.state_updated.connect(_update_info)
+	_update_info()
+
+func _notification(what : int):
+	match what:
+		NOTIFICATION_TRANSLATION_CHANGED:
+			_update_info()
 
 enum { CANNOT_EXPAND, CAN_EXPAND, PREPARING, EXPANDING }
 
@@ -53,6 +58,7 @@ func _add_building_row() -> void:
 	row.button.text = "EXPAND_PROVINCE_BUILDING"
 	row.button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.button.mouse_filter = Control.MOUSE_FILTER_PASS
+	row.button.focus_mode = FOCUS_NONE
 	row.button.pressed.connect(func(): _expand_building(row.name.text))
 	_buildings_container.add_child(row.button)
 
@@ -91,7 +97,7 @@ func _set_building_row(index : int, building : Dictionary) -> void:
 	row.button.disabled = expansion_state != CAN_EXPAND
 	row.button.visible = not show_progress_bar
 
-func update_info() -> void:
+func _update_info() -> void:
 	_province_info = GameSingleton.get_province_info_from_index(_selected_index)
 	if _province_info:
 		_province_name_label.text = _province_info.get(GameSingleton.get_province_info_province_key(),
@@ -100,7 +106,9 @@ func update_info() -> void:
 			GameSingleton.get_province_info_region_key() + _missing_suffix)
 
 		_life_rating_bar.value = _province_info.get(GameSingleton.get_province_info_life_rating_key(), 0)
-		_life_rating_bar.tooltip_text = tr("LIFE_RATING_TOOLTIP").format({ "life_rating": _life_rating_bar.value })
+		_life_rating_bar.tooltip_text = tr("LIFE_RATING_TOOLTIP").format({
+			"life_rating": Events.Localisation.tr_number(_life_rating_bar.value)
+		})
 
 		_rgo_name_label.text = _province_info.get(GameSingleton.get_province_info_rgo_key(),
 			GameSingleton.get_province_info_rgo_key() + _missing_suffix)

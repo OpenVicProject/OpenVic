@@ -1,245 +1,245 @@
 
-,, Europe
-prov_britain,Britain
-prov_ireland,Ireland
-prov_iceland,Iceland
-prov_corsica,Corsica
-prov_sardinia,Sardinia
-prov_sicily,Sicily
-prov_malta,Malta
-prov_cyprus,Cyprus
-prov_greenland,Greenland
-prov_baleares,Balearic Islands
-prov_gotland,Gotland
-prov_crete,Crete
-prov_jan_mayen,Jan Mayen
-prov_faroes,Faroe Islands
-prov_mann,Isle of Mann
-prov_shetlands,Shetlands
-prov_orkney,Orkney
-prov_channel_islands,Channel Islands
-prov_madiera,Madiera
-prov_canarias,Canarias
-prov_sjaeland,Sjaeland
-prov_bornholm,Bornholm
-prov_bear_island,Bear Island
-prov_pantelleria,Pantelleria
-prov_iberia,Iberia
-prov_scandinavia,Scandinavia
-prov_jutland,Jutland
-prov_fyn,Fyn
-prov_hiiumaa,Hiiumaa
-prov_saaremaa,Saaremaa
-prov_italy,Italy
-prov_elba,Elba
-prov_france,France
-prov_netherlands,Netherlands
-prov_belgium,Belgium
-prov_luxembourg,Luxembourg
-prov_switzerland,Switzerland
-prov_balkans,Balkans
-prov_crimea,Crimea
-prov_germany,Germany
-prov_poland,Poland
-prov_baltics,Baltics
-prov_finland,Finland
-prov_aland,Åland
-prov_ukraine,Ukraine
-prov_russia,Russia
+;; Europe
+prov_britain;Britain
+prov_ireland;Ireland
+prov_iceland;Iceland
+prov_corsica;Corsica
+prov_sardinia;Sardinia
+prov_sicily;Sicily
+prov_malta;Malta
+prov_cyprus;Cyprus
+prov_greenland;Greenland
+prov_baleares;Balearic Islands
+prov_gotland;Gotland
+prov_crete;Crete
+prov_jan_mayen;Jan Mayen
+prov_faroes;Faroe Islands
+prov_mann;Isle of Mann
+prov_shetlands;Shetlands
+prov_orkney;Orkney
+prov_channel_islands;Channel Islands
+prov_madiera;Madiera
+prov_canarias;Canarias
+prov_sjaeland;Sjaeland
+prov_bornholm;Bornholm
+prov_bear_island;Bear Island
+prov_pantelleria;Pantelleria
+prov_iberia;Iberia
+prov_scandinavia;Scandinavia
+prov_jutland;Jutland
+prov_fyn;Fyn
+prov_hiiumaa;Hiiumaa
+prov_saaremaa;Saaremaa
+prov_italy;Italy
+prov_elba;Elba
+prov_france;France
+prov_netherlands;Netherlands
+prov_belgium;Belgium
+prov_luxembourg;Luxembourg
+prov_switzerland;Switzerland
+prov_balkans;Balkans
+prov_crimea;Crimea
+prov_germany;Germany
+prov_poland;Poland
+prov_baltics;Baltics
+prov_finland;Finland
+prov_aland;Åland
+prov_ukraine;Ukraine
+prov_russia;Russia
 
-,, North America
-prov_north_america,North America
-prov_cuba,Cuba
-prov_bermuda,Bermuda
-prov_jamaica,Jamaica
-prov_hispaniola,Hispaniola
-prov_aleutians,Aleutian Islands
-prov_bahamas,Bahamas
-prov_turks_and_caicos,Turks and Caicos
-prov_puerto_rico,Puerto Rico
-prov_barbados,Barbados
-prov_grenada,Grenada
-prov_st_vincent,St Vincent
-prov_st_lucia,St Lucia
-prov_martinique,Martinique
-prov_dominica,Dominica
-prov_guadeloupe,Guadeloupe
-prov_montserrat,Montserrat
-prov_antigua,Antigua
-prov_barbuda,Barbuda
-prov_st_kitts,St Kitts
-prov_west_virgin_islands,West Virgin Islands
-prov_east_virgin_islands,East Virgin Islands
-prov_cayman_islands,Cayman Islands
-prov_angulia,Angulia
-prov_central_america,Central America
-prov_mexico,Mexico
+;; North America
+prov_north_america;North America
+prov_cuba;Cuba
+prov_bermuda;Bermuda
+prov_jamaica;Jamaica
+prov_hispaniola;Hispaniola
+prov_aleutians;Aleutian Islands
+prov_bahamas;Bahamas
+prov_turks_and_caicos;Turks and Caicos
+prov_puerto_rico;Puerto Rico
+prov_barbados;Barbados
+prov_grenada;Grenada
+prov_st_vincent;St Vincent
+prov_st_lucia;St Lucia
+prov_martinique;Martinique
+prov_dominica;Dominica
+prov_guadeloupe;Guadeloupe
+prov_montserrat;Montserrat
+prov_antigua;Antigua
+prov_barbuda;Barbuda
+prov_st_kitts;St Kitts
+prov_west_virgin_islands;West Virgin Islands
+prov_east_virgin_islands;East Virgin Islands
+prov_cayman_islands;Cayman Islands
+prov_angulia;Angulia
+prov_central_america;Central America
+prov_mexico;Mexico
 
-,, Canada
-prov_victoria,Victoria
-prov_calgary,Calgary
-prov_saskatoon,Saskatoon
-prov_winnipeg,Winnipeg
-prov_ottawa,Ottawa
-prov_quebec,Quebec
-prov_new_brunswick,New Brunswick
-prov_prince_edward_island,Prince Edward Island
-prov_nova_scotia,Nova Scotia
-prov_labrador,Labrador
-prov_newfoundland,Newfoundland
-prov_whitehorse,Whitehorse
-prov_yellowknife,Yellowknife
-prov_iqaluit,Iqaluit
+;; Canada
+prov_victoria;Victoria
+prov_calgary;Calgary
+prov_saskatoon;Saskatoon
+prov_winnipeg;Winnipeg
+prov_ottawa;Ottawa
+prov_quebec;Quebec
+prov_new_brunswick;New Brunswick
+prov_prince_edward_island;Prince Edward Island
+prov_nova_scotia;Nova Scotia
+prov_labrador;Labrador
+prov_newfoundland;Newfoundland
+prov_whitehorse;Whitehorse
+prov_yellowknife;Yellowknife
+prov_iqaluit;Iqaluit
 
-,, South America
-prov_south_america,South America
-prov_galapagos,Galapagos
-prov_falklands,Falklands
-prov_south_georgia,South Georgia
+;; South America
+prov_south_america;South America
+prov_galapagos;Galapagos
+prov_falklands;Falklands
+prov_south_georgia;South Georgia
 
-,, Africa
-prov_africa,Africa
-prov_madagascar,Madagascar
-prov_socotra,Socotra
-prov_mauritius,Mauritius
-prov_reunion,Réunion
-prov_comoros,Comoros
-prov_sao_tome,Sao Tome
-prov_fernando_po,Fernando Po
-prov_cape_verde,Cape Verde
-prov_ascension,Ascension
-prov_st_helena,St Helena
-prov_tristan_da_cunha,Tristan da Cunha
-prov_seychelles,Seychelles
-prov_prince_edward_islands,Prince Edward Islands
-prov_kerguelen_islands,Kerguelen Islands
-prov_heard_island,Heard Island
-prov_egypt,Egypt
-prov_morocco,Morocco
+;; Africa
+prov_africa;Africa
+prov_madagascar;Madagascar
+prov_socotra;Socotra
+prov_mauritius;Mauritius
+prov_reunion;Réunion
+prov_comoros;Comoros
+prov_sao_tome;Sao Tome
+prov_fernando_po;Fernando Po
+prov_cape_verde;Cape Verde
+prov_ascension;Ascension
+prov_st_helena;St Helena
+prov_tristan_da_cunha;Tristan da Cunha
+prov_seychelles;Seychelles
+prov_prince_edward_islands;Prince Edward Islands
+prov_kerguelen_islands;Kerguelen Islands
+prov_heard_island;Heard Island
+prov_egypt;Egypt
+prov_morocco;Morocco
 
-,, Asia
-prov_middle_east,Middle East
-prov_ceylon,Ceylon
-prov_formosa,Formosa
-prov_sakhalin,Sakhalin
-prov_maldives,Maldives
-prov_hainan,Hainan
-prov_hokkaido,Hokkaido
-prov_diego_garcia,Diego Garcia
-prov_philippines,Philippines
-prov_india,India
-prov_andamans,Andaman Islands
-prov_nicobar_islands,Nicobar Islands
-prov_indochina,Indochina
-prov_korea,Korea
-prov_okinawa,Okinawa
-prov_yaeyama,Yaeyama
-prov_kyushu,Kyushu
-prov_shikoku,Shikoku
-prov_japan,Japan
-prov_kurils,Kuril Islands
-prov_manchuria,Manchuria
-prov_china,China
-prov_central_asia,Central Asia
-prov_siberia,Siberia
-prov_iran,Iran
-prov_anatolia,Anatolia
+;; Asia
+prov_middle_east;Middle East
+prov_ceylon;Ceylon
+prov_formosa;Formosa
+prov_sakhalin;Sakhalin
+prov_maldives;Maldives
+prov_hainan;Hainan
+prov_hokkaido;Hokkaido
+prov_diego_garcia;Diego Garcia
+prov_philippines;Philippines
+prov_india;India
+prov_andamans;Andaman Islands
+prov_nicobar_islands;Nicobar Islands
+prov_indochina;Indochina
+prov_korea;Korea
+prov_okinawa;Okinawa
+prov_yaeyama;Yaeyama
+prov_kyushu;Kyushu
+prov_shikoku;Shikoku
+prov_japan;Japan
+prov_kurils;Kuril Islands
+prov_manchuria;Manchuria
+prov_china;China
+prov_central_asia;Central Asia
+prov_siberia;Siberia
+prov_iran;Iran
+prov_anatolia;Anatolia
 
-,, Oceania
-prov_oceania,Oceania
-prov_indonesia,Indonesia
-prov_north_island,North Island
-prov_south_island,South Island
-prov_tasmania,Tasmania
-prov_australia,Australia
-prov_hawaii,Hawaii
+;; Oceania
+prov_oceania;Oceania
+prov_indonesia;Indonesia
+prov_north_island;North Island
+prov_south_island;South Island
+prov_tasmania;Tasmania
+prov_australia;Australia
+prov_hawaii;Hawaii
 
-,, Lakes
-prov_aral_sea,Aral Sea
-prov_caspian_sea,Caspian Sea
-prov_lake_ladoga,Lake Ladoga
-prov_lake_ontario,Lake Ontario
-prov_lake_erie,Lake Erie
-prov_lake_huron,Lake Huron
-prov_lake_michigan,Lake Michigan
-prov_lake_superior,Lake Superior
-prov_lake_baikal,Lake Baikal
-prov_lake_woods,Lake of the Woods
-prov_lake_manitoba,Lake Manitoba
-prov_reindeer_lake,Reindeer Lake
-prov_lake_ronge,Lac la Ronge
-prov_lake_athabasca,Lake Athabasca
-prov_great_slave_lake,Great Slave Lake
-prov_great_bear_lake,Great Bear Lake
+;; Lakes
+prov_aral_sea;Aral Sea
+prov_caspian_sea;Caspian Sea
+prov_lake_ladoga;Lake Ladoga
+prov_lake_ontario;Lake Ontario
+prov_lake_erie;Lake Erie
+prov_lake_huron;Lake Huron
+prov_lake_michigan;Lake Michigan
+prov_lake_superior;Lake Superior
+prov_lake_baikal;Lake Baikal
+prov_lake_woods;Lake of the Woods
+prov_lake_manitoba;Lake Manitoba
+prov_reindeer_lake;Reindeer Lake
+prov_lake_ronge;Lac la Ronge
+prov_lake_athabasca;Lake Athabasca
+prov_great_slave_lake;Great Slave Lake
+prov_great_bear_lake;Great Bear Lake
 
-,, Seas and Oceans
-prov_azov_sea,Sea of Azov
-prov_black_sea,Black Sea
-prov_marmara_sea,Sea of Marmara
-prov_agean_sea,Agean Sea
-prov_ionian_sea,Ionian Sea
-prov_adriatic_sea,Adriatic Sea
-prov_tyrrhenian_sea,Tyrrhenian Sea
-prov_east_mediterranean,East Mediterranean Sea
-prov_central_mediterranean,Central Mediterranean Sea
-prov_west_mediterranean,West Mediterranean Sea
-prov_ligurian_sea,Ligurian Sea
-prov_balearic_sea,Balearic Sea
-prov_alboran_sea,Alboran Sea
-prov_gulf_bothnia,Gulf of Bothnia
-prov_gulf_finland,Gulf of Finland
-prov_gulf_riga,Gulf of Riga
-prov_baltic_sea,Baltic Sea
-prov_danish_straits,Danish Straits
-prov_english_channel,English Channel
-prov_irish_sea,Irish Sea
-prov_biscay_bay,Bay of Biscay
-prov_north_sea,North Sea
-prov_red_sea,Red Sea
-prov_arabian_sea,Arabian Sea
-prov_persian_gulf,Persian Gulf
-prov_andaman_sea,Andaman Sea
-prov_bay_bengal,Bay of Bengal
-prov_okhotsk_sea,Sea of Okhotsk
-prov_japan_sea,Sea of Japan
-prov_east_china_sea,East China Sea
-prov_south_china_sea,South China Sea
-prov_philippine_sea,Philippine Sea
-prov_celebes_sea,Celebes Sea
-prov_java_sea,Java Sea
-prov_banda_sea,Banda Sea
-prov_arafura_sea,Arafura Sea
-prov_gulf_mexico,Gulf of Mexico
-prov_caribbean_sea,Caribbean Sea
-prov_mozambique_channel,Mozambique Channel
-prov_zanj_sea,Sea of Zanj
-prov_kara_sea,Kara Sea
-prov_barents_sea,Barents Sea
-prov_norwegian_sea,Norwegian Sea
-prov_greenland_sea,Greenland Sea
-prov_labrador_sea,Labrador Sea
-prov_hudson_bay,Hudson Bay
-prov_gulf_st_lawrence,Gulf of St Lawrence
-prov_gulf_alaska,Gulf of Alaska
-prov_gulf_california,Gulf of California
-prov_east_siberian_sea,East Siberian Sea
-prov_sargasso_sea,Sargasso Sea
-prov_gulf_guinea,Gulf of Guinea
-prov_celtic_sea,Celtic Sea
-prov_argentine_sea,Argentine Sea
-prov_chilean_sea,Chilean Sea
-prov_north_atlantic,North Atlantic Ocean
-prov_central_atlantic,Central Atlantic Ocean
-prov_south_atlantic,South Atlantic Ocean
-prov_indian_ocean,Indian Ocean
-prov_great_australian_bight,Great Australian Bight
-prov_tasman_sea,Tasman Sea
-prov_coral_sea,Coral Sea
-prov_melanesia,Melanesia
-prov_micronesia,Micronesia
-prov_polynesia,Polynesia
-prov_north_pacific,North Pacific Ocean
-prov_south_pacific,South Pacific Ocean
-prov_bering_sea,Bering Sea
-prov_chukchi_sea,Chukchi Sea
-prov_beaufort_sea,Beaufort Sea
+;; Seas and Oceans
+prov_azov_sea;Sea of Azov
+prov_black_sea;Black Sea
+prov_marmara_sea;Sea of Marmara
+prov_agean_sea;Agean Sea
+prov_ionian_sea;Ionian Sea
+prov_adriatic_sea;Adriatic Sea
+prov_tyrrhenian_sea;Tyrrhenian Sea
+prov_east_mediterranean;East Mediterranean Sea
+prov_central_mediterranean;Central Mediterranean Sea
+prov_west_mediterranean;West Mediterranean Sea
+prov_ligurian_sea;Ligurian Sea
+prov_balearic_sea;Balearic Sea
+prov_alboran_sea;Alboran Sea
+prov_gulf_bothnia;Gulf of Bothnia
+prov_gulf_finland;Gulf of Finland
+prov_gulf_riga;Gulf of Riga
+prov_baltic_sea;Baltic Sea
+prov_danish_straits;Danish Straits
+prov_english_channel;English Channel
+prov_irish_sea;Irish Sea
+prov_biscay_bay;Bay of Biscay
+prov_north_sea;North Sea
+prov_red_sea;Red Sea
+prov_arabian_sea;Arabian Sea
+prov_persian_gulf;Persian Gulf
+prov_andaman_sea;Andaman Sea
+prov_bay_bengal;Bay of Bengal
+prov_okhotsk_sea;Sea of Okhotsk
+prov_japan_sea;Sea of Japan
+prov_east_china_sea;East China Sea
+prov_south_china_sea;South China Sea
+prov_philippine_sea;Philippine Sea
+prov_celebes_sea;Celebes Sea
+prov_java_sea;Java Sea
+prov_banda_sea;Banda Sea
+prov_arafura_sea;Arafura Sea
+prov_gulf_mexico;Gulf of Mexico
+prov_caribbean_sea;Caribbean Sea
+prov_mozambique_channel;Mozambique Channel
+prov_zanj_sea;Sea of Zanj
+prov_kara_sea;Kara Sea
+prov_barents_sea;Barents Sea
+prov_norwegian_sea;Norwegian Sea
+prov_greenland_sea;Greenland Sea
+prov_labrador_sea;Labrador Sea
+prov_hudson_bay;Hudson Bay
+prov_gulf_st_lawrence;Gulf of St Lawrence
+prov_gulf_alaska;Gulf of Alaska
+prov_gulf_california;Gulf of California
+prov_east_siberian_sea;East Siberian Sea
+prov_sargasso_sea;Sargasso Sea
+prov_gulf_guinea;Gulf of Guinea
+prov_celtic_sea;Celtic Sea
+prov_argentine_sea;Argentine Sea
+prov_chilean_sea;Chilean Sea
+prov_north_atlantic;North Atlantic Ocean
+prov_central_atlantic;Central Atlantic Ocean
+prov_south_atlantic;South Atlantic Ocean
+prov_indian_ocean;Indian Ocean
+prov_great_australian_bight;Great Australian Bight
+prov_tasman_sea;Tasman Sea
+prov_coral_sea;Coral Sea
+prov_melanesia;Melanesia
+prov_micronesia;Micronesia
+prov_polynesia;Polynesia
+prov_north_pacific;North Pacific Ocean
+prov_south_pacific;South Pacific Ocean
+prov_bering_sea;Bering Sea
+prov_chukchi_sea;Chukchi Sea
+prov_beaufort_sea;Beaufort Sea
