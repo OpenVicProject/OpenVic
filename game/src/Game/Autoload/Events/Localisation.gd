@@ -1,4 +1,5 @@
 extends RefCounted
+class_name LocalisationSingleton
 
 # REQUIREMENTS
 # * SS-59, SS-60, SS-61
