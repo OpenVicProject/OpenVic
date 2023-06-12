@@ -92,16 +92,19 @@ func RemoveLabel(labelName:String) -> bool:
 #Perhaps in the future, a method to reorder the labels?
 
 
-#TODO: for extra performance, should probably remove this
-#or make it editor only
+#In editor only, force the shader parameters to update whenever _draw
+#is called so developers can see their changes
+#otherwise, for performance, reduce the number of material resets
 func _draw():
-	if not material:
-		reset_material()
-	setShaderParams()
-	recalculate()
+	if Engine.is_editor_hint():
+		if not material:
+			reset_material()
+		setShaderParams()
+		recalculate()
 
 func _ready():
 	reset_material()
+	setShaderParams()
 
 func reset_material():
 	texture = CanvasTexture.new()
