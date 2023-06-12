@@ -1,4 +1,5 @@
 extends RefCounted
+class_name GameDebugSingleton
 
 # REQUIREMENTS:
 # * SS-56
