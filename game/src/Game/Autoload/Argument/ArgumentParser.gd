@@ -44,6 +44,48 @@ const color_name_array : PackedStringArray =[
 	"whitesmoke", "yellow", "yellowgreen"
 ]
 
+func has_argument_support(arg_name : StringName, include_aliases : bool = false) -> bool:
+	return option_array.any(
+		func(opt):
+			if include_aliases and arg_name in opt.aliases:
+				return true
+			return opt.name == arg_name
+	)
+
+func get_argument(arg_name : StringName, default_val : Variant = null) -> Variant:
+	if ProjectSettings.has_setting(argument_setting_path):
+		var arg_setting = ProjectSettings.get_setting_with_override(argument_setting_path)
+		if not arg_setting is Dictionary:
+			push_error("Argument setting is not a dictionary.")
+			return default_val
+		return arg_setting.get(arg_name, default_val)
+	else:
+		return default_val
+
+func set_argument(arg_name : StringName, value : Variant) -> void:
+	if ProjectSettings.has_setting(argument_setting_path):
+		var arg_setting = null
+		arg_setting = ProjectSettings.get_setting_with_override(argument_setting_path)
+		if not arg_setting is Dictionary:
+			push_error("Argument setting is not a dictionary.")
+			return
+		arg_setting[arg_name] = value
+		ProjectSettings.set_setting(argument_setting_path, arg_setting)
+		return
+	push_error("Argument setting has not been set yet.")
+
+func _set_argument_setting() -> void:
+	var argument_dictionary : Dictionary = {}
+	if ProjectSettings.has_setting(argument_setting_path):
+		argument_dictionary = ProjectSettings.get_setting_with_override(argument_setting_path)
+	for option in option_array:
+		argument_dictionary[option.name] = option.default_value
+
+	_parse_argument_list(argument_dictionary, OS.get_cmdline_args())
+	_parse_argument_list(argument_dictionary, OS.get_cmdline_user_args())
+
+	ProjectSettings.set_setting(argument_setting_path, argument_dictionary)
+
 func _parse_value(arg_name : StringName, value_string : String, type : Variant.Type) -> Variant:
 	match type:
 		TYPE_NIL: return null
@@ -183,22 +225,36 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 			# eg: "-abc" means a == true, b == true, c == true
 			if arg.length() > 1 and arg[0] != "-" and arg[1] != "=":
 				for c in arg:
+					if not ((c >= "a" and c <= "z") or (c >= "A" and c <= "Z")):
+						push_warning("Parsing shorthand alias containing '%s', perhaps you meant '--%s'? Skipping argument." % [c, arg])
+						break
+					var alias_found := false
 					for o in option_array:
 						if o.aliases.any(func(v): return c == v):
-							dictionary[o.name] = true
+							if o.type == TYPE_BOOL:
+								dictionary[o.name] = true
+							else:
+								push_warning("Shorthand alias '%s is not boolean, skipping." % c)
+								# TODO: Support POSIX 12.1 2.b?
+								# https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
+								break
+							alias_found = true
+							break
+					if not alias_found:
+						push_warning("Shorthand alias '%s' not found, skipping." % c)
 				continue
 
 			# Support for = key/value split
 			# eg: "-v=5" and "--value=5" means v == 5 and value == 5
 			var first_equal := arg.find("=")
 			if first_equal > -1:
-				key = arg.substr(0, first_equal - 1)
+				key = arg.substr(0, first_equal)
 				value = arg.substr(first_equal + 1)
 			else:
 				key = arg
 
 			# Removes - for full name arguments
-			if key.begins_with("-"):
+			if key.length() > 2 and key.begins_with("-"):
 				key = key.substr(1)
 
 			for o in option_array:
@@ -216,6 +272,10 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 				if arg_result != null:
 					dictionary[current_option.name] = arg_result
 					current_option = null
+			elif current_option.type == TYPE_BOOL:
+				dictionary[current_option.name] = true
+			else:
+				push_warning("Argument '%s' treated like a boolean but does not support a boolean value, skipping." % key)
 
 	return dictionary
 
@@ -251,17 +311,7 @@ Options:
 		])
 func _ready():
 	if Engine.is_editor_hint(): return
-
-	var argument_dictionary : Dictionary = {}
-	if ProjectSettings.has_setting(argument_setting_path):
-		argument_dictionary = ProjectSettings.get_setting_with_override(argument_setting_path)
-	for option in option_array:
-		argument_dictionary[option.name] = option.default_value
-
-	_parse_argument_list(argument_dictionary, OS.get_cmdline_args())
-	_parse_argument_list(argument_dictionary, OS.get_cmdline_user_args())
-
-	ProjectSettings.set_setting(argument_setting_path, argument_dictionary)
-	if argument_dictionary[&"help"]:
+	_set_argument_setting()
+	if get_argument(&"help"):
 		_print_help()
 		get_tree().quit()
