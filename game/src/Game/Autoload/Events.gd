@@ -28,10 +28,7 @@ func load_events(loading_screen: LoadingScreen):
 	# into the mod's dir for a temporary fix)
 	# Usage: OpenVic --compatibility-mode <path>
 
-	var compatibility_mode_path : String
-	if ProjectSettings.has_setting(ArgumentParser.argument_setting_path):
-		var arg_dictionary : Dictionary = ProjectSettings.get_setting(ArgumentParser.argument_setting_path)
-		compatibility_mode_path = arg_dictionary.get(&"compatibility-mode", compatibility_mode_path)
+	var compatibility_mode_path : String = ArgumentParser.get_argument(&"compatibility-mode")
 
 	var start := Time.get_ticks_usec()
 	

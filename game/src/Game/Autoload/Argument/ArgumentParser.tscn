@@ -14,7 +14,7 @@ default_value = false
 [sub_resource type="Resource" id="Resource_j1to4"]
 script = ExtResource("2_4hguj")
 name = &"game-debug"
-aliases = Array[StringName]([&"d", &"-debug", &"-debug-mode"])
+aliases = Array[StringName]([&"d", &"debug", &"debug-mode"])
 type = 1
 description = "Start in debug mode."
 default_value = false
@@ -22,11 +22,12 @@ default_value = false
 [sub_resource type="Resource" id="Resource_tiax1"]
 script = ExtResource("2_4hguj")
 name = &"compatibility-mode"
-aliases = Array[StringName]([&"-compat"])
+aliases = Array[StringName]([&"compat"])
 type = 4
 description = "Load Victoria 2 assets from this path."
 default_value = ""
 
 [node name="ArgumentParser" type="Node"]
+editor_description = "SS-56"
 script = ExtResource("1_pc7xr")
 option_array = Array[ExtResource("2_4hguj")]([SubResource("Resource_tq3y4"), SubResource("Resource_j1to4"), SubResource("Resource_tiax1")])
