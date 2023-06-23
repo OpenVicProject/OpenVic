@@ -5,7 +5,7 @@ extends SettingRevertButton
 
 enum ScreenMode { Unknown = -1, Fullscreen, Borderless, Windowed }
 
-func get_screen_mode_from_window_mode(window_mode : int) -> ScreenMode:
+func get_screen_mode_from_window_mode(window_mode : Window.Mode) -> ScreenMode:
 	match window_mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN:
 			return ScreenMode.Fullscreen
@@ -16,7 +16,7 @@ func get_screen_mode_from_window_mode(window_mode : int) -> ScreenMode:
 		_:
 			return ScreenMode.Unknown
 
-func get_window_mode_from_screen_mode(screen_mode : int) -> Window.Mode:
+func get_window_mode_from_screen_mode(screen_mode : ScreenMode) -> Window.Mode:
 	match screen_mode:
 		ScreenMode.Fullscreen:
 			return Window.MODE_EXCLUSIVE_FULLSCREEN
@@ -28,7 +28,7 @@ func get_window_mode_from_screen_mode(screen_mode : int) -> Window.Mode:
 			return Window.MODE_EXCLUSIVE_FULLSCREEN
 
 func _setup_button():
-	default_selected = get_screen_mode_from_window_mode(get_viewport().get_window().mode)
+	default_selected = get_screen_mode_from_window_mode(Resolution.get_current_window_mode())
 	selected = default_selected
 
 func _on_option_selected(index : int, by_user : bool) -> void:
@@ -36,13 +36,8 @@ func _on_option_selected(index : int, by_user : bool) -> void:
 		if by_user:
 			print("Start Revert Countdown!")
 			revert_dialog.show_dialog.call_deferred(self)
-			previous_index = get_screen_mode_from_window_mode(get_viewport().get_window().mode)
-
-		var current_resolution := Resolution.get_current_resolution()
-		var window_mode := get_window_mode_from_screen_mode(index)
-		Resolution.window_mode_changed.emit(window_mode)
-		get_viewport().get_window().mode = window_mode
-		Resolution.set_resolution(current_resolution)
+			previous_index = get_screen_mode_from_window_mode(Resolution.get_current_window_mode())
+		Resolution.set_window_mode(get_window_mode_from_screen_mode(index))
 	else:
 		push_error("Invalid ScreenModeSelector index: %d" % index)
 		reset_setting(not by_user)

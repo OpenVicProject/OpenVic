@@ -5,9 +5,17 @@ extends Control
 
 signal back_button_pressed
 
+@export var _tab_container : TabContainer
+
 func _ready():
+	_tab_container.set_tab_title(0, "OPTIONS_GENERAL")
+	_tab_container.set_tab_title(1, "OPTIONS_VIDEO")
+	_tab_container.set_tab_title(2, "OPTIONS_SOUND")
+	_tab_container.set_tab_title(3, "OPTIONS_CONTROLS")
+	_tab_container.set_tab_title(4, "OPTIONS_OTHER")
+
 	# Prepare options menu before loading user settings
-	var tab_bar : TabBar = $Margin/Tab.get_child(0, true)
+	var tab_bar : TabBar = _tab_container.get_child(0, true)
 
 	# This ends up easier to manage then trying to manually recreate the TabContainer's behavior
 	# These buttons can be accessed regardless of the tab
@@ -60,7 +68,7 @@ func _save_overrides() -> void:
 	var file := ConfigFile.new()
 	var err_ret := file.load(override_path)
 	if err_ret != OK: push_error("Failed to load overrides from %s" % override_path)
-	file.set_value("display", "window/size/mode", get_viewport().get_window().mode)
+	file.set_value("display", "window/size/mode", Resolution.get_current_window_mode())
 	var resolution : Vector2i = Resolution.get_current_resolution()
 	file.set_value("display", "window/size/viewport_width", resolution.x)
 	file.set_value("display", "window/size/viewport_height", resolution.y)

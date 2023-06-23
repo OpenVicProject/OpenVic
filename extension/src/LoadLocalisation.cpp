@@ -39,7 +39,8 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 	}
 	int line_number = 0;
 	while (!file->eof_reached()) {
-		PackedStringArray line = file->get_csv_line();
+		static const String delimeter = ";";
+		const PackedStringArray line = file->get_csv_line(delimeter);
 		line_number++;
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
 			if (!line[0].is_empty()) {
@@ -58,6 +59,10 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 
 Ref<Translation> LoadLocalisation::_get_translation(String const& locale) {
 	TranslationServer* server = TranslationServer::get_singleton();
+	if (server == nullptr) {
+		UtilityFunctions::push_error("Failed to get TranslationServer singleton");
+		return nullptr;
+	}
 	Ref<Translation> translation = server->get_translation_object(locale);
 	if (translation.is_null() || translation->get_locale() != locale) {
 		translation.instantiate();
@@ -79,12 +84,22 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 		UtilityFunctions::push_error("Locale directory does not exist: ", dir_path);
 		return FAILED;
 	}
-	Ref<Translation> translation = _get_translation(locale);
+	/* This will add the locale to the list of loaded locales even if it has no
+	 * localisation files - this is useful for testing other aspects of localisation
+	 * such as number formatting and text direction. To disable this behaviour and
+	 * only show non-empty localisations, move the `_get_translation` call to after
+	 * the `files.size()` check.
+	 */
+	const Ref<Translation> translation = _get_translation(locale);
+	const PackedStringArray files = DirAccess::get_files_at(dir_path);
+	if (files.size() < 1) {
+		UtilityFunctions::push_error("Locale directory does not contain any files: ", dir_path);
+		return FAILED;
+	}
 	Error err = OK;
-	for (String const& file_name : DirAccess::get_files_at(dir_path)) {
+	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
-			String file_path = dir_path.path_join(file_name);
-			if (_load_file_into_translation(file_path, translation) != OK)
+			if (_load_file_into_translation(dir_path.path_join(file_name), translation) != OK)
 				err = FAILED;
 		}
 	}
@@ -95,13 +110,22 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
  * FS-23
  */
 Error LoadLocalisation::load_localisation_dir(String const& dir_path) {
-	if(!DirAccess::dir_exists_absolute(dir_path)) {
+	if (!DirAccess::dir_exists_absolute(dir_path)) {
 		UtilityFunctions::push_error("Localisation directory does not exist: ", dir_path);
 		return FAILED;
 	}
+	PackedStringArray const dirs = DirAccess::get_directories_at(dir_path);
+	if (dirs.size() < 1) {
+		UtilityFunctions::push_error("Localisation directory does not contain any sub-directories: ", dir_path);
+		return FAILED;
+	}
 	TranslationServer* server = TranslationServer::get_singleton();
+	if (server == nullptr) {
+		UtilityFunctions::push_error("Failed to get TranslationServer singleton");
+		return FAILED;
+	}
 	Error err = OK;
-	for (String const& locale_name : DirAccess::get_directories_at(dir_path)) {
+	for (String const& locale_name : dirs) {
 		if (locale_name != server->standardize_locale(locale_name))
 			UtilityFunctions::push_error("Invalid locale directory name: ", locale_name);
 		else if (load_locale_dir(dir_path.path_join(locale_name), locale_name) == OK)

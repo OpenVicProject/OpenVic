@@ -19,6 +19,7 @@ func _add_mapmode_button(identifier : String) -> void:
 	button.toggle_mode = true
 	button.button_group = _mapmode_button_group
 	button.mouse_filter = MOUSE_FILTER_PASS
+	button.focus_mode = FOCUS_NONE
 	_mapmodes_grid.add_child(button)
 	if _mapmode_button_group.get_pressed_button() == null:
 		button.button_pressed = true

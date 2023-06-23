@@ -2,10 +2,11 @@
 
 [ext_resource type="Script" path="res://src/Game/MusicConductor/MusicConductor.gd" id="1_56t1b"]
 
-[node name="MusicConductor" type="Node"]
+[node name="MusicConductor" type="Node" node_paths=PackedStringArray("_audio_stream_player")]
 script = ExtResource("1_56t1b")
 music_directory = "res://audio/music"
 first_song_name = "The_Crown"
+_audio_stream_player = NodePath("AudioStreamPlayer")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 bus = &"MUSIC_BUS"

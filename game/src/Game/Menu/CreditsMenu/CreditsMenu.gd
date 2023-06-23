@@ -193,6 +193,11 @@ func _ready():
 	_add_godot_credits()
 	_add_licenses()
 
+func _input(event):
+	if self.is_visible_in_tree():
+		if event.is_action_pressed("ui_cancel"):
+			_on_back_button_pressed()
+
 # REQUIREMENTS:
 # * UI-38
 # * UIFUN-37

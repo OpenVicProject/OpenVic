@@ -2,7 +2,7 @@ extends SettingOptionButton
 class_name SettingRevertButton
 
 @export_group("Nodes")
-@export var revert_dialog : ResolutionRevertDialog
+@export var revert_dialog : SettingRevertDialog
 
 var previous_index : int = -1
 

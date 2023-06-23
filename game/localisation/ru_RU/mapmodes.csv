@@ -1,8 +1,8 @@
 
-,, Test Mapmodes
-mapmode_province,Провинции
-mapmode_region,Регионы
-mapmode_terrain,Ландшафт
-mapmode_index,Индекс
-mapmode_rgo,ДП
-mapmode_infrastructure,Инфраструктура
+;; Test Mapmodes
+mapmode_province;Провинции
+mapmode_region;Регионы
+mapmode_terrain;Ландшафт
+mapmode_index;Индекс
+mapmode_rgo;ДП
+mapmode_infrastructure;Инфраструктура

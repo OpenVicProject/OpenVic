@@ -1,102 +1,119 @@
 
-,, Main Menu
-MAINMENU_TITLE,OpenVic
-MAINMENU_NEW_GAME,Новая игра
-MAINMENU_CONTINUE,Продолжить
-MAINMENU_MULTIPLAYER,Сетевая игра
-MAINMENU_OPTIONS,Настройки
-MAINMENU_CREDITS,Титры
-MAINMENU_EXIT,Выйти из игры
-MAINMENU_CHECKSUM,Контрольная сумма {checksum}
+;; Main Menu
+MAINMENU_TITLE;OpenVic
+MAINMENU_NEW_GAME;Новая игра
+MAINMENU_CONTINUE;Продолжить
+MAINMENU_MULTIPLAYER;Сетевая игра
+MAINMENU_OPTIONS;Настройки
+MAINMENU_CREDITS;Титры
+MAINMENU_EXIT;Выйти из игры
+MAINMENU_CHECKSUM;Контрольная сумма {checksum}
 
-,, Options
-OPTIONS_RESET,R
-OPTIONS_BACK,X
+;; Options
+OPTIONS_RESET;R
+OPTIONS_BACK;X
 
-,, General Tab
-OPTIONS_GENERAL_SAVEFORMAT,Формат игровых сохранений
-OPTIONS_GENERAL_BINARY,Двоичный код
-OPTIONS_GENERAL_TEXT,Текст
-OPTIONS_GENERAL_AUTOSAVE,Частота автосохранений
-OPTIONS_GENERAL_AUTOSAVE_MONTHLY,Каждый месяц
-OPTIONS_GENERAL_AUTOSAVE_BIMONTHLY,Каждые два месяца 
-OPTIONS_GENERAL_AUTOSAVE_YEARLY,Раз в год
-OPTIONS_GENERAL_AUTOSAVE_BIYEARLY,Каждые два года 
-OPTIONS_GENERAL_AUTOSAVE_NEVER,Никогда
-OPTIONS_GENERAL_LANGUAGE,Язык
+;; General Tab
+OPTIONS_GENERAL;Основные настройки
+OPTIONS_GENERAL_SAVEFORMAT;Формат игровых сохранений
+OPTIONS_GENERAL_BINARY;Двоичный код
+OPTIONS_GENERAL_TEXT;Текст
+OPTIONS_GENERAL_AUTOSAVE;Частота автосохранений
+OPTIONS_GENERAL_AUTOSAVE_MONTHLY;Каждый месяц
+OPTIONS_GENERAL_AUTOSAVE_BIMONTHLY;Каждые два месяца 
+OPTIONS_GENERAL_AUTOSAVE_YEARLY;Раз в год
+OPTIONS_GENERAL_AUTOSAVE_BIYEARLY;Каждые два года 
+OPTIONS_GENERAL_AUTOSAVE_NEVER;Никогда
+OPTIONS_GENERAL_LANGUAGE;Язык
 
-,, Video Tab
-OPTIONS_VIDEO_RESOLUTION,Разрешение экрана
-OPTIONS_VIDEO_SCREEN_MODE,Экранный режим
-OPTIONS_VIDEO_FULLSCREEN,Полноэкранный
-OPTIONS_VIDEO_BORDERLESS,Окно без рамок
-OPTIONS_VIDEO_WINDOWED,Оконный
-OPTIONS_VIDEO_MONITOR_SELECTION,Выбор монитора
-OPTIONS_VIDEO_REFRESH_RATE,Частота обновления
-OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP,Изменяйте данный параметр с VSYNC, только в том случае, если вы наблюдаете проблемы с разрывом экрана.
-OPTIONS_VIDEO_QUALITY,Заданные настройки качества
-OPTIONS_VIDEO_GUI_SCALE,Масштабирование графического интерфейса
-OPTIONS_VIDEO_RESOLUTION_DIALOG_TITLE,Сохранить данное разрешение?
-OPTIONS_VIDEO_RESOLUTION_DIALOG_TEXT,Возврат к предыдущей настройке через ({time})
+;; Video Tab
+OPTIONS_VIDEO;Настройки видео
+OPTIONS_VIDEO_RESOLUTION;Разрешение экрана
+OPTIONS_VIDEO_RESOLUTION_DIMS;{width}x{height}
+OPTIONS_VIDEO_RESOLUTION_DIMS_DEFAULT;{width}x{height} (Default)
+OPTIONS_VIDEO_RESOLUTION_DIMS_NAMED;{width}x{height} ({name})
+OPTIONS_VIDEO_RESOLUTION_DIMS_NAMED_DEFAULT;{width}x{height} ({name}, Default)
+OPTIONS_VIDEO_SCREEN_MODE;Экранный режим
+OPTIONS_VIDEO_FULLSCREEN;Полноэкранный
+OPTIONS_VIDEO_BORDERLESS;Окно без рамок
+OPTIONS_VIDEO_WINDOWED;Оконный
+OPTIONS_VIDEO_MONITOR_SELECTION;Выбор монитора
+OPTIONS_VIDEO_MONITOR;Monitor {index}
+OPTIONS_VIDEO_REFRESH_RATE;Частота обновления
+OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP;Изменяйте данный параметр с VSYNC, только в том случае, если вы наблюдаете проблемы с разрывом экрана.
+OPTIONS_VIDEO_QUALITY;Заданные настройки качества
+OPTIONS_VIDEO_QUALITY_LOW;Низкие
+OPTIONS_VIDEO_QUALITY_MEDIUM;Средние
+OPTIONS_VIDEO_QUALITY_HIGH;Высокие
+OPTIONS_VIDEO_QUALITY_ULTRA;Ультра
+OPTIONS_VIDEO_QUALITY_CUSTOM;Настраиваемые
+OPTIONS_VIDEO_GUI_SCALE;Масштабирование графического интерфейса
+OPTIONS_VIDEO_REVERT_DIALOG_TITLE;Сохранить данное разрешение?
+OPTIONS_VIDEO_REVERT_DIALOG_TEXT;Возврат к предыдущей настройке через {time} секунд...
 
-,, Sound Tab
-MASTER_BUS,Общая громкость
-MUSIC_BUS,Громкость музыки
-SFX_BUS,Громкость звуковых эффектов
+;; Sound Tab
+OPTIONS_SOUND;Звук
+MASTER_BUS;Общая громкость
+MUSIC_BUS;Громкость музыки
+SFX_BUS;Громкость звуковых эффектов
+OPTIONS_SOUND_EXPLODE_EARS;Лопнули барабанные перепонки на запуске?
 
-,, Credits Menu
-CREDITS_BACK,Вернуться в главное меню
+OPTIONS_CONTROLS;Настройки контроллера
+OPTIONS_OTHER;Другие настройки
 
-,, Game Lobby
-GAMELOBBY_START,Начать игру
-GAMELOBBY_BACK,Назад
-GAMELOBBY_SESSION_TAG,Тэг сессии
-GAMELOBBY_SELECT_ALL,Все
-GAMELOBBY_DELETE_DIALOG_TITLE,Удалить {file_name}
-GAMELOBBY_DELETE_DIALOG_TEXT,Вы уверены, что хотите удалить {file_name}?
-GAMELOBBY_SESSIONTAG_DIALOG_TITLE,Переопределить {session_tag}
-GAMELOBBY_SESSIONTAG_DIALOG_TEXT,Вы хотите переопределить {session_tag} как предыдущий сеанс?
+;; Credits Menu
+CREDITS_BACK;Вернуться в главное меню
 
-,, Game Session Menu
-GAMESESSIONMENU_SAVE,Сохранить игру
-GAMESESSIONMENU_LOAD,Загрузить игру
-GAMESESSIONMENU_OPTIONS,Найстройки
-GAMESESSIONMENU_MAINMENU,Выйти в главное меню
-GAMESESSIONMENU_QUIT,Завершить игру
-GAMESESSIONMENU_CLOSE,Закрыть
+;; Game Lobby
+GAMELOBBY_START;Начать игру
+GAMELOBBY_BACK;Назад
+GAMELOBBY_SESSION_TAG;Метка сессии
+GAMELOBBY_SELECT_ALL;Все
+GAMELOBBY_DELETE_DIALOG_TITLE;Удалить {file_name}
+GAMELOBBY_DELETE_DIALOG_TEXT;Вы уверены, что хотите удалить {file_name}?
+GAMELOBBY_SESSIONTAG_DIALOG_TITLE;Переопределить {session_tag}
+GAMELOBBY_SESSIONTAG_DIALOG_TEXT;Вы хотите переопределить {session_tag} как предыдущий сеанс?
 
-GAMESESSIONMENU_MAINMENU_DIALOG_TITLE,Выйти в главное меню
-GAMESESSIONMENU_MAINMENU_DIALOG_TEXT,Вы действительно хотите выйти из текущего сценария в главное меню игры?
-GAMESESSIONMENU_QUIT_DIALOG_TITLE,Завершить игру
-GAMESESSIONMENU_QUIT_DIALOG_TEXT,Вы уверены, что хотите выйти на рабочий стол?
+;; Game Session Menu
+GAMESESSIONMENU_SAVE;Сохранить игру
+GAMESESSIONMENU_LOAD;Загрузить игру
+GAMESESSIONMENU_OPTIONS;Найстройки
+GAMESESSIONMENU_MAINMENU;Выйти в главное меню
+GAMESESSIONMENU_QUIT;Завершить игру
+GAMESESSIONMENU_CLOSE;Закрыть
 
-,, Save Load Menu
-SAVELOADMENU_SAVE_TITLE,Сохранить игру
-SAVELOADMENU_LOAD_TITLE,Загрузить игру
-SAVELOADMENU_SAVE_BUTTON,Сохранить
-SAVELOADMENU_LOAD_BUTTON,Загрузить
+GAMESESSIONMENU_MAINMENU_DIALOG_TITLE;Выйти в главное меню
+GAMESESSIONMENU_MAINMENU_DIALOG_TEXT;Вы действительно хотите выйти из текущего сценария в главное меню игры?
+GAMESESSIONMENU_QUIT_DIALOG_TITLE;Завершить игру
+GAMESESSIONMENU_QUIT_DIALOG_TEXT;Вы уверены, что хотите выйти на рабочий стол?
 
-SAVELOADMENU_DELETE_DIALOG_TITLE,Удалить {file_name}
-SAVELOADMENU_DELETE_DIALOG_TEXT,Вы уверены, что хотите удалить {file_name}?
-SAVELOADMENU_OVERWRITE_DIALOG_TITLE,Перезаписать {file_name}
-SAVELOADMENU_OVERWRITE_DIALOG_TEXT,Вы уверены, что хотите перезаписать {file_name}?
+;; Save Load Menu
+SAVELOADMENU_SAVE_TITLE;Сохранить игру
+SAVELOADMENU_LOAD_TITLE;Загрузить игру
+SAVELOADMENU_SAVE_BUTTON;Сохранить
+SAVELOADMENU_LOAD_BUTTON;Загрузить
 
-SAVELOADMENU_SESSION,Session:
+SAVELOADMENU_DELETE_DIALOG_TITLE;Удалить {file_name}
+SAVELOADMENU_DELETE_DIALOG_TEXT;Вы уверены, что хотите удалить {file_name}?
+SAVELOADMENU_OVERWRITE_DIALOG_TITLE;Перезаписать {file_name}
+SAVELOADMENU_OVERWRITE_DIALOG_TEXT;Вы уверены, что хотите перезаписать {file_name}?
 
-SAVELOADMENU_TABSELECTIONTABBAR_ALL,Все
+SAVELOADMENU_SESSION;Session:
 
-DIALOG_OK,Ок
-DIALOG_CANCEL,Отменить
-DIALOG_SAVE_AND_RESIGN,Сохраниться и выйти в главное меню
-DIALOG_SAVE_AND_QUIT,Сохраниться и выйти из игры
+SAVELOADMENU_TABSELECTIONTABBAR_ALL;Все
 
-,, Province Overview Panel
-province_MISSING,Нет провинции
-region_MISSING,Нет региона
-LIFE_RATING_TOOLTIP,Уровень жизни: {life_rating}
-rgo_MISSING,Нет ДП
-building_MISSING,Нет здания
-building_fort,Форт
-building_naval_base,Морская база
-building_railroad,Железная дорога
-EXPAND_PROVINCE_BUILDING,Расширить
+DIALOG_OK;Ок
+DIALOG_CANCEL;Отменить
+DIALOG_SAVE_AND_RESIGN;Сохраниться и выйти в главное меню
+DIALOG_SAVE_AND_QUIT;Сохраниться и выйти из игры
+
+;; Province Overview Panel
+province_MISSING;Нет провинции
+region_MISSING;Нет региона
+LIFE_RATING_TOOLTIP;Уровень жизни: {life_rating}
+rgo_MISSING;Нет ДП
+building_MISSING;Нет здания
+building_fort;Форт
+building_naval_base;Морская база
+building_railroad;Железная дорога
+EXPAND_PROVINCE_BUILDING;Расширить
