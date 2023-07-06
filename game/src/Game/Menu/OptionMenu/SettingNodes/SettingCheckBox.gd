@@ -19,7 +19,7 @@ func _ready():
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 	Events.Options.reset_settings.connect(reset_setting)
-	toggled.connect(func(pressed : bool): option_selected.emit(pressed, true))
+	toggled.connect(func(p : bool): option_selected.emit(p, true))
 	_setup_button()
 
 func _set_value_from_file(load_value) -> void:

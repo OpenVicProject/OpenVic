@@ -8,6 +8,8 @@ var loadthread: Thread
 var quotes: PackedStringArray = []
 
 func update_loading_screen(percent_complete: int, quote_should_change = false):
+	# forces the function to behave as if deferred
+	await get_tree().process_frame
 	progress_bar.value = percent_complete
 	if quote_should_change:
 		quote_label.text = quotes[randi() % quotes.size()]
