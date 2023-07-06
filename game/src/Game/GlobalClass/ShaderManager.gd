@@ -1,5 +1,5 @@
+class_name ShaderManagerClass
 extends RefCounted
-class_name ShaderManagerSingleton
 
 const param_province_shape_tex : StringName = &"province_shape_tex"
 const param_province_shape_subdivisions : StringName = &"province_shape_subdivisions"

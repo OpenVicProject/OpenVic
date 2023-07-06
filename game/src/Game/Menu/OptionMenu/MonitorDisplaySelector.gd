@@ -15,7 +15,7 @@ func _notification(what : int):
 
 func _update_monitor_options_text() -> void:
 	for index in get_item_count():
-		set_item_text(index, tr("OPTIONS_VIDEO_MONITOR").format({ "index": Events.Localisation.tr_number(index + 1) }))
+		set_item_text(index, tr("OPTIONS_VIDEO_MONITOR").format({ "index": Localisation.tr_number(index + 1) }))
 
 func _on_option_selected(index : int, by_user : bool) -> void:
 	if _valid_index(index):

@@ -9,7 +9,7 @@ func _ready():
 	var locales_country_rename : Dictionary = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
 
 	var locales_list = TranslationServer.get_loaded_locales()
-	var default_locale := Events.Localisation.get_default_locale()
+	var default_locale := Localisation.get_default_locale()
 	if default_locale not in locales_list:
 		locales_list.push_back(default_locale)
 
@@ -43,7 +43,7 @@ func _valid_index(index : int) -> bool:
 
 func load_setting(file : ConfigFile) -> void:
 	if file == null: return
-	var load_value = file.get_value(section_name, setting_name, Events.Localisation.get_default_locale())
+	var load_value = file.get_value(section_name, setting_name, Localisation.get_default_locale())
 	match typeof(load_value):
 		TYPE_STRING, TYPE_STRING_NAME:
 			if _select_locale_by_string(load_value as String):
