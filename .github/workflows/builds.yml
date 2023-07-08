@@ -168,6 +168,7 @@ jobs:
           relative_project_path: ./game
           export_as_pack: true
           export_debug: true
+          cache: true
           relative_export_path: ./game/export
 
       - run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
@@ -215,6 +216,7 @@ jobs:
           godot_export_templates_download_url: ${{env.GODOT_DOWNLOAD_URL}}/${{env.GODOT_VERSION}}/${{env.GODOT_VERSION_PREFIX}}${{env.GODOT_VERSION}}-${{env.GODOT_VERSION_SUFFIX}}_export_templates.tpz
           relative_project_path: ./game
           archive_output: true
+          cache: true
           wine_path: ${{ steps.wine_install.outputs.WINE_PATH }}
 
       - name: Create release
