@@ -1,0 +1,18 @@
+name: Setup MinGW Cache
+description: Setup MinGW Cache
+inputs:
+   cache-key:
+    description: Name for MinGW cache key.
+    default: "mingw-cache"
+runs:
+  using: "composite"
+  steps:
+    # Upload cache on completion and check it out now
+    - name: Load MinGW Cache
+      id: cache-mingw
+      uses: actions/cache@v3
+      with:
+        path: C:\ProgramData\chocolatey\lib\mingw
+        key: ${{inputs.cache-key}}
+    - name: Setup MinGW for build
+      uses: egor-tensin/setup-mingw@v2

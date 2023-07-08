@@ -7,6 +7,7 @@ env:
   GODOT_VERSION_PREFIX: Godot_v
   GODOT_VERSION_SUFFIX: stable
   GODOT_VERSION: 4.1
+  OPENVIC_BASE_BRANCH: master
 
 concurrency:
   group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
@@ -67,6 +68,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup OpenVic build cache
+        uses: ./.github/actions/openvic-cache
+        with:
+          cache-name: ${{ matrix.identifier }}
+        continue-on-error: true
+
       - name: Setup Environment
         uses: ./.github/actions/openvic-env
 
@@ -94,12 +101,14 @@ jobs:
 
       - name: Setup MinGW for Windows/MinGW build
         if: ${{ matrix.platform == 'windows' }}
-        uses: egor-tensin/setup-mingw@v2
+        uses: ./.github/actions/mingw-cache
 
       - name: Compile Extension
-        shell: sh
-        run: |
-          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
+        uses: ./.github/actions/openvic-build
+        with:
+          platform: ${{ matrix.platform }}
+          target: ${{ matrix.target }}
+          sconsflags: arch=${{ matrix.arch }}
 
       - name: Delete compilation files
         if: ${{ matrix.platform == 'windows' }}
