@@ -12,7 +12,7 @@ var _viewport_points : PackedVector2Array
 func _ready():
 	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_aspect_ratio(), 1.0) * 150
 	var minimap_material := _minimap_texture.get_material()
-	if Events.ShaderManager.set_up_shader(minimap_material, false) != OK:
+	if GameLoader.ShaderManager.set_up_shader(minimap_material, false) != OK:
 		push_error("Failed to set up minimap shader")
 	else:
 		_minimap_shader = minimap_material
@@ -20,7 +20,7 @@ func _ready():
 
 func _on_province_selected(index : int) -> void:
 	if _minimap_shader != null:
-		_minimap_shader.set_shader_parameter(Events.ShaderManager.param_selected_index, index)
+		_minimap_shader.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
 
 # REQUIREMENTS
 # * SS-80

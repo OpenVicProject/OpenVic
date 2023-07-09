@@ -23,6 +23,7 @@ config/project_settings_override.template="user://settings.cfg"
 
 ArgumentParser="*res://src/Game/Autoload/Argument/ArgumentParser.tscn"
 Events="*res://src/Game/Autoload/Events.gd"
+GameLoader="*res://src/Game/Autoload/GameLoader.gd"
 Resolution="*res://src/Game/Autoload/Resolution.gd"
 SoundManager="*res://src/Game/Autoload/SoundManager.gd"
 MusicConductor="*res://src/Game/MusicConductor/MusicConductor.tscn"

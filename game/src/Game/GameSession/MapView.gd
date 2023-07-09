@@ -58,7 +58,7 @@ func _ready():
 
 	# Shader Material
 	var map_material := _map_mesh_instance.get_active_material(0)
-	if Events.ShaderManager.set_up_shader(map_material, true) != OK:
+	if GameLoader.ShaderManager.set_up_shader(map_material, true) != OK:
 		push_error("Failed to set up map shader")
 		return
 	_map_shader_material = map_material
@@ -70,7 +70,7 @@ func _ready():
 
 	# Set map mesh size and get bounds
 	const pixels_per_terrain_tile : float = 32.0
-	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_terrain_tile_factor,
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_terrain_tile_factor,
 		float(GameSingleton.get_height()) / pixels_per_terrain_tile)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
@@ -114,7 +114,7 @@ func zoom_out() -> void:
 	_zoom_target += _zoom_target_step
 
 func _on_province_selected(index : int) -> void:
-	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_selected_index, index)
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
 
 # REQUIREMENTS
 # * SS-31
@@ -218,14 +218,14 @@ func _update_mouse_map_position() -> void:
 	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
 	var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 	if _mouse_over_viewport:
-		_map_shader_material.set_shader_parameter(Events.ShaderManager.param_hover_index, hover_index)
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
 
 func _on_mouse_entered_viewport():
 	_mouse_over_viewport = true
 
 func _on_mouse_exited_viewport():
 	_mouse_over_viewport = false
-	_map_shader_material.set_shader_parameter(Events.ShaderManager.param_hover_index, 0)
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, 0)
 
 func _on_minimap_clicked(pos_clicked : Vector2):
 	pos_clicked *= _map_mesh_dims

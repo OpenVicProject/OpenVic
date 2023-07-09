@@ -22,7 +22,7 @@ func _notification(what):
 		if not visible: _revert_node = null
 
 func _process(_delta) -> void:
-	dialog_text = tr(dialog_text_key).format({ "time": Events.Localisation.tr_number(int(timer.time_left)) })
+	dialog_text = tr(dialog_text_key).format({ "time": Localisation.tr_number(int(timer.time_left)) })
 
 func _on_canceled_or_close_requested() -> void:
 	timer.stop()

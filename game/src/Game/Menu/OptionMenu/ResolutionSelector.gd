@@ -53,8 +53,8 @@ func _update_resolution_options_text() -> void:
 			display_name += "_NAMED"
 		if resolution_value == default_value:
 			display_name += "_DEFAULT"
-		format_dict["width"] = Events.Localisation.tr_number(resolution_value.x)
-		format_dict["height"] = Events.Localisation.tr_number(resolution_value.y)
+		format_dict["width"] = Localisation.tr_number(resolution_value.x)
+		format_dict["height"] = Localisation.tr_number(resolution_value.y)
 		display_name = tr(display_name).format(format_dict)
 		set_item_text(index, display_name)
 

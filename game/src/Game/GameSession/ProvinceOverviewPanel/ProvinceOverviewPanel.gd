@@ -107,7 +107,7 @@ func _update_info() -> void:
 
 		_life_rating_bar.value = _province_info.get(GameSingleton.get_province_info_life_rating_key(), 0)
 		_life_rating_bar.tooltip_text = tr("LIFE_RATING_TOOLTIP").format({
-			"life_rating": Events.Localisation.tr_number(_life_rating_bar.value)
+			"life_rating": Localisation.tr_number(_life_rating_bar.value)
 		})
 
 		_rgo_name_label.text = _province_info.get(GameSingleton.get_province_info_rgo_key(),
