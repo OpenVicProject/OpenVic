@@ -9,6 +9,7 @@ SAVED_ARGUMENTS = ARGUMENTS.copy()
 ARGUMENTS.pop('intermediate_delete', True)
 ARGUMENTS.pop('progress', True)
 ARGUMENTS.pop('verbose', True)
+ARGUMENTS.pop('compiledb', True)
 
 env = SConscript("godot-cpp/SConstruct")
 
@@ -30,6 +31,7 @@ if profile:
         customs.append(profile + ".py")
 opts = Variables(customs, ARGUMENTS)
 
+opts.Add(BoolVariable("compiledb", "Generate compilation DB (`compile_commands.json`) for external tools", False))
 opts.Add(BoolVariable("verbose", "Enable verbose output for the compilation", False))
 opts.Add(
     BoolVariable("intermediate_delete", "Enables automatically deleting unassociated intermediate binary files.", True)
@@ -182,6 +184,19 @@ scons_cache_path = os.environ.get("SCONS_CACHE")
 if scons_cache_path != None:
     CacheDir(scons_cache_path)
     print("Scons cache enabled... (path: '" + scons_cache_path + "')")
+
+if env["compiledb"]:
+    # Generating the compilation DB (`compile_commands.json`) requires SCons 4.0.0 or later.
+    from SCons import __version__ as scons_raw_version
+
+    scons_ver = env._get_major_minor_revision(scons_raw_version)
+
+    if scons_ver < (4, 0, 0):
+        print("The `compiledb=yes` option requires SCons 4.0 or later, but your version is %s." % scons_raw_version)
+        Exit(255)
+
+    env.Tool("compilation_db")
+    env.Alias("compiledb", env.CompilationDatabase())
 
 # For the reference:
 # - CCFLAGS are compilation flags shared between C and C++
