@@ -3,10 +3,9 @@ name: Builds
 on: [push, pull_request]
 
 env:
-  GODOT_DOWNLOAD_URL: https://downloads.tuxfamily.org/godotengine
-  GODOT_VERSION_PREFIX: Godot_v
-  GODOT_VERSION_SUFFIX: stable
-  GODOT_VERSION: 4.1
+  GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
+  GODOT_VERSION: 4.1.1
+  GODOT_VERSION_TYPE: stable
   OPENVIC_BASE_BRANCH: master
 
 concurrency:
@@ -15,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on:  ${{matrix.os}}
+    runs-on: ${{matrix.os}}
     name: ${{matrix.name}}
     permissions: write-all
     strategy:
@@ -62,7 +61,6 @@ jobs:
             arch: x86_64
 
     steps:
-
       - name: Checkout project
         uses: actions/checkout@v3.3.0
         with:
@@ -80,7 +78,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Set up SCons
         shell: bash
@@ -125,9 +123,9 @@ jobs:
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.1
         with:
-          type: 'zip'
-          filename: '../../../libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip'
-          directory: '${{ github.workspace }}/game/bin/openvic/'
+          type: "zip"
+          filename: "../../../libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip"
+          directory: "${{ github.workspace }}/game/bin/openvic/"
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
       - name: Create and upload asset
@@ -146,7 +144,6 @@ jobs:
 
     name: Peform Godot Debug Checks
     steps:
-
       - name: Checkout project
         uses: actions/checkout@v3.3.0
 
@@ -163,8 +160,8 @@ jobs:
         id: export_game
         uses: Spartan322/godot-export@master
         with:
-          godot_executable_download_url: ${{env.GODOT_DOWNLOAD_URL}}/${{env.GODOT_VERSION}}/${{env.GODOT_VERSION_PREFIX}}${{env.GODOT_VERSION}}-${{env.GODOT_VERSION_SUFFIX}}_linux.x86_64.zip
-          godot_export_templates_download_url: ${{env.GODOT_DOWNLOAD_URL}}/${{env.GODOT_VERSION}}/${{env.GODOT_VERSION_PREFIX}}${{env.GODOT_VERSION}}-${{env.GODOT_VERSION_SUFFIX}}_export_templates.tpz
+          godot_executable_download_url: ${{env.GODOT_LINUX_URL}}
+          godot_export_templates_download_url: ${{env.GODOT_TEMPLATE_URL}}
           relative_project_path: ./game
           export_as_pack: true
           export_debug: true
@@ -180,7 +177,6 @@ jobs:
           path: |
             ./game/export/${{ github.event.repository.name }}.pck
 
-
   export:
     runs-on: ubuntu-latest
     needs: [build]
@@ -188,7 +184,6 @@ jobs:
 
     name: Export
     steps:
-
       - name: Checkout project
         uses: actions/checkout@v3.3.0
 
@@ -212,8 +207,8 @@ jobs:
         id: export_game
         uses: Spartan322/godot-export@master
         with:
-          godot_executable_download_url: ${{env.GODOT_DOWNLOAD_URL}}/${{env.GODOT_VERSION}}/${{env.GODOT_VERSION_PREFIX}}${{env.GODOT_VERSION}}-${{env.GODOT_VERSION_SUFFIX}}_linux.x86_64.zip
-          godot_export_templates_download_url: ${{env.GODOT_DOWNLOAD_URL}}/${{env.GODOT_VERSION}}/${{env.GODOT_VERSION_PREFIX}}${{env.GODOT_VERSION}}-${{env.GODOT_VERSION_SUFFIX}}_export_templates.tpz
+          godot_executable_download_url: ${{env.GODOT_LINUX_URL}}
+          godot_export_templates_download_url: ${{env.GODOT_TEMPLATE_URL}}
           relative_project_path: ./game
           archive_output: true
           cache: true
