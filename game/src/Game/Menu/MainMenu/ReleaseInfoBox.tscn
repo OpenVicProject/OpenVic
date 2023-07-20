@@ -10,6 +10,7 @@ _commit_label = NodePath("CommitLabel")
 _checksum_label = NodePath("ChecksumLabel")
 
 [node name="VersionLabel" type="Button" parent="."]
+editor_description = "UI-869, UI-870"
 layout_mode = 2
 tooltip_text = "VERSION_MISSING"
 focus_mode = 0
@@ -19,6 +20,7 @@ flat = true
 alignment = 0
 
 [node name="CommitLabel" type="Button" parent="."]
+editor_description = "UI-871, UI-872"
 layout_mode = 2
 focus_mode = 0
 theme_type_variation = &"CommitLabel"

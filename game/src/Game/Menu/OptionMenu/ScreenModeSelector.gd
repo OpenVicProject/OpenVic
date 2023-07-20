@@ -1,6 +1,7 @@
 extends SettingRevertButton
 
 # REQUIREMENTS
+# * SS-26, SS-127, SS-128
 # * UIFUN-42
 
 enum ScreenMode { Unknown = -1, Fullscreen, Borderless, Windowed }

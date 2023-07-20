@@ -7,6 +7,8 @@ const error_resolution : Vector2i = Vector2i(-1,-1)
 @export
 var minimum_resolution : Vector2i = Vector2i(1,1)
 
+# REQUIREMENTS:
+# * SS-130, SS-131, SS-132, SS-133
 const _starting_resolutions : Array[Vector2i] = [
 	Vector2i(3840,2160),
 	Vector2i(2560,1080),

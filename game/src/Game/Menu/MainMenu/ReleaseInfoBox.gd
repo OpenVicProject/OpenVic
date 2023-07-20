@@ -12,7 +12,8 @@ var _checksum_label : Button
 var _checksum : String = "????"
 
 # REQUIREMENTS:
-# * UIFUN-97
+# * SS-104, SS-105, SS-106, SS-107
+# * UIFUN-97, UIFUN-297, UIFUN-299
 func _ready():
 	_version_label.text = _GIT_INFO_.release_name
 	_version_label.tooltip_text = _GIT_INFO_.tag

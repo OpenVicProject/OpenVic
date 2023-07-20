@@ -66,7 +66,7 @@ func select_previous_song() -> void:
 	start_current_song()
 
 # REQUIREMENTS
-# * SND-2
+# * SND-2, SND-3
 func _ready():
 	var dir = DirAccess.open(music_directory)
 	for fname in dir.get_files():

@@ -44,7 +44,7 @@ var _building_rows : Array[Dictionary]
 # * UI-191, UI-193, UI-194, UI-766, UI-195, UI-196, UI-197
 # * UI-199, UI-201, UI-202, UI-767, UI-203, UI-204, UI-205
 func _add_building_row() -> void:
-	var row : Dictionary
+	var row : Dictionary = {}
 
 	row.level = Label.new()
 	row.level.text = "X"

@@ -83,7 +83,7 @@ void GameSingleton::_on_state_updated() {
 }
 
 /* REQUIREMENTS:
- * MAP-21, MAP-23, MAP-25
+ * MAP-21, MAP-23, MAP-25, MAP-32
  */
 GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); } },
 								 terrain_variants { "terrain variants" } {

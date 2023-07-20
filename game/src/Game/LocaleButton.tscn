@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/Game/LocaleButton.gd" id="1_ganev"]
 
 [node name="LocaleButton" type="OptionButton"]
+editor_description = "UI-600, UI-895, UI-896, UI-898, UI-899, UIFUN-322"
 custom_minimum_size = Vector2(150, 0)
 alignment = 2
 text_overrun_behavior = 2

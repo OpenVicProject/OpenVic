@@ -136,6 +136,7 @@ theme_type_variation = &"BottomMargin"
 layout_mode = 2
 
 [node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_amonp")]
+editor_description = "SS-87"
 layout_mode = 2
 size_flags_horizontal = 8
 alignment = 0

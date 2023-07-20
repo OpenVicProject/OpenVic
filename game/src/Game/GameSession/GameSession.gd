@@ -7,7 +7,7 @@ func _ready():
 	if GameSingleton.setup_game() != OK:
 		push_error("Failed to setup game")
 
-func _process(delta : float):
+func _process(_delta : float):
 	GameSingleton.try_tick()
 
 # REQUIREMENTS:

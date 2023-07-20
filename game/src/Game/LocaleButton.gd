@@ -71,6 +71,7 @@ func reset_setting() -> void:
 
 # REQUIREMENTS:
 # * SS-58
+# * UIFUN-323
 func _on_item_selected(index : int) -> void:
 	if _valid_index(index):
 		TranslationServer.set_locale(get_item_metadata(index))

@@ -37,7 +37,7 @@ func _on_game_session_menu_button_pressed() -> void:
 
 # REQUIREMENTS:
 # * SS-76
-# * UIFUN-129, UIFUN-131, UIFUN-133
+# * UIFUN-129, UIFUN-131, UIFUN-133, UIFUN-140
 func _mapmode_pressed(button : BaseButton) -> void:
 	GameSingleton.set_mapmode(button.tooltip_text)
 
