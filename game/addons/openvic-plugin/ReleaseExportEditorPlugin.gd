@@ -25,6 +25,8 @@ func _export_file(path: String, type: String, features: PackedStringArray) -> vo
 
 # Based on
 # https://github.com/godotengine/godot/blob/6ef2f358c741c993b5cdc9680489e2c4f5da25cc/methods.py#L102-L133
+# REQUIREMENTS:
+# * UIFUN-298
 var _cached_hash : StringName = &""
 func _get_commit_hash() -> StringName:
 	if not _cached_hash.is_empty(): return _cached_hash
@@ -68,6 +70,8 @@ func _get_commit_hash() -> StringName:
 
 	return git_hash
 
+# REQUIREMENTS:
+# * UIFUN-296
 func _try_get_tag() -> StringName:
 	var result : StringName = OS.get_environment("OPENVIC_TAG")
 	if result.is_empty():
@@ -84,6 +88,8 @@ func _get_commit_long():
 		_repo_hash = result
 	print("Hash: " + _repo_hash)
 
+# REQUIREMENTS:
+# * UIFUN-300
 func _get_commit_short():
 	var result := _get_commit_hash().substr(0,7)
 	if not result.is_empty():
@@ -96,6 +102,8 @@ func _get_tag():
 		_repo_tag = result
 	print("Tag: " + _repo_tag)
 
+# REQUIREMENTS:
+# * UIFUN-295
 func _get_release_name():
 	var result : StringName = OS.get_environment("OPENVIC_RELEASE")
 	if result.is_empty():

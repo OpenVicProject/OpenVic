@@ -1,6 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://dd8k3p7r3huwc"]
+[gd_scene load_steps=8 format=3 uid="uid://dd8k3p7r3huwc"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/GameSpeedPanel.gd" id="1_pfs8t"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_3k1tl"]
+action = &"time_pause"
+
+[sub_resource type="Shortcut" id="Shortcut_cg5xm"]
+events = [SubResource("InputEventAction_3k1tl")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_w2rkb"]
+action = &"time_speed_decrease"
+
+[sub_resource type="Shortcut" id="Shortcut_ocrfe"]
+events = [SubResource("InputEventAction_w2rkb")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_7sdhp"]
+action = &"time_speed_increase"
+
+[sub_resource type="Shortcut" id="Shortcut_gwofc"]
+events = [SubResource("InputEventAction_7sdhp")]
 
 [node name="GameSpeedPanel" type="PanelContainer" node_paths=PackedStringArray("_longform_date_button", "_play_pause_display_button", "_decrease_speed_button", "_increase_speed_button")]
 script = ExtResource("1_pfs8t")
@@ -13,27 +31,34 @@ _increase_speed_button = NodePath("ButtonList/IncreaseSpeedButton")
 layout_mode = 2
 
 [node name="LongformDateButton" type="Button" parent="ButtonList"]
+editor_description = "UI-74"
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 focus_mode = 0
 text = "LONGFORM DATE"
 
 [node name="PlayPauseDisplayButton" type="Button" parent="ButtonList"]
+editor_description = "UI-75, UIFUN-90"
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 focus_mode = 0
+shortcut = SubResource("Shortcut_cg5xm")
 text = "⏸  "
 
 [node name="DecreaseSpeedButton" type="Button" parent="ButtonList"]
+editor_description = "UI-77"
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 focus_mode = 0
+shortcut = SubResource("Shortcut_ocrfe")
 text = "-"
 
 [node name="IncreaseSpeedButton" type="Button" parent="ButtonList"]
+editor_description = "UI-76"
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 focus_mode = 0
+shortcut = SubResource("Shortcut_gwofc")
 text = "+"
 
 [connection signal="pressed" from="ButtonList/LongformDateButton" to="." method="_on_longform_date_label_pressed"]

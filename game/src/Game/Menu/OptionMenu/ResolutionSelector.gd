@@ -1,10 +1,7 @@
 extends SettingRevertButton
 
 # REQUIREMENTS
-# * UIFUN-21
-# * UIFUN-28
-# * UIFUN-301
-# * UIFUN-302
+# * UIFUN-21, UIFUN-28, UIFUN-301, UIFUN-302
 
 @export var default_value : Vector2i = Resolution.error_resolution
 
@@ -14,7 +11,7 @@ func _find_resolution_index_by_value(value : Vector2i) -> int:
 			return item_index
 	return -1
 
-func _sync_resolutions(value : Vector2i = Resolution.error_resolution) -> void:
+func _sync_resolutions() -> void:
 	clear()
 	default_selected = -1
 	selected = -1
@@ -59,7 +56,7 @@ func _update_resolution_options_text() -> void:
 		set_item_text(index, display_name)
 
 func _setup_button() -> void:
-	Resolution.resolution_added.connect(_sync_resolutions)
+	Resolution.resolution_added.connect(func (_value : Vector2i): _sync_resolutions())
 	if default_value.x <= 0:
 		default_value.x = ProjectSettings.get_setting("display/window/size/viewport_width")
 	if default_value.y <= 0:
@@ -75,6 +72,8 @@ func _get_value_for_file(select_value : int) -> Variant:
 	else:
 		return null
 
+# REQUIREMENTS:
+# * SS-25
 func _set_value_from_file(load_value) -> void:
 	var target_resolution := Resolution.error_resolution
 	match typeof(load_value):

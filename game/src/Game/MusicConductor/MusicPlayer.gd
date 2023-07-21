@@ -31,18 +31,22 @@ func _on_play_pause_button_pressed():
 	MusicConductor.toggle_play_pause()
 	_update_play_pause_button()
 
+# REQUIREMENTS
+# * UIFUN-93
 func _on_next_song_button_pressed():
 	MusicConductor.select_next_song()
 	_update_song_name_visual()
 	_update_play_pause_button()
 
+# REQUIREMENTS
+# * UIFUN-94
 func _on_previous_song_button_pressed():
 	MusicConductor.select_previous_song()
 	_update_song_name_visual()
 	_update_play_pause_button()
 
 # REQUIREMENTS
-# * UIFUN-92
+# * UIFUN-95
 func _on_option_button_item_selected(index):
 	MusicConductor.start_song_by_index(index)
 	_update_song_name_visual()

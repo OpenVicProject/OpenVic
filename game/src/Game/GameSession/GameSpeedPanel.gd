@@ -1,6 +1,7 @@
 extends PanelContainer
 
-#UI-74 UI-75 UI-76 UI-77
+# REQUIREMENTS:
+# * SS-37, SS-38, SS-39
 
 @export var _longform_date_button : Button
 @export var _play_pause_display_button : Button
@@ -19,15 +20,20 @@ func _update_buttons():
 
 	_longform_date_button.text = GameSingleton.get_longform_date()
 
-
+# REQUIREMENTS:
+# * UIFUN-73
 func _on_decrease_speed_button_pressed():
 	GameSingleton.decrease_speed()
 	_update_buttons()
 
+# REQUIREMENTS:
+# * UIFUN-72
 func _on_increase_speed_button_pressed():
 	GameSingleton.increase_speed()
 	_update_buttons()
 
+# REQUIREMENTS:
+# * UIFUN-71
 func _on_play_pause_display_button_pressed():
 	GameSingleton.toggle_paused()
 	_update_buttons()

@@ -17,7 +17,7 @@ _next_song_button = NodePath("ButtonList/NextSongButton")
 _visbility_button = NodePath("MusicUIVisibilityButton")
 
 [node name="SongSelectorButton" type="OptionButton" parent="."]
-editor_description = "UI-107"
+editor_description = "UI-105, UI-107, UI-110, UIFUN-92"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 focus_mode = 0
@@ -37,6 +37,7 @@ size_flags_horizontal = 4
 mouse_filter = 2
 
 [node name="PreviousSongButton" type="Button" parent="ButtonList"]
+editor_description = "UI-109"
 layout_mode = 2
 focus_mode = 0
 text = "<"
@@ -48,6 +49,7 @@ focus_mode = 0
 text = "▶"
 
 [node name="NextSongButton" type="Button" parent="ButtonList"]
+editor_description = "UI-108"
 layout_mode = 2
 focus_mode = 0
 text = ">"

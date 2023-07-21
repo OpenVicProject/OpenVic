@@ -57,9 +57,9 @@ func _ready():
 	item_selected.connect(func(index : int): option_selected.emit(index, true))
 	_setup_button()
 	if not _valid_index(default_selected) or selected == -1:
-		var msg := "Failed to generate %s %s options." % [setting_name, section_name]
+		var msg := "Failed to generate any valid %s %s options." % [setting_name, section_name]
 		push_error(msg)
-		OS.alert(msg, "%s Options Error" % section_name)
+		OS.alert(msg, "Options Error: %s / %s" % [section_name, setting_name])
 		get_tree().quit()
 
 func load_setting(file : ConfigFile) -> void:

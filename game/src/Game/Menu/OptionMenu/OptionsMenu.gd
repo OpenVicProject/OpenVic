@@ -66,11 +66,12 @@ func _save_overrides() -> void:
 	if override_path.is_empty():
 		override_path = ProjectSettings.get_setting(Events.Options.settings_file_path_setting, Events.Options.settings_file_path_default)
 	var file := ConfigFile.new()
-	var err_ret := file.load(override_path)
-	if err_ret != OK: push_error("Failed to load overrides from %s" % override_path)
+	if FileAccess.file_exists(override_path):
+		if file.load(override_path) != OK:
+			push_error("Failed to load overrides from %s" % override_path)
 	file.set_value("display", "window/size/mode", Resolution.get_current_window_mode())
 	var resolution : Vector2i = Resolution.get_current_resolution()
 	file.set_value("display", "window/size/viewport_width", resolution.x)
 	file.set_value("display", "window/size/viewport_height", resolution.y)
-	err_ret = file.save(override_path)
-	if err_ret != OK: push_error("Failed to save overrides to %s" % override_path)
+	if file.save(override_path) != OK:
+		push_error("Failed to save overrides to %s" % override_path)
