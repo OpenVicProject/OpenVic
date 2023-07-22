@@ -1,7 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene load_steps=9 format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Script" path="res://addons/zylann.hterrain/hterrain.gd" id="3_6qmnv"]
+[ext_resource type="Resource" path="res://testing/dataft/data.hterrain" id="4_cd8x3"]
+[ext_resource type="Script" path="res://addons/zylann.hterrain/hterrain_texture_set.gd" id="5_t42pt"]
+
+[sub_resource type="Resource" id="Resource_l6jw3"]
+script = ExtResource("5_t42pt")
+mode = 0
+textures = [[], []]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
@@ -22,6 +30,26 @@ _map_mesh_instance = NodePath("MapMeshInstance")
 [node name="MapCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.25, 1.5, -2.75)
 near = 0.01
+
+[node name="HTerrain" type="Node3D" parent="."]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 1, 0)
+script = ExtResource("3_6qmnv")
+centered = true
+_terrain_data = ExtResource("4_cd8x3")
+chunk_size = 32
+collision_enabled = true
+collision_layer = 1
+collision_mask = 1
+shader_type = "Classic4Lite"
+custom_shader = null
+custom_globalmap_shader = null
+texture_set = SubResource("Resource_l6jw3")
+render_layers = 1
+cast_shadow = 1
+shader_params/u_ground_uv_scale = 20
+shader_params/u_depth_blending = true
+shader_params/u_triplanar = null
+shader_params/u_tile_reduction = null
 
 [node name="MapMeshInstance" type="MeshInstance3D" parent="."]
 editor_description = "FS-343"

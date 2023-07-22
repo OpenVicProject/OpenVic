@@ -1,0 +1,143 @@
+[gd_scene load_steps=18 format=3 uid="uid://b64rk3r14m5br"]
+
+[ext_resource type="Texture2D" uid="uid://bay3ak8k8pevv" path="res://assets/kloppenheim_06_puresky_4k.exr" id="1_cyo0m"]
+[ext_resource type="Shader" path="res://assets/shaders/water.gdshader" id="2_twn8n"]
+[ext_resource type="Script" path="res://Water.gd" id="3_t5r3v"]
+[ext_resource type="Script" path="res://Cube.gd" id="3_wnrpb"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_vcvt7"]
+panorama = ExtResource("1_cyo0m")
+
+[sub_resource type="Sky" id="Sky_wc0b5"]
+sky_material = SubResource("PanoramaSkyMaterial_vcvt7")
+
+[sub_resource type="Environment" id="Environment_w5hlc"]
+background_mode = 2
+sky = SubResource("Sky_wc0b5")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hy6fq"]
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_brvoh"]
+seamless = true
+as_normal_map = true
+bump_strength = 1.5
+noise = SubResource("FastNoiseLite_hy6fq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hs2gb"]
+noise_type = 3
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_u5h0n"]
+seamless = true
+as_normal_map = true
+bump_strength = 1.5
+noise = SubResource("FastNoiseLite_hs2gb")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jbi1g"]
+noise_type = 3
+frequency = 0.001
+fractal_type = 2
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7k2l2"]
+seamless = true
+noise = SubResource("FastNoiseLite_jbi1g")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0n3y0"]
+render_priority = 0
+shader = ExtResource("2_twn8n")
+shader_parameter/albedo = Color(0, 0.321569, 0.431373, 1)
+shader_parameter/albedo2 = Color(0, 0.47451, 0.764706, 1)
+shader_parameter/color_deep = Color(0.105882, 0.294118, 0.329412, 1)
+shader_parameter/color_shallow = Color(0, 0.552941, 0.65098, 1)
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.02
+shader_parameter/wave_time = 0.0
+shader_parameter/wave_direction = Vector2(2, 0)
+shader_parameter/wave_2_direction = Vector2(0, 1)
+shader_parameter/time_scale = 0.025
+shader_parameter/wave_speed = 0.2
+shader_parameter/noise_scale = 10.0
+shader_parameter/height_scale = 2.0
+shader_parameter/beers_law = 0.089
+shader_parameter/depth_offset = -0.75
+shader_parameter/edge_scale = 0.362
+shader_parameter/near = 0.5
+shader_parameter/far = 100.0
+shader_parameter/edge_color = Color(1, 1, 1, 1)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_brvoh")
+shader_parameter/texture_normal2 = SubResource("NoiseTexture2D_u5h0n")
+shader_parameter/wave = SubResource("NoiseTexture2D_7k2l2")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0xwda"]
+material = SubResource("ShaderMaterial_0n3y0")
+size = Vector2(500, 500)
+subdivide_width = 500
+subdivide_depth = 500
+
+[sub_resource type="BoxMesh" id="BoxMesh_km0el"]
+size = Vector3(5, 1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lu3w5"]
+size = Vector3(5, 1, 10)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_w5hlc")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.940098, 0.0859291, -0.329897, -0.23722, -0.859886, 0.452021, -0.244833, 0.503202, 0.828761, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Water" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_0xwda")
+script = ExtResource("3_t5r3v")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.0305324, 0.321287, -0.94649, 0, 0.946931, 0.321437, 0.999534, -0.00981422, 0.0289121, -11.6034, 4.14286, 1.45379)
+
+[node name="Cube" type="RigidBody3D" parent="."]
+transform = Transform3D(-0.761663, 0, -0.647974, 0, 1, 0, 0.647974, 0, -0.761663, 0, 3.13922, 0)
+mass = 10.0
+script = ExtResource("3_wnrpb")
+float_force = 1.3
+water_angular_drag = 0.1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube"]
+mesh = SubResource("BoxMesh_km0el")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube"]
+shape = SubResource("BoxShape3D_lu3w5")
+
+[node name="ProbeContainer" type="Node3D" parent="Cube"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.590401, 0)
+
+[node name="Probe" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 5)
+
+[node name="Probe2" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0)
+
+[node name="Probe3" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -5)
+
+[node name="Probe4" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="Probe5" type="Marker3D" parent="Cube/ProbeContainer"]
+
+[node name="Probe6" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="Probe7" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 5)
+
+[node name="Probe8" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0)
+
+[node name="Probe9" type="Marker3D" parent="Cube/ProbeContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -5)

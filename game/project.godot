@@ -43,7 +43,7 @@ window/stretch/aspect="ignore"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg", "res://addons/zylann.hterrain/plugin.cfg")
 
 [gui]
 

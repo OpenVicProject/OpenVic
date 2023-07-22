@@ -1,0 +1,69 @@
+[gd_scene load_steps=11 format=3 uid="uid://cty2qgt0i5f4w"]
+
+[ext_resource type="Shader" path="res://assets/shaders/water.gdshader" id="1_oeaqx"]
+[ext_resource type="Script" path="res://Water.gd" id="2_qv0cn"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hy6fq"]
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_brvoh"]
+seamless = true
+as_normal_map = true
+bump_strength = 1.5
+noise = SubResource("FastNoiseLite_hy6fq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_hs2gb"]
+noise_type = 3
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_u5h0n"]
+seamless = true
+as_normal_map = true
+bump_strength = 1.5
+noise = SubResource("FastNoiseLite_hs2gb")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jbi1g"]
+noise_type = 3
+frequency = 0.001
+fractal_type = 2
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7k2l2"]
+seamless = true
+noise = SubResource("FastNoiseLite_jbi1g")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0n3y0"]
+render_priority = 0
+shader = ExtResource("1_oeaqx")
+shader_parameter/albedo = Color(0, 0.321569, 0.431373, 1)
+shader_parameter/albedo2 = Color(0, 0.47451, 0.764706, 1)
+shader_parameter/color_deep = Color(0.105882, 0.294118, 0.329412, 1)
+shader_parameter/color_shallow = Color(0, 0.552941, 0.65098, 1)
+shader_parameter/metallic = 0.0
+shader_parameter/roughness = 0.02
+shader_parameter/wave_time = 0.0
+shader_parameter/wave_direction = Vector2(2, 0)
+shader_parameter/wave_2_direction = Vector2(0, 1)
+shader_parameter/time_scale = 0.025
+shader_parameter/wave_speed = 0.2
+shader_parameter/noise_scale = 10.0
+shader_parameter/height_scale = 2.0
+shader_parameter/beers_law = 0.089
+shader_parameter/depth_offset = -0.75
+shader_parameter/edge_scale = 0.362
+shader_parameter/near = 0.5
+shader_parameter/far = 100.0
+shader_parameter/edge_color = Color(1, 1, 1, 1)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_brvoh")
+shader_parameter/texture_normal2 = SubResource("NoiseTexture2D_u5h0n")
+shader_parameter/wave = SubResource("NoiseTexture2D_7k2l2")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0xwda"]
+material = SubResource("ShaderMaterial_0n3y0")
+size = Vector2(500, 500)
+subdivide_width = 500
+subdivide_depth = 500
+
+[node name="Water" type="MeshInstance3D"]
+mesh = SubResource("PlaneMesh_0xwda")
+script = ExtResource("2_qv0cn")

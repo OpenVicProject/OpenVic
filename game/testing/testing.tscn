@@ -1,0 +1,115 @@
+[gd_scene load_steps=18 format=3 uid="uid://bh6us7qfprpc6"]
+
+[ext_resource type="Script" path="res://addons/zylann.hterrain/hterrain.gd" id="1_vnlln"]
+[ext_resource type="Resource" path="res://testing/dataft/data.hterrain" id="2_7sfpq"]
+[ext_resource type="Script" path="res://addons/zylann.hterrain/hterrain_texture_set.gd" id="3_l4lvw"]
+[ext_resource type="Shader" path="res://testing/testing.gdshader" id="4_d4jdj"]
+[ext_resource type="Texture2D" uid="uid://dl45nhftyvbof" path="res://testing/mountains1.png" id="5_u3vhh"]
+[ext_resource type="Shader" path="res://testing/water.gdshader" id="6_y3s8d"]
+
+[sub_resource type="Resource" id="Resource_hwcui"]
+script = ExtResource("3_l4lvw")
+mode = 0
+textures = [[], []]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u8as5"]
+render_priority = 0
+shader = ExtResource("4_d4jdj")
+shader_parameter/height_ration = 5.0
+shader_parameter/heightmap = ExtResource("5_u3vhh")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_cr2e3"]
+size = Vector2(200, 200)
+subdivide_width = 100
+subdivide_depth = 100
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_i35q3"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2oefh"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_i35q3")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_7emex"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cga1x"]
+seamless = true
+as_normal_map = true
+noise = SubResource("FastNoiseLite_7emex")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_oe6vd"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_esb1b"]
+seamless = true
+noise = SubResource("FastNoiseLite_oe6vd")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k47d8"]
+render_priority = 0
+shader = ExtResource("6_y3s8d")
+shader_parameter/albedo = Color(0, 0, 0.0823529, 1)
+shader_parameter/albedo2 = Color(0, 0, 0.301961, 1)
+shader_parameter/color_shallow = Color(0, 0, 0, 1)
+shader_parameter/metallic = 0.483
+shader_parameter/roughness = 0.02
+shader_parameter/wave_time = 0.0
+shader_parameter/wave_direction = Vector2(2, 0)
+shader_parameter/wave_2_direction = Vector2(0, 1)
+shader_parameter/time_scale = 0.025
+shader_parameter/wave_speed = 2.0
+shader_parameter/noise_scale = 10.0
+shader_parameter/height_scale = 0.15
+shader_parameter/beers_law = 0.0
+shader_parameter/depth_offset = 0.0
+shader_parameter/edge_scale = 0.1
+shader_parameter/near = 0.1
+shader_parameter/far = 10000.0
+shader_parameter/edge_color = Color(0.415686, 0.490196, 0.8, 1)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_2oefh")
+shader_parameter/texture_normal2 = SubResource("NoiseTexture2D_cga1x")
+shader_parameter/wave = SubResource("NoiseTexture2D_esb1b")
+
+[sub_resource type="QuadMesh" id="QuadMesh_8bjqq"]
+size = Vector2(5000, 5000)
+subdivide_width = 100
+subdivide_depth = 100
+orientation = 1
+
+[node name="testing" type="Node"]
+
+[node name="HTerrain" type="Node3D" parent="."]
+script = ExtResource("1_vnlln")
+_terrain_data = ExtResource("2_7sfpq")
+chunk_size = 32
+collision_enabled = true
+collision_layer = 1
+collision_mask = 1
+shader_type = "Classic4"
+custom_shader = null
+custom_globalmap_shader = null
+texture_set = SubResource("Resource_hwcui")
+render_layers = 1
+cast_shadow = 0
+shader_params/u_ground_uv_scale_per_texture = null
+shader_params/u_depth_blending = true
+shader_params/u_triplanar = null
+shader_params/u_tile_reduction = null
+shader_params/u_globalmap_blend_start = null
+shader_params/u_globalmap_blend_distance = null
+shader_params/u_colormap_opacity_per_texture = null
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 346.259, 0, 97.7753)
+visible = false
+material_override = SubResource("ShaderMaterial_u8as5")
+mesh = SubResource("PlaneMesh_cr2e3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.555969, -7.62939e-06, -0.0280457)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+material_override = SubResource("ShaderMaterial_k47d8")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_8bjqq")
