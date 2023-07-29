@@ -1,0 +1,21 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bl2arkbisbk8f"]
+
+[ext_resource type="Shader" path="res://src/Game/Theme/PieChart/PieChart.gdshader" id="1_j23w0"]
+
+[resource]
+resource_name = "Piechart_shader"
+shader = ExtResource("1_j23w0")
+shader_parameter/radius = 0.5
+shader_parameter/shadow_displacement = Vector2(0.75, 0.75)
+shader_parameter/shadow_tightness = 10.0
+shader_parameter/shadow_radius = 0.8
+shader_parameter/shadow_thickness = 1.0
+shader_parameter/stopAngles = [3.14159, 5.02655, 6.28319]
+shader_parameter/colours = [Vector3(0, 0, 1), Vector3(1, 1, 0), Vector3(0.4, 0, 0.6)]
+shader_parameter/trim_colour = Vector3(0, 0, 0)
+shader_parameter/trim_size = 0.02
+shader_parameter/gradient_falloff = 3.6
+shader_parameter/gradient_base = 3.1
+shader_parameter/donut = false
+shader_parameter/donut_inner_trim = true
+shader_parameter/donut_inner_radius = 0.25
