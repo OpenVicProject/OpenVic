@@ -1,5 +1,7 @@
 #include "GameSingleton.hpp"
 
+#include <cassert>
+
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic/utility/Logger.hpp"
@@ -8,6 +10,16 @@
 
 using namespace godot;
 using namespace OpenVic;
+
+TerrainVariant::TerrainVariant(std::string const& new_identfier,
+	colour_t new_colour, Ref<Image> const& new_image)
+	: HasIdentifier { new_identfier },
+	  HasColour { new_colour, true },
+	  image { new_image } {}
+
+Ref<Image> TerrainVariant::get_image() const {
+	return image;
+}
 
 GameSingleton* GameSingleton::singleton = nullptr;
 
@@ -62,6 +74,7 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_province_key"), &GameSingleton::get_province_info_province_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_region_key"), &GameSingleton::get_province_info_region_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_life_rating_key"), &GameSingleton::get_province_info_life_rating_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_total_population_key"), &GameSingleton::get_province_info_total_population_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_rgo_key"), &GameSingleton::get_province_info_rgo_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_buildings_key"), &GameSingleton::get_province_info_buildings_key);
 
@@ -83,7 +96,7 @@ void GameSingleton::_on_state_updated() {
 }
 
 /* REQUIREMENTS:
- * MAP-21, MAP-23, MAP-25, MAP-32
+ * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33
  */
 GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); } },
 								 terrain_variants { "terrain variants" } {
@@ -119,7 +132,7 @@ Error GameSingleton::_load_hardcoded_defines() {
 			} },
 		{ "mapmode_index",
 			[](Map const& map, Province const& province) -> colour_t {
-				const colour_t f = fraction_to_colour_byte(province.get_index(), map.get_province_count());
+				const colour_t f = fraction_to_colour_byte(province.get_index(), map.get_province_count() + 1);
 				return HIGH_ALPHA_VALUE | (f << 16) | (f << 8) | f;
 			} },
 		{ "mapmode_rgo",
@@ -132,7 +145,7 @@ Error GameSingleton::_load_hardcoded_defines() {
 			[](Map const& map, Province const& province) -> colour_t {
 				Building const* railroad = province.get_building_by_identifier("building_railroad");
 				if (railroad != nullptr) {
-					colour_t val = fraction_to_colour_byte(railroad->get_level(), railroad->get_type().get_max_level(), 0.5f, 1.0f);
+					colour_t val = fraction_to_colour_byte(railroad->get_level(), railroad->get_type().get_max_level() + 1, 0.5f, 1.0f);
 					switch (railroad->get_expansion_state()) {
 						case Building::ExpansionState::CannotExpand: val <<= 16; break;
 						case Building::ExpansionState::CanExpand: break;
@@ -141,6 +154,10 @@ Error GameSingleton::_load_hardcoded_defines() {
 					return HIGH_ALPHA_VALUE | val;
 				}
 				return HIGH_ALPHA_VALUE;
+			} },
+		{ "mapmode_population",
+			[](Map const& map, Province const& province) -> colour_t {
+				return HIGH_ALPHA_VALUE | (fraction_to_colour_byte(province.get_total_population(), map.get_highest_province_population() + 1, 0.1f, 1.0f) << 8);
 			} }
 	};
 	for (mapmode_t const& mapmode : mapmodes)
@@ -185,6 +202,10 @@ StringName const& GameSingleton::get_province_info_region_key() {
 }
 StringName const& GameSingleton::get_province_info_life_rating_key() {
 	static const StringName key = "life_rating";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_total_population_key() {
+	static const StringName key = "total_population";
 	return key;
 }
 StringName const& GameSingleton::get_province_info_rgo_key() {
@@ -235,6 +256,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	if (rgo != nullptr) ret[get_province_info_rgo_key()] = std_to_godot_string(rgo->get_identifier());
 
 	ret[get_province_info_life_rating_key()] = province->get_life_rating();
+	ret[get_province_info_total_population_key()] = province->get_total_population();
 
 	std::vector<Building> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {

@@ -7,20 +7,19 @@
 
 namespace OpenVic {
 	struct TerrainVariant : HasIdentifier, HasColour {
+		friend class GameSingleton;
+
 	private:
 		const godot::Ref<godot::Image> image;
 
+		TerrainVariant(std::string const& new_identfier, colour_t new_colour,
+			godot::Ref<godot::Image> const& new_image);
 	public:
 		static constexpr size_t MAX_INDEX = 1 << (8 * sizeof(Map::terrain_t));
 
-		TerrainVariant(std::string const& new_identfier, colour_t new_colour,
-			godot::Ref<godot::Image> const& new_image)
-			: HasIdentifier { new_identfier },
-			  HasColour { new_colour },
-			  image { new_image } {}
 		TerrainVariant(TerrainVariant&&) = default;
 
-		godot::Ref<godot::Image> get_image() const { return image; }
+		godot::Ref<godot::Image> get_image() const;
 	};
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
@@ -106,6 +105,7 @@ namespace OpenVic {
 		static godot::StringName const& get_province_info_province_key();
 		static godot::StringName const& get_province_info_region_key();
 		static godot::StringName const& get_province_info_life_rating_key();
+		static godot::StringName const& get_province_info_total_population_key();
 		static godot::StringName const& get_province_info_rgo_key();
 		static godot::StringName const& get_province_info_buildings_key();
 
