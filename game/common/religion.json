@@ -1,0 +1,108 @@
+{
+    "christian": {
+        "catholic": {
+            "colour": [
+                0.8,
+                0.8,
+                0
+            ]
+        },
+        "protestant": {
+            "colour": [
+                0,
+                0,
+                0.7
+            ]
+        },
+        "orthodox": {
+            "colour": [
+                0.7,
+                0.5,
+                0
+            ]
+        },
+        "coptic": {
+            "colour": [
+                0,
+                0.5,
+                0.7
+            ]
+        }
+    },
+    "muslim": {
+        "sunni": {
+            "colour": [
+                0,
+                0.6,
+                0
+            ]
+        },
+        "shiite": {
+            "colour": [
+                0,
+                0.8,
+                0
+            ]
+        }
+    },
+    "jewish": {
+        "jewish": [
+            0.3,
+            0.5,
+            0.3
+        ]
+    },
+    "eastern": {
+        "mahayana": {
+            "colour": [
+                0.8,
+                0.3,
+                0
+            ]
+        },
+        "gelugpa": {
+            "colour": [
+                0,
+                0.3,
+                0.8
+            ]
+        },
+        "theravada": {
+            "colour": [
+                0.8,
+                0,
+                0.8
+            ]
+        },
+        "hindu": {
+            "colour": [
+                0,
+                0.8,
+                0.8
+            ]
+        },
+        "shinto": {
+            "colour": [
+                0.8,
+                0,
+                0
+            ]
+        },
+        "sikh": {
+            "colour": [
+                0.3,
+                0.8,
+                0
+            ]
+        }
+    },
+    "animist": {
+        "pagan": {
+            "colour": [
+                0.5,
+                0,
+                0
+            ]
+        }
+    }
+}
