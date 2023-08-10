@@ -1,7 +1,5 @@
 #include "GameSingleton.hpp"
 
-#include <cassert>
-
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic/utility/Logger.hpp"
@@ -13,8 +11,7 @@ using namespace OpenVic;
 
 TerrainVariant::TerrainVariant(std::string const& new_identfier,
 	colour_t new_colour, Ref<Image> const& new_image)
-	: HasIdentifier { new_identfier },
-	  HasColour { new_colour, true },
+	: HasIdentifierAndColour { new_identfier, new_colour, true },
 	  image { new_image } {}
 
 Ref<Image> TerrainVariant::get_image() const {
@@ -75,6 +72,9 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_region_key"), &GameSingleton::get_province_info_region_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_life_rating_key"), &GameSingleton::get_province_info_life_rating_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_total_population_key"), &GameSingleton::get_province_info_total_population_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_pop_types_key"), &GameSingleton::get_province_info_pop_types_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_pop_ideologies_key"), &GameSingleton::get_province_info_pop_ideologies_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_pop_cultures_key"), &GameSingleton::get_province_info_pop_cultures_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_rgo_key"), &GameSingleton::get_province_info_rgo_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_province_info_buildings_key"), &GameSingleton::get_province_info_buildings_key);
 
@@ -84,6 +84,25 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_start_date_key"), &GameSingleton::get_building_info_start_date_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_end_date_key"), &GameSingleton::get_building_info_end_date_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_expansion_progress_key"), &GameSingleton::get_building_info_expansion_progress_key);
+
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_culture_info_size_key"), &GameSingleton::get_piechart_info_size_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_culture_info_colour_key"), &GameSingleton::get_piechart_info_colour_key);
+
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("draw_pie_chart", "image", "stopAngles", "colours", "radius",
+		"shadow_displacement", "shadow_tightness", "shadow_radius", "shadow_thickness",
+		"trim_colour", "trim_size", "gradient_falloff", "gradient_base",
+		"donut", "donut_inner_trim", "donut_inner_radius"), &GameSingleton::draw_pie_chart);
+}
+
+void GameSingleton::draw_pie_chart(Ref<Image> image,
+	Array const& stopAngles, Array const& colours,	float radius,
+	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
+	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
+	bool donut, bool donut_inner_trim, float donut_inner_radius) {
+
+	OpenVic::draw_pie_chart(image, stopAngles, colours, radius, shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
+		trim_colour, trim_size, gradient_falloff, gradient_base,
+		donut, donut_inner_trim, donut_inner_radius);
 }
 
 GameSingleton* GameSingleton::get_singleton() {
@@ -153,11 +172,25 @@ Error GameSingleton::_load_hardcoded_defines() {
 					}
 					return HIGH_ALPHA_VALUE | val;
 				}
-				return HIGH_ALPHA_VALUE;
+				return NULL_COLOUR;
 			} },
 		{ "mapmode_population",
 			[](Map const& map, Province const& province) -> colour_t {
 				return HIGH_ALPHA_VALUE | (fraction_to_colour_byte(province.get_total_population(), map.get_highest_province_population() + 1, 0.1f, 1.0f) << 8);
+			} },
+		{ "mapmode_culture",
+			[](Map const& map, Province const& province) -> colour_t {
+				distribution_t const& cultures = province.get_culture_distribution();
+				if (!cultures.empty()) {
+					// This breaks if replaced with distribution_t::value_type, something
+					// about operator=(volatile const&) being deleted.
+					std::pair<HasIdentifierAndColour const*, float> culture = *cultures.begin();
+					for (distribution_t::value_type const p : cultures) {
+						if (p.second > culture.second) culture = p;
+					}
+					return HIGH_ALPHA_VALUE | culture.first->get_colour();
+				}
+				return NULL_COLOUR;
 			} }
 	};
 	for (mapmode_t const& mapmode : mapmodes)
@@ -208,6 +241,18 @@ StringName const& GameSingleton::get_province_info_total_population_key() {
 	static const StringName key = "total_population";
 	return key;
 }
+StringName const& GameSingleton::get_province_info_pop_types_key() {
+	static const StringName key = "pop_types";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_pop_ideologies_key() {
+	static const StringName key = "pop_ideologies";
+	return key;
+}
+StringName const& GameSingleton::get_province_info_pop_cultures_key() {
+	static const StringName key = "pop_cultures";
+	return key;
+}
 StringName const& GameSingleton::get_province_info_rgo_key() {
 	static const StringName key = "rgo";
 	return key;
@@ -242,6 +287,26 @@ StringName const& GameSingleton::get_building_info_expansion_progress_key() {
 	return key;
 }
 
+StringName const& GameSingleton::get_piechart_info_size_key() {
+	static const StringName key = "size";
+	return key;
+}
+StringName const& GameSingleton::get_piechart_info_colour_key() {
+	static const StringName key = "colour";
+	return key;
+}
+
+Dictionary GameSingleton::_distribution_to_dictionary(distribution_t const& dist) const {
+	Dictionary dict;
+	for (distribution_t::value_type const& p : dist) {
+		Dictionary sub_dict;
+		sub_dict[get_piechart_info_size_key()] = p.second;
+		sub_dict[get_piechart_info_colour_key()] = to_godot_color(p.first->get_colour());
+		dict[std_to_godot_string(p.first->get_identifier())] = sub_dict;
+	}
+	return dict;
+}
+
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	Province const* province = game_manager.map.get_province_by_index(index);
 	if (province == nullptr) return {};
@@ -257,6 +322,12 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 
 	ret[get_province_info_life_rating_key()] = province->get_life_rating();
 	ret[get_province_info_total_population_key()] = province->get_total_population();
+	distribution_t const& pop_types = province->get_pop_type_distribution();
+	if (!pop_types.empty()) ret[get_province_info_pop_types_key()] = _distribution_to_dictionary(pop_types);
+	//distribution_t const& ideologies = province->get_ideology_distribution();
+	//if (!ideologies.empty()) ret[get_province_info_pop_ideologies_key()] = _distribution_to_dictionary(ideologies);
+	distribution_t const& cultures = province->get_culture_distribution();
+	if (!cultures.empty()) ret[get_province_info_pop_cultures_key()] = _distribution_to_dictionary(cultures);
 
 	std::vector<Building> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {

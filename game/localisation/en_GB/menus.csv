@@ -131,3 +131,6 @@ building_fort;Fort
 building_naval_base;Naval Base
 building_railroad;Railroad
 EXPAND_PROVINCE_BUILDING;Expand
+
+;; Pie Chart
+PIECHART_TOOLTIP_NO_DATA;No data

@@ -1,118 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://byq323jbel48u"]
+[gd_scene load_steps=3 format=3 uid="uid://byq323jbel48u"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 [ext_resource type="PackedScene" uid="uid://cr7p1k2xm7mum" path="res://src/Game/Theme/PieChart/PieChart.tscn" id="2_3oytt"]
 
-[sub_resource type="Shader" id="Shader_2k3yf"]
-code = "shader_type canvas_item;
-
-// The center in UV coordinates, which will always
-//be 0.5, the actual radius will be controlled by the control node
-//const vec2 center = vec2(0.5,0.5);
-uniform float radius = 0.4;
-
-//shadow
-uniform vec2 shadow_displacement = vec2(0.75,0.75);
-uniform float shadow_tightness = 10;
-uniform float shadow_radius = 0.7;
-uniform float shadow_thickness = 1.0;
-
-// Control of the slices
-uniform float stopAngles[5];
-uniform vec3 colours[5];
-
-// Trim
-uniform vec3 trim_colour;
-uniform float trim_size = 0.05;
-
-// The center is spotlighted by the gradient,
-//control its size and falloff with these
-uniform float gradient_falloff = 3.6;
-uniform float gradient_base = 3.1;
-
-// control whether this is a donut instead of a pie chart
-uniform bool donut = false;
-uniform bool donut_inner_trim = false;
-uniform float donut_inner_radius = 0.15;
-
-// get the polar coordinates of a pixel relative to the center
-vec2 getPolar(vec2 UVin, vec2 center){
-	vec2 relcoord = (UVin-center);
-	float dist = length(relcoord);
-	float theta = PI/2.0 + atan((relcoord.y)/(relcoord.x));
-	if(UVin.x < 0.5){
-		theta += PI;
-	}
-	return vec2(dist,theta);
-}
-
-// from thebookofshaders, returns a gradient falloff
-float parabola( float base, float x, float k ){
-    return pow( base*x*(1.0-x), k );
-}
-
-float parabola_shadow(float base, float x){
-	return base*x*x;
-}
-
-void fragment() {
-	vec2 coords = getPolar(UV,vec2(0.5,0.5));
-	float dist = coords.x;
-	float theta = coords.y;
-
-	vec2 shadow_polar = getPolar(UV,vec2(0.0+shadow_displacement.x,0.0+shadow_displacement.y));
-	float shadow_peak = radius+(radius-donut_inner_radius)/2.0;
-	float shadow_gradient = shadow_thickness+parabola_shadow(shadow_tightness*-10.0,shadow_polar.x+shadow_peak-shadow_radius);
-	
-	// inner hole of the donut => make it transparent
-	if(donut && dist <= donut_inner_radius){
-		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
-	}
-	// inner trim
-	else if(donut && donut_inner_trim && dist <= donut_inner_radius + trim_size){
-		COLOR = vec4(trim_colour,1.0);
-	}
-	// interior
-	else if(dist <= radius-trim_size){ 
-		for(int i=0;i<stopAngles.length();i++){
-			if(theta <= stopAngles[i]){
-				float gradient = parabola(gradient_base,dist,gradient_falloff);
-				COLOR = vec4(colours[i]*(1.0-gradient),1.0);
-				break;
-			}
-		}
-	}
-	// outer trim
-	else if(dist <= radius){ 
-		COLOR = vec4(trim_colour,1.0);
-	}
-	//outside the circle
-	else{
-		COLOR = vec4(0.1,0.1,0.1,shadow_gradient);
-	}
-}"
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3ep5m"]
-resource_name = "Piechart_shader"
-shader = SubResource("Shader_2k3yf")
-shader_parameter/radius = 0.4
-shader_parameter/shadow_displacement = Vector2(0.6, 0.6)
-shader_parameter/shadow_tightness = 1.0
-shader_parameter/shadow_radius = 0.6
-shader_parameter/shadow_thickness = 1.0
-shader_parameter/stopAngles = []
-shader_parameter/colours = []
-shader_parameter/trim_colour = Vector3(0, 0, 0)
-shader_parameter/trim_size = 0.02
-shader_parameter/gradient_falloff = 3.6
-shader_parameter/gradient_base = 3.1
-shader_parameter/donut = false
-shader_parameter/donut_inner_trim = true
-shader_parameter/donut_inner_radius = 0.25
-
-[sub_resource type="CanvasTexture" id="CanvasTexture_udhyk"]
-
-[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_total_population_label", "_rgo_icon_texture_rect", "_rgo_name_label", "_buildings_container", "_pop_culture_chart")]
+[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_total_population_label", "_rgo_icon_texture_rect", "_rgo_name_label", "_buildings_container", "_pop_type_chart", "_pop_ideology_chart", "_pop_culture_chart")]
 editor_description = "UI-56"
 anchors_preset = 2
 anchor_top = 1.0
@@ -129,7 +20,9 @@ _total_population_label = NodePath("PanelList/InteractList/TotalPopulation")
 _rgo_icon_texture_rect = NodePath("PanelList/InteractList/RGOInfo/RGOIcon")
 _rgo_name_label = NodePath("PanelList/InteractList/RGOInfo/RGOName")
 _buildings_container = NodePath("PanelList/InteractList/BuildingsContainer")
-_pop_culture_chart = NodePath("PanelList/InteractList/PopStats/PieChart")
+_pop_type_chart = NodePath("PanelList/InteractList/PopStats/PopTypeChart")
+_pop_ideology_chart = NodePath("PanelList/InteractList/PopStats/PopIdeologyChart")
+_pop_culture_chart = NodePath("PanelList/InteractList/PopStats/PopCultureChart")
 
 [node name="PanelList" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -202,10 +95,14 @@ mouse_filter = 1
 [node name="PopStats" type="HBoxContainer" parent="PanelList/InteractList"]
 layout_mode = 2
 
-[node name="PieChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
-material = SubResource("ShaderMaterial_3ep5m")
+[node name="PopTypeChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
 layout_mode = 2
-texture = SubResource("CanvasTexture_udhyk")
+
+[node name="PopIdeologyChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
+layout_mode = 2
+
+[node name="PopCultureChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
+layout_mode = 2
 
 [node name="HSeparator3" type="HSeparator" parent="PanelList/InteractList"]
 layout_mode = 2

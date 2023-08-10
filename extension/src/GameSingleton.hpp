@@ -6,7 +6,7 @@
 #include "openvic/GameManager.hpp"
 
 namespace OpenVic {
-	struct TerrainVariant : HasIdentifier, HasColour {
+	struct TerrainVariant : HasIdentifierAndColour {
 		friend class GameSingleton;
 
 	private:
@@ -64,10 +64,18 @@ namespace OpenVic {
 		godot::Error _update_colour_image();
 		void _on_state_updated();
 
+		godot::Dictionary _distribution_to_dictionary(distribution_t const& dist) const;
+
 	protected:
 		static void _bind_methods();
 
 	public:
+		static void draw_pie_chart(godot::Ref<godot::Image> image,
+			godot::Array const& stopAngles, godot::Array const& colours, float radius,
+			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
+			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
+			bool donut, bool donut_inner_trim, float donut_inner_radius);
+
 		static GameSingleton* get_singleton();
 
 		GameSingleton();
@@ -106,6 +114,9 @@ namespace OpenVic {
 		static godot::StringName const& get_province_info_region_key();
 		static godot::StringName const& get_province_info_life_rating_key();
 		static godot::StringName const& get_province_info_total_population_key();
+		static godot::StringName const& get_province_info_pop_types_key();
+		static godot::StringName const& get_province_info_pop_ideologies_key();
+		static godot::StringName const& get_province_info_pop_cultures_key();
 		static godot::StringName const& get_province_info_rgo_key();
 		static godot::StringName const& get_province_info_buildings_key();
 
@@ -115,6 +126,9 @@ namespace OpenVic {
 		static godot::StringName const& get_building_info_start_date_key();
 		static godot::StringName const& get_building_info_end_date_key();
 		static godot::StringName const& get_building_info_expansion_progress_key();
+
+		static godot::StringName const& get_piechart_info_size_key();
+		static godot::StringName const& get_piechart_info_colour_key();
 
 		/* Get info to display in Province Overview Panel, packaged in
 		 * a Dictionary using the StringNames above as keys.
