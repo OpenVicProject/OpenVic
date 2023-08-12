@@ -9,7 +9,7 @@
 using namespace godot;
 using namespace OpenVic;
 
-TerrainVariant::TerrainVariant(std::string const& new_identfier,
+TerrainVariant::TerrainVariant(const std::string_view new_identfier,
 	colour_t new_colour, Ref<Image> const& new_image)
 	: HasIdentifierAndColour { new_identfier, new_colour, true },
 	  image { new_image } {}

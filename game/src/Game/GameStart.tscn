@@ -51,8 +51,5 @@ stream = ExtResource("5_8euyy")
 autoplay = true
 expand = true
 
-[connection signal="load_changed" from="LoadingScreen" to="." method="_on_loading_screen_load_changed"]
-[connection signal="load_ended" from="LoadingScreen" to="." method="_on_loading_screen_load_ended"]
-[connection signal="load_started" from="LoadingScreen" to="." method="_on_loading_screen_load_started"]
 [connection signal="splash_end" from="SplashContainer" to="." method="_on_splash_container_splash_end"]
 [connection signal="finished" from="SplashContainer/SplashVideo" to="SplashContainer" method="_on_splash_startup_finished"]

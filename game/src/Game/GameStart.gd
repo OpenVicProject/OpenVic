@@ -49,12 +49,3 @@ func _initialize_game() -> void:
 
 func _on_splash_container_splash_end():
 	loading_screen.show()
-
-func _on_loading_screen_load_started():
-	Events.Loader.startup_load_begun.emit()
-
-func _on_loading_screen_load_changed(percentage : float) -> void:
-	Events.Loader.startup_load_changed.emit(percentage)
-
-func _on_loading_screen_load_ended():
-	Events.Loader.startup_load_ended.emit()

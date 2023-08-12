@@ -32,7 +32,7 @@ func _sync_guiscales(to_select : float = GuiScale.get_current_guiscale()) -> voi
 
 	if selected == -1:
 		selected = default_selected
-	
+
 func _setup_button():
 	if default_value <= 0:
 		default_value = ProjectSettings.get_setting("display/window/stretch/scale")

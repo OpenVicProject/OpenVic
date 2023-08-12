@@ -111,8 +111,8 @@ func sort_slices() -> void:
 
 func _ready():
 	if not Engine.is_editor_hint():
-		const size : int = 256
-		_pie_chart_image = Image.create(size, size, false, Image.FORMAT_RGBA8)
+		const image_size : int = 256
+		_pie_chart_image = Image.create(image_size, image_size, false, Image.FORMAT_RGBA8)
 		texture = ImageTexture.create_from_image(_pie_chart_image)
 		_recalculate()
 
@@ -160,11 +160,11 @@ func _on_mouse_exited():
 # is hovered over. Returns a boolean on whether the tooltip was handled.
 func _handle_tooltip(pos : Vector2) -> bool:
 	# Is it within the circle?
-	var radius := size.x / 2.0
-	var center := Vector2(radius, radius)
+	var real_radius := size.x / 2.0
+	var center := Vector2(real_radius, real_radius)
 	var distance := center.distance_to(pos)
-	var real_donut_inner_radius : float = radius * donut_inner_radius
-	if distance <= radius and (not donut or distance >= real_donut_inner_radius):
+	var real_donut_inner_radius : float = real_radius * donut_inner_radius
+	if distance <= real_radius and (not donut or distance >= real_donut_inner_radius):
 		if _slice_order.is_empty():
 			_rich_tooltip.text = "PIECHART_TOOLTIP_NO_DATA"
 		else:
@@ -189,7 +189,7 @@ func _handle_tooltip(pos : Vector2) -> bool:
 # Create a list of all the values and percentages
 # with the hovered one highlighted
 func _create_tooltip(labelHovered : String) -> String:
-	var slice_tooltips : PackedStringArray
+	var slice_tooltips : PackedStringArray = []
 	for label in _slice_order:
 		var slice : SliceData = _slices.get(label)
 		var percent := _format_percent(slice.percentage)

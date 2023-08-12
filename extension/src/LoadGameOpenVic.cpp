@@ -157,7 +157,11 @@ Error GameSingleton::_parse_region_entry(String const& identifier, Variant const
 		UtilityFunctions::push_error("Invalid province list for region \"", identifier, "\": ", entry);
 		return FAILED;
 	}
-	return ERR(game_manager.map.add_region(godot_to_std_string(identifier), province_identifiers));
+	std::vector<std::string_view> province_identifier_views;
+	for (std::string const& str : province_identifiers) {
+		province_identifier_views.push_back(str);
+	}
+	return ERR(game_manager.map.add_region(godot_to_std_string(identifier), province_identifier_views));
 }
 
 Error GameSingleton::_load_region_file(String const& file_path) {
@@ -271,7 +275,7 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 
 	// Generate interleaved province and terrain ID image
 	if (game_manager.map.generate_province_shape_image(province_dims.x, province_dims.y, province_image->get_data().ptr(),
-		terrain_image->get_data().ptr(), terrain_variant_map) != SUCCESS) err = FAILED;
+		terrain_image->get_data().ptr(), terrain_variant_map, true) != SUCCESS) err = FAILED;
 
 	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT
@@ -364,8 +368,8 @@ Error GameSingleton::_parse_good_entry(String const& identifier, Variant const& 
 	if (var_overseas_maintenance.get_type() == Variant::BOOL) overseas_maintenance = var_overseas_maintenance;
 	else UtilityFunctions::push_error("Invalid good overseas maintenance bool value for ", identifier, ": ", var_overseas_maintenance);
 
-	return ERR(game_manager.good_manager.add_good(godot_to_std_string(identifier), godot_to_std_string(category),
-		colour, base_price, default_available, tradeable, currency, overseas_maintenance));
+	return ERR(game_manager.good_manager.add_good(godot_to_std_string(identifier), colour, godot_to_std_string(category),
+		base_price, default_available, tradeable, currency, overseas_maintenance));
 }
 
 Error GameSingleton::_load_goods(String const& defines_path, String const& icons_dir_path) {
