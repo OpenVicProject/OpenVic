@@ -99,7 +99,7 @@ func set_to_distribution(dist : Dictionary) -> void:
 	clear_slices()
 	for key in dist:
 		var entry : Dictionary = dist[key]
-		_slices[key] = SliceData.new(entry[GameSingleton.get_culture_info_size_key()], key, entry[GameSingleton.get_culture_info_colour_key()])
+		_slices[key] = SliceData.new(entry[GameSingleton.get_piechart_info_size_key()], key, entry[GameSingleton.get_piechart_info_colour_key()])
 	_slice_order = _slices.keys()
 	sort_slices()
 

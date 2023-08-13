@@ -85,8 +85,8 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_end_date_key"), &GameSingleton::get_building_info_end_date_key);
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_building_info_expansion_progress_key"), &GameSingleton::get_building_info_expansion_progress_key);
 
-	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_culture_info_size_key"), &GameSingleton::get_piechart_info_size_key);
-	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_culture_info_colour_key"), &GameSingleton::get_piechart_info_colour_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_piechart_info_size_key"), &GameSingleton::get_piechart_info_size_key);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("get_piechart_info_colour_key"), &GameSingleton::get_piechart_info_colour_key);
 
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("draw_pie_chart", "image", "stopAngles", "colours", "radius",
 		"shadow_displacement", "shadow_tightness", "shadow_radius", "shadow_thickness",
