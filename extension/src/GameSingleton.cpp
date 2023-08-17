@@ -381,14 +381,14 @@ Ref<Texture> GameSingleton::get_province_colour_texture() const {
 
 Error GameSingleton::_update_colour_image() {
 	static PackedByteArray colour_data_array;
-	static constexpr int64_t colour_data_array_size = (MAX_INDEX + 1) * Map::MAPMODE_COLOUR_SIZE;
+	static constexpr int64_t colour_data_array_size = (static_cast<int64_t>(Province::MAX_INDEX) + 1) * Map::MAPMODE_COLOUR_SIZE;
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
 	if (game_manager.map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()) != SUCCESS)
 		err = FAILED;
 
-	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(index_t) * 4);
+	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
 	if (province_colour_image.is_null()) {
 		province_colour_image.instantiate();
 		ERR_FAIL_NULL_V_EDMSG(province_colour_image, FAILED,

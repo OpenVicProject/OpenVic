@@ -15,7 +15,7 @@ namespace OpenVic {
 		TerrainVariant(const std::string_view new_identfier, colour_t new_colour,
 			godot::Ref<godot::Image> const& new_image);
 	public:
-		static constexpr size_t MAX_INDEX = 1 << (8 * sizeof(Map::terrain_t));
+		static constexpr size_t MAX_TERRIN_VARIANT_COUNT = 1 << (8 * sizeof(Map::terrain_t));
 
 		TerrainVariant(TerrainVariant&&) = default;
 

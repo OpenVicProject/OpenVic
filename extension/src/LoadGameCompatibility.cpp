@@ -28,14 +28,14 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 				continue;
 
 			if (line_number < 2) continue; // skip header line
-			index_t id = NULL_INDEX;
+			Province::index_t id = Province::NULL_INDEX;
 			colour_t colour = NULL_COLOUR;
 			if (line.size() > 0) {
 				if (line[0].is_empty()) {
 					id = game_manager.map.get_province_count() + 1;
 				} else if (line[0].is_valid_int()) {
 					const int64_t val = line[0].to_int();
-					if (val > NULL_INDEX && val <= MAX_INDEX) id = val;
+					if (val > Province::NULL_INDEX && val <= Province::MAX_INDEX) id = val;
 				}
 				for (int i = 1; i < 4; ++i) {
 					if (line.size() > i) {
@@ -60,7 +60,7 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 					break;
 				}
 			}
-			if (id == NULL_INDEX || colour == NULL_COLOUR) {
+			if (id == Province::NULL_INDEX || colour == NULL_COLOUR) {
 				UtilityFunctions::push_error("Invalid province ID-colour entry \"", line, "\" on line ", line_number, " in file: ", file_path);
 				err = FAILED;
 				continue;
