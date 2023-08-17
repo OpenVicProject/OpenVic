@@ -7,6 +7,9 @@ extends PanelContainer
 @export var _rgo_icon_texture_rect : TextureRect
 @export var _rgo_name_label : Label
 @export var _buildings_container : Container
+@export var _pop_type_chart : PieChart
+@export var _pop_ideology_chart : PieChart
+@export var _pop_culture_chart : PieChart
 
 const _missing_suffix : String = "_MISSING"
 
@@ -112,6 +115,10 @@ func _update_info() -> void:
 		})
 
 		_total_population_label.text = Localisation.tr_number(_province_info.get(GameSingleton.get_province_info_total_population_key(), 0))
+
+		_pop_type_chart.set_to_distribution(_province_info.get(GameSingleton.get_province_info_pop_types_key(), {}))
+		_pop_ideology_chart.set_to_distribution(_province_info.get(GameSingleton.get_province_info_pop_ideologies_key(), {}))
+		_pop_culture_chart.set_to_distribution(_province_info.get(GameSingleton.get_province_info_pop_cultures_key(), {}))
 
 		_rgo_name_label.text = _province_info.get(GameSingleton.get_province_info_rgo_key(),
 			GameSingleton.get_province_info_rgo_key() + _missing_suffix)

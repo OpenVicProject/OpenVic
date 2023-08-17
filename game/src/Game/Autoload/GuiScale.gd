@@ -26,7 +26,7 @@ func _ready():
 
 func has_guiscale(guiscale_value : float) -> bool:
 	return guiscale_value in _guiscales
-	
+
 func add_guiscale(guiscale_value: float, guiscale_name: StringName=&"") -> bool:
 	if has_guiscale(guiscale_value): return true
 	var scale_dict := { value = guiscale_value }
@@ -39,24 +39,24 @@ func add_guiscale(guiscale_value: float, guiscale_name: StringName=&"") -> bool:
 		return false
 	_guiscales[guiscale_value] = scale_dict
 	return true
-	
+
 #returns floats
 func get_guiscale_value_list() -> Array:
 	var list := _guiscales.keys()
 	list.sort_custom(func(a, b): return a > b)
 	return list
-	
+
 func get_guiscale_display_name(guiscale_value : float) -> StringName:
 	return _guiscales.get(guiscale_value, {display_name = &"unknown gui scale"}).display_name
 
 func get_current_guiscale() -> float:
 	return get_tree().root.content_scale_factor
-	
+
 func set_guiscale(guiscale:float) -> void:
 	print("New GUI scale: %f" % guiscale)
 	if not has_guiscale(guiscale):
 		push_warning("Setting GUI Scale to non-standard value %sx" % [guiscale])
 	get_tree().root.content_scale_factor = guiscale
-	
+
 func reset_guiscale() -> void:
 	set_guiscale(get_current_guiscale())

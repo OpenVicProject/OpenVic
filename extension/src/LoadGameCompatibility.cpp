@@ -17,57 +17,57 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 	Error err = FileAccess::get_open_error();
 	if (err != OK || file.is_null()) {
 		UtilityFunctions::push_error("Failed to load compatibility mode province identifier file: ", file_path);
-		return err == OK ? FAILED : err;
-	}
+		if (err == OK) err = FAILED;
+	} else {
+		int line_number = 0;
+		while (!file->eof_reached()) {
+			const PackedStringArray line = file->get_csv_line(";");
+			line_number++;
 
-	int line_number = 0;
-	while (!file->eof_reached()) {
-		const PackedStringArray line = file->get_csv_line(";");
-		line_number++;
+			if (line.is_empty() || (line.size() == 1 && line[0].is_empty()))
+				continue;
 
-		if (line.is_empty() || (line.size() == 1 && line[0].is_empty()))
-			continue;
-
-		if (line_number < 2) continue; // skip header line
-		index_t id = NULL_INDEX;
-		colour_t colour = NULL_COLOUR;
-		if (line.size() > 0) {
-			if (line[0].is_empty()) {
-				id = game_manager.map.get_province_count() + 1;
-			} else if (line[0].is_valid_int()) {
-				const int64_t val = line[0].to_int();
-				if (val > NULL_INDEX && val <= MAX_INDEX) id = val;
-			}
-			for (int i = 1; i < 4; ++i) {
-				if (line.size() > i) {
-					if (line[i].is_valid_int()) {
-						const int64_t int_val = line[i].to_int();
-						if (int_val >= NULL_COLOUR && int_val <= FULL_COLOUR) {
-							colour = (colour << 8) | int_val;
-							continue;
-						}
-					} else if (line[i].is_valid_float()) {
-						const double double_val = line[i].to_float();
-						if (std::trunc(double_val) == double_val) {
-							const int64_t int_val = double_val;
+			if (line_number < 2) continue; // skip header line
+			index_t id = NULL_INDEX;
+			colour_t colour = NULL_COLOUR;
+			if (line.size() > 0) {
+				if (line[0].is_empty()) {
+					id = game_manager.map.get_province_count() + 1;
+				} else if (line[0].is_valid_int()) {
+					const int64_t val = line[0].to_int();
+					if (val > NULL_INDEX && val <= MAX_INDEX) id = val;
+				}
+				for (int i = 1; i < 4; ++i) {
+					if (line.size() > i) {
+						if (line[i].is_valid_int()) {
+							const int64_t int_val = line[i].to_int();
 							if (int_val >= NULL_COLOUR && int_val <= FULL_COLOUR) {
 								colour = (colour << 8) | int_val;
 								continue;
 							}
+						} else if (line[i].is_valid_float()) {
+							const double double_val = line[i].to_float();
+							if (std::trunc(double_val) == double_val) {
+								const int64_t int_val = double_val;
+								if (int_val >= NULL_COLOUR && int_val <= FULL_COLOUR) {
+									colour = (colour << 8) | int_val;
+									continue;
+								}
+							}
 						}
 					}
+					colour = NULL_COLOUR;
+					break;
 				}
-				colour = NULL_COLOUR;
-				break;
 			}
+			if (id == NULL_INDEX || colour == NULL_COLOUR) {
+				UtilityFunctions::push_error("Invalid province ID-colour entry \"", line, "\" on line ", line_number, " in file: ", file_path);
+				err = FAILED;
+				continue;
+			}
+			static const std::string province_prefix = "PROV";
+			if (game_manager.map.add_province(province_prefix + std::to_string(id), colour) != SUCCESS) err = FAILED;
 		}
-		if (id == NULL_INDEX || colour == NULL_COLOUR) {
-			UtilityFunctions::push_error("Invalid province ID-colour entry \"", line, "\" on line ", line_number, " in file: ", file_path);
-			err = FAILED;
-			continue;
-		}
-		static const std::string province_prefix = "PROV";
-		if (game_manager.map.add_province(province_prefix + std::to_string(id), colour) != SUCCESS) err = FAILED;
 	}
 	game_manager.map.lock_provinces();
 	return err;
