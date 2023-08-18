@@ -8,6 +8,12 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
 * [Godot 4.1.1](https://github.com/godotengine/godot/releases/tag/4.1.1-stable)
 * [scons](https://scons.org/)
 
+## Repo Setup
+1. Clone the OpenVic Repo to a suitable folder using the git command "git clone https://github.com/OpenVicProject/OpenVic.git"
+2. Update the submodules by executing the git command "git submodule update --init --recursive"
+
+Note that using a zip download instead of cloning means a lot of work in manually managing submodules individually. It is strongly recommended to use git to obtain the source code. 
+
 ## [Godot Documentation](https://docs.godotengine.org/en/latest/)
 
 ## Build/Run Instructions
