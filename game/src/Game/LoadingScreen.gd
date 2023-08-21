@@ -5,6 +5,7 @@ extends Control
 @export_subgroup("Nodes")
 @export var progress_bar: ProgressBar
 @export var quote_label: Label
+@export var animation_player: AnimationPlayer
 
 var thread: Thread
 var quotes: PackedStringArray = []
@@ -42,6 +43,7 @@ func _ready():
 	quotes = quotes_file.split("\n",false)
 	if quotes.is_empty():
 		quotes = [""]
+	animation_player.play("loadingscreen_gear")
 
 func _exit_tree():
 	if thread != null and thread.is_started():
