@@ -4,6 +4,3 @@
 [submodule "extension/deps/openvic-simulation"]
 	path = extension/deps/openvic-simulation
 	url = https://github.com/OpenVicProject/OpenVic-Simulation
-[submodule "extension/deps/openvic-dataloader"]
-	path = extension/deps/openvic-dataloader
-	url = https://github.com/OpenVicProject/OpenVic-Dataloader

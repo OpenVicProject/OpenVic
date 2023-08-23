@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/image.hpp>
 
-#include "openvic/Types.hpp"
+#include "openvic/types/Colour.hpp"
 
 #define ERR(x) ((x) == SUCCESS ? OK : FAILED)
 

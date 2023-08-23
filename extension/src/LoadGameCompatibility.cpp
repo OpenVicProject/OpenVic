@@ -65,8 +65,7 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 				err = FAILED;
 				continue;
 			}
-			static const std::string province_prefix = "PROV";
-			if (game_manager.map.add_province(province_prefix + std::to_string(id), colour) != SUCCESS) err = FAILED;
+			if (game_manager.map.add_province(std::to_string(id), colour) != SUCCESS) err = FAILED;
 		}
 	}
 	game_manager.map.lock_provinces();
@@ -104,7 +103,7 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 	{
 		Ref<Image> water_image = Image::create(slice_size, slice_size, false, terrain_sheet->get_format());
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
-		water_image->fill({ 0.0f, 0.0f, 1.0f });
+		water_image->fill({ 0.1f, 0.1f, 0.5f });
 		terrain_variants.add_item({ "terrain_water", 0xFFFFFF, water_image });
 	}
 	Error err = OK;
@@ -123,29 +122,53 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 	return err;
 }
 
-Error GameSingleton::load_defines_compatibility_mode(String const& file_path) {
-	static const String province_identifier_file = "/map/definition.csv";
-	static const String province_image_file = "/map/provinces.bmp";
-	static const String terrain_image_file = "/map/terrain.bmp";
-	static const String terrain_texture_dir = "/map/terrain/texturesheet.tga";
+Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
+	static const std::filesystem::path province_identifier_file = "map/definition.csv";
+	static const std::filesystem::path province_image_file = "map/provinces.bmp";
+	static const std::filesystem::path terrain_image_file = "map/terrain.bmp";
+	static const std::filesystem::path terrain_texture_file = "map/terrain/texturesheet.tga";
+
+	std::vector<std::filesystem::path> roots;
+	for (String const& path : file_paths) {
+		roots.push_back(godot_to_std_string(path));
+	}
 
 	Error err = OK;
-	if (_load_province_identifier_file_compatibility_mode(file_path + province_identifier_file) != OK) {
+
+	if (dataloader.set_roots(roots) != SUCCESS) {
+		Logger::error("Failed to set dataloader roots!");
+		err = FAILED;
+	}
+
+	if (dataloader.load_defines(game_manager) != SUCCESS) {
+		UtilityFunctions::push_error("Failed to load defines!");
+		err = FAILED;
+	}
+
+	if (_load_province_identifier_file_compatibility_mode(
+		std_to_godot_string(dataloader.lookup_file(province_identifier_file).string())
+		) != OK) {
 		UtilityFunctions::push_error("Failed to load province identifiers!");
 		err = FAILED;
 	}
 	game_manager.map.lock_water_provinces();
 	game_manager.map.lock_regions();
-	if (_load_terrain_variants_compatibility_mode(file_path + terrain_image_file, file_path + terrain_texture_dir) != OK) {
+	if (_load_terrain_variants_compatibility_mode(
+		std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
+		std_to_godot_string(dataloader.lookup_file(terrain_texture_file).string())
+		) != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
 	}
-	if (_load_map_images(file_path + province_image_file, file_path + terrain_image_file, true) != OK) {
+	if (_load_map_images(
+		std_to_godot_string(dataloader.lookup_file(province_image_file).string()),
+		std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
+		true) != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}
 	game_manager.good_manager.lock_goods();
-	if (_load_hardcoded_defines() != OK) {
+	if (game_manager.load_hardcoded_defines() != SUCCESS) {
 		UtilityFunctions::push_error("Failed to hardcoded defines!");
 		err = FAILED;
 	}

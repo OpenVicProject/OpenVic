@@ -36,7 +36,17 @@ func _initialize_game() -> void:
 	# into the mod's dir for a temporary fix)
 	# Usage: OpenVic --compatibility-mode <path>
 
-	var compatibility_mode_path : String = ArgumentParser.get_argument(&"compatibility-mode")
+	var compatibility_mode_path : String = ArgumentParser.get_argument(&"compatibility-mode", "")
+
+	if not compatibility_mode_path:
+		# TODO - non-Windows default paths
+		const default_path : String = "C:/Program Files (x86)/Steam/steamapps/common/Victoria 2"
+		compatibility_mode_path = default_path
+
+	var compatibility_mode_paths : PackedStringArray = [compatibility_mode_path]
+
+	# Example for adding mod paths
+	#compatibility_mode_paths.push_back("C:/Program Files (x86)/Steam/steamapps/common/Victoria 2/mod/TGC")
 
 	var start := Time.get_ticks_usec()
 
@@ -49,13 +59,8 @@ func _initialize_game() -> void:
 	# TODO: Loading takes way too long to keep the LoadingScreen at 50%
 	# Should either split this up or seperately multithread the compatibility mode loader
 	# Or both and emit a signal that allows us to add percentages to the LoadingScreen
-	if compatibility_mode_path:
-		if GameSingleton.load_defines_compatibility_mode(compatibility_mode_path) != OK:
-			push_error("Errors loading game defines!")
-	else:
-		GameLoader.define_filepaths_dict.make_read_only()
-		if GameSingleton.load_defines(GameLoader.define_filepaths_dict) != OK:
-			push_error("Errors loading game defines!")
+	if GameSingleton.load_defines_compatibility_mode(compatibility_mode_paths) != OK:
+		push_error("Errors loading game defines!")
 
 	loading_screen.try_update_loading_screen(100)
 	var end := Time.get_ticks_usec()
