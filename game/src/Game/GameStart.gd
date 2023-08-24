@@ -1,11 +1,19 @@
 extends Control
 
 const LoadingScreen = preload("res://src/Game/LoadingScreen.gd")
+const SoundTabScene = preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
 
 @export_subgroup("Nodes")
 @export var loading_screen : LoadingScreen
 
 func _ready() -> void:
+	# Hack to ensure Sound Options load
+	var sound_tab := SoundTabScene.instantiate()
+	sound_tab.visible = false
+	add_child(sound_tab)
+	Events.Options.load_settings_from_file()
+	sound_tab.queue_free()
+
 	loading_screen.start_loading_screen(_initialize_game)
 
 # REQUIREMENTS
