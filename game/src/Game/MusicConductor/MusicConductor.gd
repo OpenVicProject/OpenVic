@@ -1,5 +1,11 @@
 extends Node
 
+signal song_paused(paused : bool)
+signal song_started(track_id : int)
+## Only triggers when song naturally ends
+signal song_finished(track_id : int)
+signal song_scrubbed(percentage : float, seconds : float)
+
 # REQUIREMENTS
 # * SS-67
 @export_dir var music_directory : String
@@ -32,6 +38,7 @@ func get_current_song_name() -> String:
 func scrub_song_by_percentage(percentage: float) -> void:
 	var percentInSeconds : float = (percentage / 100.0) * _audio_stream_player.stream.get_length()
 	_audio_stream_player.play(percentInSeconds)
+	song_scrubbed.emit(percentage, percentInSeconds)
 
 func get_current_song_progress_percentage() -> float:
 	return 100 * (_audio_stream_player.get_playback_position() / _audio_stream_player.stream.get_length())
@@ -41,13 +48,15 @@ func is_paused() -> bool:
 
 func set_paused(paused : bool) -> void:
 	_audio_stream_player.stream_paused = paused
+	song_paused.emit(paused)
 
 func toggle_play_pause() -> void:
-	_audio_stream_player.stream_paused = !_audio_stream_player.stream_paused
+	set_paused(not is_paused())
 
 func start_current_song() -> void:
 	_audio_stream_player.stream = _available_songs[_selected_track].song_stream
 	_audio_stream_player.play()
+	song_started.emit(_selected_track)
 
 # REQUIREMENTS
 # * SS-70
@@ -76,7 +85,6 @@ func _ready():
 				_selected_track = _available_songs.size()
 			_available_songs.append(SongInfo.new(music_directory, fname))
 	start_current_song()
-	set_paused(true)
 
 func set_startup_music(play : bool) -> void:
 	if not _has_startup_happened:
@@ -84,6 +92,7 @@ func set_startup_music(play : bool) -> void:
 		set_paused(not play)
 
 func _on_audio_stream_player_finished():
+	song_finished.emit(_selected_track)
 	if _auto_play_next_song:
 		select_next_song()
 		start_current_song()
