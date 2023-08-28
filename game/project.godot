@@ -15,17 +15,19 @@ config/description="A faithful recreation of Victoria 2: Heart of Darkness with 
 run/main_scene="res://src/Game/GameStart.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.1", "Forward Plus")
-boot_splash/bg_color=Color(0.380392, 0.145098, 0.14902, 1)
+boot_splash/bg_color=Color(0, 0, 0, 0)
+boot_splash/show_image=false
 boot_splash/image="res://splash_assets/splash_image.png"
 config/icon="res://icon.svg"
 config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
 
+Resolution="*res://src/Game/Autoload/Resolution.gd"
 ArgumentParser="*res://src/Game/Autoload/Argument/ArgumentParser.tscn"
+WindowOverride="*res://src/Game/Autoload/WindowOverride.gd"
 Events="*res://src/Game/Autoload/Events.gd"
 GameLoader="*res://src/Game/Autoload/GameLoader.gd"
-Resolution="*res://src/Game/Autoload/Resolution.gd"
 SoundManager="*res://src/Game/Autoload/SoundManager.gd"
 MusicConductor="*res://src/Game/MusicConductor/MusicConductor.tscn"
 Keychain="*res://addons/keychain/Keychain.gd"
@@ -36,10 +38,15 @@ SaveManager="*res://src/Game/Autoload/SaveManager.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-window/size/mode=3
+window/size/mode=1
 window/size/resizable=false
+window/size/borderless=true
+window/size/transparent=true
+window/size/window_width_override=1
+window/size/window_height_override=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
+window/per_pixel_transparency/allowed=true
 
 [editor_plugins]
 
