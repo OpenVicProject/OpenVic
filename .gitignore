@@ -74,3 +74,6 @@ bin/*
 
 *.translation
 !game/common/map/*.obj
+
+# JetBrains
+.idea
