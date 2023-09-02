@@ -23,6 +23,7 @@ GameSingleton* GameSingleton::singleton = nullptr;
 void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("setup_logger"), &GameSingleton::setup_logger);
 	ClassDB::bind_method(D_METHOD("load_defines_compatibility_mode", "file_paths"), &GameSingleton::load_defines_compatibility_mode);
+	ClassDB::bind_method(D_METHOD("lookup_file", "path"), &GameSingleton::lookup_file);
 	ClassDB::bind_method(D_METHOD("setup_game"), &GameSingleton::setup_game);
 
 	ClassDB::bind_method(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);

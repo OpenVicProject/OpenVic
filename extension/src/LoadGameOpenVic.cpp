@@ -11,19 +11,19 @@ using namespace OpenVic;
 
 Error GameSingleton::_generate_terrain_texture_array() {
 	Error err = OK;
-	if (terrain_variants.get_item_count() == 0) {
+	if (terrain_variants.size() == 0) {
 		UtilityFunctions::push_error("Failed to load terrain textures!");
 		return FAILED;
 	}
 	// TerrainVariant count is limited by the data type representing it in the map image
-	if (terrain_variants.get_item_count() > TerrainVariant::MAX_TERRIN_VARIANT_COUNT) {
+	if (terrain_variants.size() > TerrainVariant::MAX_TERRIN_VARIANT_COUNT) {
 		UtilityFunctions::push_error("Too many terrain textures - all after the first ",
 			static_cast<uint64_t>(TerrainVariant::MAX_TERRIN_VARIANT_COUNT), " will be ignored");
 		err = FAILED;
 	}
 
 	Array terrain_images;
-	for (size_t i = 0; i < terrain_variants.get_item_count() && i < TerrainVariant::MAX_TERRIN_VARIANT_COUNT; ++i) {
+	for (size_t i = 0; i < terrain_variants.size() && i < TerrainVariant::MAX_TERRIN_VARIANT_COUNT; ++i) {
 		TerrainVariant const& var = *terrain_variants.get_item_by_index(i);
 		terrain_variant_map[var.get_colour()] = i;
 		terrain_images.append(var.get_image());

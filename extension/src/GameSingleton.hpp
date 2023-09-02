@@ -7,6 +7,7 @@
 #include "openvic/dataloader/Dataloader.hpp"
 
 namespace OpenVic {
+
 	struct TerrainVariant : HasIdentifierAndColour {
 		friend class GameSingleton;
 
@@ -23,6 +24,7 @@ namespace OpenVic {
 
 		godot::Ref<godot::Image> get_image() const;
 	};
+
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
 
@@ -75,6 +77,8 @@ namespace OpenVic {
 		 * pointing to the defines folder.
 		 */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
+
+		godot::String lookup_file(godot::String const& path) const;
 
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.

@@ -28,14 +28,24 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 				continue;
 
 			if (line_number < 2) continue; // skip header line
-			Province::index_t id = Province::NULL_INDEX;
+			std::string identifier;
 			colour_t colour = NULL_COLOUR;
 			if (line.size() > 0) {
-				if (line[0].is_empty()) {
-					id = game_manager.map.get_province_count() + 1;
-				} else if (line[0].is_valid_int()) {
-					const int64_t val = line[0].to_int();
-					if (val > Province::NULL_INDEX && val <= Province::MAX_INDEX) id = val;
+				identifier = godot_to_std_string(line[0]);
+				if (identifier.empty()) {
+					identifier = std::to_string(game_manager.map.get_province_count() + 1);
+				} else {
+					bool successful = false;
+					const uint64_t val = StringUtils::string_to_uint64(identifier, &successful, 10);
+					if (successful) {
+						if (val <= Province::NULL_INDEX || val > Province::MAX_INDEX) {
+							UtilityFunctions::push_error("Invalid province index ", line[0], " (out of valid range ", Province::NULL_INDEX, " < index <= ", Province::MAX_INDEX, ")");
+							err = FAILED;
+						}
+					} else {
+						UtilityFunctions::push_error("Invalid province index ", line[0], " (not a valid integer)");
+						err = FAILED;
+					}
 				}
 				for (int i = 1; i < 4; ++i) {
 					if (line.size() > i) {
@@ -60,12 +70,12 @@ Error GameSingleton::_load_province_identifier_file_compatibility_mode(String co
 					break;
 				}
 			}
-			if (id == Province::NULL_INDEX || colour == NULL_COLOUR) {
+			if (identifier.empty() || colour == NULL_COLOUR) {
 				UtilityFunctions::push_error("Invalid province ID-colour entry \"", line, "\" on line ", line_number, " in file: ", file_path);
 				err = FAILED;
 				continue;
 			}
-			if (game_manager.map.add_province(std::to_string(id), colour) != SUCCESS) err = FAILED;
+			if (game_manager.map.add_province(identifier, colour) != SUCCESS) err = FAILED;
 		}
 	}
 	game_manager.map.lock_provinces();
@@ -167,10 +177,13 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}
-	game_manager.good_manager.lock_goods();
 	if (game_manager.load_hardcoded_defines() != SUCCESS) {
 		UtilityFunctions::push_error("Failed to hardcoded defines!");
 		err = FAILED;
 	}
 	return err;
+}
+
+String GameSingleton::lookup_file(String const& path) const {
+	return std_to_godot_string(dataloader.lookup_file(godot_to_std_string(path)).string());
 }
