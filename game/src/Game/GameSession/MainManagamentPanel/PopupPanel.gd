@@ -1,9 +1,9 @@
 extends Control
 
+var PanelName: String = "TEST"
 var _mouse_over_viewport : bool = true
-var _mouse_entered : bool = true
 const _action_click : StringName = &"map_click"
-				
+
 func _on_close_button_pressed():
 	self.queue_free()
 

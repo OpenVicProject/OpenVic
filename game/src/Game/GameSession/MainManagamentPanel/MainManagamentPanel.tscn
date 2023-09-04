@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://cyr5e31ucu44d"]
+[gd_scene load_steps=10 format=3 uid="uid://cyr5e31ucu44d"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/BudgetPanel.gd" id="1_5jsre"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/ProductionPanel.gd" id="1_7nvhi"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/TechnologyPanel.gd" id="3_i0cql"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/PoliticsPanel.gd" id="4_b1w56"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/PopulationPanel.gd" id="5_e3kg5"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/TradePanel.gd" id="6_lrvon"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/DiplomacyPanel.gd" id="7_4ixxg"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/MilitaryPanel.gd" id="8_oxtyy"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/CountryPanel.gd" id="9_c6qjc"]
 
 [node name="MainManagamentPanel" type="Control"]
 layout_mode = 3
@@ -18,44 +26,77 @@ offset_bottom = 100.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="ProductionPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "PRODUCTION_TOP_PANEL"
+clip_text = true
+script = ExtResource("1_7nvhi")
 
 [node name="BudgetPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "BUDGET_TOP_PANEL"
+clip_text = true
 script = ExtResource("1_5jsre")
 
 [node name="TechnologyPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "TECHNOLOGY_TOP_PANEL"
+clip_text = true
+script = ExtResource("3_i0cql")
 
 [node name="PoliticsPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "POLITICS_TOP_PANEL"
+clip_text = true
+script = ExtResource("4_b1w56")
 
 [node name="PopulationPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "POPULATION_TOP_PANEL"
+clip_text = true
+script = ExtResource("5_e3kg5")
 
 [node name="TradePanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "TRADE_TOP_PANEL"
+clip_text = true
+script = ExtResource("6_lrvon")
 
 [node name="DiplomacyPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
+clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
+text = "DIPLOMACY_TOP_PANEL"
+clip_text = true
+script = ExtResource("7_4ixxg")
 
 [node name="MilitaryPanel" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "MILITARY_TOP_PANEL"
+clip_text = true
+script = ExtResource("8_oxtyy")
 
 [node name="CountryPanel" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(100, 60)
 layout_mode = 2
 size_flags_horizontal = 0
+text = "COUNTRY_TOP_PANEL"
+script = ExtResource("9_c6qjc")
 
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ProductionPanel" to="VBoxContainer/HBoxContainer/ProductionPanel" method="_on_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/BudgetPanel" to="VBoxContainer/HBoxContainer/BudgetPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/TechnologyPanel" to="VBoxContainer/HBoxContainer/TechnologyPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PoliticsPanel" to="VBoxContainer/HBoxContainer/PoliticsPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/PopulationPanel" to="VBoxContainer/HBoxContainer/PopulationPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/TradePanel" to="VBoxContainer/HBoxContainer/TradePanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/DiplomacyPanel" to="VBoxContainer/HBoxContainer/DiplomacyPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/MilitaryPanel" to="VBoxContainer/HBoxContainer/MilitaryPanel" method="_on_pressed"]
+[connection signal="pressed" from="VBoxContainer/CountryPanel" to="VBoxContainer/CountryPanel" method="_on_pressed"]

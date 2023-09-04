@@ -6,9 +6,15 @@
 [sub_resource type="GDScript" id="GDScript_c3oah"]
 script/source = "extends Panel
 
+
 func _ready():
+	var PanelLabel: Label = $Label
+	
 	self.set_size($\"../CloseButton/Sprite2D/Control\".get_size()*$\"../CloseButton/Sprite2D\".get_scale()) # Making it equal to sprite size
 	self.size.x = get_parent().size.x # Making it to be on whole top side
+	
+	PanelLabel.set_size(self.get_size() - $\"../CloseButton/Sprite2D/Control\".get_size()*$\"../CloseButton/Sprite2D\".get_scale()) # Not letting it clip over X button
+	PanelLabel.text = String(get_parent().PanelName)
 "
 
 [sub_resource type="GDScript" id="GDScript_vtk7h"]
@@ -50,6 +56,19 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = SubResource("GDScript_c3oah")
 
+[node name="Label" type="Label" parent="TopPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_right = 40.0
+offset_bottom = 11.5
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
 [node name="CloseButton" type="Button" parent="."]
 layout_mode = 1
 offset_right = 9.0
@@ -77,4 +96,3 @@ mouse_filter = 2
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="gui_input" from="TopPanel" to="." method="_on_top_panel_gui_input"]
 [connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
-[connection signal="pressed" from="CloseButton" to="." method="_on_button_pressed"]

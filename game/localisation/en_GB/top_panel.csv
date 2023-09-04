@@ -1,0 +1,13 @@
+
+;; Top Panel
+PRODUCTION_TOP_PANEL;Production
+BUDGET_TOP_PANEL;Budget
+TECHNOLOGY_TOP_PANEL;Technology
+POLITICS_TOP_PANEL;Politics
+POPULATION_TOP_PANEL;Population
+TRADE_TOP_PANEL;Trade
+DIPLOMACY_TOP_PANEL;Diplomacy
+MILITARY_TOP_PANEL;Military
+COUNTRY_TOP_PANEL;Country
+EXAMPLE_POPUP;Example of working localisation
+EXAMPLE_POPUP_BUDGET;Example of BUDGET Popup localisation
