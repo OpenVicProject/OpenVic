@@ -29,6 +29,8 @@ var _mouse_over_viewport : bool = true
 @export var _zoom_target : float = 1.0:
 	get: return _zoom_target
 	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
+const _zoom_position_multiplier = 4.0  # This value needs to be fine-tuned.
+var _zoom_position : Vector2
 
 @export var _map_mesh_instance : MeshInstance3D
 var _map_mesh : MapMesh
@@ -109,9 +111,13 @@ func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 
 func zoom_in() -> void:
 	_zoom_target -= _zoom_target_step
+	_zoom_position = (Vector2(0.5, 0.5) - _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims) * _zoom_position_multiplier
 
 func zoom_out() -> void:
 	_zoom_target += _zoom_target_step
+	# For some reason, zooming out in the original game does not consider the
+	# cursor location. I'm not sure if we want to preserve this behavior.
+	_zoom_position = Vector2()
 
 func _on_province_selected(index : int) -> void:
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
@@ -170,11 +176,10 @@ func _movement_process(delta : float) -> void:
 # REQUIREMENTS
 # * UIFUN-125
 func _edge_scrolling_vector() -> Vector2:
-	if not _mouse_over_viewport:
-		return Vector2()
 	var mouse_vector := _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims - Vector2(0.5, 0.5)
+	# Only scroll if outside the move threshold.
 	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
-		mouse_vector *= 0
+		return Vector2()
 	return mouse_vector * _edge_move_speed
 
 # REQUIREMENTS
@@ -196,12 +201,11 @@ func _clamp_over_map() -> void:
 func _zoom_process(delta : float) -> void:
 	var height := _camera.position.y
 	var zoom := _zoom_target - height
-	height += zoom * _zoom_speed * delta
-	var new_zoom := _zoom_target - height
+	var zoom_delta = zoom * _zoom_speed * delta
 	# Set to target if height is within _zoom_epsilon of it or has overshot past it
-	if abs(new_zoom) < _zoom_epsilon or sign(zoom) != sign(new_zoom):
-		height = _zoom_target
-	_camera.position.y = height
+	if abs(zoom - zoom_delta) < _zoom_epsilon or sign(zoom) != sign(zoom - zoom_delta):
+		zoom_delta = zoom
+	_camera.position += Vector3(_zoom_position.x * zoom_delta, zoom_delta, _zoom_position.y * zoom_delta)
 
 func _update_orientation() -> void:
 	var dir := Vector3(0, -1, -exp(-_camera.position.y - 1))
