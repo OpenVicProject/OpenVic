@@ -29,17 +29,9 @@ func _ready():
 
 [node name="PopupPanel" type="Control"]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -125.0
-offset_top = -100.0
-offset_right = 125.0
-offset_bottom = 100.0
-grow_horizontal = 2
-grow_vertical = 2
+anchors_preset = 0
+offset_right = 250.0
+offset_bottom = 200.0
 script = ExtResource("1_u7a8e")
 
 [node name="Body" type="Panel" parent="."]

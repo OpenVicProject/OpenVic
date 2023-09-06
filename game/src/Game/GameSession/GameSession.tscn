@@ -26,7 +26,12 @@ _game_session_menu = NodePath("GameSessionMenu")
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 
 [node name="MainManagamentPanel" parent="." instance=ExtResource("3_wxhjf")]
-layout_mode = 1
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="MapControlPanel" parent="." instance=ExtResource("3_afh6d")]
 layout_mode = 1

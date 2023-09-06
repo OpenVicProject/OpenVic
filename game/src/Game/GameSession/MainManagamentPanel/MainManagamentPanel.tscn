@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cyr5e31ucu44d"]
+[gd_scene load_steps=11 format=3 uid="uid://cyr5e31ucu44d"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/BudgetPanel.gd" id="1_5jsre"]
 [ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/ProductionPanel.gd" id="1_7nvhi"]
@@ -10,19 +10,20 @@
 [ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/MilitaryPanel.gd" id="8_oxtyy"]
 [ext_resource type="Script" path="res://src/Game/GameSession/MainManagamentPanel/CountryPanel.gd" id="9_c6qjc"]
 
-[node name="MainManagamentPanel" type="Control"]
-layout_mode = 3
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_d4afl"]
+
+[node name="MainManagamentPanel" type="PanelContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_d4afl")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 custom_minimum_size = Vector2(700, 100)
 layout_mode = 2
-offset_right = 700.0
-offset_bottom = 100.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
