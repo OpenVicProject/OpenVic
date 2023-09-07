@@ -8,18 +8,14 @@
             "type": "cppdbg",
             "request": "launch",
             "name": "Debug",
-            "program": "/bin/godot4",   // TODO: Godot environment variable?
-            "args": [],
+            "program": "/bin/godot4", // TODO: Set your Godot binary path
+            "args": [
+                "-e"
+            ],
             "cwd": "${workspaceFolder}/game",
             "preLaunchTask": "dev_build",
             "windows": {
-                "type": "cppvsdb",
-                "request": "launch",
-                "name": "Debug",
-                "program": "/bin/godot4", // TODO: Common Godot 4 Windows install or Godot environment variable?
-                "args": [],
                 "cwd": "${workspaceFolder}\\game",
-                "preLaunchTask": "dev_build",
             }
         }
     ]
