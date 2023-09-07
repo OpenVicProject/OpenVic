@@ -7,6 +7,15 @@ const SoundTabScene = preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
 @export var loading_screen : LoadingScreen
 
 func _ready() -> void:
+	if ArgumentParser.get_argument(&"help"):
+		ArgumentParser._print_help()
+		# For some reason this doesn't get freed properly
+		# Godot will always quit before it frees the active StreamPlayback resource
+		# This hack fixes that
+		MusicConductor.queue_free()
+		get_tree().quit()
+		return
+
 	# Hack to ensure Sound Options load
 	var sound_tab := SoundTabScene.instantiate()
 	sound_tab.visible = false

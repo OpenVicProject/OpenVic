@@ -309,10 +309,8 @@ Options:
 			("Type: %s - Default Value: %s" % [option.get_type_string(), option.default_value]).rpad(45),
 			option.description
 		])
+
 func _ready():
 	if Engine.is_editor_hint(): return
 	_set_argument_setting()
 	GameDebug._singleton = GameDebug.new()
-	if get_argument(&"help"):
-		_print_help()
-		get_tree().quit()
