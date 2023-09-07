@@ -9,8 +9,8 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
 * [scons](https://scons.org/)
 
 ## Repo Setup
-1. Clone the OpenVic Repo to a suitable folder using the git command "git clone https://github.com/OpenVicProject/OpenVic.git"
-2. Update the submodules by executing the git command "git submodule update --init --recursive"
+1. Clone the OpenVic Repo to a suitable folder using the git command `git clone https://github.com/OpenVicProject/OpenVic.git`
+2. Update the submodules by executing the git command `git submodule update --init --recursive`
 
 Note that using a zip download instead of cloning means a lot of work in manually managing submodules individually. It is strongly recommended to use git to obtain the source code. 
 
@@ -21,6 +21,17 @@ Note that using a zip download instead of cloning means a lot of work in manuall
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Run `scons` in the project root, you should see a libopenvic file in `game/bin/openvic`.
 4. Open with Godot 4, click import and navigate to the `game` directory.
+5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
+6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
+
+## Build/Run Instructions for Archlinux (using yay)
+1. Install [Godot 4.1.1](https://archlinux.org/packages/extra/x86_64/godot/)  with `yay -S Godot` and [scons](https://archlinux.org/packages/extra/any/scons/) with ` yay -S scons`.
+2. Clone the OpenVic Repo using the git command `git clone https://github.com/OpenVicProject/OpenVic.git`.
+3. CD into the game directory with `cd ./OpenVic`.
+4. Update the submodules by executing the git command `sudo git submodule update --init --recursive`.
+5. While still in the game directory, run `scons`.
+6. Now launch Godot 4, click import and navigate to `OpenVic` then to `game`.
+7. Click `project.godot`.
 5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
 6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
 
