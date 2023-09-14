@@ -93,15 +93,18 @@ layout_mode = 2
 mouse_filter = 1
 
 [node name="PopStats" type="HBoxContainer" parent="PanelList/InteractList"]
+editor_description = "UI-124"
 layout_mode = 2
 
 [node name="PopTypeChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
+editor_description = "UI-125"
 layout_mode = 2
 
 [node name="PopIdeologyChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
 layout_mode = 2
 
 [node name="PopCultureChart" parent="PanelList/InteractList/PopStats" instance=ExtResource("2_3oytt")]
+editor_description = "UI-127"
 layout_mode = 2
 
 [node name="HSeparator3" type="HSeparator" parent="PanelList/InteractList"]

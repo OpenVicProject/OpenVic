@@ -1,11 +1,11 @@
-#include "register_types.h"
+#include "register_types.hpp"
 
 #include <godot_cpp/classes/engine.hpp>
 
-#include "Checksum.hpp"
-#include "GameSingleton.hpp"
-#include "LoadLocalisation.hpp"
-#include "MapMesh.hpp"
+#include "openvic-extension/Checksum.hpp"
+#include "openvic-extension/GameSingleton.hpp"
+#include "openvic-extension/LoadLocalisation.hpp"
+#include "openvic-extension/MapMesh.hpp"
 
 using namespace godot;
 using namespace OpenVic;

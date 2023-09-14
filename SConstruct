@@ -2,7 +2,6 @@
 import os
 import sys
 from glob import glob
-from pathlib import Path
 
 # Local
 from scripts.build.option_handler import OptionsClass
@@ -60,9 +59,15 @@ if env["compiledb"]:
 # - CPPDEFINES are for pre-processor defines
 # - LINKFLAGS are for linking flags
 
+ovsim_env = SConscript("extension/deps/openvic-simulation/SConstruct")
+
+env.Append(LIBPATH=ovsim_env.openvic_simulation["LIBPATH"])
+env.Append(LIBS=ovsim_env.openvic_simulation["LIBS"])
+env.Append(CPPPATH=ovsim_env.openvic_simulation["INCPATH"])
+
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-paths = ["extension/src/", "extension/deps/openvic-simulation/src/"]
-env.Append(CPPPATH=paths)
+paths = ["extension/src/"]
+env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
 sources = GlobRecursive("*.cpp", paths)
 env.extension_sources = sources
 

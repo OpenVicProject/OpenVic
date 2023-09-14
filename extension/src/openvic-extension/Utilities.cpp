@@ -19,7 +19,7 @@ Ref<Image> OpenVic::load_godot_image(String const& path) {
 
 // Get the polar coordinates of a pixel relative to the center
 static Vector2 getPolar(Vector2 UVin, Vector2 center) {
-	Vector2 relcoord = (UVin-center);
+	Vector2 relcoord = (UVin - center);
 	float dist = relcoord.length();
 	float theta = std::numbers::pi / 2 + atan2(relcoord.y, relcoord.x);
 	if (theta < 0.0f) theta += std::numbers::pi * 2;
@@ -27,11 +27,11 @@ static Vector2 getPolar(Vector2 UVin, Vector2 center) {
 }
 
 // From thebookofshaders, returns a gradient falloff
-static inline float parabola(float base, float x, float k){
+static inline float parabola(float base, float x, float k) {
 	return powf(base * x * (1.0 - x), k);
 }
 
-static inline float parabola_shadow(float base, float x){
+static inline float parabola_shadow(float base, float x) {
 	return base * x * x;
 }
 
@@ -57,9 +57,9 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 		return { trim_colour, 1.0 };
 	}
 	// Interior
-	else if (dist <= radius-trim_size) {
+	else if (dist <= radius - trim_size) {
 		Color col { 1.0f, 0.0f, 0.0f };
-		for (int i = 0; i < stopAngles.size(); i++){
+		for (int i = 0; i < stopAngles.size(); i++) {
 			if (theta <= float(stopAngles[i])) {
 				col = colours[i];
 				break;
@@ -73,7 +73,7 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 		return { trim_colour, 1.0 };
 	}
 	// Outside the circle
-	else{
+	else {
 		return { 0.1, 0.1, 0.1, shadow_gradient };
 	}
 }

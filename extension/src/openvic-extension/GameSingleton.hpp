@@ -3,9 +3,11 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
-#include "openvic/GameManager.hpp"
+#include <openvic-simulation/GameManager.hpp>
+#include <openvic-simulation/dataloader/Dataloader.hpp>
 
 namespace OpenVic {
+
 	struct TerrainVariant : HasIdentifierAndColour {
 		friend class GameSingleton;
 
@@ -14,19 +16,22 @@ namespace OpenVic {
 
 		TerrainVariant(const std::string_view new_identfier, colour_t new_colour,
 			godot::Ref<godot::Image> const& new_image);
+
 	public:
-		static constexpr size_t MAX_INDEX = 1 << (8 * sizeof(Map::terrain_t));
+		static constexpr size_t MAX_TERRIN_VARIANT_COUNT = 1 << (8 * sizeof(Map::terrain_t));
 
 		TerrainVariant(TerrainVariant&&) = default;
 
 		godot::Ref<godot::Image> get_image() const;
 	};
+
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
 
 		static GameSingleton* singleton;
 
 		GameManager game_manager;
+		Dataloader dataloader;
 
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
@@ -38,26 +43,10 @@ namespace OpenVic {
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 		godot::Dictionary good_icons;
 
-		godot::Error _parse_province_identifier_entry(godot::String const& identifier, godot::Variant const& entry);
-		godot::Error _parse_region_entry(godot::String const& identifier, godot::Variant const& entry);
-		godot::Error _parse_terrain_entry(godot::String const& identifier, godot::Variant const& entry, godot::String const& terrain_texture_dir_path);
-		godot::Error _parse_good_entry(godot::String const& identifier, godot::Variant const& entry);
-
-		godot::Error _load_province_identifier_file(godot::String const& file_path);
-		godot::Error _load_water_province_file(godot::String const& file_path);
-		godot::Error _load_region_file(godot::String const& file_path);
-		godot::Error _load_terrain_variants(godot::String const& terrain_identifiers_path, godot::String const& terrain_texture_dir_path);
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
-		godot::Error _load_goods(godot::String const& defines_path, godot::String const& icons_dir_path);
 
-		godot::Error _load_province_identifier_file_compatibility_mode(godot::String const& file_path);
 		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_image_path, godot::String const& terrain_texturesheet_path);
-
-		/* Hardcoded data for defining things for which parsing from files has
-		 * not been implemented, currently mapmodes and building types.
-		 */
-		godot::Error _load_hardcoded_defines();
 
 		/* Generate the province_colour_texture from the current mapmode.
 		 */
@@ -83,25 +72,12 @@ namespace OpenVic {
 
 		static void setup_logger();
 
-		static godot::StringName const& get_province_identifier_file_key();
-		static godot::StringName const& get_water_province_file_key();
-		static godot::StringName const& get_region_file_key();
-		static godot::StringName const& get_terrain_variant_file_key();
-		static godot::StringName const& get_terrain_texture_dir_key();
-		static godot::StringName const& get_province_image_file_key();
-		static godot::StringName const& get_terrain_image_file_key();
-		static godot::StringName const& get_goods_file_key();
-		static godot::StringName const& get_good_icons_dir_key();
-
-		/* Load the game's defines from the filepaths listed as Strings
-		 * in a Dictionary, using the StringNames above as keys.
-		 */
-		godot::Error load_defines(godot::Dictionary const& file_dict);
-
 		/* Load the game's defines in compatiblity mode from the filepath
 		 * pointing to the defines folder.
 		 */
-		godot::Error load_defines_compatibility_mode(godot::String const& file_path);
+		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
+
+		godot::String lookup_file(godot::String const& path) const;
 
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.
