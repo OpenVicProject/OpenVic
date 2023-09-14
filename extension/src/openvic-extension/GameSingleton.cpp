@@ -2,9 +2,9 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-simulation/utility/Logger.hpp"
+#include <openvic-simulation/utility/Logger.hpp>
 
-#include "Utilities.hpp"
+#include "openvic-extension/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -105,7 +105,7 @@ void GameSingleton::_on_state_updated() {
 }
 
 /* REQUIREMENTS:
- * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33
+ * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); } },
 								 terrain_variants { "terrain variants" } {
@@ -115,6 +115,7 @@ GameSingleton::GameSingleton() : game_manager { [this]() { _on_state_updated(); 
 
 void GameSingleton::setup_logger() {
 	Logger::set_info_func([](std::string&& str) { UtilityFunctions::print(std_to_godot_string(str)); });
+	Logger::set_warning_func([](std::string&& str) { UtilityFunctions::push_warning(std_to_godot_string(str)); });
 	Logger::set_error_func([](std::string&& str) { UtilityFunctions::push_error(std_to_godot_string(str)); });
 }
 

@@ -3,8 +3,8 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
-#include "openvic-simulation/GameManager.hpp"
-#include "openvic-simulation/dataloader/Dataloader.hpp"
+#include <openvic-simulation/GameManager.hpp>
+#include <openvic-simulation/dataloader/Dataloader.hpp>
 
 namespace OpenVic {
 

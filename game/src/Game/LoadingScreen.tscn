@@ -59,6 +59,7 @@ _data = {
 }
 
 [node name="LoadingScreen" type="Control" node_paths=PackedStringArray("progress_bar", "quote_label", "animation_player")]
+editor_description = "UI-24"
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

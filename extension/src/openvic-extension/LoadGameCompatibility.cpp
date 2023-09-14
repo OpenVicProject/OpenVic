@@ -3,9 +3,9 @@
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-simulation/utility/BMP.hpp"
+#include <openvic-simulation/utility/BMP.hpp>
 
-#include "Utilities.hpp"
+#include "openvic-extension/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -62,11 +62,11 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 }
 
 Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
-	static const std::filesystem::path province_image_file = "map/provinces.bmp";
-	static const std::filesystem::path terrain_image_file = "map/terrain.bmp";
-	static const std::filesystem::path terrain_texture_file = "map/terrain/texturesheet.tga";
+	static const fs::path province_image_file = "map/provinces.bmp";
+	static const fs::path terrain_image_file = "map/terrain.bmp";
+	static const fs::path terrain_texture_file = "map/terrain/texturesheet.tga";
 
-	std::vector<std::filesystem::path> roots;
+	Dataloader::path_vector_t roots;
 	for (String const& path : file_paths) {
 		roots.push_back(godot_to_std_string(path));
 	}

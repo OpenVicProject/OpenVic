@@ -24,7 +24,7 @@ SpaceBeforeAssignmentOperators: true
 SpaceAfterTemplateKeyword: false
 SpaceAfterLogicalNot: false
 PointerAlignment: Left
-PackConstructorInitializers: CurrentLine
+PackConstructorInitializers: BinPack
 NamespaceIndentation: All
 LambdaBodyIndentation: Signature
 IndentExternBlock: Indent
@@ -43,8 +43,11 @@ AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortEnumsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AlignTrailingComments: true
-AlignEscapedNewlines: Left
-AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: DontAlign
+AlignAfterOpenBracket: BlockIndent
+BinPackArguments: true
+BinPackParameters: true
+IndentRequiresClause: false
 AccessModifierOffset: -4
 IncludeCategories:
   - Regex: <[[:alnum:]_]+>
@@ -53,7 +56,11 @@ IncludeCategories:
     Priority: 2
   - Regex: ^<godot_cpp/
     Priority: 3
-  - Regex: ^"openvic/
+  - Regex: ^<openvic-dataloader/
     Priority: 4
-  - Regex: .*
+  - Regex: ^<openvic-simulation/
     Priority: 5
+  - Regex: ^"openvic-extension/
+    Priority: 6
+  - Regex: .*
+    Priority: 7

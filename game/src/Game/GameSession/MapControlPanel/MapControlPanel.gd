@@ -11,7 +11,7 @@ signal zoom_out_button_pressed
 var _mapmode_button_group : ButtonGroup
 
 # REQUIREMENTS:
-# * UI-550, UI-552, UI-554, UI-561, UI-562
+# * UI-550, UI-552, UI-554, UI-561, UI-562, UI-563
 func _add_mapmode_button(identifier : String) -> void:
 	var button := Button.new()
 	button.text = identifier
@@ -37,7 +37,7 @@ func _on_game_session_menu_button_pressed() -> void:
 
 # REQUIREMENTS:
 # * SS-76
-# * UIFUN-129, UIFUN-131, UIFUN-133, UIFUN-140, UIFUN-141
+# * UIFUN-129, UIFUN-131, UIFUN-133, UIFUN-140, UIFUN-141, UIFUN-142
 func _mapmode_pressed(button : BaseButton) -> void:
 	GameSingleton.set_mapmode(button.tooltip_text)
 
