@@ -193,13 +193,13 @@ func _create_tooltip(labelHovered : String) -> String:
 	for label in _slice_order:
 		var slice : SliceData = _slices.get(label)
 		var percent := _format_percent(slice.percentage)
-		var entry : String = "%s %s%%" % [label, percent]
+		var entry : String = "%s %s%%" % [tr(label), percent]
 		if label == labelHovered:
 			entry = "[i][u][b]>>%s<<[/b][/u][/i]" % entry
 		slice_tooltips.push_back(entry)
 	# Slices are ordered smallest to largest, but here we want the opposite
 	slice_tooltips.reverse()
-	return "[font_size=10]%s[/font_size]" % "\n".join(slice_tooltips)
+	return "[font_size=14]%s[/font_size]" % "\n".join(slice_tooltips)
 
 # Angle from center.angle_to_point is measured from the +x axis,
 # but the chart starts from +y

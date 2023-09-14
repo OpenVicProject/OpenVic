@@ -104,7 +104,7 @@ func _set_building_row(index : int, building : Dictionary) -> void:
 func _update_info() -> void:
 	_province_info = GameSingleton.get_province_info_from_index(_selected_index)
 	if _province_info:
-		_province_name_label.text = _province_info.get(GameSingleton.get_province_info_province_key(),
+		_province_name_label.text = "PROV" + _province_info.get(GameSingleton.get_province_info_province_key(),
 			GameSingleton.get_province_info_province_key() + _missing_suffix)
 		_region_name_label.text = _province_info.get(GameSingleton.get_province_info_region_key(),
 			GameSingleton.get_province_info_region_key() + _missing_suffix)

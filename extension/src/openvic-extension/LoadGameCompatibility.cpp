@@ -5,6 +5,7 @@
 
 #include <openvic-simulation/utility/BMP.hpp>
 
+#include "openvic-extension/LoadLocalisation.hpp"
 #include "openvic-extension/Utilities.hpp"
 
 using namespace godot;
@@ -83,7 +84,6 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		err = FAILED;
 	}
 
-	game_manager.map.lock_regions();
 	if (_load_terrain_variants_compatibility_mode(
 		std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
 		std_to_godot_string(dataloader.lookup_file(terrain_texture_file).string())
@@ -102,6 +102,11 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to hardcoded defines!");
 		err = FAILED;
 	}
+	if (!dataloader.load_localisation_files(LoadLocalisation::add_message)) {
+		UtilityFunctions::push_error("Failed to load localisation!");
+		err = FAILED;
+	}
+
 	return err;
 }
 
