@@ -3,8 +3,8 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
-#include "openvic/GameManager.hpp"
-#include "openvic/dataloader/Dataloader.hpp"
+#include "openvic-simulation/GameManager.hpp"
+#include "openvic-simulation/dataloader/Dataloader.hpp"
 
 namespace OpenVic {
 
@@ -46,7 +46,6 @@ namespace OpenVic {
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
 
-		godot::Error _load_province_identifier_file_compatibility_mode(godot::String const& file_path);
 		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_image_path, godot::String const& terrain_texturesheet_path);
 
 		/* Generate the province_colour_texture from the current mapmode.

@@ -86,8 +86,8 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 	if (err != OK) return err;
 
 	// Generate interleaved province and terrain ID image
-	if (game_manager.map.generate_province_shape_image(province_dims.x, province_dims.y, province_image->get_data().ptr(),
-		terrain_image->get_data().ptr(), terrain_variant_map, false) != SUCCESS) err = FAILED;
+	if (!game_manager.map.generate_province_shape_image(province_dims.x, province_dims.y, province_image->get_data().ptr(),
+		terrain_image->get_data().ptr(), terrain_variant_map, false)) err = FAILED;
 
 	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT

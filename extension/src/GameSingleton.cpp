@@ -2,7 +2,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic/utility/Logger.hpp"
+#include "openvic-simulation/utility/Logger.hpp"
 
 #include "Utilities.hpp"
 
@@ -124,10 +124,8 @@ GameSingleton::~GameSingleton() {
 }
 
 Error GameSingleton::setup_game() {
-	return_t ret = game_manager.setup();
-	if (dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string()) != SUCCESS) {
-		ret = FAILURE;
-	}
+	bool ret = game_manager.setup();
+	ret &= dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string());
 	return ERR(ret);
 }
 
@@ -297,7 +295,7 @@ Error GameSingleton::_update_colour_image() {
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
-	if (game_manager.map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()) != SUCCESS)
+	if (!game_manager.map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()))
 		err = FAILED;
 
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
@@ -348,7 +346,7 @@ void GameSingleton::set_selected_province(int32_t index) {
 }
 
 Error GameSingleton::expand_building(int32_t province_index, String const& building_type_identifier) {
-	if (game_manager.expand_building(province_index, godot_to_std_string(building_type_identifier)) != SUCCESS) {
+	if (!game_manager.expand_building(province_index, godot_to_std_string(building_type_identifier))) {
 		UtilityFunctions::push_error("Failed to expand ", building_type_identifier, " at province index ", province_index);
 		return FAILED;
 	}

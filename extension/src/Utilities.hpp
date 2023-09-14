@@ -2,9 +2,9 @@
 
 #include <godot_cpp/classes/image.hpp>
 
-#include "openvic/types/Colour.hpp"
+#include "openvic-simulation/types/Colour.hpp"
 
-#define ERR(x) ((x) == SUCCESS ? OK : FAILED)
+#define ERR(x) ((x) ? OK : FAILED)
 
 namespace OpenVic {
 
