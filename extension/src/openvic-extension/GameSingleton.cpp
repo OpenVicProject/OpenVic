@@ -11,7 +11,7 @@ using namespace OpenVic;
 
 TerrainVariant::TerrainVariant(const std::string_view new_identfier,
 	colour_t new_colour, Ref<Image> const& new_image)
-	: HasIdentifierAndColour { new_identfier, new_colour, true },
+	: HasIdentifierAndColour { new_identfier, new_colour, true, false },
 	  image { new_image } {}
 
 Ref<Image> TerrainVariant::get_image() const {
@@ -43,7 +43,6 @@ void GameSingleton::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_selected_province", "index"), &GameSingleton::set_selected_province);
 
 	ClassDB::bind_method(D_METHOD("expand_building", "province_index", "building_type_identifier"), &GameSingleton::expand_building);
-	ClassDB::bind_method(D_METHOD("get_good_icon_texture", "identifier"), &GameSingleton::get_good_icon_texture);
 
 	ClassDB::bind_method(D_METHOD("set_paused", "paused"), &GameSingleton::set_paused);
 	ClassDB::bind_method(D_METHOD("toggle_paused"), &GameSingleton::toggle_paused);
@@ -133,7 +132,7 @@ Error GameSingleton::setup_game() {
 int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
 	const size_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_width();
 	const size_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_height();
-	return game_manager.map.get_province_index_at(x_mod_w, y_mod_h);
+	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
 }
 
 StringName const& GameSingleton::get_province_info_province_key() {
@@ -219,7 +218,7 @@ Dictionary GameSingleton::_distribution_to_dictionary(distribution_t const& dist
 }
 
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
-	Province const* province = game_manager.map.get_province_by_index(index);
+	Province const* province = game_manager.get_map().get_province_by_index(index);
 	if (province == nullptr) return {};
 	Dictionary ret;
 
@@ -263,11 +262,11 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 }
 
 int32_t GameSingleton::get_width() const {
-	return game_manager.map.get_width();
+	return game_manager.get_map().get_width();
 }
 
 int32_t GameSingleton::get_height() const {
-	return game_manager.map.get_height();
+	return game_manager.get_map().get_height();
 }
 
 float GameSingleton::get_aspect_ratio() const {
@@ -296,7 +295,7 @@ Error GameSingleton::_update_colour_image() {
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
-	if (!game_manager.map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()))
+	if (!game_manager.get_map().generate_mapmode_colours(mapmode_index, colour_data_array.ptrw()))
 		err = FAILED;
 
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
@@ -316,17 +315,17 @@ Error GameSingleton::_update_colour_image() {
 }
 
 int32_t GameSingleton::get_mapmode_count() const {
-	return game_manager.map.get_mapmode_count();
+	return game_manager.get_map().get_mapmode_count();
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* mapmode = game_manager.map.get_mapmode_by_index(index);
+	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_index(index);
 	if (mapmode != nullptr) return std_to_godot_string(mapmode->get_identifier());
 	return String {};
 }
 
 Error GameSingleton::set_mapmode(String const& identifier) {
-	Mapmode const* mapmode = game_manager.map.get_mapmode_by_identifier(godot_to_std_string(identifier));
+	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_identifier(godot_to_std_string(identifier));
 	if (mapmode == nullptr) {
 		UtilityFunctions::push_error("Failed to set mapmode to: ", identifier);
 		return FAILED;
@@ -337,11 +336,11 @@ Error GameSingleton::set_mapmode(String const& identifier) {
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
-	return game_manager.map.get_selected_province_index();
+	return game_manager.get_map().get_selected_province_index();
 }
 
 void GameSingleton::set_selected_province(int32_t index) {
-	game_manager.map.set_selected_province(index);
+	game_manager.get_map().set_selected_province(index);
 	_update_colour_image();
 	emit_signal("province_selected", index);
 }
@@ -354,36 +353,32 @@ Error GameSingleton::expand_building(int32_t province_index, String const& build
 	return OK;
 }
 
-Ref<Texture> GameSingleton::get_good_icon_texture(String const& identifier) const {
-	return good_icons.get(identifier, {});
-}
-
 void GameSingleton::set_paused(bool paused) {
-	game_manager.clock.isPaused = paused;
+	game_manager.get_clock().isPaused = paused;
 }
 
 void GameSingleton::toggle_paused() {
-	game_manager.clock.isPaused = !game_manager.clock.isPaused;
+	game_manager.get_clock().isPaused = !game_manager.get_clock().isPaused;
 }
 
 bool GameSingleton::is_paused() const {
-	return game_manager.clock.isPaused;
+	return game_manager.get_clock().isPaused;
 }
 
 void GameSingleton::increase_speed() {
-	game_manager.clock.increaseSimulationSpeed();
+	game_manager.get_clock().increaseSimulationSpeed();
 }
 
 void GameSingleton::decrease_speed() {
-	game_manager.clock.decreaseSimulationSpeed();
+	game_manager.get_clock().decreaseSimulationSpeed();
 }
 
 bool GameSingleton::can_increase_speed() const {
-	return game_manager.clock.canIncreaseSimulationSpeed();
+	return game_manager.get_clock().canIncreaseSimulationSpeed();
 }
 
 bool GameSingleton::can_decrease_speed() const {
-	return game_manager.clock.canDecreaseSimulationSpeed();
+	return game_manager.get_clock().canDecreaseSimulationSpeed();
 }
 
 String GameSingleton::get_longform_date() const {
@@ -391,5 +386,5 @@ String GameSingleton::get_longform_date() const {
 }
 
 void GameSingleton::try_tick() {
-	game_manager.clock.conditionallyAdvanceGame();
+	game_manager.get_clock().conditionallyAdvanceGame();
 }

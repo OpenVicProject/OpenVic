@@ -41,7 +41,6 @@ namespace OpenVic {
 		IdentifierRegistry<TerrainVariant> terrain_variants;
 		Map::terrain_variant_map_t terrain_variant_map;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
-		godot::Dictionary good_icons;
 
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
@@ -143,7 +142,6 @@ namespace OpenVic {
 		void set_selected_province(int32_t index);
 
 		godot::Error expand_building(int32_t province_index, godot::String const& building_type_identifier);
-		godot::Ref<godot::Texture> get_good_icon_texture(godot::String const& identifier) const;
 
 		void set_paused(bool paused);
 		void toggle_paused();

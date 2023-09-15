@@ -122,7 +122,7 @@ func _update_info() -> void:
 
 		_rgo_name_label.text = _province_info.get(GameSingleton.get_province_info_rgo_key(),
 			GameSingleton.get_province_info_rgo_key() + _missing_suffix)
-		_rgo_icon_texture_rect.texture = GameSingleton.get_good_icon_texture(_rgo_name_label.text)
+		_rgo_icon_texture_rect.texture = null
 
 		var buildings : Array = _province_info.get(GameSingleton.get_province_info_buildings_key(), [])
 		for i in max(buildings.size(), _building_rows.size()):
