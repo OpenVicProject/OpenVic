@@ -1,14 +1,76 @@
-#include "GameSingleton.hpp"
-
+#include <godot_cpp/classes/dir_access.hpp>
 #include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/classes/json.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/utility/BMP.hpp>
 
 #include "openvic-extension/Utilities.hpp"
 
+#include "GameSingleton.hpp"
+
 using namespace godot;
 using namespace OpenVic;
+
+Error GameSingleton::quazz_map_convert(String const& json_file_path, String const& csv_file_path) {
+	Ref<FileAccess> json_file = FileAccess::open(json_file_path, FileAccess::READ);
+
+	Variant data_received;
+	if (!json_file.is_valid() && FileAccess::get_open_error() == FAILED) {
+		UtilityFunctions::push_error("Error opening JSON file: ", json_file);
+		return FAILED;
+	}
+
+	String json_content = json_file->get_as_text();
+	json_file->close();
+	godot::JSON json_data;
+	Error error = json_data.parse(json_content);
+
+	if (error == OK) {
+		data_received = json_data.get_data(); 
+	} else {
+		UtilityFunctions::push_error("JSON Parse Error: ", json_data.get_error_message());
+		return FAILED;
+	}
+	Ref<FileAccess> csv_file = FileAccess::open(csv_file_path, FileAccess::WRITE);
+
+	if (!csv_file.is_valid() && FileAccess::get_open_error() == FAILED) {
+		UtilityFunctions::push_error("Error creating CSV file: ", csv_file);
+		return FAILED;
+	}
+
+	Dictionary json_dict = data_received;
+	Array keys = json_dict.keys();
+	String csv_header = "province_count;red;green;blue;province_name;x\n";
+	csv_file->store_string(csv_header);
+
+	for (int i = 0; i < keys.size(); i++) {
+		String province_name = keys[i];
+		Variant color_data = json_dict[province_name];
+		String color_string;
+
+		if (color_data.get_type() == Variant::ARRAY) {
+			Array color_array = color_data;
+			int red = color_array[0];
+			int green = color_array[1];
+			int blue = color_array[2];
+			color_string = String::num(red) + ";" + String::num(green) + ";" + String::num(blue);
+		} else if (color_data.get_type() == Variant::STRING) {
+			String hex_color = color_data;
+			int red = hex_color.substr(1, 2).hex_to_int();
+			int green = hex_color.substr(3, 2).hex_to_int();
+			int blue = hex_color.substr(5, 2).hex_to_int();
+			color_string = String::num(red) + ";" + String::num(green) + ";" + String::num(blue);
+		}
+
+		String csv_line = String::num(i + 1) + ";" + color_string + ";" + province_name + ";x\n";
+		csv_file->store_string(csv_line);
+	}
+	csv_file->close();
+
+	Error err = OK;
+	return err;
+}
 
 Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& terrain_image_path, String const& terrain_texturesheet_path) {
 	// Read BMP's palette to determine terrain variant colours which texture they're associated with
@@ -85,16 +147,17 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 
 	game_manager.map.lock_regions();
 	if (_load_terrain_variants_compatibility_mode(
-		std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
-		std_to_godot_string(dataloader.lookup_file(terrain_texture_file).string())
+			std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
+			std_to_godot_string(dataloader.lookup_file(terrain_texture_file).string())
 		) != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
 	}
 	if (_load_map_images(
-		std_to_godot_string(dataloader.lookup_file(province_image_file).string()),
-		std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
-		true) != OK) {
+			std_to_godot_string(dataloader.lookup_file(province_image_file).string()),
+			std_to_godot_string(dataloader.lookup_file(terrain_image_file).string()),
+			true
+		) != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}

@@ -43,6 +43,7 @@ namespace OpenVic {
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 		godot::Dictionary good_icons;
 
+		
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
 
@@ -76,7 +77,7 @@ namespace OpenVic {
 		 * pointing to the defines folder.
 		 */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
-
+		godot::Error quazz_map_convert(godot::String const& json_file_path, godot::String const& csv_file_path);
 		godot::String lookup_file(godot::String const& path) const;
 
 		/* Post-load/restart game setup - reset the game to post-load state
