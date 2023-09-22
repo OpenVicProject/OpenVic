@@ -1,0 +1,16 @@
+prefix=${pcfiledir}/../..
+#   xxHash - Extremely fast hash algorithm
+#   Copyright (C) 2012-2021, Yann Collet, Facebook
+#   BSD 2-Clause License (https://www.opensource.org/licenses/bsd-license.php)
+
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: xxhash
+Description: extremely fast hash algorithm
+URL: http://www.xxhash.com/
+Version: 0.8.2
+Libs: "-L${libdir}" -lxxhash
+Cflags: "-I${includedir}"
+

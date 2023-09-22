@@ -1,3 +1,5 @@
+
+
 #!/usr/bin/env python
 import os
 import sys
@@ -18,7 +20,6 @@ opts.Add(BoolVariable("progress", "Show a progress indicator during compilation"
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
 env = SConscript("godot-cpp/SConstruct").Clone()
-
 # Make LIBS into a list which is easier to deal with.
 env["LIBS"] = [env["LIBS"]]
 
@@ -51,6 +52,9 @@ if env["compiledb"]:
     env.Tool("compilation_db")
     env.Alias("compiledb", env.CompilationDatabase())
 
+env.Append(LIBS = ['xxhash'])
+env.Append(LIBPATH = ['extension/src/openvic-extension/xxHash/lib'])
+
 # For the reference:
 # - CCFLAGS are compilation flags shared between C and C++
 # - CFLAGS are for C-specific compilation flags
@@ -58,13 +62,11 @@ if env["compiledb"]:
 # - CPPFLAGS are for pre-processor flags
 # - CPPDEFINES are for pre-processor defines
 # - LINKFLAGS are for linking flags
-
 ovsim_env = SConscript("extension/deps/openvic-simulation/SConstruct")
 
 env.Append(LIBPATH=ovsim_env.openvic_simulation["LIBPATH"])
 env.Append(LIBS=ovsim_env.openvic_simulation["LIBS"])
 env.Append(CPPPATH=ovsim_env.openvic_simulation["INCPATH"])
-
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 paths = ["extension/src/"]
 env.Append(CPPPATH=[[env.Dir(p) for p in paths]])

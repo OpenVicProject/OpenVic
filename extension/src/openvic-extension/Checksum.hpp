@@ -1,18 +1,19 @@
 #pragma once
-
+#include "xxHash/include/xxhash.h"
 #include <godot_cpp/core/class_db.hpp>
-
+using namespace godot;
 namespace OpenVic {
-	class Checksum : public godot::Object {
-		GDCLASS(Checksum, godot::Object)
-
-		// BEGIN BOILERPLATE
+	class Checksum : public Object {
+		GDCLASS(Checksum, Object)
+		
+		// INIT PART
 		inline static Checksum* _checksum = nullptr;
 
+	private:
+		XXH64_hash_t hash_checksum;
+
 	protected:
-		static void _bind_methods() {
-			godot::ClassDB::bind_method(godot::D_METHOD("get_checksum_text"), &Checksum::get_checksum_text);
-		}
+		static void _bind_methods();
 
 	public:
 		inline static Checksum* get_singleton() { return _checksum; }
@@ -25,13 +26,9 @@ namespace OpenVic {
 			ERR_FAIL_COND(_checksum != this);
 			_checksum = nullptr;
 		}
-		// END BOILERPLATE
-
-		/* REQUIREMENTS:
-		 * DAT-8
-		 */
-		inline godot::String get_checksum_text() {
-			return godot::String("1234abcd");
-		}
+		// END INIT
+		void checksum_dir(XXH3_state_t* const state, PackedByteArray buffer, String directory_path);
+		void calculate_checksum(String directory_path);
+		XXH64_hash_t get_checksum() const;
 	};
 }

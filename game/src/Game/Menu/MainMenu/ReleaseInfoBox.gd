@@ -20,7 +20,7 @@ func _ready():
 	_commit_label.text = _GIT_INFO_.short_hash
 	_commit_label.tooltip_text = _GIT_INFO_.commit_hash
 	# UI-111
-	_checksum = Checksum.get_checksum_text()
+	_checksum = str(Checksum.get_checksum())
 	_update_checksum_label_text()
 
 func _notification(what : int):

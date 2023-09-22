@@ -35,7 +35,7 @@ func _load_compatibility_mode():
 
 	if not compatibility_mode_path:
 		# TODO - non-Windows default paths
-		const default_path : String = "C:/Program Files (x86)/Steam/steamapps/common/Victoria 2"
+		const default_path : String = "G:/Games/Steam-Library/steamapps/common/Victoria 2"
 		compatibility_mode_path = default_path
 
 	var compatibility_mode_paths : PackedStringArray = [compatibility_mode_path]
@@ -62,10 +62,14 @@ func _initialize_game() -> void:
 	loading_screen.try_update_loading_screen(100)
 
 	var end := Time.get_ticks_usec()
+	Checksum.calculate_directory_checksum('res://')
+	print(Checksum.get_checksum())
+	
 	print("Loading took ", float(end - start) / 1000000, " seconds")
 
 	# change scene in a thread-safe way
 	get_tree().call_deferred("change_scene_to_file", "res://src/Game/GameMenu.tscn")
+
 
 func _on_splash_container_splash_end():
 	loading_screen.show()
