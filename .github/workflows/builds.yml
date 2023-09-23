@@ -67,13 +67,14 @@ jobs:
           submodules: recursive
 
       - name: Setup OpenVic build cache
-        uses: ./.github/actions/openvic-cache
+        uses: OpenVicProject/openvic-cache@master
         with:
           cache-name: ${{ matrix.identifier }}
+          base-branch: ${{ env.OPENVIC_BASE_BRANCH }}
         continue-on-error: true
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic-env
+        uses: OpenVicProject/openvic-env@master
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -99,13 +100,14 @@ jobs:
 
       - name: Setup MinGW for Windows/MinGW build
         if: ${{ matrix.platform == 'windows' }}
-        uses: ./.github/actions/mingw-cache
+        uses: OpenVicProject/mingw-cache@master
 
       - name: Compile Extension
-        uses: ./.github/actions/openvic-build
+        uses: OpenVicProject/openvic-build@master
         with:
           platform: ${{ matrix.platform }}
           target: ${{ matrix.target }}
+          bin-dir: "game/bin/"
           sconsflags: arch=${{ matrix.arch }}
 
       - name: Delete compilation files
@@ -148,7 +150,7 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic-env
+        uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -188,7 +190,7 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: Setup Environment
-        uses: ./.github/actions/openvic-env
+        uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
         uses: actions/download-artifact@v3
