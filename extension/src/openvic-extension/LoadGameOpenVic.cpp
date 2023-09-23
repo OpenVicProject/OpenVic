@@ -86,7 +86,7 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 	if (err != OK) return err;
 
 	// Generate interleaved province and terrain ID image
-	if (!game_manager.map.generate_province_shape_image(province_dims.x, province_dims.y,
+	if (!game_manager.get_map().generate_province_shape_image(province_dims.x, province_dims.y,
 		province_image->get_data().ptr(), terrain_image->get_data().ptr(), terrain_variant_map,
 		false /* <-- whether to print detailed map errors or not (specific missing/unrecognised colours) */
 		)) err = FAILED;
@@ -97,7 +97,7 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 		for (image_subdivisions[i] = 1; province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT ||
 			province_dims[i] % image_subdivisions[i] != 0; ++image_subdivisions[i]);
 
-	Map::shape_pixel_t const* province_shape_data = game_manager.map.get_province_shape_image().data();
+	Map::shape_pixel_t const* province_shape_data = game_manager.get_map().get_province_shape_image().data();
 	const Vector2i divided_dims = province_dims / image_subdivisions;
 	Array province_shape_images;
 	province_shape_images.resize(image_subdivisions.x * image_subdivisions.y);

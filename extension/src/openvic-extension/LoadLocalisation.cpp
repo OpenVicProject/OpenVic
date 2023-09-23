@@ -5,6 +5,8 @@
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/Utilities.hpp"
+
 using namespace godot;
 using namespace OpenVic;
 
@@ -30,7 +32,7 @@ LoadLocalisation::~LoadLocalisation() {
 	singleton = nullptr;
 }
 
-Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref<Translation> translation) {
+Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref<Translation> translation) const {
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	if (err != OK || file.is_null()) {
@@ -57,7 +59,7 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 	return err;
 }
 
-Ref<Translation> LoadLocalisation::_get_translation(String const& locale) {
+Ref<Translation> LoadLocalisation::_get_translation(String const& locale) const {
 	TranslationServer* server = TranslationServer::get_singleton();
 	if (server == nullptr) {
 		UtilityFunctions::push_error("Failed to get TranslationServer singleton");
@@ -72,14 +74,14 @@ Ref<Translation> LoadLocalisation::_get_translation(String const& locale) {
 	return translation;
 }
 
-Error LoadLocalisation::load_file(String const& file_path, String const& locale) {
+Error LoadLocalisation::load_file(String const& file_path, String const& locale) const {
 	return _load_file_into_translation(file_path, _get_translation(locale));
 }
 
 /* REQUIREMENTS
  * FS-18, FS-24, FS-25
  */
-Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) {
+Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) const {
 	if (!DirAccess::dir_exists_absolute(dir_path)) {
 		UtilityFunctions::push_error("Locale directory does not exist: ", dir_path);
 		return FAILED;
@@ -109,7 +111,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 /* REQUIREMENTS
  * FS-23
  */
-Error LoadLocalisation::load_localisation_dir(String const& dir_path) {
+Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	if (!DirAccess::dir_exists_absolute(dir_path)) {
 		UtilityFunctions::push_error("Localisation directory does not exist: ", dir_path);
 		return FAILED;
@@ -133,4 +135,25 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) {
 		err = FAILED;
 	}
 	return err;
+}
+bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t locale, std::string_view localisation) {
+	static Ref<Translation> translations[Dataloader::_LocaleCount] = { nullptr };
+	Ref<Translation>& translation = translations[locale];
+	if (translation.is_null()) {
+		translation = singleton->_get_translation(Dataloader::locale_names[locale]);
+		if (translation.is_null()) {
+			UtilityFunctions::push_error("Failed to get translation object: ", Dataloader::locale_names[locale]);
+			return false;
+		}
+	}
+	const StringName godot_key = std_to_godot_string(std::string { key });
+	const StringName godot_localisation = std_to_godot_string(std::string { localisation });
+	if (0) {
+		const StringName old_localisation = translation->get_message(godot_key);
+		if (!old_localisation.is_empty()) {
+			UtilityFunctions::push_warning("Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"", old_localisation, "\" to \"", godot_localisation, "\"");
+		}
+	}
+	translation->add_message(godot_key, godot_localisation);
+	return true;
 }

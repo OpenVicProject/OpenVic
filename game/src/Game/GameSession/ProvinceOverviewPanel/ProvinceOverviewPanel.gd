@@ -104,7 +104,7 @@ func _set_building_row(index : int, building : Dictionary) -> void:
 func _update_info() -> void:
 	_province_info = GameSingleton.get_province_info_from_index(_selected_index)
 	if _province_info:
-		_province_name_label.text = _province_info.get(GameSingleton.get_province_info_province_key(),
+		_province_name_label.text = "PROV" + _province_info.get(GameSingleton.get_province_info_province_key(),
 			GameSingleton.get_province_info_province_key() + _missing_suffix)
 		_region_name_label.text = _province_info.get(GameSingleton.get_province_info_region_key(),
 			GameSingleton.get_province_info_region_key() + _missing_suffix)
@@ -122,7 +122,7 @@ func _update_info() -> void:
 
 		_rgo_name_label.text = _province_info.get(GameSingleton.get_province_info_rgo_key(),
 			GameSingleton.get_province_info_rgo_key() + _missing_suffix)
-		_rgo_icon_texture_rect.texture = GameSingleton.get_good_icon_texture(_rgo_name_label.text)
+		_rgo_icon_texture_rect.texture = null
 
 		var buildings : Array = _province_info.get(GameSingleton.get_province_info_buildings_key(), [])
 		for i in max(buildings.size(), _building_rows.size()):
