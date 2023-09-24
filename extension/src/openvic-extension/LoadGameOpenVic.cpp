@@ -25,7 +25,6 @@ Error GameSingleton::_generate_terrain_texture_array() {
 	Array terrain_images;
 	for (size_t i = 0; i < terrain_variants.size() && i < TerrainVariant::MAX_TERRIN_VARIANT_COUNT; ++i) {
 		TerrainVariant const& var = *terrain_variants.get_item_by_index(i);
-		terrain_variant_map[var.get_colour()] = i;
 		terrain_images.append(var.get_image());
 	}
 
@@ -43,53 +42,11 @@ Error GameSingleton::_load_map_images(String const& province_image_path, String 
 		return FAILED;
 	}
 
-	// Load images
-	Ref<Image> province_image = load_godot_image(province_image_path);
-	if (province_image.is_null()) {
-		UtilityFunctions::push_error("Failed to load province image: ", province_image_path);
-		return FAILED;
-	}
-	Ref<Image> terrain_image = load_godot_image(terrain_image_path);
-	if (terrain_image.is_null()) {
-		UtilityFunctions::push_error("Failed to load terrain image: ", terrain_image_path);
-		return FAILED;
-	}
-
-	if (flip_vertical) {
-		province_image->flip_y();
-		terrain_image->flip_y();
-	}
-
-	// Validate dimensions and format
 	Error err = OK;
-	const Vector2i province_dims = province_image->get_size(), terrain_dims = terrain_image->get_size();
-	if (province_dims.x < 1 || province_dims.y < 1) {
-		UtilityFunctions::push_error("Invalid dimensions (", province_dims.x, "x", province_dims.y, ") for province image: ", province_image_path);
-		err = FAILED;
-	}
-	if (province_dims != terrain_dims) {
-		UtilityFunctions::push_error("Invalid dimensions (", terrain_dims.x, "x", terrain_dims.y, ") for terrain image: ",
-			terrain_image_path, " (must match province image: (", province_dims.x, "x", province_dims.x, "))");
-		err = FAILED;
-	}
-	static constexpr Image::Format expected_format = Image::FORMAT_RGB8;
-	if (province_image->get_format() == Image::FORMAT_RGBA8) province_image->convert(expected_format);
-	if (terrain_image->get_format() == Image::FORMAT_RGBA8) terrain_image->convert(expected_format);
-	if (province_image->get_format() != expected_format) {
-		UtilityFunctions::push_error("Invalid format (", province_image->get_format(), ", should be ", expected_format, ") for province image: ", province_image_path);
-		err = FAILED;
-	}
-	if (terrain_image->get_format() != expected_format) {
-		UtilityFunctions::push_error("Invalid format (", terrain_image->get_format(), ", should be ", expected_format, ") for terrain image: ", terrain_image_path);
-		err = FAILED;
-	}
-	if (err != OK) return err;
 
-	// Generate interleaved province and terrain ID image
-	if (!game_manager.get_map().generate_province_shape_image(province_dims.x, province_dims.y,
-		province_image->get_data().ptr(), terrain_image->get_data().ptr(), terrain_variant_map,
-		false /* <-- whether to print detailed map errors or not (specific missing/unrecognised colours) */
-		)) err = FAILED;
+	const Vector2i province_dims {
+		static_cast<int32_t>(game_manager.get_map().get_width()),
+		static_cast<int32_t>(game_manager.get_map().get_height()) };
 
 	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 	// For each dimension of the image, this finds the small number of equal subdivisions required get the individual texture dims under GPU_DIM_LIMIT

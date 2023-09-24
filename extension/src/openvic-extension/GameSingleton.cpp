@@ -9,10 +9,8 @@
 using namespace godot;
 using namespace OpenVic;
 
-TerrainVariant::TerrainVariant(const std::string_view new_identfier,
-	colour_t new_colour, Ref<Image> const& new_image)
-	: HasIdentifierAndColour { new_identfier, new_colour, true, false },
-	  image { new_image } {}
+TerrainVariant::TerrainVariant(const std::string_view new_identfier, Ref<Image> const& new_image)
+	: HasIdentifier { new_identfier }, image { new_image } {}
 
 Ref<Image> TerrainVariant::get_image() const {
 	return image;
@@ -81,6 +79,7 @@ void GameSingleton::_bind_methods() {
 		"shadow_displacement", "shadow_tightness", "shadow_radius", "shadow_thickness",
 		"trim_colour", "trim_size", "gradient_falloff", "gradient_base",
 		"donut", "donut_inner_trim", "donut_inner_radius"), &GameSingleton::draw_pie_chart);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("load_image", "path"), &GameSingleton::load_image);
 }
 
 void GameSingleton::draw_pie_chart(Ref<Image> image,
@@ -92,6 +91,10 @@ void GameSingleton::draw_pie_chart(Ref<Image> image,
 	OpenVic::draw_pie_chart(image, stopAngles, colours, radius, shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
 		trim_colour, trim_size, gradient_falloff, gradient_base,
 		donut, donut_inner_trim, donut_inner_radius);
+}
+
+Ref<Image> GameSingleton::load_image(String const& path) {
+	return load_godot_image(path);
 }
 
 GameSingleton* GameSingleton::get_singleton() {

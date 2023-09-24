@@ -36,9 +36,10 @@ SConscript("extension/deps/SCsub", "env")
 # - LINKFLAGS are for linking flags
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-paths = ["extension/src"]
-env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
-sources = env.GlobRecursive("*.cpp", paths)
+source_paths = ["extension/src"]
+include_paths = ["extension/deps/gli", "extension/deps/gli/external"]
+env.Append(CPPPATH=[[env.Dir(p) for p in source_paths + include_paths]])
+sources = env.GlobRecursive("*.cpp", source_paths)
 env.extension_sources = sources
 
 # Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
@@ -49,7 +50,7 @@ if env["intermediate_delete"]:
         return file[:file.rindex(".")]
 
     found_one = False
-    for path in paths:
+    for path in source_paths:
         for obj_file in [file[:-len(".os")] for file in glob(path + "*.os", recursive=True)]:
             found = False
             for source_file in sources:

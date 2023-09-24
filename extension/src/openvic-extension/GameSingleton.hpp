@@ -8,17 +8,16 @@
 
 namespace OpenVic {
 
-	struct TerrainVariant : HasIdentifierAndColour {
+	struct TerrainVariant : HasIdentifier {
 		friend class GameSingleton;
 
 	private:
 		const godot::Ref<godot::Image> image;
 
-		TerrainVariant(const std::string_view new_identfier, colour_t new_colour,
-			godot::Ref<godot::Image> const& new_image);
+		TerrainVariant(const std::string_view new_identfier, godot::Ref<godot::Image> const& new_image);
 
 	public:
-		static constexpr size_t MAX_TERRIN_VARIANT_COUNT = 1 << (8 * sizeof(Map::terrain_t));
+		static constexpr size_t MAX_TERRIN_VARIANT_COUNT = 1 << (8 * sizeof(TerrainTypeMapping::index_t));
 
 		TerrainVariant(TerrainVariant&&) = default;
 
@@ -39,7 +38,6 @@ namespace OpenVic {
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode::index_t mapmode_index = 0;
 		IdentifierRegistry<TerrainVariant> terrain_variants;
-		Map::terrain_variant_map_t terrain_variant_map;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
 		godot::Error _generate_terrain_texture_array();
@@ -63,6 +61,7 @@ namespace OpenVic {
 			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
 			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
 			bool donut, bool donut_inner_trim, float donut_inner_radius);
+		static godot::Ref<godot::Image> load_image(godot::String const& path);
 
 		static GameSingleton* get_singleton();
 

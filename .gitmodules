@@ -7,3 +7,6 @@
 [submodule "scripts"]
 	path = scripts
 	url = https://github.com/OpenVicProject/scripts
+[submodule "extension/deps/gli"]
+	path = extension/deps/gli
+	url = https://github.com/g-truc/gli

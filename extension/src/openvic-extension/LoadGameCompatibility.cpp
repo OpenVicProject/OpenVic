@@ -12,18 +12,7 @@ using namespace godot;
 using namespace OpenVic;
 
 Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& terrain_image_path, String const& terrain_texturesheet_path) {
-	// Read BMP's palette to determine terrain variant colours which texture they're associated with
-	BMP bmp;
-	if (!(bmp.open(godot_to_std_string(terrain_image_path).c_str()) && bmp.read_header() && bmp.read_palette())) {
-		UtilityFunctions::push_error("Failed to read BMP palette from compatibility mode terrain image: ", terrain_image_path);
-		return FAILED;
-	}
-	std::vector<colour_t> const& palette = bmp.get_palette();
-	static constexpr int32_t SHEET_DIMS = 8, PALETTE_SIZE = SHEET_DIMS * SHEET_DIMS;
-	if (palette.size() == 0 || palette.size() < PALETTE_SIZE) {
-		UtilityFunctions::push_error("Invalid BMP palette size for terrain image: ", static_cast<uint64_t>(palette.size()), " (expected ", PALETTE_SIZE, ")");
-		return FAILED;
-	}
+	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
 	// Load the terrain texture sheet and prepare to slice it up
 	Ref<Image> terrain_sheet = load_godot_image(terrain_texturesheet_path);
@@ -44,10 +33,10 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 		Ref<Image> water_image = Image::create(slice_size, slice_size, false, terrain_sheet->get_format());
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
 		water_image->fill({ 0.1f, 0.1f, 0.5f });
-		terrain_variants.add_item({ "terrain_water", TERRAIN_WATER_INDEX_COLOUR, water_image });
+		terrain_variants.add_item({ "terrain_water", water_image });
 	}
 	Error err = OK;
-	for (int32_t idx = 0; idx < PALETTE_SIZE; ++idx) {
+	for (int32_t idx = 0; idx < SHEET_SIZE; ++idx) {
 		const Rect2i slice { (idx % SHEET_DIMS) * slice_size, (7 - (idx / SHEET_DIMS)) * slice_size, slice_size, slice_size };
 		const Ref<Image> terrain_image = terrain_sheet->get_region(slice);
 		if (terrain_image.is_null() || terrain_image->is_empty()) {
@@ -55,7 +44,7 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 			err = FAILED;
 			continue;
 		}
-		if (!terrain_variants.add_item({ "terrain_" + std::to_string(idx), palette[idx], terrain_image })) err = FAILED;
+		if (!terrain_variants.add_item({ "terrain_" + std::to_string(idx), terrain_image })) err = FAILED;
 	}
 	terrain_variants.lock();
 	if (_generate_terrain_texture_array() != OK) return FAILED;
