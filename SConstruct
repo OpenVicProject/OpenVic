@@ -1,55 +1,31 @@
 #!/usr/bin/env python
+
 import os
+import platform
 import sys
-from glob import glob
 
-# Local
-from scripts.build.option_handler import OptionsClass
-from scripts.build.glob_recursive import GlobRecursive
-from scripts.build.cache import show_progress
+import SCons
 
-opts = OptionsClass(ARGUMENTS)
+BINDIR = "game/bin"
 
-opts.Add(BoolVariable("compiledb", "Generate compilation DB (`compile_commands.json`) for external tools", False))
-opts.Add(BoolVariable("verbose", "Enable verbose output for the compilation", False))
-opts.Add(BoolVariable("intermediate_delete", "Enables automatically deleting unassociated intermediate binary files.", True))
-opts.Add(BoolVariable("progress", "Show a progress indicator during compilation", True))
+env = SConscript("scripts/SConstruct")
 
+env.PrependENVPath("PATH", os.getenv("PATH"))
+
+opts = env.SetupOptions()
+
+env.FinalizeOptions()
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
-env = SConscript("godot-cpp/SConstruct").Clone()
+godot_env = SConscript("godot-cpp/SConstruct")
 
 # Make LIBS into a list which is easier to deal with.
-env["LIBS"] = [env["LIBS"]]
+godot_env["LIBS"] = [godot_env["LIBS"]]
+env.Append(CPPPATH=godot_env["CPPPATH"])
+env.Append(LIBPATH=godot_env["LIBPATH"])
+env.Prepend(LIBS=godot_env["LIBS"])
 
-# Require C++20
-if env.get("is_msvc", False):
-    env.Replace(CXXFLAGS=["/std:c++20"])
-else:
-    env.Replace(CXXFLAGS=["-std=c++20"])
-
-# Custom options and profile flags.
-opts.Make(["custom.py"])
-opts.Finalize(env)
-Help(opts.GenerateHelpText(env))
-
-scons_cache_path = os.environ.get("SCONS_CACHE")
-if scons_cache_path != None:
-    CacheDir(scons_cache_path)
-    print("Scons cache enabled... (path: '" + scons_cache_path + "')")
-
-if env["compiledb"]:
-    # Generating the compilation DB (`compile_commands.json`) requires SCons 4.0.0 or later.
-    from SCons import __version__ as scons_raw_version
-
-    scons_ver = env._get_major_minor_revision(scons_raw_version)
-
-    if scons_ver < (4, 0, 0):
-        print("The `compiledb=yes` option requires SCons 4.0 or later, but your version is %s." % scons_raw_version)
-        Exit(255)
-
-    env.Tool("compilation_db")
-    env.Alias("compiledb", env.CompilationDatabase())
+SConscript("extension/deps/SCsub", "env")
 
 # For the reference:
 # - CCFLAGS are compilation flags shared between C and C++
@@ -59,20 +35,15 @@ if env["compiledb"]:
 # - CPPDEFINES are for pre-processor defines
 # - LINKFLAGS are for linking flags
 
-ovsim_env = SConscript("extension/deps/openvic-simulation/SConstruct")
-
-env.Append(LIBPATH=ovsim_env.openvic_simulation["LIBPATH"])
-env.Append(LIBS=ovsim_env.openvic_simulation["LIBS"])
-env.Append(CPPPATH=ovsim_env.openvic_simulation["INCPATH"])
-
 # tweak this if you want to use different folders, or more folders, to store your source code in.
-paths = ["extension/src/"]
+paths = ["extension/src"]
 env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
-sources = GlobRecursive("*.cpp", paths)
+sources = env.GlobRecursive("*.cpp", paths)
 env.extension_sources = sources
 
 # Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
 if env["intermediate_delete"]:
+    from glob import glob
     def remove_extension(file : str):
         if file.find(".") == -1: return file
         return file[:file.rindex(".")]
@@ -94,20 +65,20 @@ if env["intermediate_delete"]:
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(
-        "game/bin/openvic/libopenvic.{}.{}.framework/libopenvic.{}.{}".format(
-            env["platform"], env["target"], env["platform"], env["target"]
+        BINDIR + "/openvic/libopenvic.{}.{}.framework/libopenvic.{}.{}".format(
+            godot_env["platform"], godot_env["target"], godot_env["platform"], godot_env["target"]
         ),
         source=sources,
     )
 else:
-    suffix = ".{}.{}.{}".format(env["platform"], env["target"], env["arch"])
+    suffix = ".{}.{}.{}".format(godot_env["platform"], godot_env["target"], godot_env["arch"])
     library = env.SharedLibrary(
-        "game/bin/openvic/libopenvic{}{}".format(suffix, env["SHLIBSUFFIX"]),
+        BINDIR + "/openvic/libopenvic{}{}".format(suffix, godot_env["SHLIBSUFFIX"]),
         source=sources,
     )
 
 if "env" in locals():
     # FIXME: This method mixes both cosmetic progress stuff and cache handling...
-    show_progress(env)
+    env.show_progress(env)
 
 Default(library)

@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+Import("env")
+
+def build_openvic_simulation(env):
+    ovsim_env = SConscript("openvic-simulation/SConstruct")
+    env.Append(LIBPATH=ovsim_env.openvic_simulation["LIBPATH"])
+    env.Prepend(LIBS=ovsim_env.openvic_simulation["LIBS"])
+    env.Append(CPPPATH=ovsim_env.openvic_simulation["INCPATH"])
+    env.openvic_simulation = ovsim_env.openvic_simulation
+
+build_openvic_simulation(env)
