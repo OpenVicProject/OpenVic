@@ -6,4 +6,4 @@
 	url = https://github.com/OpenVicProject/OpenVic-Simulation
 [submodule "scripts"]
 	path = scripts
-	url = git@github.com:OpenVicProject/scripts
+	url = https://github.com/OpenVicProject/scripts
