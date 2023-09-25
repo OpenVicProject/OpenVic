@@ -8,22 +8,6 @@
 
 namespace OpenVic {
 
-	struct TerrainVariant : HasIdentifier {
-		friend class GameSingleton;
-
-	private:
-		const godot::Ref<godot::Image> image;
-
-		TerrainVariant(const std::string_view new_identfier, godot::Ref<godot::Image> const& new_image);
-
-	public:
-		static constexpr size_t MAX_TERRIN_VARIANT_COUNT = 1 << (8 * sizeof(TerrainTypeMapping::index_t));
-
-		TerrainVariant(TerrainVariant&&) = default;
-
-		godot::Ref<godot::Image> get_image() const;
-	};
-
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
 
@@ -37,13 +21,12 @@ namespace OpenVic {
 		godot::Ref<godot::Image> province_colour_image;
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode::index_t mapmode_index = 0;
-		IdentifierRegistry<TerrainVariant> terrain_variants;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
 		godot::Error _generate_terrain_texture_array();
-		godot::Error _load_map_images(godot::String const& province_image_path, godot::String const& terrain_image_path, bool flip_vertical = false);
+		godot::Error _load_map_images(bool flip_vertical = false);
 
-		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_image_path, godot::String const& terrain_texturesheet_path);
+		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_texturesheet_path);
 
 		/* Generate the province_colour_texture from the current mapmode.
 		 */
@@ -87,6 +70,7 @@ namespace OpenVic {
 		static godot::StringName const& get_province_info_province_key();
 		static godot::StringName const& get_province_info_region_key();
 		static godot::StringName const& get_province_info_life_rating_key();
+		static godot::StringName const& get_province_info_terrain_type_key();
 		static godot::StringName const& get_province_info_total_population_key();
 		static godot::StringName const& get_province_info_pop_types_key();
 		static godot::StringName const& get_province_info_pop_ideologies_key();

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel/ProvinceOverviewPanel.gd" id="1_3n8k5"]
 [ext_resource type="PackedScene" uid="uid://cr7p1k2xm7mum" path="res://src/Game/Theme/PieChart/PieChart.tscn" id="2_3oytt"]
 
-[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_total_population_label", "_rgo_icon_texture_rect", "_rgo_name_label", "_buildings_container", "_pop_type_chart", "_pop_ideology_chart", "_pop_culture_chart")]
+[node name="ProvinceOverviewPanel" type="PanelContainer" node_paths=PackedStringArray("_province_name_label", "_region_name_label", "_life_rating_bar", "_terrain_type_name_label", "_total_population_label", "_rgo_icon_texture_rect", "_rgo_name_label", "_buildings_container", "_pop_type_chart", "_pop_ideology_chart", "_pop_culture_chart")]
 editor_description = "UI-56"
 anchors_preset = 2
 anchor_top = 1.0
@@ -16,6 +16,7 @@ script = ExtResource("1_3n8k5")
 _province_name_label = NodePath("PanelList/TopBarList/NameList/ProvinceName")
 _region_name_label = NodePath("PanelList/TopBarList/NameList/RegionName")
 _life_rating_bar = NodePath("PanelList/TopBarList/NameList/LifeRatingBar")
+_terrain_type_name_label = NodePath("PanelList/TopBarList/NameList/TerrainTypeName")
 _total_population_label = NodePath("PanelList/InteractList/TotalPopulation")
 _rgo_icon_texture_rect = NodePath("PanelList/InteractList/RGOInfo/RGOIcon")
 _rgo_name_label = NodePath("PanelList/InteractList/RGOInfo/RGOName")
@@ -51,6 +52,11 @@ vertical_alignment = 1
 editor_description = "UI-62"
 layout_mode = 2
 mouse_filter = 1
+
+[node name="TerrainTypeName" type="Label" parent="PanelList/TopBarList/NameList"]
+layout_mode = 2
+text = "terrain_type_MISSING"
+vertical_alignment = 1
 
 [node name="CloseButton" type="Button" parent="PanelList/TopBarList"]
 custom_minimum_size = Vector2(30, 30)

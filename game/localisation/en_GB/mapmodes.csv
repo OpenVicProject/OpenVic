@@ -4,6 +4,7 @@ mapmode_province;Province
 mapmode_region;Region
 mapmode_terrain;Terrain
 mapmode_index;Index
+mapmode_terrain_type;Terrain Type
 mapmode_rgo;RGO
 mapmode_infrastructure;Infrastructure
 mapmode_population;Population Density

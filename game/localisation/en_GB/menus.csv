@@ -123,6 +123,7 @@ DIALOG_SAVE_AND_QUIT;Save and Quit
 province_MISSING;No Province
 region_MISSING;No Region
 LIFE_RATING_TOOLTIP;Liferating: {life_rating}
+terrain_type_MISSING;No Terrain Type
 total_population_MISSING;No Population
 PROVINCE_POPULATION_TOOLTIP;Province population
 rgo_MISSING;No RGO
