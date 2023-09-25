@@ -4,15 +4,19 @@ Main Repo for the OpenVic Project
 ## Quickstart Guide
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
 
-## Required
+## System Requirements
 * [Godot 4.1.1](https://github.com/godotengine/godot/releases/tag/4.1.1-stable)
 * [scons](https://scons.org/)
+
+See [System Requirements](docs/contribution/system-requirements.md).
 
 ## Repo Setup
 1. Clone the OpenVic Repo to a suitable folder using the git command `git clone https://github.com/OpenVicProject/OpenVic.git`
 2. Update the submodules by executing the git command `git submodule update --init --recursive`
 
-Note that using a zip download instead of cloning means a lot of work in manually managing submodules individually. It is strongly recommended to use git to obtain the source code. 
+Note that using a zip download instead of cloning means a lot of work in manually managing submodules individually. It is strongly recommended to use git to obtain the source code.
+
+See [Cloning](docs/contribution/cloning.md).
 
 ## [Godot Documentation](https://docs.godotengine.org/en/latest/)
 
@@ -24,16 +28,7 @@ Note that using a zip download instead of cloning means a lot of work in manuall
 5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
 6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
 
-## Build/Run Instructions for Archlinux (using yay)
-1. Install [Godot 4.1.1](https://archlinux.org/packages/extra/x86_64/godot/)  with `yay -S Godot` and [scons](https://archlinux.org/packages/extra/any/scons/) with ` yay -S scons`.
-2. Clone the OpenVic Repo using the git command `git clone https://github.com/OpenVicProject/OpenVic.git`.
-3. CD into the game directory with `cd ./OpenVic`.
-4. Update the submodules by executing the git command `sudo git submodule update --init --recursive`.
-5. While still in the game directory, run `scons`.
-6. Now launch Godot 4, click import and navigate to `OpenVic` then to `game`.
-7. Click `project.godot`.
-5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
-6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
+See [Run, Build, and Export](docs/contribution/run-build-export.md).
 
 ## Project Export
 1. Build the extension with `scons` or `scons target=template_debug`. (or `scons target=template_release` for release)
@@ -47,8 +42,12 @@ Note that using a zip download instead of cloning means a lot of work in manuall
     * On Windows run `game/export/Windows/OpenVic.exe`.
     * On Linux x86_64 run `game/export/Linux-x86_64/OpenVic.sh`.
 
+See [Run, Build, and Export](docs/contribution/run-build-export.md).
+
 ## Extension Debugging
 1. If in a clean build, build the extension with `scons`.
 2. Build with `scons dev_build=yes`.
 3. [Setup your IDE](https://godotengine.org/qa/108346/how-can-i-debug-runtime-errors-of-native-library-in-godot) so your Command/Host/Launching App is your Godot 4 binary and the Working Directory is the `game` directory.
 4. Start the debugger.
+
+See [Debugging](docs/contribution/debugging.md).
