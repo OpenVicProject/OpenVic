@@ -28,7 +28,7 @@ See [Cloning](docs/contribution/cloning.md).
 5. Press "Import & Edit", wait for the Editor to finish re-importing assets, and then close the Editor ***without saving*** and reopen the project.
 6. Once loaded, click the play button at the top right, and you should see and hear the game application open on the main menu.
 
-See [Run, Build, and Export](docs/contribution/run-build-export.md).
+See [Run, Build, and Export](docs/contribution/run-build-and-export.md).
 
 ## Project Export
 1. Build the extension with `scons` or `scons target=template_debug`. (or `scons target=template_release` for release)
@@ -42,7 +42,7 @@ See [Run, Build, and Export](docs/contribution/run-build-export.md).
     * On Windows run `game/export/Windows/OpenVic.exe`.
     * On Linux x86_64 run `game/export/Linux-x86_64/OpenVic.sh`.
 
-See [Run, Build, and Export](docs/contribution/run-build-export.md).
+See [Run, Build, and Export](docs/contribution/run-build-and-export.md).
 
 ## Extension Debugging
 1. If in a clean build, build the extension with `scons`.
