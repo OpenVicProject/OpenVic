@@ -232,7 +232,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	if (rgo != nullptr) ret[get_province_info_rgo_key()] = std_to_godot_string(rgo->get_identifier());
 
 	ret[get_province_info_life_rating_key()] = province->get_life_rating();
-	
+
 	TerrainType const* terrain_type = province->get_terrain_type();
 	if (terrain_type != nullptr) ret[get_province_info_terrain_type_key()] = std_to_godot_string(terrain_type->get_identifier());
 
@@ -244,16 +244,16 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	distribution_t const& cultures = province->get_culture_distribution();
 	if (!cultures.empty()) ret[get_province_info_pop_cultures_key()] = _distribution_to_dictionary(cultures);
 
-	std::vector<Building> const& buildings = province->get_buildings();
+	std::vector<BuildingInstance> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {
 		Array buildings_array;
 		buildings_array.resize(buildings.size());
 		for (size_t idx = 0; idx < buildings.size(); ++idx) {
-			Building const& building = buildings[idx];
+			BuildingInstance const& building = buildings[idx];
 
 			Dictionary building_dict;
 			building_dict[get_building_info_building_key()] = std_to_godot_string(building.get_identifier());
-			building_dict[get_building_info_level_key()] = static_cast<int32_t>(building.get_level());
+			building_dict[get_building_info_level_key()] = static_cast<int32_t>(building.get_current_level());
 			building_dict[get_building_info_expansion_state_key()] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[get_building_info_start_date_key()] = std_to_godot_string(building.get_start_date().to_string());
 			building_dict[get_building_info_end_date_key()] = std_to_godot_string(building.get_end_date().to_string());
