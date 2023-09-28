@@ -2,17 +2,55 @@
 
 #include <numbers>
 
+#include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <gli/convert.hpp>
+#include <gli/load_dds.hpp>
+
 using namespace godot;
 using namespace OpenVic;
+
+static Ref<Image> load_dds_image(String const& path) {
+	gli::texture2d texture { gli::load_dds(godot_to_std_string(path)) };
+	if (texture.empty()) {
+		UtilityFunctions::push_error("Failed to load DDS file: ", path);
+		return {};
+	}
+
+	static constexpr gli::format expected_format = gli::FORMAT_BGRA8_UNORM_PACK8;
+	const bool needs_bgr_to_rgb = texture.format() == expected_format;
+	if (!needs_bgr_to_rgb) {
+		texture = gli::convert(texture, expected_format);
+		if (texture.empty()) {
+			UtilityFunctions::push_error("Failed to convert DDS file: ", path);
+			return {};
+		}
+	}
+
+	PackedByteArray pixels;
+	pixels.resize(texture.size());
+	memcpy(pixels.ptrw(), texture.data(), pixels.size());
+	UtilityFunctions::print("needs_bgr_to_rgb = ", needs_bgr_to_rgb);
+	if (needs_bgr_to_rgb) {
+		for (size_t i = 0; i < pixels.size(); i += 4) {
+			std::swap(pixels[i], pixels[i+2]);
+		}
+	}
+
+	const gli::texture2d::extent_type extent { texture.extent() };
+	return Image::create_from_data(extent.x, extent.y, false, Image::FORMAT_RGBA8, pixels);
+}
 
 Ref<Image> OpenVic::load_godot_image(String const& path) {
 	if (path.begins_with("res://")) {
 		ResourceLoader* loader = ResourceLoader::get_singleton();
 		return loader ? loader->load(path) : nullptr;
 	} else {
+		if (path.ends_with(".dds")) {
+			return load_dds_image(path);
+		}
 		return Image::load_from_file(path);
 	}
 }

@@ -3,6 +3,7 @@ extends PanelContainer
 @export var _province_name_label : Label
 @export var _region_name_label : Label
 @export var _life_rating_bar : ProgressBar
+@export var _terrain_type_name_label : Label
 @export var _total_population_label : Label
 @export var _rgo_icon_texture_rect : TextureRect
 @export var _rgo_name_label : Label
@@ -108,11 +109,12 @@ func _update_info() -> void:
 			GameSingleton.get_province_info_province_key() + _missing_suffix)
 		_region_name_label.text = _province_info.get(GameSingleton.get_province_info_region_key(),
 			GameSingleton.get_province_info_region_key() + _missing_suffix)
-
 		_life_rating_bar.value = _province_info.get(GameSingleton.get_province_info_life_rating_key(), 0)
 		_life_rating_bar.tooltip_text = tr("LIFE_RATING_TOOLTIP").format({
 			"life_rating": Localisation.tr_number(_life_rating_bar.value)
 		})
+		_terrain_type_name_label.text = _province_info.get(GameSingleton.get_province_info_terrain_type_key(),
+			GameSingleton.get_province_info_terrain_type_key() + _missing_suffix)
 
 		_total_population_label.text = Localisation.tr_number(_province_info.get(GameSingleton.get_province_info_total_population_key(), 0))
 
