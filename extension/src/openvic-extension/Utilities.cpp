@@ -13,10 +13,10 @@ using namespace godot;
 using namespace OpenVic;
 
 static Ref<Image> load_dds_image(String const& path) {
-	gli::texture2d texture { gli::load_dds(godot_to_std_string(path)) };
+	gli::texture2d texture { gli::load_dds(Utilities::godot_to_std_string(path)) };
 	if (texture.empty()) {
 		UtilityFunctions::push_error("Failed to load DDS file: ", path);
-		return {};
+		return nullptr;
 	}
 
 	static constexpr gli::format expected_format = gli::FORMAT_BGRA8_UNORM_PACK8;
@@ -25,7 +25,7 @@ static Ref<Image> load_dds_image(String const& path) {
 		texture = gli::convert(texture, expected_format);
 		if (texture.empty()) {
 			UtilityFunctions::push_error("Failed to convert DDS file: ", path);
-			return {};
+			return nullptr;
 		}
 	}
 
@@ -43,7 +43,7 @@ static Ref<Image> load_dds_image(String const& path) {
 	return Image::create_from_data(extent.x, extent.y, false, Image::FORMAT_RGBA8, pixels);
 }
 
-Ref<Image> OpenVic::load_godot_image(String const& path) {
+Ref<Image> Utilities::load_godot_image(String const& path) {
 	if (path.begins_with("res://")) {
 		ResourceLoader* loader = ResourceLoader::get_singleton();
 		return loader ? loader->load(path) : nullptr;
@@ -116,7 +116,7 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 	}
 }
 
-void OpenVic::draw_pie_chart(Ref<Image> image,
+void Utilities::draw_pie_chart(Ref<Image> image,
 	Array const& stopAngles, Array const& colours, float radius,
 	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
 	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,

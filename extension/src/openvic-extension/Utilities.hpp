@@ -3,10 +3,11 @@
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
+#include <openvic-simulation/types/Vector.hpp>
 
 #define ERR(x) ((x) ? OK : FAILED)
 
-namespace OpenVic {
+namespace OpenVic::Utilities {
 
 	inline std::string godot_to_std_string(godot::String const& str) {
 		return str.ascii().get_data();
@@ -16,8 +17,16 @@ namespace OpenVic {
 		return str.c_str();
 	}
 
+	inline godot::String std_view_to_godot_string(std::string_view str) {
+		return std_to_godot_string(static_cast<std::string>(str));
+	}
+
 	inline godot::Color to_godot_color(colour_t colour) {
 		return { colour_byte_to_float((colour >> 16) & 0xFF), colour_byte_to_float((colour >> 8) & 0xFF), colour_byte_to_float(colour & 0xFF) };
+	}
+
+	inline godot::Vector2i to_godot_ivec2(ivec2_t vec) {
+		return { vec.x, vec.y };
 	}
 
 	godot::Ref<godot::Image> load_godot_image(godot::String const& path);

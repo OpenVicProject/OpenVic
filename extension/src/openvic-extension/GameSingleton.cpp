@@ -10,11 +10,16 @@
 using namespace godot;
 using namespace OpenVic;
 
+using OpenVic::Utilities::std_to_godot_string;
+using OpenVic::Utilities::std_view_to_godot_string;
+using OpenVic::Utilities::godot_to_std_string;
+
 GameSingleton* GameSingleton::singleton = nullptr;
 
 void GameSingleton::_bind_methods() {
 	ClassDB::bind_static_method("GameSingleton", D_METHOD("setup_logger"), &GameSingleton::setup_logger);
 	ClassDB::bind_method(D_METHOD("load_defines_compatibility_mode", "file_paths"), &GameSingleton::load_defines_compatibility_mode);
+	ClassDB::bind_static_method("GameSingleton", D_METHOD("search_for_game_path", "hint_path"), &GameSingleton::search_for_game_path, DEFVAL(String{}));
 	ClassDB::bind_method(D_METHOD("lookup_file", "path"), &GameSingleton::lookup_file);
 	ClassDB::bind_method(D_METHOD("setup_game"), &GameSingleton::setup_game);
 
@@ -83,13 +88,13 @@ void GameSingleton::draw_pie_chart(Ref<Image> image,
 	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
 	bool donut, bool donut_inner_trim, float donut_inner_radius) {
 
-	OpenVic::draw_pie_chart(image, stopAngles, colours, radius, shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
+	Utilities::draw_pie_chart(image, stopAngles, colours, radius, shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
 		trim_colour, trim_size, gradient_falloff, gradient_base,
 		donut, donut_inner_trim, donut_inner_radius);
 }
 
 Ref<Image> GameSingleton::load_image(String const& path) {
-	return load_godot_image(path);
+	return Utilities::load_godot_image(path);
 }
 
 GameSingleton* GameSingleton::get_singleton() {
@@ -211,9 +216,9 @@ Dictionary GameSingleton::_distribution_to_dictionary(distribution_t const& dist
 	Dictionary dict;
 	for (distribution_t::value_type const& p : dist) {
 		Dictionary sub_dict;
-		sub_dict[get_piechart_info_size_key()] = p.second;
-		sub_dict[get_piechart_info_colour_key()] = to_godot_color(p.first->get_colour());
-		dict[std_to_godot_string(p.first->get_identifier())] = sub_dict;
+		sub_dict[get_piechart_info_size_key()] = p.second.to_float();
+		sub_dict[get_piechart_info_colour_key()] = Utilities::to_godot_color(p.first->get_colour());
+		dict[std_view_to_godot_string(p.first->get_identifier())] = sub_dict;
 	}
 	return dict;
 }
@@ -223,18 +228,18 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	if (province == nullptr) return {};
 	Dictionary ret;
 
-	ret[get_province_info_province_key()] = std_to_godot_string(province->get_identifier());
+	ret[get_province_info_province_key()] = std_view_to_godot_string(province->get_identifier());
 
 	Region const* region = province->get_region();
-	if (region != nullptr) ret[get_province_info_region_key()] = std_to_godot_string(region->get_identifier());
+	if (region != nullptr) ret[get_province_info_region_key()] = std_view_to_godot_string(region->get_identifier());
 
 	Good const* rgo = province->get_rgo();
-	if (rgo != nullptr) ret[get_province_info_rgo_key()] = std_to_godot_string(rgo->get_identifier());
+	if (rgo != nullptr) ret[get_province_info_rgo_key()] = std_view_to_godot_string(rgo->get_identifier());
 
 	ret[get_province_info_life_rating_key()] = province->get_life_rating();
 
 	TerrainType const* terrain_type = province->get_terrain_type();
-	if (terrain_type != nullptr) ret[get_province_info_terrain_type_key()] = std_to_godot_string(terrain_type->get_identifier());
+	if (terrain_type != nullptr) ret[get_province_info_terrain_type_key()] = std_view_to_godot_string(terrain_type->get_identifier());
 
 	ret[get_province_info_total_population_key()] = province->get_total_population();
 	distribution_t const& pop_types = province->get_pop_type_distribution();
@@ -252,7 +257,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 			BuildingInstance const& building = buildings[idx];
 
 			Dictionary building_dict;
-			building_dict[get_building_info_building_key()] = std_to_godot_string(building.get_identifier());
+			building_dict[get_building_info_building_key()] = std_view_to_godot_string(building.get_identifier());
 			building_dict[get_building_info_level_key()] = static_cast<int32_t>(building.get_current_level());
 			building_dict[get_building_info_expansion_state_key()] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[get_building_info_start_date_key()] = std_to_godot_string(building.get_start_date().to_string());
@@ -325,7 +330,7 @@ int32_t GameSingleton::get_mapmode_count() const {
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
 	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_index(index);
-	if (mapmode != nullptr) return std_to_godot_string(mapmode->get_identifier());
+	if (mapmode != nullptr) return std_view_to_godot_string(mapmode->get_identifier());
 	return String {};
 }
 
@@ -450,7 +455,7 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
 	// Load the terrain texture sheet and prepare to slice it up
-	Ref<Image> terrain_sheet = load_godot_image(terrain_texturesheet_path);
+	Ref<Image> terrain_sheet = Utilities::load_godot_image(terrain_texturesheet_path);
 	if (terrain_sheet.is_null()) {
 		UtilityFunctions::push_error("Failed to load terrain texture sheet: ", terrain_texturesheet_path);
 		return FAILED;
@@ -528,6 +533,10 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 	}
 
 	return err;
+}
+
+String GameSingleton::search_for_game_path(String hint_path) {
+	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
 }
 
 String GameSingleton::lookup_file(String const& path) const {

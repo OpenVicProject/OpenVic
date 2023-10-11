@@ -44,6 +44,7 @@ namespace OpenVic {
 			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
 			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
 			bool donut, bool donut_inner_trim, float donut_inner_radius);
+
 		static godot::Ref<godot::Image> load_image(godot::String const& path);
 
 		static GameSingleton* get_singleton();
@@ -57,6 +58,8 @@ namespace OpenVic {
 		 * pointing to the defines folder.
 		 */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
+
+		static godot::String search_for_game_path(godot::String hint_path = {});
 
 		godot::String lookup_file(godot::String const& path) const;
 
