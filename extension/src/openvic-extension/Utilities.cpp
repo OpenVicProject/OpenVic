@@ -35,7 +35,7 @@ static Ref<Image> load_dds_image(String const& path) {
 	UtilityFunctions::print("needs_bgr_to_rgb = ", needs_bgr_to_rgb);
 	if (needs_bgr_to_rgb) {
 		for (size_t i = 0; i < pixels.size(); i += 4) {
-			std::swap(pixels[i], pixels[i+2]);
+			std::swap(pixels[i], pixels[i + 2]);
 		}
 	}
 
@@ -60,7 +60,9 @@ static Vector2 getPolar(Vector2 UVin, Vector2 center) {
 	Vector2 relcoord = (UVin - center);
 	float dist = relcoord.length();
 	float theta = std::numbers::pi / 2 + atan2(relcoord.y, relcoord.x);
-	if (theta < 0.0f) theta += std::numbers::pi * 2;
+	if (theta < 0.0f) {
+		theta += std::numbers::pi * 2;
+	}
 	return { dist, theta };
 }
 
@@ -84,7 +86,8 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 
 	Vector2 shadow_polar = getPolar(UV, shadow_displacement);
 	float shadow_peak = radius + (radius - donut_inner_radius) / 2.0;
-	float shadow_gradient = shadow_thickness + parabola_shadow(shadow_tightness * -10.0, shadow_polar.x + shadow_peak - shadow_radius);
+	float shadow_gradient = shadow_thickness + parabola_shadow(shadow_tightness * -10.0,
+		shadow_polar.x + shadow_peak - shadow_radius);
 
 	// Inner hole of the donut => make it transparent
 	if (donut && dist <= donut_inner_radius) {
@@ -133,8 +136,7 @@ void Utilities::draw_pie_chart(Ref<Image> image,
 	for (int32_t y = 0; y < size; ++y) {
 		for (int32_t x = 0; x < size; ++x) {
 			image->set_pixel(x, y, pie_chart_fragment(
-				{ static_cast<float>(x) / static_cast<float>(size),
-				  static_cast<float>(y) / static_cast<float>(size) },
+				Vector2 { static_cast<float>(x), static_cast<float>(y) } / size,
 				radius, stopAngles, colours,
 				shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
 				trim_colour, trim_size, gradient_falloff, gradient_base,

@@ -101,8 +101,9 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 	Error err = OK;
 	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
-			if (_load_file_into_translation(dir_path.path_join(file_name), translation) != OK)
+			if (_load_file_into_translation(dir_path.path_join(file_name), translation) != OK) {
 				err = FAILED;
+			}
 		}
 	}
 	return err;
@@ -128,10 +129,11 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	}
 	Error err = OK;
 	for (String const& locale_name : dirs) {
-		if (locale_name != server->standardize_locale(locale_name))
+		if (locale_name != server->standardize_locale(locale_name)) {
 			UtilityFunctions::push_error("Invalid locale directory name: ", locale_name);
-		else if (load_locale_dir(dir_path.path_join(locale_name), locale_name) == OK)
+		} else if (load_locale_dir(dir_path.path_join(locale_name), locale_name) == OK) {
 			continue;
+		}
 		err = FAILED;
 	}
 	return err;
@@ -151,7 +153,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	if (0) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
-			UtilityFunctions::push_warning("Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"", old_localisation, "\" to \"", godot_localisation, "\"");
+			UtilityFunctions::push_warning("Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
+				old_localisation, "\" to \"", godot_localisation, "\"");
 		}
 	}
 	translation->add_message(godot_key, godot_localisation);

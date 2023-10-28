@@ -15,7 +15,9 @@ namespace OpenVic {
 		}
 
 	public:
-		inline static Checksum* get_singleton() { return _checksum; }
+		inline static Checksum* get_singleton() {
+			return _checksum;
+		}
 
 		inline Checksum() {
 			ERR_FAIL_COND(_checksum != nullptr);
