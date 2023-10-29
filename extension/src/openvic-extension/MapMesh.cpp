@@ -21,14 +21,21 @@ void MapMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_core_aabb"), &MapMesh::get_core_aabb);
 	ClassDB::bind_method(D_METHOD("is_valid_uv_coord"), &MapMesh::is_valid_uv_coord);
 
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "aspect_ratio", PROPERTY_HINT_NONE, "suffix:m"),
-		"set_aspect_ratio", "get_aspect_ratio");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "repeat_proportion", PROPERTY_HINT_NONE, "suffix:m"),
-		"set_repeat_proportion", "get_repeat_proportion");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_width", PROPERTY_HINT_RANGE, "0,100,1,or_greater"),
-		"set_subdivide_width", "get_subdivide_width");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_depth", PROPERTY_HINT_RANGE, "0,100,1,or_greater"),
-		"set_subdivide_depth", "get_subdivide_depth");
+	ADD_PROPERTY(
+		PropertyInfo(Variant::FLOAT, "aspect_ratio", PROPERTY_HINT_NONE, "suffix:m"), "set_aspect_ratio", "get_aspect_ratio"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::FLOAT, "repeat_proportion", PROPERTY_HINT_NONE, "suffix:m"), "set_repeat_proportion",
+		"get_repeat_proportion"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::INT, "subdivide_width", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_width",
+		"get_subdivide_width"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::INT, "subdivide_depth", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_depth",
+		"get_subdivide_depth"
+	);
 }
 
 void MapMesh::_request_update() {

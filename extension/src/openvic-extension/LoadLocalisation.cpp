@@ -32,7 +32,7 @@ LoadLocalisation::~LoadLocalisation() {
 	singleton = nullptr;
 }
 
-Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref<Translation> translation) const {
+Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> translation) const {
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	if (err != OK || file.is_null()) {
@@ -46,10 +46,14 @@ Error LoadLocalisation::_load_file_into_translation(String const& file_path, Ref
 		line_number++;
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
 			if (!line[0].is_empty()) {
-				UtilityFunctions::push_warning("Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path);
+				UtilityFunctions::push_warning(
+					"Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path
+				);
 				err = FAILED;
 			} else if (line.size() >= 2 && !line[1].is_empty()) {
-				UtilityFunctions::push_warning("Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path);
+				UtilityFunctions::push_warning(
+					"Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path
+				);
 				err = FAILED;
 			}
 			continue;
@@ -75,7 +79,7 @@ Ref<Translation> LoadLocalisation::_get_translation(String const& locale) const 
 }
 
 Error LoadLocalisation::load_file(String const& file_path, String const& locale) const {
-	return _load_file_into_translation(file_path, _get_translation(locale));
+	return _load_file(file_path, _get_translation(locale));
 }
 
 /* REQUIREMENTS
@@ -101,7 +105,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 	Error err = OK;
 	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
-			if (_load_file_into_translation(dir_path.path_join(file_name), translation) != OK) {
+			if (_load_file(dir_path.path_join(file_name), translation) != OK) {
 				err = FAILED;
 			}
 		}
@@ -153,8 +157,10 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	if (0) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
-			UtilityFunctions::push_warning("Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
-				old_localisation, "\" to \"", godot_localisation, "\"");
+			UtilityFunctions::push_warning(
+				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
+				old_localisation, "\" to \"", godot_localisation, "\""
+			);
 		}
 	}
 	translation->add_message(godot_key, godot_localisation);

@@ -33,17 +33,16 @@ namespace OpenVic {
 		godot::Error _update_colour_image();
 		void _on_state_updated();
 
-		godot::Dictionary _distribution_to_dictionary(distribution_t const& dist) const;
-
 	protected:
 		static void _bind_methods();
 
 	public:
-		static void draw_pie_chart(godot::Ref<godot::Image> image,
-			godot::Array const& stopAngles, godot::Array const& colours, float radius,
+		static void draw_pie_chart(
+			godot::Ref<godot::Image> image, godot::Array const& stopAngles, godot::Array const& colours, float radius,
 			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
-			bool donut, bool donut_inner_trim, float donut_inner_radius);
+			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base, bool donut,
+			bool donut_inner_trim, float donut_inner_radius
+		);
 
 		static godot::Ref<godot::Image> load_image(godot::String const& path);
 

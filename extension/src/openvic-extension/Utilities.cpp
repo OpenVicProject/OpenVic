@@ -75,10 +75,11 @@ static inline float parabola_shadow(float base, float x) {
 	return base * x * x;
 }
 
-static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngles, Array const& colours,
-	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
-	bool donut, bool donut_inner_trim, float donut_inner_radius) {
+static Color pie_chart_fragment(
+	Vector2 UV, float radius, Array const& stopAngles, Array const& colours, Vector2 shadow_displacement,
+	float shadow_tightness, float shadow_radius, float shadow_thickness, Color trim_colour, float trim_size,
+	float gradient_falloff, float gradient_base, bool donut, bool donut_inner_trim, float donut_inner_radius
+) {
 
 	Vector2 coords = getPolar(UV, { 0.5, 0.5 });
 	float dist = coords.x;
@@ -86,8 +87,8 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 
 	Vector2 shadow_polar = getPolar(UV, shadow_displacement);
 	float shadow_peak = radius + (radius - donut_inner_radius) / 2.0;
-	float shadow_gradient = shadow_thickness + parabola_shadow(shadow_tightness * -10.0,
-		shadow_polar.x + shadow_peak - shadow_radius);
+	float shadow_gradient =
+		shadow_thickness + parabola_shadow(shadow_tightness * -10.0, shadow_polar.x + shadow_peak - shadow_radius);
 
 	// Inner hole of the donut => make it transparent
 	if (donut && dist <= donut_inner_radius) {
@@ -119,11 +120,11 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 	}
 }
 
-void Utilities::draw_pie_chart(Ref<Image> image,
-	Array const& stopAngles, Array const& colours, float radius,
-	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
-	bool donut, bool donut_inner_trim, float donut_inner_radius) {
+void Utilities::draw_pie_chart(
+	Ref<Image> image, Array const& stopAngles, Array const& colours, float radius, Vector2 shadow_displacement,
+	float shadow_tightness, float shadow_radius, float shadow_thickness, Color trim_colour, float trim_size,
+	float gradient_falloff, float gradient_base, bool donut, bool donut_inner_trim, float donut_inner_radius
+) {
 
 	ERR_FAIL_NULL_EDMSG(image, "Cannot draw pie chart to null image.");
 	const int32_t width = image->get_width();
@@ -135,12 +136,14 @@ void Utilities::draw_pie_chart(Ref<Image> image,
 	const int32_t size = std::min(width, height);
 	for (int32_t y = 0; y < size; ++y) {
 		for (int32_t x = 0; x < size; ++x) {
-			image->set_pixel(x, y, pie_chart_fragment(
-				Vector2 { static_cast<float>(x), static_cast<float>(y) } / size,
-				radius, stopAngles, colours,
-				shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
-				trim_colour, trim_size, gradient_falloff, gradient_base,
-				donut, donut_inner_trim, donut_inner_radius));
+			image->set_pixel(
+				x, y,
+				pie_chart_fragment(
+					Vector2 { static_cast<float>(x), static_cast<float>(y) } / size, radius, stopAngles, colours,
+					shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness, trim_colour, trim_size,
+					gradient_falloff, gradient_base, donut, donut_inner_trim, donut_inner_radius
+				)
+			);
 		}
 	}
 }
