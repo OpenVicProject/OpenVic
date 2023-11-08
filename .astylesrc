@@ -1,0 +1,217 @@
+# @file Astyle code automatic formatting settings
+# @see http://astyle.sourceforge.net/astyle.html#_General_Information
+
+#
+# Java style uses attached braces.
+#
+# int Foo(bool isBar) {
+#     if (isBar) {
+#         bar();
+#         return 1;
+#     } else
+#         return 0;
+# }
+#
+--style=attach
+
+#
+# Indent using all tab characters, if possible. If a continuation line is not an even number of tabs,
+# spaces will be added at the end. Treat each tab as # spaces (e.g. -T6 / --indent=force-tab=6).
+# # must be between 2 and 20. If no # is set, treats tabs as 4 spaces.
+#
+--indent=force-tab=4
+
+#
+# Add extra indentation to namespace blocks. This option has no effect on Java files.
+#
+--indent-namespaces
+
+#
+# Indent multi-line preprocessor definitions ending with a backslash. Should be used with --convert-tabs for proper results.
+# Does a pretty good job, but cannot perform miracles in obfuscated preprocessor definitions.
+# Without this option the preprocessor statements remain unchanged.
+#
+--indent-preproc-define
+
+#
+# Indent C++ comments beginning in column one. By default C++ comments beginning in column one are assumed to be
+# commented-out code and not indented. This option will allow the comments to be indented with the code.
+#
+--indent-col1-comments
+
+#
+# Indent, instead of align, continuation lines following lines that contain an opening paren '(' or an assignment '='.
+# This includes function definitions and declarations and return statements.
+# The indentation can be modified by using the following indent-continuation option.
+# This option may be preferred for editors displaying proportional fonts.
+#
+--indent-after-parens
+
+#
+# Set the continuation indent for a line that ends with an opening paren '(' or an assignment '='.
+# This includes function definitions and declarations. It will also modify the previous indent-after-paren option.
+# The value for # indicates a number of indents. The valid values are the integer values from 0 thru 4.
+# If this option is not used, the default value of 1 is used. 
+#
+--indent-continuation=1
+
+#
+# Set the minimal indent that is added when a header is built of multiple lines.
+# This indent helps to easily separate the header from the command statements that follow.
+# The value for # indicates a number of indents and is a minimum value.
+# The indent may be greater to align with the data on the previous line.
+# The valid values are:
+# 0 - no minimal indent. The lines will be aligned with the paren on the preceding line.
+# 1 - indent at least one additional indent.
+# 2 - indent at least two additional indents.
+# 3 - indent at least one-half an additional indent. This is intended for large indents (e.g. 8).
+# The default value is 2, two additional indents.
+#
+--min-conditional-indent=0
+
+#
+# Set the  maximum of # spaces to indent a continuation line. The # indicates a number of columns and
+# must not be less than 40 or greater than 120. If no value is set, the default value of 40 will be used.
+# This option will prevent continuation lines from extending too far to the right.
+# Setting a larger value will allow the code to be extended further to the right.
+#
+#--max-continuation-indent=40
+
+#
+# Indent labels so that they appear one indent less than
+# the current indentation level, rather than being
+# flushed completely to the left (which is the default).
+#
+--indent-labels
+
+#
+# This option improves indentation of C++ lambda functions. As it currently does not work well with
+# complex lambda function bodies, this feature is not enabled by default. 
+#
+#--lambda-indent
+
+#
+# Attach a pointer or reference operator (*, &, or ^) to either the variable type (left) or variable name (right), or place it between the type and name (middle).
+#
+--align-pointer=type
+
+#
+# This option will align references separate from pointers. Pointers are not changed by this option.
+# If pointers and references are to be aligned the same, use the previous align-pointer option.
+#
+--align-reference=type
+
+#
+# Add brackets to unbracketed one line conditional statements (e.g. 'if', 'for', 'while'...).
+# The statement must be on a single line. The brackets will be added according to the currently requested predefined style or bracket type.
+# If no style or bracket type is requested the brackets will be attached.
+# If --add-one-line-brackets is also used the result will be one line brackets.
+#
+--add-braces
+
+# Don't break complex statements and multiple statements residing on a single line.
+#
+#--keep-one-line-statements
+
+#
+# The option max?code?length will break a line if the code exceeds # characters.
+# The valid values are 50 thru 200. Lines without logical conditionals will break on a logical conditional (||, &&, ...), comma, paren, semicolon, or space.
+# Some code will not be broken, such as comments, quotes, and arrays. If used with keep?one?line?blocks or add-one-line-brackets the blocks will NOT be broken.
+# If used with keep?one?line?statements the statements will be broken at a semicolon if the line goes over the maximum length.
+# If there is no available break point within the max code length, the line will be broken at the first available break point after the max code length.
+#
+--max-code-length=128
+
+#
+# By default logical conditionals will be placed first on the new line.
+# The option break?after?logical will cause the logical conditionals to be placed last on the previous line. This option has no effect without max?code?length.
+#
+#--break-after-logical
+
+#
+# Indent a C type, C#, or Java file. C type files are C, C++, C++/CLI, and Objective-C.  The option is usually set from the file extension for each file.
+#
+--mode=c
+
+#
+# Verbose display mode. Display optional information, such as release number, date, option file locations, and statistical data.
+#
+--verbose
+
+#
+# Formatted files display mode. Display only the files that have been formatted. Do not display files that are unchanged.
+#
+--formatted
+
+#
+# Force use of the specified line end style. Valid options are windows (CRLF), linux (LF), and macold (CR).
+# MacOld style is the format for Mac OS 9 and earlier. OS X uses the Linux style.
+# If one of these options is not used the line ends will be determined automatically from the input file.
+# When redirection is used on Windows the output will always have Windows line ends. This option will be ignored.
+#
+--lineend=linux
+
+#
+# Insert space padding around operators. This will also pad commas. Any end of line comments will remain
+# in the original column, if possible. Note that there is no option to unpad. Once padded, they stay padded.
+#
+--pad-oper
+
+#
+# Insert space padding between a header (e.g. 'if', 'for', 'while'...) and the following paren.
+# Any end of line comments will remain in the original column, if possible.
+# This can be used with unpad-paren to remove unwanted spaces.
+#
+--pad-header
+
+#
+# Remove extra space padding around parens on the inside and outside. Any end of line comments will remain in the original
+# column, if possible. This option can be used in combination with the paren padding options pad-paren, pad-paren-out,
+# pad-paren-in, and pad-header above. Only padding that has not been requested by other options will be removed.
+# For example, if a source has parens padded on both the inside and outside, and you want inside only.
+# You need to use unpad-paren to remove the outside padding, and pad-paren-in to retain the inside padding.
+# Using only pad-paren-in> would not remove the outside padding.
+#
+--unpad-paren
+
+#
+# Remove padding around square brackets on both the outside and the inside. 
+#
+--unpad-brackets
+
+#
+# Remove superfluous empty lines exceeding the given number.
+#
+--squeeze-lines=1
+
+#
+# Remove superfluous whitespace
+#
+--squeeze-ws
+
+#
+# Attach the return type to the function name. The two options are for the function definitions (-xf),
+# and the function declarations or signatures (-xh). They are intended to undo the --break-return-type options.
+# If used with --break-return-type, the result will be to break the return type.
+# This option has no effect on Objective-C functions.
+#
+--attach-return-type
+
+#
+# Closes whitespace between the ending angle brackets of template definitions.
+# Closing the ending angle brackets is now allowed by the C++11 standard.
+# Be sure your compiler supports this before making the changes.
+#
+--close-templates
+
+#
+# Do not retain a backup of the original file. The original file is purged after it is formatted.
+#
+--suffix=none
+
+#
+# Preserve the original file's date and time modified.
+# The time modified will be changed a few microseconds to force the changed files to compile.
+# This option is not effective if redirection is used to rename the input file.
+#
+--preserve-date

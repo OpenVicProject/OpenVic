@@ -5,7 +5,9 @@ Standard: c++20
 UseTab: Always
 TabWidth: 4
 IndentWidth: 4
-ColumnLimit: 0
+ColumnLimit: 128
+PointerAlignment: Left
+DerivePointerAlignment: false
 SpacesInSquareBrackets: false
 SpacesInParentheses: false
 SpacesInCStyleCastParentheses: false
@@ -14,6 +16,7 @@ SpacesInConditionalStatement: false
 SpacesInAngles: false
 SpaceInEmptyParentheses: false
 SpaceInEmptyBlock: false
+SpacesInParens: Never
 SpaceBeforeSquareBrackets: false
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeParens: ControlStatements
@@ -23,13 +26,14 @@ SpaceBeforeCpp11BracedList: true
 SpaceBeforeAssignmentOperators: true
 SpaceAfterTemplateKeyword: false
 SpaceAfterLogicalNot: false
-PointerAlignment: Left
 PackConstructorInitializers: BinPack
 NamespaceIndentation: All
-LambdaBodyIndentation: Signature
+#LambdaBodyIndentation: Signature
 IndentExternBlock: Indent
-IndentCaseLabels: true
+IndentCaseBlocks: false
+IndentCaseLabels: false
 IndentAccessModifiers: false
+IndentRequiresClause: false
 IncludeBlocks: Regroup
 FixNamespaceComments: false
 EmptyLineBeforeAccessModifier: LogicalBlock
@@ -38,17 +42,35 @@ CompactNamespaces: false
 BreakConstructorInitializers: BeforeColon
 BreakBeforeBraces: Attach
 AlwaysBreakTemplateDeclarations: Yes
-AllowShortLambdasOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 10
+BreakBeforeConceptDeclarations: Always
+AllowShortLambdasOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortEnumsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
-AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLoopsOnASingleLine: false
+AlignTrailingComments:
+  Kind: Never
+  OverEmptyLines: 0
 AlignEscapedNewlines: DontAlign
 AlignAfterOpenBracket: BlockIndent
+AlignOperands: DontAlign
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCaseColons: false
 BinPackArguments: true
 BinPackParameters: true
-IndentRequiresClause: false
 AccessModifierOffset: -4
+InsertNewlineAtEOF: true
+InsertBraces: true
+MaxEmptyLinesToKeep: 2
+RequiresClausePosition: OwnLine
 IncludeCategories:
   - Regex: <[[:alnum:]_]+>
     Priority: 1

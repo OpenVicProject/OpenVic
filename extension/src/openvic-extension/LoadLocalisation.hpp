@@ -11,7 +11,7 @@ namespace OpenVic {
 
 		static LoadLocalisation* singleton;
 
-		godot::Error _load_file_into_translation(godot::String const& file_path, godot::Ref<godot::Translation> translation) const;
+		godot::Error _load_file(godot::String const& file_path, godot::Ref<godot::Translation> translation) const;
 		godot::Ref<godot::Translation> _get_translation(godot::String const& locale) const;
 
 	protected:

@@ -13,10 +13,10 @@ using namespace godot;
 using namespace OpenVic;
 
 static Ref<Image> load_dds_image(String const& path) {
-	gli::texture2d texture { gli::load_dds(godot_to_std_string(path)) };
+	gli::texture2d texture { gli::load_dds(Utilities::godot_to_std_string(path)) };
 	if (texture.empty()) {
 		UtilityFunctions::push_error("Failed to load DDS file: ", path);
-		return {};
+		return nullptr;
 	}
 
 	static constexpr gli::format expected_format = gli::FORMAT_BGRA8_UNORM_PACK8;
@@ -25,7 +25,7 @@ static Ref<Image> load_dds_image(String const& path) {
 		texture = gli::convert(texture, expected_format);
 		if (texture.empty()) {
 			UtilityFunctions::push_error("Failed to convert DDS file: ", path);
-			return {};
+			return nullptr;
 		}
 	}
 
@@ -35,7 +35,7 @@ static Ref<Image> load_dds_image(String const& path) {
 	UtilityFunctions::print("needs_bgr_to_rgb = ", needs_bgr_to_rgb);
 	if (needs_bgr_to_rgb) {
 		for (size_t i = 0; i < pixels.size(); i += 4) {
-			std::swap(pixels[i], pixels[i+2]);
+			std::swap(pixels[i], pixels[i + 2]);
 		}
 	}
 
@@ -43,7 +43,7 @@ static Ref<Image> load_dds_image(String const& path) {
 	return Image::create_from_data(extent.x, extent.y, false, Image::FORMAT_RGBA8, pixels);
 }
 
-Ref<Image> OpenVic::load_godot_image(String const& path) {
+Ref<Image> Utilities::load_godot_image(String const& path) {
 	if (path.begins_with("res://")) {
 		ResourceLoader* loader = ResourceLoader::get_singleton();
 		return loader ? loader->load(path) : nullptr;
@@ -60,7 +60,9 @@ static Vector2 getPolar(Vector2 UVin, Vector2 center) {
 	Vector2 relcoord = (UVin - center);
 	float dist = relcoord.length();
 	float theta = std::numbers::pi / 2 + atan2(relcoord.y, relcoord.x);
-	if (theta < 0.0f) theta += std::numbers::pi * 2;
+	if (theta < 0.0f) {
+		theta += std::numbers::pi * 2;
+	}
 	return { dist, theta };
 }
 
@@ -73,10 +75,11 @@ static inline float parabola_shadow(float base, float x) {
 	return base * x * x;
 }
 
-static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngles, Array const& colours,
-	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
-	bool donut, bool donut_inner_trim, float donut_inner_radius) {
+static Color pie_chart_fragment(
+	Vector2 UV, float radius, Array const& stopAngles, Array const& colours, Vector2 shadow_displacement,
+	float shadow_tightness, float shadow_radius, float shadow_thickness, Color trim_colour, float trim_size,
+	float gradient_falloff, float gradient_base, bool donut, bool donut_inner_trim, float donut_inner_radius
+) {
 
 	Vector2 coords = getPolar(UV, { 0.5, 0.5 });
 	float dist = coords.x;
@@ -84,7 +87,8 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 
 	Vector2 shadow_polar = getPolar(UV, shadow_displacement);
 	float shadow_peak = radius + (radius - donut_inner_radius) / 2.0;
-	float shadow_gradient = shadow_thickness + parabola_shadow(shadow_tightness * -10.0, shadow_polar.x + shadow_peak - shadow_radius);
+	float shadow_gradient =
+		shadow_thickness + parabola_shadow(shadow_tightness * -10.0, shadow_polar.x + shadow_peak - shadow_radius);
 
 	// Inner hole of the donut => make it transparent
 	if (donut && dist <= donut_inner_radius) {
@@ -116,11 +120,11 @@ static Color pie_chart_fragment(Vector2 UV, float radius, Array const& stopAngle
 	}
 }
 
-void OpenVic::draw_pie_chart(Ref<Image> image,
-	Array const& stopAngles, Array const& colours, float radius,
-	Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-	Color trim_colour, float trim_size, float gradient_falloff, float gradient_base,
-	bool donut, bool donut_inner_trim, float donut_inner_radius) {
+void Utilities::draw_pie_chart(
+	Ref<Image> image, Array const& stopAngles, Array const& colours, float radius, Vector2 shadow_displacement,
+	float shadow_tightness, float shadow_radius, float shadow_thickness, Color trim_colour, float trim_size,
+	float gradient_falloff, float gradient_base, bool donut, bool donut_inner_trim, float donut_inner_radius
+) {
 
 	ERR_FAIL_NULL_EDMSG(image, "Cannot draw pie chart to null image.");
 	const int32_t width = image->get_width();
@@ -132,13 +136,14 @@ void OpenVic::draw_pie_chart(Ref<Image> image,
 	const int32_t size = std::min(width, height);
 	for (int32_t y = 0; y < size; ++y) {
 		for (int32_t x = 0; x < size; ++x) {
-			image->set_pixel(x, y, pie_chart_fragment(
-				{ static_cast<float>(x) / static_cast<float>(size),
-				  static_cast<float>(y) / static_cast<float>(size) },
-				radius, stopAngles, colours,
-				shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
-				trim_colour, trim_size, gradient_falloff, gradient_base,
-				donut, donut_inner_trim, donut_inner_radius));
+			image->set_pixel(
+				x, y,
+				pie_chart_fragment(
+					Vector2 { static_cast<float>(x), static_cast<float>(y) } / size, radius, stopAngles, colours,
+					shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness, trim_colour, trim_size,
+					gradient_falloff, gradient_base, donut, donut_inner_trim, donut_inner_radius
+				)
+			);
 		}
 	}
 }

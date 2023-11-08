@@ -12,7 +12,7 @@ func get_screen_mode_from_window_mode(window_mode : Window.Mode) -> ScreenMode:
 			return ScreenMode.Fullscreen
 		Window.MODE_FULLSCREEN:
 			return ScreenMode.Borderless
-		Window.MODE_WINDOWED:
+		Window.MODE_WINDOWED, Window.MODE_MINIMIZED:
 			return ScreenMode.Windowed
 		_:
 			return ScreenMode.Unknown

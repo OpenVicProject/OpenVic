@@ -6,6 +6,10 @@ const SoundTabScene = preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
 @export_subgroup("Nodes")
 @export var loading_screen : LoadingScreen
 
+@export var section_name : String = "general"
+@export var setting_name : String = "base_defines_path"
+var _settings_base_path : String = ""
+
 func _ready() -> void:
 	if ArgumentParser.get_argument(&"help"):
 		ArgumentParser._print_help()
@@ -20,10 +24,20 @@ func _ready() -> void:
 	var sound_tab := SoundTabScene.instantiate()
 	sound_tab.visible = false
 	add_child(sound_tab)
+	Events.Options.load_settings.connect(_load_setting)
+	Events.Options.save_settings.connect(_save_setting)
 	Events.Options.load_settings_from_file()
 	sound_tab.queue_free()
 
 	loading_screen.start_loading_screen(_initialize_game)
+
+func _load_setting(file : ConfigFile) -> void:
+	if file == null: return
+	_settings_base_path = file.get_value(section_name, setting_name, "")
+
+func _save_setting(file : ConfigFile) -> void:
+	if file == null: return
+	file.set_value(section_name, setting_name, _settings_base_path)
 
 func _load_compatibility_mode():
 	# Set this to your Vic2 install dir or a mod's dir to enable compatibility mode
@@ -31,19 +45,43 @@ func _load_compatibility_mode():
 	# into the mod's dir for a temporary fix)
 	# Usage: OpenVic --compatibility-mode <path>
 
-	var compatibility_mode_path : String = ArgumentParser.get_argument(&"compatibility-mode", "")
+	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
+	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
 
-	if not compatibility_mode_path:
-		# TODO - non-Windows default paths
-		const default_path : String = "C:/Program Files (x86)/Steam/steamapps/common/Victoria 2"
-		compatibility_mode_path = default_path
+	var actual_base_path : String = ""
 
-	var compatibility_mode_paths : PackedStringArray = [compatibility_mode_path]
+	if arg_base_path:
+		if arg_search_path:
+			push_warning("Exact base path and search base path arguments both used:\nBase: ", arg_base_path, "\nSearch: ", arg_search_path)
+		actual_base_path = arg_base_path
+	elif arg_search_path:
+		actual_base_path = GameSingleton.search_for_game_path(arg_search_path)
+		if not actual_base_path:
+			push_warning("Failed to find assets using search hint: ", arg_search_path)
+
+	if not actual_base_path:
+		if _settings_base_path:
+			actual_base_path = _settings_base_path
+		else:
+			actual_base_path = GameSingleton.search_for_game_path()
+		if not actual_base_path:
+			var title : String = "Failed to find game asset path!"
+			var msg : String = "The path can be specified with the \"base-path\" command line option."
+			OS.alert(msg, title)
+			get_tree().quit()
+			return
+
+	if not _settings_base_path:
+		_settings_base_path = actual_base_path
+		# Save the path found in the search
+		Events.Options.save_settings_to_file()
+
+	var paths : PackedStringArray = [actual_base_path]
 
 	# Example for adding mod paths
-	#compatibility_mode_paths.push_back("C:/Program Files (x86)/Steam/steamapps/common/Victoria 2/mod/TGC")
+	#paths.push_back(actual_base_path + "/mod/TGC")
 
-	if GameSingleton.load_defines_compatibility_mode(compatibility_mode_paths) != OK:
+	if GameSingleton.load_defines_compatibility_mode(paths) != OK:
 		push_error("Errors loading game defines!")
 
 # REQUIREMENTS
