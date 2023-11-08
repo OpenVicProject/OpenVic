@@ -5,12 +5,10 @@
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/Utilities.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
-
-LoadLocalisation* LoadLocalisation::singleton = nullptr;
 
 void LoadLocalisation::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_file", "file_path", "locale"), &LoadLocalisation::load_file);
@@ -19,17 +17,17 @@ void LoadLocalisation::_bind_methods() {
 }
 
 LoadLocalisation* LoadLocalisation::get_singleton() {
-	return singleton;
+	return _singleton;
 }
 
 LoadLocalisation::LoadLocalisation() {
-	ERR_FAIL_COND(singleton != nullptr);
-	singleton = this;
+	ERR_FAIL_COND(_singleton != nullptr);
+	_singleton = this;
 }
 
 LoadLocalisation::~LoadLocalisation() {
-	ERR_FAIL_COND(singleton != this);
-	singleton = nullptr;
+	ERR_FAIL_COND(_singleton != this);
+	_singleton = nullptr;
 }
 
 Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> translation) const {
@@ -65,10 +63,7 @@ Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> tra
 
 Ref<Translation> LoadLocalisation::_get_translation(String const& locale) const {
 	TranslationServer* server = TranslationServer::get_singleton();
-	if (server == nullptr) {
-		UtilityFunctions::push_error("Failed to get TranslationServer singleton");
-		return nullptr;
-	}
+	ERR_FAIL_NULL_V(server, nullptr);
 	Ref<Translation> translation = server->get_translation_object(locale);
 	if (translation.is_null() || translation->get_locale() != locale) {
 		translation.instantiate();
@@ -127,10 +122,7 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 		return FAILED;
 	}
 	TranslationServer* server = TranslationServer::get_singleton();
-	if (server == nullptr) {
-		UtilityFunctions::push_error("Failed to get TranslationServer singleton");
-		return FAILED;
-	}
+	ERR_FAIL_NULL_V(server, FAILED);
 	Error err = OK;
 	for (String const& locale_name : dirs) {
 		if (locale_name != server->standardize_locale(locale_name)) {
@@ -146,14 +138,14 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	static Ref<Translation> translations[Dataloader::_LocaleCount] = { nullptr };
 	Ref<Translation>& translation = translations[locale];
 	if (translation.is_null()) {
-		translation = singleton->_get_translation(Dataloader::locale_names[locale]);
+		translation = _singleton->_get_translation(Dataloader::locale_names[locale]);
 		if (translation.is_null()) {
 			UtilityFunctions::push_error("Failed to get translation object: ", Dataloader::locale_names[locale]);
 			return false;
 		}
 	}
-	const StringName godot_key = Utilities::std_view_to_godot_string(key);
-	const StringName godot_localisation = Utilities::std_view_to_godot_string(localisation);
+	const StringName godot_key = Utilities::std_view_to_godot_string_name(key);
+	const StringName godot_localisation = Utilities::std_view_to_godot_string_name(localisation);
 	if (0) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {

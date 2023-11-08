@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://g524p8lr574w" path="res://src/Game/GameSession/MapControlPanel/MapControlPanel.tscn" id="3_afh6d"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/Game/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_xkg5j"]
-[ext_resource type="PackedScene" uid="uid://byq323jbel48u" path="res://src/Game/GameSession/ProvinceOverviewPanel/ProvinceOverviewPanel.tscn" id="5_osjnn"]
+[ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel.gd" id="5_lfv8l"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/Game/Menu/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
 [ext_resource type="PackedScene" uid="uid://dd8k3p7r3huwc" path="res://src/Game/GameSession/GameSpeedPanel.tscn" id="7_myy4q"]
 [ext_resource type="PackedScene" uid="uid://d3g6wbvwflmyk" path="res://src/Game/Menu/SaveLoadMenu/SaveLoadMenu.tscn" id="8_4g7ko"]
@@ -24,6 +24,16 @@ _game_session_menu = NodePath("GameSessionMenu")
 
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 
+[node name="ProvinceOverviewPanel" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("5_lfv8l")
+
 [node name="MapControlPanel" parent="." instance=ExtResource("3_afh6d")]
 layout_mode = 1
 anchors_preset = 3
@@ -33,9 +43,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
-
-[node name="ProvinceOverviewPanel" parent="." instance=ExtResource("5_osjnn")]
-layout_mode = 1
 
 [node name="GameSpeedPanel" parent="." instance=ExtResource("7_myy4q")]
 layout_mode = 0
@@ -86,8 +93,6 @@ grow_horizontal = 0
 [connection signal="mouse_exited" from="MapControlPanel" to="MapView" method="_on_mouse_entered_viewport"]
 [connection signal="zoom_in_button_pressed" from="MapControlPanel" to="MapView" method="zoom_in"]
 [connection signal="zoom_out_button_pressed" from="MapControlPanel" to="MapView" method="zoom_out"]
-[connection signal="mouse_entered" from="ProvinceOverviewPanel" to="MapView" method="_on_mouse_exited_viewport"]
-[connection signal="mouse_exited" from="ProvinceOverviewPanel" to="MapView" method="_on_mouse_entered_viewport"]
 [connection signal="load_button_pressed" from="GameSessionMenu" to="SaveLoadMenu" method="show_for_load"]
 [connection signal="options_button_pressed" from="GameSessionMenu" to="OptionsMenu" method="show"]
 [connection signal="save_button_pressed" from="GameSessionMenu" to="SaveLoadMenu" method="show_for_save"]

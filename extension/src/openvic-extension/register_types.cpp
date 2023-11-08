@@ -2,17 +2,20 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
-#include "openvic-extension/Checksum.hpp"
-#include "openvic-extension/GameSingleton.hpp"
-#include "openvic-extension/LoadLocalisation.hpp"
-#include "openvic-extension/MapMesh.hpp"
+#include "openvic-extension/classes/GFXIconTexture.hpp"
+#include "openvic-extension/classes/MapMesh.hpp"
+#include "openvic-extension/singletons/AssetManager.hpp"
+#include "openvic-extension/singletons/Checksum.hpp"
+#include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/LoadLocalisation.hpp"
 
 using namespace godot;
 using namespace OpenVic;
 
-static Checksum* _checksum;
+static Checksum* _checksum_singleton;
 static LoadLocalisation* _load_localisation;
-static GameSingleton* _map_singleton;
+static GameSingleton* _game_singleton;
+static AssetManager* _asset_manager_singleton;
 
 void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -20,7 +23,7 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	}
 
 	ClassDB::register_class<Checksum>();
-	_checksum = memnew(Checksum);
+	_checksum_singleton = memnew(Checksum);
 	Engine::get_singleton()->register_singleton("Checksum", Checksum::get_singleton());
 
 	ClassDB::register_class<LoadLocalisation>();
@@ -28,10 +31,15 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	Engine::get_singleton()->register_singleton("LoadLocalisation", LoadLocalisation::get_singleton());
 
 	ClassDB::register_class<GameSingleton>();
-	_map_singleton = memnew(GameSingleton);
+	_game_singleton = memnew(GameSingleton);
 	Engine::get_singleton()->register_singleton("GameSingleton", GameSingleton::get_singleton());
 
+	ClassDB::register_class<AssetManager>();
+	_asset_manager_singleton = memnew(AssetManager);
+	Engine::get_singleton()->register_singleton("AssetManager", AssetManager::get_singleton());
+
 	ClassDB::register_class<MapMesh>();
+	ClassDB::register_class<GFXIconTexture>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
@@ -40,13 +48,16 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 	}
 
 	Engine::get_singleton()->unregister_singleton("Checksum");
-	memdelete(_checksum);
+	memdelete(_checksum_singleton);
 
 	Engine::get_singleton()->unregister_singleton("LoadLocalisation");
 	memdelete(_load_localisation);
 
 	Engine::get_singleton()->unregister_singleton("GameSingleton");
-	memdelete(_map_singleton);
+	memdelete(_game_singleton);
+
+	Engine::get_singleton()->unregister_singleton("AssetManager");
+	memdelete(_asset_manager_singleton);
 }
 
 extern "C" {

@@ -6,9 +6,9 @@
 
 #include <openvic-simulation/utility/Logger.hpp>
 
-#include "openvic-extension/LoadLocalisation.hpp"
-#include "openvic-extension/Utilities.hpp"
+#include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -55,29 +55,10 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_longform_date);
 	OV_BIND_METHOD(GameSingleton::try_tick);
 
+	OV_BIND_METHOD(GameSingleton::generate_gui, { "gui_file", "gui_element" });
+
 	ADD_SIGNAL(MethodInfo("state_updated"));
 	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
-
-	OV_BIND_SMETHOD(get_province_info_province_key);
-	OV_BIND_SMETHOD(get_province_info_region_key);
-	OV_BIND_SMETHOD(get_province_info_life_rating_key);
-	OV_BIND_SMETHOD(get_province_info_terrain_type_key);
-	OV_BIND_SMETHOD(get_province_info_total_population_key);
-	OV_BIND_SMETHOD(get_province_info_pop_types_key);
-	OV_BIND_SMETHOD(get_province_info_pop_ideologies_key);
-	OV_BIND_SMETHOD(get_province_info_pop_cultures_key);
-	OV_BIND_SMETHOD(get_province_info_rgo_key);
-	OV_BIND_SMETHOD(get_province_info_buildings_key);
-
-	OV_BIND_SMETHOD(get_building_info_building_key);
-	OV_BIND_SMETHOD(get_building_info_level_key);
-	OV_BIND_SMETHOD(get_building_info_expansion_state_key);
-	OV_BIND_SMETHOD(get_building_info_start_date_key);
-	OV_BIND_SMETHOD(get_building_info_end_date_key);
-	OV_BIND_SMETHOD(get_building_info_expansion_progress_key);
-
-	OV_BIND_SMETHOD(get_piechart_info_size_key);
-	OV_BIND_SMETHOD(get_piechart_info_colour_key);
 
 	OV_BIND_SMETHOD(
 		draw_pie_chart,
@@ -87,6 +68,31 @@ void GameSingleton::_bind_methods() {
 	);
 
 	OV_BIND_SMETHOD(load_image, { "path" });
+}
+
+Control* GameSingleton::generate_gui(String const& gui_file, String const& gui_element) {
+	GUI::Scene const* scene = game_manager.get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_file));
+	if (scene == nullptr) {
+		UtilityFunctions::push_error("Failed to find GUI file ", gui_file);
+		return nullptr;
+	}
+	GUI::Element const* element = scene->get_element_by_identifier(godot_to_std_string(gui_element));
+	if (element == nullptr) {
+		UtilityFunctions::push_error("Failed to find GUI element ", gui_element, " in GUI file ", gui_file);
+		return nullptr;
+	}
+
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	ERR_FAIL_NULL_V(asset_manager, nullptr);
+	Control* result = nullptr;
+	if (!GodotGUIBuilder::generate_element(element, *asset_manager, result)) {
+		UtilityFunctions::push_error("Failed to generate GUI element ", gui_element, " in GUI file ", gui_file);
+	}
+	return result;
+}
+
+GFX::Sprite const* GameSingleton::get_gfx_sprite(String const& sprite_name) const {
+	return game_manager.get_ui_manager().get_sprite_by_identifier(godot_to_std_string(sprite_name));
 }
 
 void GameSingleton::draw_pie_chart(
@@ -121,6 +127,10 @@ GameSingleton::GameSingleton()
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
+GameSingleton::~GameSingleton() {
+	ERR_FAIL_COND(singleton != this);
+	singleton = nullptr;
+}
 
 void GameSingleton::setup_logger() {
 	Logger::set_info_func([](std::string&& str) {
@@ -134,9 +144,8 @@ void GameSingleton::setup_logger() {
 	});
 }
 
-GameSingleton::~GameSingleton() {
-	ERR_FAIL_COND(singleton != this);
-	singleton = nullptr;
+Dataloader const& GameSingleton::get_dataloader() const {
+	return dataloader;
 }
 
 Error GameSingleton::setup_game() {
@@ -151,89 +160,16 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
 }
 
-StringName const& GameSingleton::get_province_info_province_key() {
-	static const StringName key = "province";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_region_key() {
-	static const StringName key = "region";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_life_rating_key() {
-	static const StringName key = "life_rating";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_terrain_type_key() {
-	static const StringName key = "terrain_type";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_total_population_key() {
-	static const StringName key = "total_population";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_pop_types_key() {
-	static const StringName key = "pop_types";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_pop_ideologies_key() {
-	static const StringName key = "pop_ideologies";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_pop_cultures_key() {
-	static const StringName key = "pop_cultures";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_rgo_key() {
-	static const StringName key = "rgo";
-	return key;
-}
-StringName const& GameSingleton::get_province_info_buildings_key() {
-	static const StringName key = "buildings";
-	return key;
-}
-
-StringName const& GameSingleton::get_building_info_building_key() {
-	static const StringName key = "building";
-	return key;
-}
-StringName const& GameSingleton::get_building_info_level_key() {
-	static const StringName key = "level";
-	return key;
-}
-StringName const& GameSingleton::get_building_info_expansion_state_key() {
-	static const StringName key = "expansion_state";
-	return key;
-}
-StringName const& GameSingleton::get_building_info_start_date_key() {
-	static const StringName key = "start_date";
-	return key;
-}
-StringName const& GameSingleton::get_building_info_end_date_key() {
-	static const StringName key = "end_date";
-	return key;
-}
-StringName const& GameSingleton::get_building_info_expansion_progress_key() {
-	static const StringName key = "expansion_progress";
-	return key;
-}
-
-StringName const& GameSingleton::get_piechart_info_size_key() {
-	static const StringName key = "size";
-	return key;
-}
-StringName const& GameSingleton::get_piechart_info_colour_key() {
-	static const StringName key = "colour";
-	return key;
-}
-
 template<std::derived_from<HasIdentifierAndColour> T>
 static Dictionary _distribution_to_dictionary(decimal_map_t<T const*> const& dist) {
+	static const StringName piechart_info_size_key = "size";
+	static const StringName piechart_info_colour_key = "colour";
 	Dictionary dict;
 	for (auto const& [key, val] : dist) {
 		if (key != nullptr) {
 			Dictionary sub_dict;
-			sub_dict[GameSingleton::get_piechart_info_size_key()] = val.to_float();
-			sub_dict[GameSingleton::get_piechart_info_colour_key()] = Utilities::to_godot_color(key->get_colour());
+			sub_dict[piechart_info_size_key] = val.to_float();
+			sub_dict[piechart_info_colour_key] = Utilities::to_godot_color(key->get_colour());
 			dict[std_view_to_godot_string(key->get_identifier())] = std::move(sub_dict);
 		} else {
 			UtilityFunctions::push_error("Null distribution key with value ", val.to_float());
@@ -243,44 +179,62 @@ static Dictionary _distribution_to_dictionary(decimal_map_t<T const*> const& dis
 }
 
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
+	static const StringName province_info_province_key = "province";
+	static const StringName province_info_region_key = "region";
+	static const StringName province_info_life_rating_key = "life_rating";
+	static const StringName province_info_terrain_type_key = "terrain_type";
+	static const StringName province_info_total_population_key = "total_population";
+	static const StringName province_info_pop_types_key = "pop_types";
+	static const StringName province_info_pop_ideologies_key = "pop_ideologies";
+	static const StringName province_info_pop_cultures_key = "pop_cultures";
+	static const StringName province_info_rgo_key = "rgo";
+	static const StringName province_info_buildings_key = "buildings";
+
 	Province const* province = game_manager.get_map().get_province_by_index(index);
 	if (province == nullptr) {
 		return {};
 	}
 	Dictionary ret;
 
-	ret[get_province_info_province_key()] = std_view_to_godot_string(province->get_identifier());
+	ret[province_info_province_key] = std_view_to_godot_string(province->get_identifier());
 
 	Region const* region = province->get_region();
 	if (region != nullptr) {
-		ret[get_province_info_region_key()] = std_view_to_godot_string(region->get_identifier());
+		ret[province_info_region_key] = std_view_to_godot_string(region->get_identifier());
 	}
 
 	Good const* rgo = province->get_rgo();
 	if (rgo != nullptr) {
-		ret[get_province_info_rgo_key()] = std_view_to_godot_string(rgo->get_identifier());
+		ret[province_info_rgo_key] = std_view_to_godot_string(rgo->get_identifier());
 	}
 
-	ret[get_province_info_life_rating_key()] = province->get_life_rating();
+	ret[province_info_life_rating_key] = province->get_life_rating();
 
 	TerrainType const* terrain_type = province->get_terrain_type();
 	if (terrain_type != nullptr) {
-		ret[get_province_info_terrain_type_key()] = std_view_to_godot_string(terrain_type->get_identifier());
+		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
 	}
 
-	ret[get_province_info_total_population_key()] = province->get_total_population();
+	ret[province_info_total_population_key] = province->get_total_population();
 	decimal_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
 	if (!pop_types.empty()) {
-		ret[get_province_info_pop_types_key()] = _distribution_to_dictionary(pop_types);
+		ret[province_info_pop_types_key] = _distribution_to_dictionary(pop_types);
 	}
 	decimal_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
 	if (!ideologies.empty()) {
-		ret[get_province_info_pop_ideologies_key()] = _distribution_to_dictionary(ideologies);
+		ret[province_info_pop_ideologies_key] = _distribution_to_dictionary(ideologies);
 	}
 	decimal_map_t<Culture const*> const& cultures = province->get_culture_distribution();
 	if (!cultures.empty()) {
-		ret[get_province_info_pop_cultures_key()] = _distribution_to_dictionary(cultures);
+		ret[province_info_pop_cultures_key] = _distribution_to_dictionary(cultures);
 	}
+
+	static const StringName building_info_building_key = "building";
+	static const StringName building_info_level_key = "level";
+	static const StringName building_info_expansion_state_key = "expansion_state";
+	static const StringName building_info_start_date_key = "start_date";
+	static const StringName building_info_end_date_key = "end_date";
+	static const StringName building_info_expansion_progress_key = "expansion_progress";
 
 	std::vector<BuildingInstance> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {
@@ -290,16 +244,16 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 			BuildingInstance const& building = buildings[idx];
 
 			Dictionary building_dict;
-			building_dict[get_building_info_building_key()] = std_view_to_godot_string(building.get_identifier());
-			building_dict[get_building_info_level_key()] = static_cast<int32_t>(building.get_current_level());
-			building_dict[get_building_info_expansion_state_key()] = static_cast<int32_t>(building.get_expansion_state());
-			building_dict[get_building_info_start_date_key()] = std_to_godot_string(building.get_start_date().to_string());
-			building_dict[get_building_info_end_date_key()] = std_to_godot_string(building.get_end_date().to_string());
-			building_dict[get_building_info_expansion_progress_key()] = building.get_expansion_progress();
+			building_dict[building_info_building_key] = std_view_to_godot_string(building.get_identifier());
+			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_current_level());
+			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
+			building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
+			building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
+			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
 
 			buildings_array[idx] = building_dict;
 		}
-		ret[get_province_info_buildings_key()] = buildings_array;
+		ret[province_info_buildings_key] = buildings_array;
 	}
 	return ret;
 }

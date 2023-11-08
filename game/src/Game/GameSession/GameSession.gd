@@ -7,6 +7,12 @@ func _ready():
 	if GameSingleton.setup_game() != OK:
 		push_error("Failed to setup game")
 
+	# Temporarily here for cosmetic reasons, will be moved to its
+	# own child node later, similar to ProvinceOverviewPanel
+	add_child(GameSingleton.generate_gui("topbar.gui", "topbar"))
+	$topbar/topbar_outlinerbutton_bg.visible = false
+	$topbar/topbar_outlinerbutton.visible = false
+
 func _process(_delta : float):
 	GameSingleton.try_tick()
 
