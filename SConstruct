@@ -17,12 +17,15 @@ opts = env.SetupOptions()
 env.FinalizeOptions()
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
+OLD_ARGS = ARGUMENTS.copy()
+ARGUMENTS["use_static_cpp"] = False # TODO: Dependencies need to update scripts submodule
+ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
 godot_env = SConscript("godot-cpp/SConstruct")
+ARGUMENTS = OLD_ARGS
 
 # Make LIBS into a list which is easier to deal with.
 godot_env["LIBS"] = [godot_env["LIBS"]]
 env.Append(CPPPATH=godot_env["CPPPATH"])
-env.Append(LIBPATH=godot_env["LIBPATH"])
 env.Prepend(LIBS=godot_env["LIBS"])
 
 SConscript("extension/deps/SCsub", "env")
@@ -77,8 +80,14 @@ else:
         source=sources,
     )
 
+default_args = [library]
+
+# Add compiledb if the option is set
+if env.get("compiledb", False):
+    default_args += ["compiledb"]
+
 if "env" in locals():
     # FIXME: This method mixes both cosmetic progress stuff and cache handling...
     env.show_progress(env)
 
-Default(library)
+Default(default_args)
