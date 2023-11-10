@@ -2,24 +2,26 @@
 
 #include <godot_cpp/templates/vector.hpp>
 
+#include "openvic-extension/utility/ClassBindings.hpp"
+
 using namespace godot;
 using namespace OpenVic;
 
 void MapMesh::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_aspect_ratio", "ratio"), &MapMesh::set_aspect_ratio);
-	ClassDB::bind_method(D_METHOD("get_aspect_ratio"), &MapMesh::get_aspect_ratio);
+	OV_BIND_METHOD(MapMesh::set_aspect_ratio, { "ratio" });
+	OV_BIND_METHOD(MapMesh::get_aspect_ratio);
 
-	ClassDB::bind_method(D_METHOD("set_repeat_proportion", "proportion"), &MapMesh::set_repeat_proportion);
-	ClassDB::bind_method(D_METHOD("get_repeat_proportion"), &MapMesh::get_repeat_proportion);
+	OV_BIND_METHOD(MapMesh::set_repeat_proportion, { "proportion" });
+	OV_BIND_METHOD(MapMesh::get_repeat_proportion);
 
-	ClassDB::bind_method(D_METHOD("set_subdivide_width", "divisions"), &MapMesh::set_subdivide_width);
-	ClassDB::bind_method(D_METHOD("get_subdivide_width"), &MapMesh::get_subdivide_width);
+	OV_BIND_METHOD(MapMesh::set_subdivide_width, { "divisions" });
+	OV_BIND_METHOD(MapMesh::get_subdivide_width);
 
-	ClassDB::bind_method(D_METHOD("set_subdivide_depth", "divisions"), &MapMesh::set_subdivide_depth);
-	ClassDB::bind_method(D_METHOD("get_subdivide_depth"), &MapMesh::get_subdivide_depth);
+	OV_BIND_METHOD(MapMesh::set_subdivide_depth, { "divisions" });
+	OV_BIND_METHOD(MapMesh::get_subdivide_depth);
 
-	ClassDB::bind_method(D_METHOD("get_core_aabb"), &MapMesh::get_core_aabb);
-	ClassDB::bind_method(D_METHOD("is_valid_uv_coord"), &MapMesh::is_valid_uv_coord);
+	OV_BIND_METHOD(MapMesh::get_core_aabb);
+	OV_BIND_METHOD(MapMesh::is_valid_uv_coord);
 
 	ADD_PROPERTY(
 		PropertyInfo(Variant::FLOAT, "aspect_ratio", PROPERTY_HINT_NONE, "suffix:m"), "set_aspect_ratio", "get_aspect_ratio"

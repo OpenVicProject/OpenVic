@@ -1,11 +1,14 @@
 #include "GameSingleton.hpp"
 
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/LoadLocalisation.hpp"
 #include "openvic-extension/Utilities.hpp"
+#include "openvic-extension/utility/ClassBindings.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -14,94 +17,76 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 
-GameSingleton* GameSingleton::singleton = nullptr;
-
-#define BM ClassDB::bind_method
-#define BSM ClassDB::bind_static_method
-
 void GameSingleton::_bind_methods() {
-	BSM("GameSingleton", D_METHOD("setup_logger"), &GameSingleton::setup_logger);
-	BM(D_METHOD("load_defines_compatibility_mode", "file_paths"), &GameSingleton::load_defines_compatibility_mode);
-	BSM(
-		"GameSingleton", D_METHOD("search_for_game_path", "hint_path"), &GameSingleton::search_for_game_path, DEFVAL(String {})
-	);
-	BM(D_METHOD("lookup_file", "path"), &GameSingleton::lookup_file);
-	BM(D_METHOD("setup_game"), &GameSingleton::setup_game);
+	OV_BIND_SMETHOD(setup_logger);
 
-	BM(D_METHOD("get_province_index_from_uv_coords", "coords"), &GameSingleton::get_province_index_from_uv_coords);
-	BM(D_METHOD("get_province_info_from_index", "index"), &GameSingleton::get_province_info_from_index);
-	BM(D_METHOD("get_width"), &GameSingleton::get_width);
-	BM(D_METHOD("get_height"), &GameSingleton::get_height);
-	BM(D_METHOD("get_aspect_ratio"), &GameSingleton::get_aspect_ratio);
-	BM(D_METHOD("get_terrain_texture"), &GameSingleton::get_terrain_texture);
-	BM(D_METHOD("get_province_shape_image_subdivisions"), &GameSingleton::get_province_shape_image_subdivisions);
-	BM(D_METHOD("get_province_shape_texture"), &GameSingleton::get_province_shape_texture);
-	BM(D_METHOD("get_province_colour_texture"), &GameSingleton::get_province_colour_texture);
+	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
+	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 
-	BM(D_METHOD("get_mapmode_count"), &GameSingleton::get_mapmode_count);
-	BM(D_METHOD("get_mapmode_identifier", "index"), &GameSingleton::get_mapmode_identifier);
-	BM(D_METHOD("set_mapmode", "identifier"), &GameSingleton::set_mapmode);
-	BM(D_METHOD("get_selected_province_index"), &GameSingleton::get_selected_province_index);
-	BM(D_METHOD("set_selected_province", "index"), &GameSingleton::set_selected_province);
+	OV_BIND_METHOD(GameSingleton::lookup_file, { "path" });
+	OV_BIND_METHOD(GameSingleton::setup_game);
 
-	BM(D_METHOD("expand_building", "province_index", "building_type_identifier"), &GameSingleton::expand_building);
+	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
+	OV_BIND_METHOD(GameSingleton::get_province_info_from_index, { "index" });
 
-	BM(D_METHOD("set_paused", "paused"), &GameSingleton::set_paused);
-	BM(D_METHOD("toggle_paused"), &GameSingleton::toggle_paused);
-	BM(D_METHOD("is_paused"), &GameSingleton::is_paused);
-	BM(D_METHOD("increase_speed"), &GameSingleton::increase_speed);
-	BM(D_METHOD("decrease_speed"), &GameSingleton::decrease_speed);
-	BM(D_METHOD("can_increase_speed"), &GameSingleton::can_increase_speed);
-	BM(D_METHOD("can_decrease_speed"), &GameSingleton::can_decrease_speed);
-	BM(D_METHOD("get_longform_date"), &GameSingleton::get_longform_date);
-	BM(D_METHOD("try_tick"), &GameSingleton::try_tick);
+	OV_BIND_METHOD(GameSingleton::get_width);
+	OV_BIND_METHOD(GameSingleton::get_height);
+	OV_BIND_METHOD(GameSingleton::get_aspect_ratio);
+	OV_BIND_METHOD(GameSingleton::get_terrain_texture);
+	OV_BIND_METHOD(GameSingleton::get_province_shape_image_subdivisions);
+	OV_BIND_METHOD(GameSingleton::get_province_shape_texture);
+	OV_BIND_METHOD(GameSingleton::get_province_colour_texture);
+
+	OV_BIND_METHOD(GameSingleton::get_mapmode_count);
+	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier);
+	OV_BIND_METHOD(GameSingleton::set_mapmode, { "identifier" });
+	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
+	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
+
+	OV_BIND_METHOD(GameSingleton::expand_building, { "province_index", "building_type_identifier" });
+
+	OV_BIND_METHOD(GameSingleton::set_paused, { "paused" });
+	OV_BIND_METHOD(GameSingleton::toggle_paused);
+	OV_BIND_METHOD(GameSingleton::is_paused);
+	OV_BIND_METHOD(GameSingleton::increase_speed);
+	OV_BIND_METHOD(GameSingleton::decrease_speed);
+	OV_BIND_METHOD(GameSingleton::can_increase_speed);
+	OV_BIND_METHOD(GameSingleton::can_decrease_speed);
+	OV_BIND_METHOD(GameSingleton::get_longform_date);
+	OV_BIND_METHOD(GameSingleton::try_tick);
 
 	ADD_SIGNAL(MethodInfo("state_updated"));
 	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
 
-	BSM("GameSingleton", D_METHOD("get_province_info_province_key"), &GameSingleton::get_province_info_province_key);
-	BSM("GameSingleton", D_METHOD("get_province_info_region_key"), &GameSingleton::get_province_info_region_key);
-	BSM("GameSingleton", D_METHOD("get_province_info_life_rating_key"), &GameSingleton::get_province_info_life_rating_key);
-	BSM("GameSingleton", D_METHOD("get_province_info_terrain_type_key"), &GameSingleton::get_province_info_terrain_type_key);
-	BSM(
-		"GameSingleton", D_METHOD("get_province_info_total_population_key"),
-		&GameSingleton::get_province_info_total_population_key
-	);
-	BSM("GameSingleton", D_METHOD("get_province_info_pop_types_key"), &GameSingleton::get_province_info_pop_types_key);
-	BSM(
-		"GameSingleton", D_METHOD("get_province_info_pop_ideologies_key"),
-		&GameSingleton::get_province_info_pop_ideologies_key
-	);
-	BSM("GameSingleton", D_METHOD("get_province_info_pop_cultures_key"), &GameSingleton::get_province_info_pop_cultures_key);
-	BSM("GameSingleton", D_METHOD("get_province_info_rgo_key"), &GameSingleton::get_province_info_rgo_key);
-	BSM("GameSingleton", D_METHOD("get_province_info_buildings_key"), &GameSingleton::get_province_info_buildings_key);
+	OV_BIND_SMETHOD(get_province_info_province_key);
+	OV_BIND_SMETHOD(get_province_info_region_key);
+	OV_BIND_SMETHOD(get_province_info_life_rating_key);
+	OV_BIND_SMETHOD(get_province_info_terrain_type_key);
+	OV_BIND_SMETHOD(get_province_info_total_population_key);
+	OV_BIND_SMETHOD(get_province_info_pop_types_key);
+	OV_BIND_SMETHOD(get_province_info_pop_ideologies_key);
+	OV_BIND_SMETHOD(get_province_info_pop_cultures_key);
+	OV_BIND_SMETHOD(get_province_info_rgo_key);
+	OV_BIND_SMETHOD(get_province_info_buildings_key);
 
-	BSM("GameSingleton", D_METHOD("get_building_info_building_key"), &GameSingleton::get_building_info_building_key);
-	BSM("GameSingleton", D_METHOD("get_building_info_level_key"), &GameSingleton::get_building_info_level_key);
-	BSM(
-		"GameSingleton", D_METHOD("get_building_info_expansion_state_key"),
-		&GameSingleton::get_building_info_expansion_state_key
-	);
-	BSM("GameSingleton", D_METHOD("get_building_info_start_date_key"), &GameSingleton::get_building_info_start_date_key);
-	BSM("GameSingleton", D_METHOD("get_building_info_end_date_key"), &GameSingleton::get_building_info_end_date_key);
-	BSM(
-		"GameSingleton", D_METHOD("get_building_info_expansion_progress_key"),
-		&GameSingleton::get_building_info_expansion_progress_key
+	OV_BIND_SMETHOD(get_building_info_building_key);
+	OV_BIND_SMETHOD(get_building_info_level_key);
+	OV_BIND_SMETHOD(get_building_info_expansion_state_key);
+	OV_BIND_SMETHOD(get_building_info_start_date_key);
+	OV_BIND_SMETHOD(get_building_info_end_date_key);
+	OV_BIND_SMETHOD(get_building_info_expansion_progress_key);
+
+	OV_BIND_SMETHOD(get_piechart_info_size_key);
+	OV_BIND_SMETHOD(get_piechart_info_colour_key);
+
+	OV_BIND_SMETHOD(
+		draw_pie_chart,
+		{ "image", "stopAngles", "colours", "radius", "shadow_displacement", "shadow_tightness", "shadow_radius",
+		  "shadow_thickness", "trim_colour", "trim_size", "gradient_falloff", "gradient_base", "donut", "donut_inner_trim",
+		  "donut_inner_radius" }
 	);
 
-	BSM("GameSingleton", D_METHOD("get_piechart_info_size_key"), &GameSingleton::get_piechart_info_size_key);
-	BSM("GameSingleton", D_METHOD("get_piechart_info_colour_key"), &GameSingleton::get_piechart_info_colour_key);
-
-	BSM(
-		"GameSingleton",
-		D_METHOD(
-			"draw_pie_chart", "image", "stopAngles", "colours", "radius", "shadow_displacement", "shadow_tightness",
-			"shadow_radius", "shadow_thickness", "trim_colour", "trim_size", "gradient_falloff", "gradient_base", "donut",
-			"donut_inner_trim", "donut_inner_radius"
-		),
-		&GameSingleton::draw_pie_chart
-	);
-	BSM("GameSingleton", D_METHOD("load_image", "path"), &GameSingleton::load_image);
+	OV_BIND_SMETHOD(load_image, { "path" });
 }
 
 void GameSingleton::draw_pie_chart(
