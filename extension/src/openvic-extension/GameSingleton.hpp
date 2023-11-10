@@ -11,7 +11,7 @@ namespace OpenVic {
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
 
-		static GameSingleton* singleton;
+		inline static GameSingleton* singleton = nullptr;
 
 		GameManager game_manager;
 		Dataloader dataloader;

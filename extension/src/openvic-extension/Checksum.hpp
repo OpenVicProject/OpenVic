@@ -1,6 +1,8 @@
 #pragma once
 
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/core/object.hpp>
+#include <godot_cpp/variant/string.hpp>
 
 namespace OpenVic {
 	class Checksum : public godot::Object {
@@ -10,30 +12,15 @@ namespace OpenVic {
 		static inline Checksum* _checksum = nullptr;
 
 	protected:
-		static void _bind_methods() {
-			godot::ClassDB::bind_method(godot::D_METHOD("get_checksum_text"), &Checksum::get_checksum_text);
-		}
+		static void _bind_methods();
 
 	public:
-		static inline Checksum* get_singleton() {
-			return _checksum;
-		}
+		static Checksum* get_singleton();
 
-		inline Checksum() {
-			ERR_FAIL_COND(_checksum != nullptr);
-			_checksum = this;
-		}
-		inline ~Checksum() {
-			ERR_FAIL_COND(_checksum != this);
-			_checksum = nullptr;
-		}
+		Checksum();
+		~Checksum();
 		// END BOILERPLATE
 
-		/* REQUIREMENTS:
-		 * DAT-8
-		 */
-		inline godot::String get_checksum_text() {
-			return godot::String("1234abcd");
-		}
+		godot::String get_checksum_text();
 	};
 }
