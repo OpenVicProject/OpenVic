@@ -12,16 +12,21 @@ env = SConscript("scripts/SConstruct")
 
 env.PrependENVPath("PATH", os.getenv("PATH"))
 
+OLD_ARGS = ARGUMENTS.copy()
+ARGUMENTS["compiledb"] = False
 opts = env.SetupOptions()
 
 env.FinalizeOptions()
+ARGUMENTS = OLD_ARGS
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
-OLD_ARGS = ARGUMENTS.copy()
-ARGUMENTS["use_static_cpp"] = False # TODO: Dependencies need to update scripts submodule
-ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
+OLD_ARGS = SCons.Script.ARGUMENTS.copy()
+SCons.Script.ARGUMENTS["use_static_cpp"] = env["use_static_cpp"]
+SCons.Script.ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
+if ARGUMENTS.get("compiledb", False):
+    SCons.Script.ARGUMENTS["compiledb"] = True
 godot_env = SConscript("godot-cpp/SConstruct")
-ARGUMENTS = OLD_ARGS
+SCons.Script.ARGUMENTS = OLD_ARGS
 
 # Make LIBS into a list which is easier to deal with.
 godot_env["LIBS"] = [godot_env["LIBS"]]
@@ -82,12 +87,8 @@ else:
 
 default_args = [library]
 
-# Add compiledb if the option is set
-if env.get("compiledb", False):
-    default_args += ["compiledb"]
-
 if "env" in locals():
     # FIXME: This method mixes both cosmetic progress stuff and cache handling...
     env.show_progress(env)
 
-Default(default_args)
+Default(*default_args)
