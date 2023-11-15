@@ -23,15 +23,14 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 
-	OV_BIND_METHOD(GameSingleton::lookup_file, { "path" });
 	OV_BIND_METHOD(GameSingleton::setup_game);
 
 	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
 	OV_BIND_METHOD(GameSingleton::get_province_info_from_index, { "index" });
 
-	OV_BIND_METHOD(GameSingleton::get_width);
-	OV_BIND_METHOD(GameSingleton::get_height);
-	OV_BIND_METHOD(GameSingleton::get_aspect_ratio);
+	OV_BIND_METHOD(GameSingleton::get_map_width);
+	OV_BIND_METHOD(GameSingleton::get_map_height);
+	OV_BIND_METHOD(GameSingleton::get_map_aspect_ratio);
 	OV_BIND_METHOD(GameSingleton::get_terrain_texture);
 	OV_BIND_METHOD(GameSingleton::get_province_shape_image_subdivisions);
 	OV_BIND_METHOD(GameSingleton::get_province_shape_texture);
@@ -149,19 +148,25 @@ Dataloader const& GameSingleton::get_dataloader() const {
 }
 
 Error GameSingleton::setup_game() {
-	bool ret = game_manager.setup();
+	BookmarkManager const& bookmark_manager = game_manager.get_history_manager().get_bookmark_manager();
+	if (bookmark_manager.bookmarks_empty()) {
+		UtilityFunctions::push_error("No bookmark to load!");
+		return FAILED;
+	}
+	bool ret = game_manager.load_bookmark(&bookmark_manager.get_bookmarks().front());
+	// TODO - load pop history with the new history system
 	ret &= dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string());
 	return ERR(ret);
 }
 
 int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
-	const size_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_width();
-	const size_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_height();
+	const size_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_map_width();
+	const size_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_map_height();
 	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
 }
 
 template<std::derived_from<HasIdentifierAndColour> T>
-static Dictionary _distribution_to_dictionary(decimal_map_t<T const*> const& dist) {
+static Dictionary _distribution_to_dictionary(fixed_point_map_t<T const*> const& dist) {
 	static const StringName piechart_info_size_key = "size";
 	static const StringName piechart_info_colour_key = "colour";
 	Dictionary dict;
@@ -216,15 +221,15 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	}
 
 	ret[province_info_total_population_key] = province->get_total_population();
-	decimal_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
+	fixed_point_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
 	if (!pop_types.empty()) {
 		ret[province_info_pop_types_key] = _distribution_to_dictionary(pop_types);
 	}
-	decimal_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
+	fixed_point_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
 	if (!ideologies.empty()) {
 		ret[province_info_pop_ideologies_key] = _distribution_to_dictionary(ideologies);
 	}
-	decimal_map_t<Culture const*> const& cultures = province->get_culture_distribution();
+	fixed_point_map_t<Culture const*> const& cultures = province->get_culture_distribution();
 	if (!cultures.empty()) {
 		ret[province_info_pop_cultures_key] = _distribution_to_dictionary(cultures);
 	}
@@ -245,7 +250,7 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 
 			Dictionary building_dict;
 			building_dict[building_info_building_key] = std_view_to_godot_string(building.get_identifier());
-			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_current_level());
+			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
 			building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
@@ -258,16 +263,16 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	return ret;
 }
 
-int32_t GameSingleton::get_width() const {
+int32_t GameSingleton::get_map_width() const {
 	return game_manager.get_map().get_width();
 }
 
-int32_t GameSingleton::get_height() const {
+int32_t GameSingleton::get_map_height() const {
 	return game_manager.get_map().get_height();
 }
 
-float GameSingleton::get_aspect_ratio() const {
-	return static_cast<float>(get_width()) / static_cast<float>(get_height());
+float GameSingleton::get_map_aspect_ratio() const {
+	return static_cast<float>(get_map_width()) / static_cast<float>(get_map_height());
 }
 
 Ref<Texture> GameSingleton::get_terrain_texture() const {
@@ -289,7 +294,7 @@ Ref<Texture> GameSingleton::get_province_colour_texture() const {
 Error GameSingleton::_update_colour_image() {
 	static PackedByteArray colour_data_array;
 	static constexpr int64_t colour_data_array_size =
-		(static_cast<int64_t>(Province::MAX_INDEX) + 1) * Map::MAPMODE_COLOUR_SIZE;
+		(static_cast<int64_t>(Province::MAX_INDEX) + 1) * sizeof(Mapmode::base_stripe_t);
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
@@ -297,12 +302,16 @@ Error GameSingleton::_update_colour_image() {
 		err = FAILED;
 	}
 
+	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
 	if (province_colour_image.is_null()) {
 		province_colour_image.instantiate();
 		ERR_FAIL_NULL_V_EDMSG(province_colour_image, FAILED, "Failed to create province colour image");
 	}
-	province_colour_image->set_data(PROVINCE_INDEX_SQRT, PROVINCE_INDEX_SQRT, false, Image::FORMAT_RGBA8, colour_data_array);
+	/* Width is doubled as each province has a (base, stripe) colour pair. */
+	province_colour_image->set_data(
+		PROVINCE_INDEX_SQRT * 2, PROVINCE_INDEX_SQRT, false, Image::FORMAT_RGBA8, colour_data_array
+	);
 	if (province_colour_texture.is_null()) {
 		province_colour_texture = ImageTexture::create_from_image(province_colour_image);
 		ERR_FAIL_NULL_V_EDMSG(province_colour_texture, FAILED, "Failed to create province colour texture");
@@ -542,8 +551,4 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 
 String GameSingleton::search_for_game_path(String hint_path) {
 	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
-}
-
-String GameSingleton::lookup_file(String const& path) const {
-	return std_to_godot_string(dataloader.lookup_file(godot_to_std_string(path)).string());
 }

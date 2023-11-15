@@ -65,7 +65,7 @@ static T* new_control(GUI::Element const& element) {
 		UtilityFunctions::push_error("Invalid orientation for GUI element ",
 			std_view_to_godot_string(element.get_name()));
 	}
-	node->set_position(Utilities::to_godot_ivec2(element.get_position()));
+	node->set_position(Utilities::to_godot_fvec2(element.get_position()));
 	node->set_focus_mode(Control::FOCUS_NONE);
 
 	return node;
@@ -343,7 +343,7 @@ bool GodotGUIBuilder::generate_overlapping_elements(
 		return false;
 	}
 
-	godot_rect->set_size(Utilities::to_godot_ivec2(overlapping_elements.get_size()));
+	godot_rect->set_size(Utilities::to_godot_fvec2(overlapping_elements.get_size()));
 	godot_rect->set_color({ 0.0f, 0.5f, 1.0f, 0.2f });
 
 	result = godot_rect;
@@ -362,7 +362,7 @@ bool GodotGUIBuilder::generate_listbox(GUI::Element const& element, AssetManager
 		return false;
 	}
 
-	godot_rect->set_size(Utilities::to_godot_ivec2(listbox.get_size()));
+	godot_rect->set_size(Utilities::to_godot_fvec2(listbox.get_size()));
 	godot_rect->set_color({ 1.0f, 0.5f, 0.0f, 0.2f });
 
 	result = godot_rect;
@@ -382,7 +382,7 @@ bool GodotGUIBuilder::generate_window(GUI::Element const& element, AssetManager&
 		return false;
 	}
 
-	godot_panel->set_size(Utilities::to_godot_ivec2(window.get_size()));
+	godot_panel->set_size(Utilities::to_godot_fvec2(window.get_size()));
 	godot_panel->set_self_modulate({ 1.0f, 1.0f, 1.0f, 0.0f });
 
 	bool ret = true;

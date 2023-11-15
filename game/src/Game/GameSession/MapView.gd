@@ -74,7 +74,10 @@ func _ready():
 	# Set map mesh size and get bounds
 	const pixels_per_terrain_tile : float = 32.0
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_terrain_tile_factor,
-		float(GameSingleton.get_height()) / pixels_per_terrain_tile)
+		float(GameSingleton.get_map_height()) / pixels_per_terrain_tile)
+	const pixels_per_stripe_tile : float = 16.0
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_stripe_tile_factor,
+		float(GameSingleton.get_map_height()) / pixels_per_stripe_tile)
 	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),

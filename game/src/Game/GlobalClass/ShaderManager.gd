@@ -8,6 +8,8 @@ const param_hover_index : StringName = &"hover_index"
 const param_selected_index : StringName = &"selected_index"
 const param_terrain_tex : StringName = &"terrain_tex"
 const param_terrain_tile_factor : StringName = &"terrain_tile_factor"
+const param_stripe_tex : StringName = &"stripe_tex"
+const param_stripe_tile_factor : StringName = &"stripe_tile_factor"
 
 func set_up_shader(material : Material, add_cosmetic_textures : bool) -> Error:
 	# Shader Material
@@ -45,5 +47,12 @@ func set_up_shader(material : Material, add_cosmetic_textures : bool) -> Error:
 			push_error("Failed to get terrain texture!")
 			return FAILED
 		shader_material.set_shader_parameter(param_terrain_tex, terrain_texture)
+
+		# Stripe texture
+		var stripe_texture := AssetManager.get_texture(&"map/terrain/stripes.dds")
+		if stripe_texture == null:
+			push_error("Failed to get stripe texture!")
+			return FAILED
+		shader_material.set_shader_parameter(param_stripe_tex, stripe_texture)
 
 	return OK

@@ -69,8 +69,6 @@ namespace OpenVic {
 
 		static godot::String search_for_game_path(godot::String hint_path = {});
 
-		godot::String lookup_file(godot::String const& path) const;
-
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.
 		 */
@@ -83,9 +81,9 @@ namespace OpenVic {
 		 */
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 
-		int32_t get_width() const;
-		int32_t get_height() const;
-		float get_aspect_ratio() const;
+		int32_t get_map_width() const;
+		int32_t get_map_height() const;
+		float get_map_aspect_ratio() const;
 
 		/* The cosmetic terrain textures stored in a Texture2DArray.
 		 */

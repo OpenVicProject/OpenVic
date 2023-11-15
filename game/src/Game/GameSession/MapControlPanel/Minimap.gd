@@ -10,7 +10,7 @@ var _minimap_shader : ShaderMaterial
 var _viewport_points : PackedVector2Array
 
 func _ready():
-	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_aspect_ratio(), 1.0) * 150
+	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_map_aspect_ratio(), 1.0) * 150
 	var minimap_material := _minimap_texture.get_material()
 	if GameLoader.ShaderManager.set_up_shader(minimap_material, false) != OK:
 		push_error("Failed to set up minimap shader")

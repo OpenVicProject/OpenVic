@@ -42,6 +42,10 @@ namespace OpenVic::Utilities {
 		return { vec.x, vec.y };
 	}
 
+	inline godot::Vector2 to_godot_fvec2(fvec2_t vec) {
+		return { vec.x, vec.y };
+	}
+
 	godot::Ref<godot::Image> load_godot_image(godot::String const& path);
 
 	godot::Ref<godot::FontFile> load_godot_font(godot::String const& fnt_path, godot::Ref<godot::Image> const& image);
