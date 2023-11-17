@@ -1,10 +1,13 @@
 #pragma once
 
+#include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
+
+#include "openvic-extension/UIAdapter.hpp"
 
 namespace OpenVic {
 
@@ -37,6 +40,10 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
+
+		godot::Control* generate_gui(godot::String const& gui_file, godot::String const& gui_element);
+		GFX::Sprite const* get_gfx_sprite(godot::String const& sprite_name) const;
+
 		static void draw_pie_chart(
 			godot::Ref<godot::Image> image, godot::Array const& stopAngles, godot::Array const& colours, float radius,
 			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
@@ -53,14 +60,14 @@ namespace OpenVic {
 
 		static void setup_logger();
 
+		Dataloader const& get_dataloader() const;
+
 		/* Load the game's defines in compatiblity mode from the filepath
 		 * pointing to the defines folder.
 		 */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
 
 		static godot::String search_for_game_path(godot::String hint_path = {});
-
-		godot::String lookup_file(godot::String const& path) const;
 
 		/* Post-load/restart game setup - reset the game to post-load state
 		 * and (re)generate starting data, e.g. buildings.
@@ -69,35 +76,14 @@ namespace OpenVic {
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 
-		static godot::StringName const& get_province_info_province_key();
-		static godot::StringName const& get_province_info_region_key();
-		static godot::StringName const& get_province_info_life_rating_key();
-		static godot::StringName const& get_province_info_terrain_type_key();
-		static godot::StringName const& get_province_info_total_population_key();
-		static godot::StringName const& get_province_info_pop_types_key();
-		static godot::StringName const& get_province_info_pop_ideologies_key();
-		static godot::StringName const& get_province_info_pop_cultures_key();
-		static godot::StringName const& get_province_info_rgo_key();
-		static godot::StringName const& get_province_info_buildings_key();
-
-		static godot::StringName const& get_building_info_building_key();
-		static godot::StringName const& get_building_info_level_key();
-		static godot::StringName const& get_building_info_expansion_state_key();
-		static godot::StringName const& get_building_info_start_date_key();
-		static godot::StringName const& get_building_info_end_date_key();
-		static godot::StringName const& get_building_info_expansion_progress_key();
-
-		static godot::StringName const& get_piechart_info_size_key();
-		static godot::StringName const& get_piechart_info_colour_key();
-
 		/* Get info to display in Province Overview Panel, packaged in
-		 * a Dictionary using the StringNames above as keys.
+		 * a Dictionary using StringName constants as keys.
 		 */
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 
-		int32_t get_width() const;
-		int32_t get_height() const;
-		float get_aspect_ratio() const;
+		int32_t get_map_width() const;
+		int32_t get_map_height() const;
+		float get_map_aspect_ratio() const;
 
 		/* The cosmetic terrain textures stored in a Texture2DArray.
 		 */

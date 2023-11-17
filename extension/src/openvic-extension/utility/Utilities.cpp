@@ -29,30 +29,48 @@ static Ref<Image> load_dds_image(String const& path) {
 		}
 	}
 
-	PackedByteArray pixels;
-	pixels.resize(texture.size());
-	memcpy(pixels.ptrw(), texture.data(), pixels.size());
-	UtilityFunctions::print("needs_bgr_to_rgb = ", needs_bgr_to_rgb);
-	if (needs_bgr_to_rgb) {
-		for (size_t i = 0; i < pixels.size(); i += 4) {
-			std::swap(pixels[i], pixels[i + 2]);
-		}
+	const gli::texture2d::extent_type extent { texture.extent() };
+	const int width = extent.x, height = extent.y, size = width * height * 4;
+
+	/* Only fail if there aren't enough bytes, everything seems to work fine if there are extra bytes and we ignore them */
+	if (size > texture.size()) {
+		UtilityFunctions::push_error(
+			"Texture size ", static_cast<int64_t>(texture.size()), " mismatched with dims-based size ", size, " for ", path
+		);
+		return nullptr;
 	}
 
-	const gli::texture2d::extent_type extent { texture.extent() };
-	return Image::create_from_data(extent.x, extent.y, false, Image::FORMAT_RGBA8, pixels);
+	PackedByteArray pixels;
+	pixels.resize(size);
+	/* Index offset used to control whether we are reading  */
+	const size_t rb_idx = 2 * needs_bgr_to_rgb;
+	uint8_t const* ptr = static_cast<uint8_t const*>(texture.data());
+	for (size_t i = 0; i < size; i += 4) {
+		pixels[i + 0] = ptr[i + rb_idx];
+		pixels[i + 1] = ptr[i + 1];
+		pixels[i + 2] = ptr[i + 2 - rb_idx];
+		pixels[i + 3] = ptr[i + 3];
+	}
+
+	return Image::create_from_data(width, height, false, Image::FORMAT_RGBA8, pixels);
 }
 
 Ref<Image> Utilities::load_godot_image(String const& path) {
-	if (path.begins_with("res://")) {
-		ResourceLoader* loader = ResourceLoader::get_singleton();
-		return loader ? loader->load(path) : nullptr;
-	} else {
-		if (path.ends_with(".dds")) {
-			return load_dds_image(path);
-		}
-		return Image::load_from_file(path);
+	if (path.ends_with(".dds")) {
+		return load_dds_image(path);
 	}
+	return Image::load_from_file(path);
+}
+
+Ref<FontFile> Utilities::load_godot_font(String const& fnt_path, Ref<Image> const& image) {
+	Ref<FontFile> font;
+	font.instantiate();
+	const Error err = font->load_bitmap_font(fnt_path);
+	font->set_texture_image(0, { font->get_fixed_size(), 0 }, 0, image);
+	if (err != OK) {
+		UtilityFunctions::push_error("Failed to load font (error ", err, "): ", fnt_path);
+	}
+	return font;
 }
 
 // Get the polar coordinates of a pixel relative to the center

@@ -13,17 +13,17 @@ void Checksum::_bind_methods() {
 }
 
 Checksum* Checksum::get_singleton() {
-	return _checksum;
+	return _singleton;
 }
 
 Checksum::Checksum() {
-	ERR_FAIL_COND(_checksum != nullptr);
-	_checksum = this;
+	ERR_FAIL_COND(_singleton != nullptr);
+	_singleton = this;
 }
 
 Checksum::~Checksum() {
-	ERR_FAIL_COND(_checksum != this);
-	_checksum = nullptr;
+	ERR_FAIL_COND(_singleton != this);
+	_singleton = nullptr;
 }
 
 /* REQUIREMENTS:

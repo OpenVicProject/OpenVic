@@ -1,5 +1,6 @@
 #pragma once
 
+#include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
@@ -21,6 +22,14 @@ namespace OpenVic::Utilities {
 		return std_to_godot_string(static_cast<std::string>(str));
 	}
 
+	inline godot::StringName std_to_godot_string_name(std::string const& str) {
+		return str.c_str();
+	}
+
+	inline godot::StringName std_view_to_godot_string_name(std::string_view str) {
+		return std_to_godot_string_name(static_cast<std::string>(str));
+	}
+
 	inline godot::Color to_godot_color(colour_t colour) {
 		return {
 			colour_byte_to_float((colour >> 16) & 0xFF),
@@ -33,7 +42,13 @@ namespace OpenVic::Utilities {
 		return { vec.x, vec.y };
 	}
 
+	inline godot::Vector2 to_godot_fvec2(fvec2_t vec) {
+		return { vec.x, vec.y };
+	}
+
 	godot::Ref<godot::Image> load_godot_image(godot::String const& path);
+
+	godot::Ref<godot::FontFile> load_godot_font(godot::String const& fnt_path, godot::Ref<godot::Image> const& image);
 
 	void draw_pie_chart(
 		godot::Ref<godot::Image> image, godot::Array const& stopAngles, godot::Array const& colours, float radius,

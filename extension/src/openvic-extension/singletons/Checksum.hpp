@@ -8,8 +8,7 @@ namespace OpenVic {
 	class Checksum : public godot::Object {
 		GDCLASS(Checksum, godot::Object)
 
-		// BEGIN BOILERPLATE
-		static inline Checksum* _checksum = nullptr;
+		static inline Checksum* _singleton = nullptr;
 
 	protected:
 		static void _bind_methods();
@@ -19,7 +18,6 @@ namespace OpenVic {
 
 		Checksum();
 		~Checksum();
-		// END BOILERPLATE
 
 		godot::String get_checksum_text();
 	};

@@ -6,10 +6,9 @@
 
 namespace OpenVic {
 	class LoadLocalisation : public godot::Object {
-
 		GDCLASS(LoadLocalisation, godot::Object)
 
-		static LoadLocalisation* singleton;
+		static inline LoadLocalisation* _singleton = nullptr;
 
 		godot::Error _load_file(godot::String const& file_path, godot::Ref<godot::Translation> translation) const;
 		godot::Ref<godot::Translation> _get_translation(godot::String const& locale) const;
