@@ -1,5 +1,7 @@
 #include "GameSingleton.hpp"
 
+#include <functional>
+
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -553,7 +555,8 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to hardcoded defines!");
 		err = FAILED;
 	}
-	if (!dataloader.load_localisation_files(LoadLocalisation::add_message)) {
+	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
+	if (!dataloader.load_localisation_files(add_message)) {
 		UtilityFunctions::push_error("Failed to load localisation!");
 		err = FAILED;
 	}
