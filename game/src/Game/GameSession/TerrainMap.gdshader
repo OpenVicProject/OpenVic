@@ -47,7 +47,7 @@ vec3 get_terrain_colour(
 	vec3 tinted_terrain_colour = mix(terrain_colour, tint_colour, 0.3);
 	vec3 mixed_colour = mix(tinted_terrain_colour, province_colour.rgb, province_colour.a);
 
-	float highlight_mix_val = 0.1 * (float(province_index == hover_index) + float(province_index == selected_index));
+	float highlight_mix_val = 0.4 * (float(province_index == hover_index) + float(province_index == selected_index));
 	return mix(mixed_colour, highlight_colour, highlight_mix_val);
 }
 

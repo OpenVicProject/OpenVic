@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
+#include <openvic-simulation/types/Date.hpp>
 #include <openvic-simulation/types/Vector.hpp>
 
 #define ERR(x) ((x) ? OK : FAILED)
@@ -30,6 +31,8 @@ namespace OpenVic::Utilities {
 		return std_to_godot_string_name(static_cast<std::string>(str));
 	}
 
+	godot::String date_to_formatted_string(Date date);
+
 	inline godot::Color to_godot_color(colour_t colour) {
 		return {
 			colour_byte_to_float((colour >> 16) & 0xFF),
@@ -46,14 +49,14 @@ namespace OpenVic::Utilities {
 		return { vec.x, vec.y };
 	}
 
+	/* Loads a Resource from a file in the Godot project directory given by a path beginning with "res://". */
+	godot::Ref<godot::Resource> load_resource(godot::String const& path, godot::String const& type_hint = {});
+
+	/* Load an Image from anywhere on the machine, using Godot's image-loading function or, in the case of
+	 * ".dds" image files which Godot is unable to load at runtime, GLI's DDS loading function. */
 	godot::Ref<godot::Image> load_godot_image(godot::String const& path);
 
+	/* Load a Font from anywhere on the machine, combining the ".fnt" file loaded from the given path with the
+	 * already-loaded image file containing the actual characters. */
 	godot::Ref<godot::FontFile> load_godot_font(godot::String const& fnt_path, godot::Ref<godot::Image> const& image);
-
-	void draw_pie_chart(
-		godot::Ref<godot::Image> image, godot::Array const& stopAngles, godot::Array const& colours, float radius,
-		godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-		godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base, bool donut,
-		bool donut_inner_trim, float donut_inner_radius
-	);
 }

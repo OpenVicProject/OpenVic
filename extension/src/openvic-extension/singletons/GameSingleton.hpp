@@ -14,7 +14,7 @@ namespace OpenVic {
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
 
-		inline static GameSingleton* singleton = nullptr;
+		static inline GameSingleton* singleton = nullptr;
 
 		GameManager game_manager;
 		Dataloader dataloader;
@@ -27,12 +27,10 @@ namespace OpenVic {
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
 		godot::Error _generate_terrain_texture_array();
-		godot::Error _load_map_images(bool flip_vertical = false);
+		godot::Error _load_map_images(bool flip_vertical);
+		godot::Error _load_terrain_variants();
 
-		godot::Error _load_terrain_variants_compatibility_mode(godot::String const& terrain_texturesheet_path);
-
-		/* Generate the province_colour_texture from the current mapmode.
-		 */
+		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
 		void _on_state_updated();
 
@@ -42,16 +40,6 @@ namespace OpenVic {
 	public:
 
 		godot::Control* generate_gui(godot::String const& gui_file, godot::String const& gui_element);
-		GFX::Sprite const* get_gfx_sprite(godot::String const& sprite_name) const;
-
-		static void draw_pie_chart(
-			godot::Ref<godot::Image> image, godot::Array const& stopAngles, godot::Array const& colours, float radius,
-			godot::Vector2 shadow_displacement, float shadow_tightness, float shadow_radius, float shadow_thickness,
-			godot::Color trim_colour, float trim_size, float gradient_falloff, float gradient_base, bool donut,
-			bool donut_inner_trim, float donut_inner_radius
-		);
-
-		static godot::Ref<godot::Image> load_image(godot::String const& path);
 
 		static GameSingleton* get_singleton();
 
@@ -60,50 +48,47 @@ namespace OpenVic {
 
 		static void setup_logger();
 
+		GameManager const& get_game_manager() const;
 		Dataloader const& get_dataloader() const;
 
 		/* Load the game's defines in compatiblity mode from the filepath
-		 * pointing to the defines folder.
-		 */
+		 * pointing to the defines folder. */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
 
 		static godot::String search_for_game_path(godot::String hint_path = {});
 
 		/* Post-load/restart game setup - reset the game to post-load state
-		 * and (re)generate starting data, e.g. buildings.
-		 */
+		 * and (re)generate starting data, e.g. buildings. */
 		godot::Error setup_game();
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 
 		/* Get info to display in Province Overview Panel, packaged in
-		 * a Dictionary using StringName constants as keys.
-		 */
+		 * a Dictionary using StringName constants as keys. */
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 
 		int32_t get_map_width() const;
 		int32_t get_map_height() const;
 		float get_map_aspect_ratio() const;
 
-		/* The cosmetic terrain textures stored in a Texture2DArray.
-		 */
+		/* The cosmetic terrain textures stored in a Texture2DArray. */
 		godot::Ref<godot::Texture> get_terrain_texture() const;
+
+		/* The flag image corresponding to the requested country / flag_type
+		 * combination, or nullptr if no such flag can be found. */
+		godot::Ref<godot::Image> get_flag_image(Country const* country, godot::StringName const& flag_type) const;
 
 		/* Number of (vertical, horizontal) subdivisions the province shape image
 		 * was split into when making the province_shape_texture to ensure no
-		 * piece had a dimension greater than 16383.
-		 */
+		 * piece had a dimension greater than 16383. */
 		godot::Vector2i get_province_shape_image_subdivisions() const;
 
 		/* The map, encoded in RGB8 with RG representing province index and B representing terrain texture.
 		 * To support a wider range of GPUs, the image is divided so that no piece has a dimension
-		 * greater than 16383 and the pieces are stored in a Texture2DArray.
-		 */
+		 * greater than 16383 and the pieces are stored in a Texture2DArray. */
 		godot::Ref<godot::Texture> get_province_shape_texture() const;
 
-		/* The colour each province should be tinted, arranged in
-		 * index order into a 256x256 RGB8 texture.
-		 */
+		/* The base and stripe colours for each province. */
 		godot::Ref<godot::Texture> get_province_colour_texture() const;
 
 		int32_t get_mapmode_count() const;

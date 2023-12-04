@@ -17,6 +17,9 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 
+/* Maximum width or height a GPU texture can have. */
+static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
+
 void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
@@ -58,15 +61,6 @@ void GameSingleton::_bind_methods() {
 
 	ADD_SIGNAL(MethodInfo("state_updated"));
 	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
-
-	OV_BIND_SMETHOD(
-		draw_pie_chart,
-		{ "image", "stopAngles", "colours", "radius", "shadow_displacement", "shadow_tightness", "shadow_radius",
-		  "shadow_thickness", "trim_colour", "trim_size", "gradient_falloff", "gradient_base", "donut", "donut_inner_trim",
-		  "donut_inner_radius" }
-	);
-
-	OV_BIND_SMETHOD(load_image, { "path" });
 }
 
 Control* GameSingleton::generate_gui(String const& gui_file, String const& gui_element) {
@@ -88,25 +82,6 @@ Control* GameSingleton::generate_gui(String const& gui_file, String const& gui_e
 		UtilityFunctions::push_error("Failed to generate GUI element ", gui_element, " in GUI file ", gui_file);
 	}
 	return result;
-}
-
-GFX::Sprite const* GameSingleton::get_gfx_sprite(String const& sprite_name) const {
-	return game_manager.get_ui_manager().get_sprite_by_identifier(godot_to_std_string(sprite_name));
-}
-
-void GameSingleton::draw_pie_chart(
-	Ref<Image> image, Array const& stopAngles, Array const& colours, float radius, Vector2 shadow_displacement,
-	float shadow_tightness, float shadow_radius, float shadow_thickness, Color trim_colour, float trim_size,
-	float gradient_falloff, float gradient_base, bool donut, bool donut_inner_trim, float donut_inner_radius
-) {
-	Utilities::draw_pie_chart(
-		image, stopAngles, colours, radius, shadow_displacement, shadow_tightness, shadow_radius, shadow_thickness,
-		trim_colour, trim_size, gradient_falloff, gradient_base, donut, donut_inner_trim, donut_inner_radius
-	);
-}
-
-Ref<Image> GameSingleton::load_image(String const& path) {
-	return Utilities::load_godot_image(path);
 }
 
 GameSingleton* GameSingleton::get_singleton() {
@@ -143,6 +118,10 @@ void GameSingleton::setup_logger() {
 	});
 }
 
+GameManager const& GameSingleton::get_game_manager() const {
+	return game_manager;
+}
+
 Dataloader const& GameSingleton::get_dataloader() const {
 	return dataloader;
 }
@@ -156,6 +135,13 @@ Error GameSingleton::setup_game() {
 	bool ret = game_manager.load_bookmark(&bookmark_manager.get_bookmarks().front());
 	// TODO - load pop history with the new history system
 	ret &= dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string());
+	for (Province& province : game_manager.get_map().get_provinces()) {
+		province.set_crime(
+			game_manager.get_modifier_manager().get_crime_modifier_by_index(
+				(province.get_index() - 1) % game_manager.get_modifier_manager().get_crime_modifier_count()
+			)
+		);
+	}
 	return ERR(ret);
 }
 
@@ -166,21 +152,32 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 }
 
 template<std::derived_from<HasIdentifierAndColour> T>
-static Dictionary _distribution_to_dictionary(fixed_point_map_t<T const*> const& dist) {
-	static const StringName piechart_info_size_key = "size";
-	static const StringName piechart_info_colour_key = "colour";
-	Dictionary dict;
-	for (auto const& [key, val] : dist) {
-		if (key != nullptr) {
-			Dictionary sub_dict;
-			sub_dict[piechart_info_size_key] = val.to_float();
-			sub_dict[piechart_info_colour_key] = Utilities::to_godot_color(key->get_colour());
-			dict[std_view_to_godot_string(key->get_identifier())] = std::move(sub_dict);
+static Array _distribution_to_pie_chart_array(fixed_point_map_t<T const*> const& dist) {
+	using entry_t = std::pair<T const*, fixed_point_t>;
+	std::vector<entry_t> sorted_dist;
+	sorted_dist.reserve(dist.size());
+	for (entry_t const& entry : dist) {
+		if (entry.first != nullptr) {
+			sorted_dist.push_back(entry);
 		} else {
-			UtilityFunctions::push_error("Null distribution key with value ", val.to_float());
+			UtilityFunctions::push_error("Null distribution key with value ", entry.second.to_float());
 		}
 	}
-	return dict;
+	std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
+		return lhs.second < rhs.second;
+	});
+	static const StringName identifier_key = "identifier";
+	static const StringName colour_key = "colour";
+	static const StringName weight_key = "weight";
+	Array array;
+	for (auto const& [key, val] : sorted_dist) {
+		Dictionary sub_dict;
+		sub_dict[identifier_key] = std_view_to_godot_string(key->get_identifier());
+		sub_dict[colour_key] = Utilities::to_godot_color(key->get_colour());
+		sub_dict[weight_key] = val.to_float();
+		array.push_back(sub_dict);
+	}
+	return array;
 }
 
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
@@ -223,15 +220,15 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	ret[province_info_total_population_key] = province->get_total_population();
 	fixed_point_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
 	if (!pop_types.empty()) {
-		ret[province_info_pop_types_key] = _distribution_to_dictionary(pop_types);
+		ret[province_info_pop_types_key] = _distribution_to_pie_chart_array(pop_types);
 	}
 	fixed_point_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
 	if (!ideologies.empty()) {
-		ret[province_info_pop_ideologies_key] = _distribution_to_dictionary(ideologies);
+		ret[province_info_pop_ideologies_key] = _distribution_to_pie_chart_array(ideologies);
 	}
 	fixed_point_map_t<Culture const*> const& cultures = province->get_culture_distribution();
 	if (!cultures.empty()) {
-		ret[province_info_pop_cultures_key] = _distribution_to_dictionary(cultures);
+		ret[province_info_pop_cultures_key] = _distribution_to_pie_chart_array(cultures);
 	}
 
 	static const StringName building_info_building_key = "building";
@@ -292,25 +289,34 @@ Ref<Texture> GameSingleton::get_province_colour_texture() const {
 }
 
 Error GameSingleton::_update_colour_image() {
+	Map const& map = game_manager.get_map();
+	if (!map.provinces_are_locked()) {
+		UtilityFunctions::push_error("Cannot generate province colour image before provinces are locked!");
+		return FAILED;
+	}
+	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
+	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
+	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_t);
+	/* Province count + null province, rounded up to next multiple of PROVINCE_INDEX_SQRT.
+	 * Rearranged from: (map.get_province_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
+	static const int32_t colour_image_height = (map.get_province_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
+
 	static PackedByteArray colour_data_array;
-	static constexpr int64_t colour_data_array_size =
-		(static_cast<int64_t>(Province::MAX_INDEX) + 1) * sizeof(Mapmode::base_stripe_t);
+	static const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_t);
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
-	if (!game_manager.get_map().generate_mapmode_colours(mapmode_index, colour_data_array.ptrw())) {
+	if (!map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw())) {
 		err = FAILED;
 	}
 
-	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
-	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
 	if (province_colour_image.is_null()) {
 		province_colour_image.instantiate();
 		ERR_FAIL_NULL_V_EDMSG(province_colour_image, FAILED, "Failed to create province colour image");
 	}
 	/* Width is doubled as each province has a (base, stripe) colour pair. */
 	province_colour_image->set_data(
-		PROVINCE_INDEX_SQRT * 2, PROVINCE_INDEX_SQRT, false, Image::FORMAT_RGBA8, colour_data_array
+		colour_image_width, colour_image_height, false, Image::FORMAT_RGBA8, colour_data_array
 	);
 	if (province_colour_texture.is_null()) {
 		province_colour_texture = ImageTexture::create_from_image(province_colour_image);
@@ -363,39 +369,39 @@ Error GameSingleton::expand_building(int32_t province_index, String const& build
 }
 
 void GameSingleton::set_paused(bool paused) {
-	game_manager.get_clock().isPaused = paused;
+	game_manager.get_clock().is_paused = paused;
 }
 
 void GameSingleton::toggle_paused() {
-	game_manager.get_clock().isPaused = !game_manager.get_clock().isPaused;
+	game_manager.get_clock().is_paused = !game_manager.get_clock().is_paused;
 }
 
 bool GameSingleton::is_paused() const {
-	return game_manager.get_clock().isPaused;
+	return game_manager.get_clock().is_paused;
 }
 
 void GameSingleton::increase_speed() {
-	game_manager.get_clock().increaseSimulationSpeed();
+	game_manager.get_clock().increase_simulation_speed();
 }
 
 void GameSingleton::decrease_speed() {
-	game_manager.get_clock().decreaseSimulationSpeed();
+	game_manager.get_clock().decrease_simulation_speed();
 }
 
 bool GameSingleton::can_increase_speed() const {
-	return game_manager.get_clock().canIncreaseSimulationSpeed();
+	return game_manager.get_clock().can_increase_simulation_speed();
 }
 
 bool GameSingleton::can_decrease_speed() const {
-	return game_manager.get_clock().canDecreaseSimulationSpeed();
+	return game_manager.get_clock().can_decrease_simulation_speed();
 }
 
 String GameSingleton::get_longform_date() const {
-	return std_to_godot_string(game_manager.get_today().to_string());
+	return Utilities::date_to_formatted_string(game_manager.get_today());
 }
 
 void GameSingleton::try_tick() {
-	game_manager.get_clock().conditionallyAdvanceGame();
+	game_manager.get_clock().conditionally_advance_game();
 }
 
 Error GameSingleton::_load_map_images(bool flip_vertical) {
@@ -411,7 +417,6 @@ Error GameSingleton::_load_map_images(bool flip_vertical) {
 		static_cast<int32_t>(game_manager.get_map().get_height())
 	};
 
-	static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 	// For each dimension of the image, this finds the small number of equal subdivisions
 	// required get the individual texture dims under GPU_DIM_LIMIT
 	for (int i = 0; i < 2; ++i) {
@@ -461,15 +466,25 @@ Error GameSingleton::_load_map_images(bool flip_vertical) {
 	return err;
 }
 
-Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& terrain_texturesheet_path) {
-	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
+Error GameSingleton::_load_terrain_variants() {
+	if (terrain_texture.is_valid()) {
+		UtilityFunctions::push_error("Terrain variants have already been loaded!");
+		return FAILED;
+	}
 
+	static const String terrain_texturesheet_path = "map/terrain/texturesheet.tga";
+
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	ERR_FAIL_NULL_V(asset_manager, FAILED);
 	// Load the terrain texture sheet and prepare to slice it up
-	Ref<Image> terrain_sheet = Utilities::load_godot_image(terrain_texturesheet_path);
+	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path);
 	if (terrain_sheet.is_null()) {
 		UtilityFunctions::push_error("Failed to load terrain texture sheet: ", terrain_texturesheet_path);
 		return FAILED;
 	}
+
+	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
+
 	terrain_sheet->flip_y();
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
 	if (sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height) {
@@ -511,8 +526,6 @@ Error GameSingleton::_load_terrain_variants_compatibility_mode(String const& ter
 }
 
 Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
-	static constexpr std::string_view terrain_texture_file = "map/terrain/texturesheet.tga";
-
 	Dataloader::path_vector_t roots;
 	for (String const& path : file_paths) {
 		roots.push_back(godot_to_std_string(path));
@@ -528,8 +541,7 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to load defines!");
 		err = FAILED;
 	}
-	if (_load_terrain_variants_compatibility_mode(std_to_godot_string(
-		dataloader.lookup_file(terrain_texture_file).string())) != OK) {
+	if (_load_terrain_variants() != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
 	}
