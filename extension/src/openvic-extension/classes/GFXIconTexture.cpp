@@ -10,13 +10,14 @@
 using namespace godot;
 using namespace OpenVic;
 
+using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
 void GFXIconTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXIconTexture::clear);
 
-	OV_BIND_METHOD(GFXIconTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name" }, DEFVAL(GFX::NO_FRAMES));
+	OV_BIND_METHOD(GFXIconTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name", "icon" }, DEFVAL(GFX::NO_FRAMES));
 	OV_BIND_METHOD(GFXIconTexture::get_gfx_texture_sprite_name);
 
 	OV_BIND_METHOD(GFXIconTexture::set_icon_index, { "new_icon_index" });
@@ -32,7 +33,7 @@ GFXIconTexture::GFXIconTexture()
 Ref<GFXIconTexture> GFXIconTexture::make_gfx_icon_texture(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
 	Ref<GFXIconTexture> icon_texture;
 	icon_texture.instantiate();
-	ERR_FAIL_NULL_V(icon_texture, icon_texture);
+	ERR_FAIL_NULL_V(icon_texture, nullptr);
 	icon_texture->set_gfx_texture_sprite(gfx_texture_sprite, icon);
 	return icon_texture;
 }
@@ -53,9 +54,11 @@ Error GFXIconTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx_t
 		}
 		AssetManager* asset_manager = AssetManager::get_singleton();
 		ERR_FAIL_NULL_V(asset_manager, FAILED);
+
 		const StringName texture_file = std_view_to_godot_string_name(new_gfx_texture_sprite->get_texture_file());
 		const Ref<ImageTexture> texture = asset_manager->get_texture(texture_file);
-		ERR_FAIL_NULL_V_MSG(texture, FAILED, "Failed to load texture: " + texture_file);
+		ERR_FAIL_NULL_V_MSG(texture, FAILED, vformat("Failed to load texture: %s", texture_file));
+
 		gfx_texture_sprite = new_gfx_texture_sprite;
 		set_atlas(texture);
 		icon_index = GFX::NO_FRAMES;
@@ -70,13 +73,16 @@ Error GFXIconTexture::set_gfx_texture_sprite_name(String const& gfx_texture_spri
 	}
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	GFX::Sprite const* sprite = game_singleton->get_gfx_sprite(gfx_texture_sprite_name);
-	ERR_FAIL_NULL_V_MSG(sprite, FAILED, "GFX sprite not found: " + gfx_texture_sprite_name);
+	GFX::Sprite const* sprite = game_singleton->get_game_manager().get_ui_manager().get_sprite_by_identifier(
+		godot_to_std_string(gfx_texture_sprite_name)
+	);
+	ERR_FAIL_NULL_V_MSG(sprite, FAILED, vformat("GFX sprite not found: %s", gfx_texture_sprite_name));
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
-		new_texture_sprite, FAILED, "Invalid type for GFX sprite " + gfx_texture_sprite_name + ": " +
-		std_view_to_godot_string(sprite->get_type()) + " (expected " +
-		std_view_to_godot_string(GFX::TextureSprite::get_type_static()) + ")"
+		new_texture_sprite, FAILED, vformat(
+			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
+			std_view_to_godot_string(sprite->get_type()), std_view_to_godot_string(GFX::TextureSprite::get_type_static())
+		)
 	);
 	return set_gfx_texture_sprite(new_texture_sprite, icon);
 }
@@ -100,7 +106,7 @@ Error GFXIconTexture::set_icon_index(int32_t new_icon_index) {
 	if (GFX::NO_FRAMES < new_icon_index && new_icon_index <= icon_count) {
 		icon_index = new_icon_index;
 	} else {
-		icon_index = icon_count;
+		icon_index = 1;
 		if (new_icon_index > icon_count) {
 			UtilityFunctions::push_warning(
 				"Invalid icon index ", new_icon_index, " out of count ", icon_count, " - defaulting to ", icon_index

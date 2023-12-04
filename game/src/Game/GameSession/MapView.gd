@@ -30,7 +30,7 @@ var _window_in_focus : bool = true
 @export var _zoom_target : float = 1.0:
 	get: return _zoom_target
 	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
-const _zoom_position_multiplier = 3.14159  # Horizontal movement coefficient during zoom
+const _zoom_position_multiplier = 3.14159 # Horizontal movement coefficient during zoom
 var _zoom_position : Vector2
 
 @export var _map_mesh_instance : MeshInstance3D

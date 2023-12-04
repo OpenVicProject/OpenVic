@@ -40,7 +40,7 @@ func _ready():
 	thread = Thread.new()
 	# FS-3, UI-30, UIFUN-35
 	var quotes_file := FileAccess.open(quote_file_path, FileAccess.READ).get_as_text()
-	quotes = quotes_file.split("\n",false)
+	quotes = quotes_file.split("\n", false)
 	if quotes.is_empty():
 		quotes = [""]
 	animation_player.play("loadingscreen_gear")

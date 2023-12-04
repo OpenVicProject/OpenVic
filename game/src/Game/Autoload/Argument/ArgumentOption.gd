@@ -20,7 +20,7 @@ extends Resource
 var default_value
 @export var description : String
 
-func _init(_name = "",  _type = TYPE_NIL, _description = "", default = null):
+func _init(_name = "", _type = TYPE_NIL, _description = "", default = null):
 	name = _name
 	type = _type
 	if default != null and typeof(default) == type:

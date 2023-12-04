@@ -23,6 +23,7 @@ namespace OpenVic {
 		image_asset_map_t image_assets;
 		font_map_t fonts;
 
+		static godot::Ref<godot::Image> _load_image(godot::StringName path);
 		image_asset_map_t::iterator _get_image_asset(godot::StringName path);
 
 	protected:
@@ -35,8 +36,8 @@ namespace OpenVic {
 		~AssetManager();
 
 		/* Search for and load an image at the specified path relative to the game defines, first checking the AssetManager's
-		 * image cache in case it has already been loaded, and returning nullptr if image loading fails. */
-		godot::Ref<godot::Image> get_image(godot::StringName path);
+		 * image cache (if cache is true) in case it has already been loaded, and returning nullptr if image loading fails. */
+		godot::Ref<godot::Image> get_image(godot::StringName path, bool cache = true);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking
 		 * AssetManager's texture cache in case it has already been loaded, and returning nullptr if image loading

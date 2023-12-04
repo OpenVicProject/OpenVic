@@ -105,7 +105,7 @@ bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& a
 			}
 
 			const StringName texture_file =
-				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::MaskedFlag>()->get_texture_file());
+				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::MaskedFlag>()->get_overlay_file());
 			const Ref<ImageTexture> texture = asset_manager.get_texture(texture_file);
 			if (texture.is_valid()) {
 				godot_texture_rect->set_texture(texture);
@@ -189,7 +189,7 @@ bool GodotGUIBuilder::generate_button(GUI::Element const& element, AssetManager&
 			}
 		} else if (button.get_sprite()->is_type<GFX::MaskedFlag>()) {
 			texture = asset_manager.get_texture(std_view_to_godot_string_name(
-				button.get_sprite()->cast_to<GFX::MaskedFlag>()->get_texture_file()));
+				button.get_sprite()->cast_to<GFX::MaskedFlag>()->get_overlay_file()));
 			if (texture.is_null()) {
 				UtilityFunctions::push_error("Failed to load masked flag sprite for GUI button ", button_name);
 				ret = false;
