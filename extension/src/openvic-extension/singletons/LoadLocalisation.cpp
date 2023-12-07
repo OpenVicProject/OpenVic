@@ -135,7 +135,6 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	return err;
 }
 bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t locale, std::string_view localisation) {
-	static Ref<Translation> translations[Dataloader::_LocaleCount] = { nullptr };
 	Ref<Translation>& translation = translations[locale];
 	if (translation.is_null()) {
 		translation = _singleton->_get_translation(Dataloader::locale_names[locale]);

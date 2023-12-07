@@ -10,6 +10,8 @@ namespace OpenVic {
 
 		static inline LoadLocalisation* _singleton = nullptr;
 
+		godot::Ref<godot::Translation> translations[Dataloader::_LocaleCount];
+
 		godot::Error _load_file(godot::String const& file_path, godot::Ref<godot::Translation> translation) const;
 		godot::Ref<godot::Translation> _get_translation(godot::String const& locale) const;
 
@@ -26,6 +28,6 @@ namespace OpenVic {
 		godot::Error load_locale_dir(godot::String const& dir_path, godot::String const& locale) const;
 		godot::Error load_localisation_dir(godot::String const& dir_path) const;
 
-		static bool add_message(std::string_view key, Dataloader::locale_t locale, std::string_view localisation);
+		bool add_message(std::string_view key, Dataloader::locale_t locale, std::string_view localisation);
 	};
 }

@@ -12,19 +12,15 @@ env = SConscript("scripts/SConstruct")
 
 env.PrependENVPath("PATH", os.getenv("PATH"))
 
-OLD_ARGS = ARGUMENTS.copy()
-ARGUMENTS["compiledb"] = False
 opts = env.SetupOptions()
 
 env.FinalizeOptions()
-ARGUMENTS = OLD_ARGS
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
 OLD_ARGS = SCons.Script.ARGUMENTS.copy()
 SCons.Script.ARGUMENTS["use_static_cpp"] = env["use_static_cpp"]
 SCons.Script.ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
-if ARGUMENTS.get("compiledb", False):
-    SCons.Script.ARGUMENTS["compiledb"] = True
+SCons.Script.ARGUMENTS["compiledb_file"] = 'godot-cpp/compile_commands.json'
 godot_env = SConscript("godot-cpp/SConstruct")
 SCons.Script.ARGUMENTS = OLD_ARGS
 
@@ -90,5 +86,9 @@ default_args = [library]
 if "env" in locals():
     # FIXME: This method mixes both cosmetic progress stuff and cache handling...
     env.show_progress(env)
+
+# Add compiledb if the option is set
+if env.get("compiledb", False):
+    default_args += ["compiledb"]
 
 Default(*default_args)
