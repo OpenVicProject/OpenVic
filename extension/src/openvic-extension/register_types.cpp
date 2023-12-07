@@ -3,6 +3,9 @@
 #include <godot_cpp/classes/engine.hpp>
 
 #include "openvic-extension/classes/GFXIconTexture.hpp"
+#include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
+#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
@@ -40,6 +43,9 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 
 	ClassDB::register_class<MapMesh>();
 	ClassDB::register_class<GFXIconTexture>();
+	ClassDB::register_class<GFXMaskedFlagTexture>();
+	ClassDB::register_class<GFXPieChartTexture>();
+	ClassDB::register_class<GUINode>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {

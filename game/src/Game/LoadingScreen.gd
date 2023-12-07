@@ -21,7 +21,6 @@ func start_loading_screen(thread_safe_function : Callable) -> void:
 		thread.wait_to_finish()
 
 	thread.start(thread_safe_function)
-	Events.Loader.startup_load_begun.emit()
 
 func try_update_loading_screen(percent_complete: float, quote_should_change = false):
 	# forces the function to behave as if deferred
@@ -29,11 +28,6 @@ func try_update_loading_screen(percent_complete: float, quote_should_change = fa
 	progress_bar.value = percent_complete
 	if quote_should_change:
 		quote_label.text = quotes[randi() % quotes.size()]
-	if is_equal_approx(percent_complete, 100):
-		thread.wait_to_finish()
-		Events.Loader.startup_load_ended.emit()
-	else:
-		Events.Loader.startup_load_changed.emit(percent_complete)
 
 func _ready():
 	if Engine.is_editor_hint(): return

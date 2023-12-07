@@ -12,6 +12,8 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GFXIconTexture.hpp"
+#include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
+#include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -20,12 +22,14 @@ using namespace OpenVic;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
-bool GodotGUIBuilder::generate_element(GUI::Element const* element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_element(
+	GUI::Element const* element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	if (element == nullptr) {
 		UtilityFunctions::push_error("Invalid element passed to GodotGUIBuilder - null!");
 		return false;
 	}
-	static const std::map<std::string_view, bool (*)(GUI::Element const&, AssetManager&, Control*&)> type_map {
+	static const std::map<std::string_view, bool (*)(GUI::Element const&, String const&, AssetManager&, Control*&)> type_map {
 		{ GUI::Icon::get_type_static(), &generate_icon },
 		{ GUI::Button::get_type_static(), &generate_button },
 		{ GUI::Checkbox::get_type_static(), &generate_checkbox },
@@ -36,7 +40,7 @@ bool GodotGUIBuilder::generate_element(GUI::Element const* element, AssetManager
 	};
 	const decltype(type_map)::const_iterator it = type_map.find(element->get_type());
 	if (it != type_map.end()) {
-		return it->second(*element, asset_manager, result);
+		return it->second(*element, name, asset_manager, result);
 	} else {
 		UtilityFunctions::push_error("Invalid GUI element type: ", std_view_to_godot_string(element->get_type()));
 		result = nullptr;
@@ -45,7 +49,7 @@ bool GodotGUIBuilder::generate_element(GUI::Element const* element, AssetManager
 }
 
 template<std::derived_from<Control> T>
-static T* new_control(GUI::Element const& element) {
+static T* new_control(GUI::Element const& element, String const& name) {
 	T* node = memnew(T);
 	ERR_FAIL_NULL_V(node, nullptr);
 
@@ -57,7 +61,12 @@ static T* new_control(GUI::Element const& element) {
 		{ CENTER, PRESET_CENTER }
 	};
 
-	node->set_name(std_view_to_godot_string(element.get_name()));
+	if (name.is_empty()) {
+		node->set_name(std_view_to_godot_string(element.get_name()));
+	} else {
+		node->set_name(name);
+	}
+
 	const decltype(orientation_map)::const_iterator it = orientation_map.find(element.get_orientation());
 	if (it != orientation_map.end()) {
 		node->set_anchors_and_offsets_preset(it->second);
@@ -71,7 +80,9 @@ static T* new_control(GUI::Element const& element) {
 	return node;
 }
 
-bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_icon(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::Icon const& icon = static_cast<GUI::Icon const&>(element);
 
 	result = nullptr;
@@ -81,11 +92,8 @@ bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& a
 	bool ret = true;
 	if (icon.get_sprite() != nullptr) {
 		if (icon.get_sprite()->is_type<GFX::TextureSprite>()) {
-			TextureRect* godot_texture_rect = new_control<TextureRect>(icon);
-			if (godot_texture_rect == nullptr) {
-				UtilityFunctions::push_error("Failed to create TextureRect for GUI icon ", icon_name);
-				return false;
-			}
+			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, name);
+			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
 			GFX::TextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::TextureSprite>();
 			Ref<GFXIconTexture> texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, icon.get_frame());
@@ -98,29 +106,24 @@ bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& a
 
 			result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::MaskedFlag>()) {
-			TextureRect* godot_texture_rect = new_control<TextureRect>(icon);
-			if (godot_texture_rect == nullptr) {
-				UtilityFunctions::push_error("Failed to create TextureRect for GUI icon ", icon_name);
-				return false;
-			}
+			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, name);
+			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
-			const StringName texture_file =
-				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::MaskedFlag>()->get_overlay_file());
-			const Ref<ImageTexture> texture = asset_manager.get_texture(texture_file);
+			GFX::MaskedFlag const* masked_flag = icon.get_sprite()->cast_to<GFX::MaskedFlag>();
+			Ref<GFXMaskedFlagTexture> texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
 			if (texture.is_valid()) {
 				godot_texture_rect->set_texture(texture);
 			} else {
-				UtilityFunctions::push_error("Failed to load masked flag sprite ", texture_file, " for GUI icon ", icon_name);
+				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI icon ", icon_name);
 				ret = false;
 			}
 
 			result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::ProgressBar>()) {
-			TextureProgressBar* godot_progress_bar = new_control<TextureProgressBar>(icon);
-			if (godot_progress_bar == nullptr) {
-				UtilityFunctions::push_error("Failed to create TextureProgressBar for GUI icon ", icon_name);
-				return false;
-			}
+			TextureProgressBar* godot_progress_bar = new_control<TextureProgressBar>(icon, name);
+			ERR_FAIL_NULL_V_MSG(
+				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
+			);
 
 			const StringName back_texture_file =
 				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::ProgressBar>()->get_back_texture_file());
@@ -146,7 +149,23 @@ bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& a
 
 			result = godot_progress_bar;
 		} else if (icon.get_sprite()->is_type<GFX::PieChart>()) {
+			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, name);
+			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
+			GFX::PieChart const* pie_chart = icon.get_sprite()->cast_to<GFX::PieChart>();
+			Ref<GFXPieChartTexture> texture = GFXPieChartTexture::make_gfx_pie_chart_texture(pie_chart);
+			if (texture.is_valid()) {
+				godot_texture_rect->set_texture(texture);
+				// TODO - work out why this is needed
+				Vector2 pos = godot_texture_rect->get_position();
+				pos.x -= texture->get_width() / 2;
+				godot_texture_rect->set_position(pos);
+			} else {
+				UtilityFunctions::push_error("Failed to make GFXPieChartTexture for GUI icon ", icon_name);
+				ret = false;
+			}
+
+			result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::LineChart>()) {
 
 		} else {
@@ -161,21 +180,21 @@ bool GodotGUIBuilder::generate_icon(GUI::Element const& element, AssetManager& a
 	return ret;
 }
 
-bool GodotGUIBuilder::generate_button(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_button(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::Button const& button = static_cast<GUI::Button const&>(element);
 
 	// TODO - shortcut, sprite, text
 	result = nullptr;
 	const String button_name = std_view_to_godot_string(button.get_name());
 
-	Button* godot_button = new_control<Button>(button);
-	if (godot_button == nullptr) {
-		UtilityFunctions::push_error("Failed to create Button for GUI button ", button_name);
-		return false;
-	}
+	Button* godot_button = new_control<Button>(button, name);
+	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI button %s", button_name));
 
-	godot_button->set_text(std_view_to_godot_string(button.get_text()));
-	//godot_button->set_flat(true);
+	if (!button.get_text().empty()) {
+		godot_button->set_text(std_view_to_godot_string(button.get_text()));
+	}
 
 	bool ret = true;
 	if (button.get_sprite() != nullptr) {
@@ -188,10 +207,10 @@ bool GodotGUIBuilder::generate_button(GUI::Element const& element, AssetManager&
 				ret = false;
 			}
 		} else if (button.get_sprite()->is_type<GFX::MaskedFlag>()) {
-			texture = asset_manager.get_texture(std_view_to_godot_string_name(
-				button.get_sprite()->cast_to<GFX::MaskedFlag>()->get_overlay_file()));
+			GFX::MaskedFlag const* masked_flag = button.get_sprite()->cast_to<GFX::MaskedFlag>();
+			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
 			if (texture.is_null()) {
-				UtilityFunctions::push_error("Failed to load masked flag sprite for GUI button ", button_name);
+				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI button ", button_name);
 				ret = false;
 			}
 		} else {
@@ -205,8 +224,9 @@ bool GodotGUIBuilder::generate_button(GUI::Element const& element, AssetManager&
 			Ref<StyleBoxTexture> stylebox;
 			stylebox.instantiate();
 			if (stylebox.is_valid()) {
+				static const StringName theme_name_normal = "normal";
 				stylebox->set_texture(texture);
-				godot_button->add_theme_stylebox_override("normal", stylebox);
+				godot_button->add_theme_stylebox_override(theme_name_normal, stylebox);
 			} else {
 				UtilityFunctions::push_error("Failed to load instantiate texture stylebox for GUI button ", button_name);
 				ret = false;
@@ -234,18 +254,17 @@ bool GodotGUIBuilder::generate_button(GUI::Element const& element, AssetManager&
 	return ret;
 }
 
-bool GodotGUIBuilder::generate_checkbox(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_checkbox(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::Checkbox const& checkbox = static_cast<GUI::Checkbox const&>(element);
 
 	// TODO - shortcut, sprite, text
 	result = nullptr;
 	const String checkbox_name = std_view_to_godot_string(checkbox.get_name());
 
-	CheckBox* godot_checkbox = new_control<CheckBox>(checkbox);
-	if (godot_checkbox == nullptr) {
-		UtilityFunctions::push_error("Failed to create CheckBox for GUI checkbox ", checkbox_name);
-		return false;
-	}
+	CheckBox* godot_checkbox = new_control<CheckBox>(checkbox, name);
+	ERR_FAIL_NULL_V_MSG(godot_checkbox, false, vformat("Failed to create CheckBox for GUI checkbox %s", checkbox_name));
 
 	bool ret = true;
 	if (checkbox.get_sprite() != nullptr) {
@@ -267,8 +286,10 @@ bool GodotGUIBuilder::generate_checkbox(GUI::Element const& element, AssetManage
 				ret = false;
 			}
 		} else {
-			UtilityFunctions::push_error("Invalid sprite type ", std_view_to_godot_string(checkbox.get_sprite()->get_type()),
-				" for GUI checkbox ", checkbox_name);
+			UtilityFunctions::push_error(
+				"Invalid sprite type ", std_view_to_godot_string(checkbox.get_sprite()->get_type()), " for GUI checkbox ",
+				checkbox_name
+			);
 			ret = false;
 		}
 	} else {
@@ -280,17 +301,16 @@ bool GodotGUIBuilder::generate_checkbox(GUI::Element const& element, AssetManage
 	return ret;
 }
 
-bool GodotGUIBuilder::generate_text(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_text(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::Text const& text = static_cast<GUI::Text const&>(element);
 
 	result = nullptr;
 	const String text_name = std_view_to_godot_string(text.get_name());
 
-	Label* godot_label = new_control<Label>(text);
-	if (godot_label == nullptr) {
-		UtilityFunctions::push_error("Failed to create Label for GUI text ", text_name);
-		return false;
-	}
+	Label* godot_label = new_control<Label>(text, name);
+	ERR_FAIL_NULL_V_MSG(godot_label, false, vformat("Failed to create Label for GUI text %s", text_name));
 
 	godot_label->set_text(std_view_to_godot_string(text.get_text()));
 	godot_label->set_size(Utilities::to_godot_fvec2(text.get_max_size()));
@@ -329,19 +349,17 @@ bool GodotGUIBuilder::generate_text(GUI::Element const& element, AssetManager& a
 }
 
 bool GodotGUIBuilder::generate_overlapping_elements(
-	GUI::Element const& element, AssetManager& asset_manager, Control*& result
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
 ) {
 	GUI::OverlappingElementsBox const& overlapping_elements = static_cast<GUI::OverlappingElementsBox const&>(element);
 
 	result = nullptr;
 	const String overlapping_elements_name = std_view_to_godot_string(overlapping_elements.get_name());
 
-	ColorRect* godot_rect = new_control<ColorRect>(overlapping_elements);
-	if (godot_rect == nullptr) {
-		UtilityFunctions::push_error("Failed to create ColorRect for GUI overlapping elements ",
-			overlapping_elements_name);
-		return false;
-	}
+	ColorRect* godot_rect = new_control<ColorRect>(overlapping_elements, name);
+	ERR_FAIL_NULL_V_MSG(
+		godot_rect, false, vformat("Failed to create ColorRect for GUI overlapping elements %s", overlapping_elements_name)
+	);
 
 	godot_rect->set_size(Utilities::to_godot_fvec2(overlapping_elements.get_size()));
 	godot_rect->set_color({ 0.0f, 0.5f, 1.0f, 0.2f });
@@ -350,17 +368,16 @@ bool GodotGUIBuilder::generate_overlapping_elements(
 	return true;
 }
 
-bool GodotGUIBuilder::generate_listbox(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_listbox(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::ListBox const& listbox = static_cast<GUI::ListBox const&>(element);
 
 	result = nullptr;
 	const String listbox_name = std_view_to_godot_string(listbox.get_name());
 
-	ColorRect* godot_rect = new_control<ColorRect>(listbox);
-	if (godot_rect == nullptr) {
-		UtilityFunctions::push_error("Failed to create ColorRect for GUI listbox ", listbox_name);
-		return false;
-	}
+	ColorRect* godot_rect = new_control<ColorRect>(listbox, name);
+	ERR_FAIL_NULL_V_MSG(godot_rect, false, vformat("Failed to create ColorRect for GUI listbox %s", listbox_name));
 
 	godot_rect->set_size(Utilities::to_godot_fvec2(listbox.get_size()));
 	godot_rect->set_color({ 1.0f, 0.5f, 0.0f, 0.2f });
@@ -369,32 +386,30 @@ bool GodotGUIBuilder::generate_listbox(GUI::Element const& element, AssetManager
 	return true;
 }
 
-bool GodotGUIBuilder::generate_window(GUI::Element const& element, AssetManager& asset_manager, Control*& result) {
+bool GodotGUIBuilder::generate_window(
+	GUI::Element const& element, String const& name, AssetManager& asset_manager, Control*& result
+) {
 	GUI::Window const& window = static_cast<GUI::Window const&>(element);
 
 	// TODO - moveable, fullscreen, dontRender (disable visibility?)
 	result = nullptr;
 	const String window_name = std_view_to_godot_string(window.get_name());
 
-	Panel* godot_panel = new_control<Panel>(window);
-	if (godot_panel == nullptr) {
-		UtilityFunctions::push_error("Failed to create Panel for GUI window ", window_name);
-		return false;
-	}
+	Panel* godot_panel = new_control<Panel>(window, name);
+	ERR_FAIL_NULL_V_MSG(godot_panel, false, vformat("Failed to create Panel for GUI window %s", window_name));
 
 	godot_panel->set_size(Utilities::to_godot_fvec2(window.get_size()));
 	godot_panel->set_self_modulate({ 1.0f, 1.0f, 1.0f, 0.0f });
 
 	bool ret = true;
-	for (std::unique_ptr<GUI::Element> const& element : window.get_elements()) {
+	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;
-		const bool element_ret = generate_element(element.get(), asset_manager, node);
-		if (element_ret) {
-			if (node != nullptr) {
-				godot_panel->add_child(node);
-			}
-		} else {
-			UtilityFunctions::push_error("Failed to generate GUI element ", std_view_to_godot_string(element->get_name()));
+		const bool element_ret = generate_element(element.get(), "", asset_manager, node);
+		if (node != nullptr) {
+			godot_panel->add_child(node);
+		}
+		if (!element_ret) {
+			UtilityFunctions::push_error("Errors generating GUI element ", std_view_to_godot_string(element->get_name()));
 			ret = false;
 		}
 	}

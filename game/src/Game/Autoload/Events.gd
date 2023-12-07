@@ -3,9 +3,7 @@
 ## It does such by providing a global interface of signals that are connected to and emitted by that are garunteed to exist.
 extends Node
 
-var Loader: LoaderEventsObject
 var Options: OptionsEventsObject
 
 func _init():
-	Loader = LoaderEventsObject.new()
 	Options = OptionsEventsObject.new()
