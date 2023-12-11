@@ -17,6 +17,7 @@ using namespace OpenVic;
 
 using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
+using OpenVic::Utilities::std_to_godot_string_name;
 using OpenVic::Utilities::std_view_to_godot_string;
 
 /* Maximum width or height a GPU texture can have. */
@@ -48,42 +49,25 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 
 	OV_BIND_METHOD(GameSingleton::expand_building, { "province_index", "building_type_identifier" });
+	OV_BIND_METHOD(GameSingleton::get_slave_pop_icon_index);
+	OV_BIND_METHOD(GameSingleton::get_administrative_pop_icon_index);
+	OV_BIND_METHOD(GameSingleton::get_rgo_owner_pop_icon_index);
+	OV_BIND_SMETHOD(int_to_formatted_string, { "val" });
+	OV_BIND_SMETHOD(float_to_formatted_string, { "val" });
 
 	OV_BIND_METHOD(GameSingleton::set_paused, { "paused" });
 	OV_BIND_METHOD(GameSingleton::toggle_paused);
 	OV_BIND_METHOD(GameSingleton::is_paused);
 	OV_BIND_METHOD(GameSingleton::increase_speed);
 	OV_BIND_METHOD(GameSingleton::decrease_speed);
+	OV_BIND_METHOD(GameSingleton::get_speed);
 	OV_BIND_METHOD(GameSingleton::can_increase_speed);
 	OV_BIND_METHOD(GameSingleton::can_decrease_speed);
 	OV_BIND_METHOD(GameSingleton::get_longform_date);
 	OV_BIND_METHOD(GameSingleton::try_tick);
 
-	OV_BIND_METHOD(GameSingleton::generate_gui, { "gui_file", "gui_element" });
-
 	ADD_SIGNAL(MethodInfo("state_updated"));
 	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
-}
-
-Control* GameSingleton::generate_gui(String const& gui_file, String const& gui_element) {
-	GUI::Scene const* scene = game_manager.get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_file));
-	if (scene == nullptr) {
-		UtilityFunctions::push_error("Failed to find GUI file ", gui_file);
-		return nullptr;
-	}
-	GUI::Element const* element = scene->get_element_by_identifier(godot_to_std_string(gui_element));
-	if (element == nullptr) {
-		UtilityFunctions::push_error("Failed to find GUI element ", gui_element, " in GUI file ", gui_file);
-		return nullptr;
-	}
-
-	AssetManager* asset_manager = AssetManager::get_singleton();
-	ERR_FAIL_NULL_V(asset_manager, nullptr);
-	Control* result = nullptr;
-	if (!GodotGUIBuilder::generate_element(element, *asset_manager, result)) {
-		UtilityFunctions::push_error("Failed to generate GUI element ", gui_element, " in GUI file ", gui_file);
-	}
-	return result;
 }
 
 GameSingleton* GameSingleton::get_singleton() {
@@ -139,8 +123,8 @@ Error GameSingleton::setup_game() {
 	ret &= dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string());
 	for (Province& province : game_manager.get_map().get_provinces()) {
 		province.set_crime(
-			game_manager.get_modifier_manager().get_crime_modifier_by_index(
-				(province.get_index() - 1) % game_manager.get_modifier_manager().get_crime_modifier_count()
+			game_manager.get_crime_manager().get_crime_modifier_by_index(
+				(province.get_index() - 1) % game_manager.get_crime_manager().get_crime_modifier_count()
 			)
 		);
 	}
@@ -185,13 +169,19 @@ static Array _distribution_to_pie_chart_array(fixed_point_map_t<T const*> const&
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_province_key = "province";
 	static const StringName province_info_region_key = "region";
+	static const StringName province_info_controller_key = "controller";
 	static const StringName province_info_life_rating_key = "life_rating";
 	static const StringName province_info_terrain_type_key = "terrain_type";
+	static const StringName province_info_crime_name_key = "crime_name";
+	static const StringName province_info_crime_icon_key = "crime_icon";
 	static const StringName province_info_total_population_key = "total_population";
 	static const StringName province_info_pop_types_key = "pop_types";
 	static const StringName province_info_pop_ideologies_key = "pop_ideologies";
 	static const StringName province_info_pop_cultures_key = "pop_cultures";
-	static const StringName province_info_rgo_key = "rgo";
+	static const StringName province_info_rgo_name_key = "rgo_name";
+	static const StringName province_info_rgo_icon_key = "rgo_icon";
+	static const StringName province_info_colony_status_key = "colony_status";
+	static const StringName province_info_slave_status_key = "slave_status";
 	static const StringName province_info_buildings_key = "buildings";
 
 	Province const* province = game_manager.get_map().get_province_by_index(index);
@@ -207,9 +197,15 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_region_key] = std_view_to_godot_string(region->get_identifier());
 	}
 
+	Country const* controller = province->get_controller();
+	if (controller != nullptr) {
+		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
+	}
+
 	Good const* rgo = province->get_rgo();
 	if (rgo != nullptr) {
-		ret[province_info_rgo_key] = std_view_to_godot_string(rgo->get_identifier());
+		ret[province_info_rgo_name_key] = std_view_to_godot_string(rgo->get_identifier());
+		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
 	}
 
 	ret[province_info_life_rating_key] = province->get_life_rating();
@@ -218,6 +214,15 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	if (terrain_type != nullptr) {
 		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
 	}
+
+	Crime const* crime = province->get_crime();
+	if (crime != nullptr) {
+		ret[province_info_crime_name_key] = std_view_to_godot_string(crime->get_identifier());
+		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
+	}
+
+	ret[province_info_colony_status_key] = static_cast<int32_t>(province->get_colony_status());
+	ret[province_info_slave_status_key] = province->get_slave();
 
 	ret[province_info_total_population_key] = province->get_total_population();
 	fixed_point_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
@@ -276,6 +281,27 @@ float GameSingleton::get_map_aspect_ratio() const {
 
 Ref<Texture> GameSingleton::get_terrain_texture() const {
 	return terrain_texture;
+}
+
+Ref<Image> GameSingleton::get_flag_image(Country const* country, StringName const& flag_type) const {
+	if (country != nullptr) {
+		const typename decltype(flag_image_map)::const_iterator it = flag_image_map.find(country);
+		if (it != flag_image_map.end()) {
+			const typename decltype(it->second)::const_iterator it2 = it->second.find(flag_type);
+			if (it2 != it->second.end()) {
+				return it2->second;
+			} else {
+				UtilityFunctions::push_error(
+					"Failed to find ", flag_type, " flag for country: ", std_view_to_godot_string(country->get_identifier())
+				);
+			}
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to find flags for country: ", std_view_to_godot_string(country->get_identifier())
+			);
+		}
+	}
+	return nullptr;
 }
 
 Vector2i GameSingleton::get_province_shape_image_subdivisions() const {
@@ -370,6 +396,41 @@ Error GameSingleton::expand_building(int32_t province_index, String const& build
 	return OK;
 }
 
+int32_t GameSingleton::get_slave_pop_icon_index() const {
+	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_slave_sprite();
+	if (sprite <= 0) {
+		UtilityFunctions::push_error("Slave sprite unset!");
+		return 0;
+	}
+	return sprite;
+}
+
+int32_t GameSingleton::get_administrative_pop_icon_index() const {
+	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_administrative_sprite();
+	if (sprite <= 0) {
+		UtilityFunctions::push_error("Administrative sprite unset!");
+		return 0;
+	}
+	return sprite;
+}
+
+int32_t GameSingleton::get_rgo_owner_pop_icon_index() const {
+	const PopType::sprite_t sprite = game_manager.get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
+	if (sprite <= 0) {
+		UtilityFunctions::push_error("RGO owner sprite unset!");
+		return 0;
+	}
+	return sprite;
+}
+
+String GameSingleton::int_to_formatted_string(int64_t val) {
+	return Utilities::int_to_formatted_string(val);
+}
+
+String GameSingleton::float_to_formatted_string(float val) {
+	return Utilities::float_to_formatted_string(val);
+}
+
 void GameSingleton::set_paused(bool paused) {
 	game_manager.get_clock().is_paused = paused;
 }
@@ -388,6 +449,10 @@ void GameSingleton::increase_speed() {
 
 void GameSingleton::decrease_speed() {
 	game_manager.get_clock().decrease_simulation_speed();
+}
+
+int32_t GameSingleton::get_speed() const {
+	return game_manager.get_clock().get_simulation_speed();
 }
 
 bool GameSingleton::can_increase_speed() const {
@@ -527,6 +592,57 @@ Error GameSingleton::_load_terrain_variants() {
 	return err;
 }
 
+Error GameSingleton::_load_flag_images() {
+	if (!flag_image_map.empty()) {
+		UtilityFunctions::push_error("Flag images have already been loaded!");
+		return FAILED;
+	}
+
+	GovernmentTypeManager const& government_type_manager = game_manager.get_politics_manager().get_government_type_manager();
+	if (!government_type_manager.government_types_are_locked()) {
+		UtilityFunctions::push_error("Cannot load flag images before government types are locked!");
+		return FAILED;
+	}
+	CountryManager const& country_manager = game_manager.get_country_manager();
+	if (!country_manager.countries_are_locked()) {
+		UtilityFunctions::push_error("Cannot load flag images before countries are locked!");
+		return FAILED;
+	}
+
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	ERR_FAIL_NULL_V(asset_manager, FAILED);
+
+	static const String flag_directory = "gfx/flags/";
+	static const String flag_separator = "_";
+	static const String flag_extension = ".tga";
+
+	std::vector<StringName> flag_types;
+	for (std::string const& type : government_type_manager.get_flag_types()) {
+		flag_types.emplace_back(std_to_godot_string_name(type));
+	}
+
+	Error ret = OK;
+	for (Country const& country : country_manager.get_countries()) {
+		std::map<StringName, Ref<Image>>& flag_images = flag_image_map[&country];
+		const String country_name = std_view_to_godot_string(country.get_identifier());
+		for (StringName const& flag_type : flag_types) {
+			String flag_path = flag_directory + country_name;
+			if (!flag_type.is_empty()) {
+				flag_path += flag_separator + flag_type;
+			}
+			flag_path += flag_extension;
+			const Ref<Image> flag_image = asset_manager->get_image(flag_path);
+			if (flag_image.is_valid()) {
+				flag_images.emplace(flag_type, flag_image);
+			} else {
+				UtilityFunctions::push_error("Failed to load flag image: ", flag_path);
+				ret = FAILED;
+			}
+		}
+	}
+	return ret;
+}
+
 Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
 	Dataloader::path_vector_t roots;
 	for (String const& path : file_paths) {
@@ -545,6 +661,10 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 	}
 	if (_load_terrain_variants() != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
+		err = FAILED;
+	}
+	if (_load_flag_images() != OK) {
+		UtilityFunctions::push_error("Failed to load flag textures!");
 		err = FAILED;
 	}
 	if (_load_map_images(true) != OK) {

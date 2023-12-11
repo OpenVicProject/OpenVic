@@ -25,10 +25,12 @@ namespace OpenVic {
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode::index_t mapmode_index = 0;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
+		std::map<Country const*, std::map<godot::StringName, godot::Ref<godot::Image>>> flag_image_map;
 
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(bool flip_vertical);
 		godot::Error _load_terrain_variants();
+		godot::Error _load_flag_images();
 
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
@@ -38,9 +40,6 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
-
-		godot::Control* generate_gui(godot::String const& gui_file, godot::String const& gui_element);
-
 		static GameSingleton* get_singleton();
 
 		GameSingleton();
@@ -98,12 +97,18 @@ namespace OpenVic {
 		void set_selected_province(int32_t index);
 
 		godot::Error expand_building(int32_t province_index, godot::String const& building_type_identifier);
+		int32_t get_slave_pop_icon_index() const;
+		int32_t get_administrative_pop_icon_index() const;
+		int32_t get_rgo_owner_pop_icon_index() const;
+		static godot::String int_to_formatted_string(int64_t val);
+		static godot::String float_to_formatted_string(float val);
 
 		void set_paused(bool paused);
 		void toggle_paused();
 		bool is_paused() const;
 		void increase_speed();
 		void decrease_speed();
+		int32_t get_speed() const;
 		bool can_increase_speed() const;
 		bool can_decrease_speed() const;
 		godot::String get_longform_date() const;

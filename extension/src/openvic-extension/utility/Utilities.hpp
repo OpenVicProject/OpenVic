@@ -31,6 +31,10 @@ namespace OpenVic::Utilities {
 		return std_to_godot_string_name(static_cast<std::string>(str));
 	}
 
+	godot::String int_to_formatted_string(int64_t val);
+
+	godot::String float_to_formatted_string(float val);
+
 	godot::String date_to_formatted_string(Date date);
 
 	inline godot::Color to_godot_color(colour_t colour) {

@@ -13,6 +13,37 @@
 using namespace godot;
 using namespace OpenVic;
 
+/* Int to 2 decimal place string in terms of the largest suffix less than or equal to it,
+ * or normal integer string if less than the smallest suffix. */
+String Utilities::int_to_formatted_string(int64_t val) {
+	static const std::vector<std::pair<int64_t, String>> suffixes {
+		{ 1'000'000'000'000, "T" },
+		{ 1'000'000'000, "B" },
+		{ 1'000'000, "M" },
+		{ 1'000, "k" }
+	};
+	static constexpr int64_t decimal_places_multiplier = 100;
+	const bool negative = val < 0;
+	if (negative) {
+		val = -val;
+	}
+	for (auto const& [suffix_val, suffix_str] : suffixes) {
+		if (val >= suffix_val) {
+			const int64_t whole = val / suffix_val;
+			const int64_t frac = (val * decimal_places_multiplier / suffix_val) % decimal_places_multiplier;
+			return (negative ? "-" : "") + String::num_int64(whole) + "." +
+				(frac < 10 ? "0" : "") + String::num_int64(frac) + suffix_str;
+		}
+	}
+	return (negative ? "-" : "") + String::num_int64(val);
+}
+
+/* Float to formatted to 4 decimal place string. */
+String Utilities::float_to_formatted_string(float val) {
+	static constexpr int64_t decimal_places = 4;
+	return String::num(val, decimal_places).pad_decimals(decimal_places);
+}
+
 /* Date formatted like this: "January 1, 1836" (with the month localised, if possible). */
 String Utilities::date_to_formatted_string(Date date) {
 	std::string const& month_name = date.get_month_name();
