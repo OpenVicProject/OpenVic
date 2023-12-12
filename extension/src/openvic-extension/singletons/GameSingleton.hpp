@@ -56,9 +56,8 @@ namespace OpenVic {
 
 		static godot::String search_for_game_path(godot::String hint_path = {});
 
-		/* Post-load/restart game setup - reset the game to post-load state
-		 * and (re)generate starting data, e.g. buildings. */
-		godot::Error setup_game();
+		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
+		godot::Error setup_game(int32_t bookmark_index);
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 

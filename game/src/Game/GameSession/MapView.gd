@@ -129,6 +129,7 @@ func zoom_out() -> void:
 
 func _on_province_selected(index : int) -> void:
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
+	print("Province selected with index: ", index)
 
 # REQUIREMENTS
 # * SS-31

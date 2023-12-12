@@ -11,3 +11,5 @@ mapmode_infrastructure;Infrastructure
 mapmode_population;Population Density
 mapmode_culture;Nationality
 mapmode_religion;Religion
+mapmode_adjacencies;Adjacencies
+mapmode_port;Ports
