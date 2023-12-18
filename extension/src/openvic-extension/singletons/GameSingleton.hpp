@@ -7,8 +7,6 @@
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
 
-#include "openvic-extension/UIAdapter.hpp"
-
 namespace OpenVic {
 
 	class GameSingleton : public godot::Object {
@@ -95,7 +93,9 @@ namespace OpenVic {
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);
 
-		godot::Error expand_building(int32_t province_index, godot::String const& building_type_identifier);
+		int32_t get_province_building_count() const;
+		godot::String get_province_building_identifier(int32_t building_index) const;
+		godot::Error expand_selected_province_building(int32_t building_index);
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;

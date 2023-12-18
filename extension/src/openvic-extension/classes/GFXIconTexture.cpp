@@ -5,6 +5,7 @@
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -71,12 +72,8 @@ Error GFXIconTexture::set_gfx_texture_sprite_name(String const& gfx_texture_spri
 	if (gfx_texture_sprite_name.is_empty()) {
 		return set_gfx_texture_sprite(nullptr);
 	}
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	GFX::Sprite const* sprite = game_singleton->get_game_manager().get_ui_manager().get_sprite_by_identifier(
-		godot_to_std_string(gfx_texture_sprite_name)
-	);
-	ERR_FAIL_NULL_V_MSG(sprite, FAILED, vformat("GFX sprite not found: %s", gfx_texture_sprite_name));
+	GFX::Sprite const* sprite = UITools::get_gfx_sprite(gfx_texture_sprite_name);
+	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
 		new_texture_sprite, FAILED, vformat(

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <godot_cpp/classes/font_file.hpp>
-#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
@@ -37,12 +37,8 @@ namespace OpenVic::Utilities {
 
 	godot::String date_to_formatted_string(Date date);
 
-	inline godot::Color to_godot_color(colour_t colour) {
-		return {
-			colour_byte_to_float((colour >> 16) & 0xFF),
-			colour_byte_to_float((colour >> 8) & 0xFF),
-			colour_byte_to_float(colour & 0xFF)
-		};
+	inline godot::Color to_godot_color(IsColour auto colour) {
+		return { colour.redf(), colour.greenf(), colour.bluef(), colour.alphaf() };
 	}
 
 	inline godot::Vector2i to_godot_ivec2(ivec2_t vec) {
@@ -63,4 +59,14 @@ namespace OpenVic::Utilities {
 	/* Load a Font from anywhere on the machine, combining the ".fnt" file loaded from the given path with the
 	 * already-loaded image file containing the actual characters. */
 	godot::Ref<godot::FontFile> load_godot_font(godot::String const& fnt_path, godot::Ref<godot::Image> const& image);
+
+	godot::Ref<godot::Image> make_solid_colour_image(
+		godot::Color const& colour, int32_t width, int32_t height,
+		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
+	);
+
+	godot::Ref<godot::ImageTexture> make_solid_colour_texture(
+		godot::Color const& colour, int32_t width, int32_t height,
+		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
+	);
 }

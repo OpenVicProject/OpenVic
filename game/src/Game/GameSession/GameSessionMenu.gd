@@ -63,7 +63,7 @@ func _on_quit_confirmed() -> void:
 func _on_options_button_pressed() -> void:
 	options_button_pressed.emit()
 
-func _on_main_menu_dialog_custom_action(action) -> void:
+func _on_main_menu_dialog_custom_action(action : StringName) -> void:
 	match action:
 		&"save_and_main_menu":
 			_on_main_menu_confirmed()
@@ -73,8 +73,8 @@ func _on_quit_dialog_custom_action(action : StringName) -> void:
 		&"save_and_quit":
 			_on_quit_confirmed()
 
-func _on_save_button_pressed():
+func _on_save_button_pressed() -> void:
 	save_button_pressed.emit()
 
-func _on_load_button_pressed():
+func _on_load_button_pressed() -> void:
 	load_button_pressed.emit()

@@ -50,7 +50,7 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 # to a failed HashMap lookup. I'm not sure if this is a bug in the
 # editor, GDExtension, my own extension, or a combination of them.
 # This was an absolute pain to track down. --- hop311
-func _ready():
+func _ready() -> void:
 	if _camera == null:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
@@ -71,14 +71,16 @@ func _ready():
 		return
 	_map_mesh = _map_mesh_instance.mesh
 
-	# Set map mesh size and get bounds
-	const pixels_per_terrain_tile : float = 32.0
+	const pixels_per_terrain_tile : float = 20.0
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_terrain_tile_factor,
 		float(GameSingleton.get_map_height()) / pixels_per_terrain_tile)
+
 	const pixels_per_stripe_tile : float = 16.0
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_stripe_tile_factor,
 		float(GameSingleton.get_map_height()) / pixels_per_stripe_tile)
-	var map_mesh_aabb := _map_mesh.get_core_aabb() * _map_mesh_instance.transform
+
+	# Get map mesh bounds
+	var map_mesh_aabb : AABB = _map_mesh.get_core_aabb() * _map_mesh_instance.transform
 	_map_mesh_corner = Vector2(
 		min(map_mesh_aabb.position.x, map_mesh_aabb.end.x),
 		min(map_mesh_aabb.position.z, map_mesh_aabb.end.z)
@@ -90,7 +92,7 @@ func _ready():
 
 	GameSingleton.province_selected.connect(_on_province_selected)
 
-func _notification(what : int):
+func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_WM_MOUSE_ENTER: # Mouse inside window
 			_on_mouse_entered_viewport()
@@ -108,7 +110,7 @@ func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 	var ray_origin := _camera.project_ray_origin(pos_viewport)
 	var ray_normal := _camera.project_ray_normal(pos_viewport)
 	# Plane with normal (0,1,0) facing upwards, at a distance 0 from the origin
-	var intersection = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
+	var intersection : Variant = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
 	if typeof(intersection) == TYPE_VECTOR3:
 		return _world_to_map_coords(intersection as Vector3)
 	else:
@@ -133,7 +135,7 @@ func _on_province_selected(index : int) -> void:
 
 # REQUIREMENTS
 # * SS-31
-func _unhandled_input(event : InputEvent):
+func _unhandled_input(event : InputEvent) -> void:
 	if _mouse_over_viewport and event.is_action_pressed(_action_click):
 		# Check if the mouse is outside of bounds
 		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
@@ -154,7 +156,7 @@ func _unhandled_input(event : InputEvent):
 	elif event.is_action_pressed(_action_zoom_out, true):
 		zoom_out()
 
-func _physics_process(delta : float):
+func _physics_process(delta : float) -> void:
 	_mouse_pos_viewport = get_viewport().get_mouse_position()
 	_viewport_dims = Vector2(Resolution.get_current_resolution())
 	# Process movement
@@ -212,7 +214,7 @@ func _clamp_over_map() -> void:
 func _zoom_process(delta : float) -> void:
 	var height := _camera.position.y
 	var zoom := _zoom_target - height
-	var zoom_delta = zoom * _zoom_speed * delta
+	var zoom_delta := zoom * _zoom_speed * delta
 	# Set to target if height is within _zoom_epsilon of it or has overshot past it
 	if abs(zoom - zoom_delta) < _zoom_epsilon or sign(zoom) != sign(zoom - zoom_delta):
 		zoom_delta = zoom
@@ -235,20 +237,20 @@ func _update_mouse_map_position() -> void:
 	if _mouse_over_viewport:
 		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
 
-func _on_mouse_entered_viewport():
+func _on_mouse_entered_viewport() -> void:
 	_mouse_over_viewport = true
 
-func _on_mouse_exited_viewport():
+func _on_mouse_exited_viewport() -> void:
 	_mouse_over_viewport = false
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, 0)
 
-func _on_window_entered_focus():
+func _on_window_entered_focus() -> void:
 	_window_in_focus = true
 
-func _on_window_exited_focus():
+func _on_window_exited_focus() -> void:
 	_window_in_focus = false
 
-func _on_minimap_clicked(pos_clicked : Vector2):
+func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	pos_clicked *= _map_mesh_dims
 	_camera.position.x = pos_clicked.x
 	_camera.position.z = pos_clicked.y

@@ -35,12 +35,12 @@ namespace OpenVic {
 		);
 
 		/* Search for a GFX::TextureSprite with the specfied name and,
-		 * if successful, call set_gfx_texture_sprite to set it and its icon */
+		 * if successful, call set_gfx_texture_sprite to set it and its icon. */
 		godot::Error set_gfx_texture_sprite_name(
 			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
-		/* Return the name of the GFX::TextureSprite, or an empty String if it's null */
+		/* Return the name of the GFX::TextureSprite, or an empty String if it's null. */
 		godot::String get_gfx_texture_sprite_name() const;
 
 		/* Set icon_index to a value between one and icon_count (inclusive), and update the AtlasTexture's region

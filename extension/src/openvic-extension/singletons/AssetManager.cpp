@@ -15,11 +15,6 @@ using OpenVic::Utilities::std_to_godot_string;
 void AssetManager::_bind_methods() {
 	OV_BIND_METHOD(AssetManager::get_image, { "path" });
 	OV_BIND_METHOD(AssetManager::get_texture, { "path" });
-
-	OV_BIND_SMETHOD(AssetManager::make_icon, { "texture", "frame", "frame_count" });
-	OV_BIND_METHOD(AssetManager::get_icon, { "texture", "frame", "frame_count" });
-
-	OV_BIND_METHOD(AssetManager::get_texture_or_icon, { "path", "frame", "frame_count" });
 	OV_BIND_METHOD(AssetManager::get_font, { "name" });
 }
 
@@ -93,46 +88,6 @@ Ref<ImageTexture> AssetManager::get_texture(StringName path) {
 		return it->second.texture;
 	} else {
 		return nullptr;
-	}
-}
-
-Ref<AtlasTexture> AssetManager::make_icon(Ref<Texture2D> texture, GFX::frame_t frame, GFX::frame_t frame_count) {
-	ERR_FAIL_NULL_V(texture, nullptr);
-
-	if (frame_count <= GFX::NO_FRAMES) {
-		UtilityFunctions::push_warning("No frames!");
-		frame_count = 1;
-	}
-	if (frame <= GFX::NO_FRAMES || frame > frame_count) {
-		UtilityFunctions::push_warning("Invalid frame index ", frame, " out of count ", frame_count);
-		frame = frame_count;
-	}
-	frame--;
-	const Vector2i size = texture->get_size();
-	const Rect2i region { frame * size.x / frame_count, 0, size.x / frame_count, size.y };
-
-	Ref<AtlasTexture> atlas;
-	atlas.instantiate();
-	ERR_FAIL_NULL_V(atlas, nullptr);
-	atlas->set_atlas(texture);
-	atlas->set_region(region);
-	return atlas;
-}
-
-Ref<AtlasTexture> AssetManager::get_icon(StringName path, GFX::frame_t frame, GFX::frame_t frame_count) {
-	Ref<ImageTexture> texture = get_texture(path);
-	ERR_FAIL_NULL_V(texture, nullptr);
-	return make_icon(texture, frame, frame_count);
-}
-
-Ref<Texture2D> AssetManager::get_texture_or_icon(StringName path, GFX::frame_t frame, GFX::frame_t frame_count) {
-	if (frame_count < 2) {
-		if (frame > frame_count) {
-			UtilityFunctions::push_warning("Invalid frame index ", frame, " out of count ", frame_count);
-		}
-		return get_texture(path);
-	} else {
-		return get_icon(path, frame, frame_count);
 	}
 }
 

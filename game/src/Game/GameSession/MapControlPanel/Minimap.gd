@@ -9,7 +9,7 @@ var _minimap_shader : ShaderMaterial
 
 var _viewport_points : PackedVector2Array
 
-func _ready():
+func _ready() -> void:
 	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_map_aspect_ratio(), 1.0) * 150
 	var minimap_material := _minimap_texture.get_material()
 	if GameLoader.ShaderManager.set_up_shader(minimap_material, false) != OK:
@@ -32,7 +32,7 @@ func _draw() -> void:
 # REQUIREMENTS
 # * SS-81
 # * UIFUN-127
-func _unhandled_input(event : InputEvent):
+func _unhandled_input(event : InputEvent) -> void:
 	if event is InputEventMouse and Input.is_action_pressed(_action_click):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
 		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
@@ -100,6 +100,6 @@ func _on_map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_ri
 	_add_line_looped_over_x(far_left, near_left)
 	_add_line_looped_over_x(near_right, far_right)
 
-	for i in _viewport_points.size():
+	for i : int in _viewport_points.size():
 		_viewport_points[i] *= size
 	queue_redraw()
