@@ -29,7 +29,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 
-	OV_BIND_METHOD(GameSingleton::setup_game);
+	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 
 	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
 	OV_BIND_METHOD(GameSingleton::get_province_info_from_index, { "index" });
@@ -112,15 +112,13 @@ Dataloader const& GameSingleton::get_dataloader() const {
 	return dataloader;
 }
 
-Error GameSingleton::setup_game() {
-	BookmarkManager const& bookmark_manager = game_manager.get_history_manager().get_bookmark_manager();
-	if (bookmark_manager.bookmarks_empty()) {
-		UtilityFunctions::push_error("No bookmark to load!");
+Error GameSingleton::setup_game(int32_t bookmark_index) {
+	Bookmark const* bookmark = game_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index);
+	if (bookmark == nullptr) {
+		UtilityFunctions::push_error("Failed to get bookmark with index: ", bookmark_index);
 		return FAILED;
 	}
-	bool ret = game_manager.load_bookmark(&bookmark_manager.get_bookmarks().front());
-	// TODO - load pop history with the new history system
-	ret &= dataloader.load_pop_history(game_manager, "history/pops/" + game_manager.get_today().to_string());
+	bool ret = game_manager.load_bookmark(bookmark);
 	for (Province& province : game_manager.get_map().get_provinces()) {
 		province.set_crime(
 			game_manager.get_crime_manager().get_crime_modifier_by_index(
