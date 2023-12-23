@@ -15,14 +15,14 @@ var default_pressed : bool = true
 func _setup_button() -> void:
 	pass
 
-func _ready():
+func _ready() -> void:
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 	Events.Options.reset_settings.connect(reset_setting)
-	toggled.connect(func(p : bool): option_selected.emit(p, true))
+	toggled.connect(func(p : bool) -> void: option_selected.emit(p, true))
 	_setup_button()
 
-func _set_value_from_file(load_value) -> void:
+func _set_value_from_file(load_value : Variant) -> void:
 	match typeof(load_value):
 		TYPE_BOOL, TYPE_INT:
 			set_pressed_no_signal(load_value as bool)

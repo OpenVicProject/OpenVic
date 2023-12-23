@@ -43,7 +43,7 @@ const title_key : String = "TITLE"
 # * FS-4
 func _load_credit_file(path : String) -> Dictionary:
 	var roles := {}
-	var core_credits = FileAccess.open(path, FileAccess.READ)
+	var core_credits := FileAccess.open(path, FileAccess.READ)
 	if core_credits == null:
 		push_error("Failed to open credits file %s (error code %d)" % [path, FileAccess.get_open_error()])
 		return roles
@@ -79,7 +79,7 @@ func _load_credit_file(path : String) -> Dictionary:
 			roles[title_key] = [roles[title_key][0]]
 	else:
 		push_warning("Credits file %s missing %s" % [path, title_key])
-	for role_list in roles.values():
+	for role_list : Array in roles.values():
 		role_list.sort_custom(func(a : String, b : String) -> bool: return a.naturalnocasecmp_to(b) < 0)
 	return roles
 
@@ -94,7 +94,7 @@ func _add_label(node : Node, text : String, type_variation : StringName) -> void
 # REQUIREMENTS:
 # * UI-34, UI-35
 func _add_project_credits(project : Dictionary) -> void:
-	var project_credits_list = VBoxContainer.new()
+	var project_credits_list := VBoxContainer.new()
 	project_credits_list.name = 'Credits'
 	if title_key in project:
 		var title : String = project[title_key][0]
@@ -102,13 +102,13 @@ func _add_project_credits(project : Dictionary) -> void:
 		_add_label(project_credits_list, title, label_variants_project)
 		project_credits_list.add_child(HSeparator.new())
 
-	for role in project:
+	for role : String in project:
 		if role == title_key:
 			continue
 
-		var role_parent = VBoxContainer.new()
+		var role_parent := VBoxContainer.new()
 
-		for person in project[role]:
+		for person : String in project[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(project_credits_list, role, label_variants_role)
@@ -118,19 +118,19 @@ func _add_project_credits(project : Dictionary) -> void:
 	credits_list.add_child(project_credits_list)
 
 func _add_godot_credits() -> void:
-	var godot_credits_list = VBoxContainer.new()
+	var godot_credits_list := VBoxContainer.new()
 	godot_credits_list.name = 'CreditsGodot'
-	var godot_engine = godot_engine_scene.instantiate()
+	var godot_engine := godot_engine_scene.instantiate()
 	godot_credits_list.add_child(godot_engine)
 	godot_credits_list.add_child(HSeparator.new())
 
 	var author_dict := Engine.get_author_info()
 	_add_label(godot_credits_list, "Contributors", label_variants_role)
 
-	for role in author_dict:
-		var role_parent = VBoxContainer.new()
+	for role : String in author_dict:
+		var role_parent := VBoxContainer.new()
 
-		for person in author_dict[role]:
+		for person : String in author_dict[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
@@ -140,11 +140,11 @@ func _add_godot_credits() -> void:
 	var donor_dict := Engine.get_donor_info()
 	_add_label(godot_credits_list, "Donors", label_variants_role)
 
-	for role in donor_dict:
+	for role : String in donor_dict:
 		if donor_dict[role].size() == 0 or donor_dict[role][0].begins_with("None"): continue
-		var role_parent = VBoxContainer.new()
+		var role_parent := VBoxContainer.new()
 
-		for person in donor_dict[role]:
+		for person : String in donor_dict[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
@@ -163,7 +163,7 @@ func _add_link_button(node : Node, text : String, url: String, type_variation : 
 	node.add_child(button)
 
 func _add_licenses() -> void:
-	var license_list = VBoxContainer.new()
+	var license_list := VBoxContainer.new()
 	license_list.name = 'Licenses'
 	_add_label(license_list, "Third-Party Licenses", label_variants_project)
 	license_list.add_child(HSeparator.new())
@@ -178,7 +178,7 @@ func _add_licenses() -> void:
 	# Add additional licenses required for attribution here
 	# These licenses should also either be displayed or exported alongside this project
 
-	for project in license_info:
+	for project : String in license_info:
 		_add_label(license_list, project, label_variants_role)
 		_add_link_button(license_list, license_info[project][0], license_info[project][1], label_variants_person)
 		license_list.add_child(HSeparator.new())
@@ -188,12 +188,12 @@ func _add_licenses() -> void:
 
 # REQUIREMENTS:
 # * SS-17
-func _ready():
+func _ready() -> void:
 	_add_project_credits(_load_credit_file(core_credits_path))
 	_add_godot_credits()
 	_add_licenses()
 
-func _input(event):
+func _input(event : InputEvent) -> void:
 	if self.is_visible_in_tree():
 		if event.is_action_pressed("ui_cancel"):
 			_on_back_button_pressed()

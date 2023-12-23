@@ -17,10 +17,10 @@ extends Resource
 			TYPE_COLOR: default_value = Color()
 			_: default_value = null
 		notify_property_list_changed()
-var default_value
+var default_value : Variant
 @export var description : String
 
-func _init(_name = "", _type = TYPE_NIL, _description = "", default = null):
+func _init(_name := "", _type := TYPE_NIL, _description := "", default : Variant = null) -> void:
 	name = _name
 	type = _type
 	if default != null and typeof(default) == type:
@@ -41,15 +41,17 @@ func get_type_string() -> StringName:
 		TYPE_COLOR: return "color"
 	return "<invalid type>"
 
-func _get(property):
+func _get(property : StringName) -> Variant:
 	if property == "default_value": return default_value
+	return null
 
-func _set(property, value):
+func _set(property : StringName, value : Variant) -> bool:
 	if property == "default_value":
 		default_value = value
 		return true
+	return false
 
-func _get_property_list():
+func _get_property_list() -> Array[Dictionary]:
 	var properties := []
 
 	properties.append({

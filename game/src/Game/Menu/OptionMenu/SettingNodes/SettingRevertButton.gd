@@ -6,7 +6,7 @@ class_name SettingRevertButton
 
 var previous_index : int = -1
 
-func _ready():
+func _ready() -> void:
 	super()
 	if revert_dialog != null:
 		revert_dialog.visibility_changed.connect(_on_revert_dialog_visibility_changed)

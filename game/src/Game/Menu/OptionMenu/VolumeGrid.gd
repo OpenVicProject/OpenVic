@@ -39,7 +39,7 @@ func add_volume_row(bus_name : String, bus_index : int) -> HSlider:
 
 # REQUIREMENTS
 # * UI-22
-func _ready():
+func _ready() -> void:
 	for bus_index in AudioServer.bus_count:
 		add_volume_row(AudioServer.get_bus_name(bus_index), bus_index)
 
@@ -54,17 +54,17 @@ func _on_slider_value_changed(value : float, bus_index : int) -> void:
 	AudioServer.set_bus_volume_db(bus_index, get_volume_value_as_db(value))
 
 
-func _on_options_menu_load_settings(load_file : ConfigFile):
-	for volume_slider in _slider_dictionary.values():
+func _on_options_menu_load_settings(load_file : ConfigFile) -> void:
+	for volume_slider : SettingHSlider in _slider_dictionary.values():
 		volume_slider.load_setting(load_file)
 
 # REQUIREMENTS
 # * UIFUN-23
-func _on_options_menu_save_settings(save_file : ConfigFile):
-	for volume_slider in _slider_dictionary.values():
+func _on_options_menu_save_settings(save_file : ConfigFile) -> void:
+	for volume_slider : SettingHSlider in _slider_dictionary.values():
 		volume_slider.save_setting(save_file)
 
 
-func _on_options_menu_reset_settings():
-	for volume_slider in _slider_dictionary.values():
+func _on_options_menu_reset_settings() -> void:
+	for volume_slider : SettingHSlider in _slider_dictionary.values():
 		volume_slider.reset_setting()

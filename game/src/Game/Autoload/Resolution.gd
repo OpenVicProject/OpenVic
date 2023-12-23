@@ -27,7 +27,7 @@ var _resolutions : Array[Vector2i]
 const _regex_pattern : String = "(\\d+)\\s*[xX,]\\s*(\\d+)"
 var _regex : RegEx
 
-func _ready():
+func _ready() -> void:
 	assert(minimum_resolution.x > 0 and minimum_resolution.y > 0, "Minimum resolution must be positive!")
 	for resolution_value in _starting_resolutions:
 		add_resolution(resolution_value)
@@ -53,7 +53,7 @@ func get_resolution_value_list() -> Array[Vector2i]:
 	var list : Array[Vector2i] = []
 	# Return a sorted copy instead of a reference to the private array
 	list.append_array(_resolutions)
-	list.sort_custom(func(a, b): return a > b)
+	list.sort_custom(func(a : Vector2i, b : Vector2i) -> bool: return a > b)
 	return list
 
 func get_resolution_value_from_string(resolution_string : String) -> Vector2i:

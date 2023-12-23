@@ -8,7 +8,7 @@ func _setup_button() -> void:
 	_update_monitor_options_text()
 	default_selected = Resolution.get_current_monitor()
 
-func _notification(what : int):
+func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_monitor_options_text()

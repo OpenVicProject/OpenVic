@@ -28,7 +28,7 @@ func get_window_mode_from_screen_mode(screen_mode : ScreenMode) -> Window.Mode:
 		_:
 			return Window.MODE_EXCLUSIVE_FULLSCREEN
 
-func _setup_button():
+func _setup_button() -> void:
 	default_selected = get_screen_mode_from_window_mode(Resolution.get_current_window_mode())
 	selected = default_selected
 

@@ -5,5 +5,5 @@ extends Node
 
 var Options: OptionsEventsObject
 
-func _init():
+func _init() -> void:
 	Options = OptionsEventsObject.new()

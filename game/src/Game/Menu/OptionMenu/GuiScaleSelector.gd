@@ -17,7 +17,7 @@ func _sync_guiscales(to_select : float = GuiScale.get_current_guiscale()) -> voi
 	clear()
 	default_selected = -1
 	selected = -1
-	for guiscale_value in GuiScale.get_guiscale_value_list():
+	for guiscale_value : float in GuiScale.get_guiscale_value_list():
 		add_item(GuiScale.get_guiscale_display_name(guiscale_value))
 		set_item_metadata(item_count - 1, guiscale_value)
 
@@ -33,7 +33,7 @@ func _sync_guiscales(to_select : float = GuiScale.get_current_guiscale()) -> voi
 	if selected == -1:
 		selected = default_selected
 
-func _setup_button():
+func _setup_button() -> void:
 	if default_value <= 0:
 		default_value = ProjectSettings.get_setting("display/window/stretch/scale")
 	GuiScale.add_guiscale(default_value, &"default")
@@ -45,7 +45,7 @@ func _get_value_for_file(select_value : int):
 	else:
 		return null
 
-func _set_value_from_file(load_value):
+func _set_value_from_file(load_value : Variant) -> void:
 	if typeof(load_value) == TYPE_FLOAT:
 		var target_guiscale : float = load_value
 		selected = _find_guiscale_index_by_value(target_guiscale)
@@ -56,7 +56,7 @@ func _set_value_from_file(load_value):
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	selected = default_selected
 
-func _on_option_selected(index : int, by_user : bool):
+func _on_option_selected(index : int, by_user : bool) -> void:
 	if _valid_index(index):
 		GuiScale.set_guiscale(get_item_metadata(index))
 	else:

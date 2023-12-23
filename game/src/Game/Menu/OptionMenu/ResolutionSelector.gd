@@ -34,7 +34,7 @@ func _sync_resolutions() -> void:
 		selected = default_selected
 	_update_resolution_options_text()
 
-func _notification(what : int):
+func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_resolution_options_text()
@@ -56,7 +56,7 @@ func _update_resolution_options_text() -> void:
 		set_item_text(index, display_name)
 
 func _setup_button() -> void:
-	Resolution.resolution_added.connect(func (_value : Vector2i): _sync_resolutions())
+	Resolution.resolution_added.connect(func (_value : Vector2i) -> void: _sync_resolutions())
 	if default_value.x <= 0:
 		default_value.x = ProjectSettings.get_setting("display/window/size/viewport_width")
 	if default_value.y <= 0:
@@ -66,7 +66,7 @@ func _setup_button() -> void:
 	else:
 		_sync_resolutions()
 
-func _get_value_for_file(select_value : int) -> Variant:
+func _get_value_for_file(select_value : int):
 	if _valid_index(select_value):
 		return get_item_metadata(select_value)
 	else:
@@ -74,7 +74,7 @@ func _get_value_for_file(select_value : int) -> Variant:
 
 # REQUIREMENTS:
 # * SS-25
-func _set_value_from_file(load_value) -> void:
+func _set_value_from_file(load_value : Variant) -> void:
 	var target_resolution := Resolution.error_resolution
 	match typeof(load_value):
 		TYPE_VECTOR2I: target_resolution = load_value

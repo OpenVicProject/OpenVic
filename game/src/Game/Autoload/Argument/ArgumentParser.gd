@@ -46,7 +46,7 @@ const color_name_array : PackedStringArray =[
 
 func has_argument_support(arg_name : StringName, include_aliases : bool = false) -> bool:
 	return option_array.any(
-		func(opt):
+		func(opt : ArgumentOption) -> bool:
 			if include_aliases and arg_name in opt.aliases:
 				return true
 			return opt.name == arg_name
@@ -54,7 +54,7 @@ func has_argument_support(arg_name : StringName, include_aliases : bool = false)
 
 func get_argument(arg_name : StringName, default_val : Variant = null) -> Variant:
 	if ProjectSettings.has_setting(argument_setting_path):
-		var arg_setting = ProjectSettings.get_setting_with_override(argument_setting_path)
+		var arg_setting : Variant = ProjectSettings.get_setting_with_override(argument_setting_path)
 		if not arg_setting is Dictionary:
 			push_error("Argument setting is not a dictionary.")
 			return default_val
@@ -64,7 +64,7 @@ func get_argument(arg_name : StringName, default_val : Variant = null) -> Varian
 
 func set_argument(arg_name : StringName, value : Variant) -> void:
 	if ProjectSettings.has_setting(argument_setting_path):
-		var arg_setting = null
+		var arg_setting : Variant = null
 		arg_setting = ProjectSettings.get_setting_with_override(argument_setting_path)
 		if not arg_setting is Dictionary:
 			push_error("Argument setting is not a dictionary.")
@@ -124,7 +124,7 @@ func _parse_value(arg_name : StringName, value_string : String, type : Variant.T
 		TYPE_RECT2,		\
 		TYPE_RECT2I:
 			push_warning("Value type '%s' may not be supported." % type)
-			var data_array = value_string.lstrip("(").rstrip(")").split(",", false)
+			var data_array := value_string.lstrip("(").rstrip(")").split(",", false)
 			for index in range(data_array.size()):
 				data_array[index] = " " + data_array[index].strip_edges()
 			match type:
@@ -206,7 +206,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 	var current_option : ArgumentOption = null
 	for arg in arg_list:
 		if current_option != null and not arg.begins_with("-"):
-			var result = _parse_value(current_key, arg, current_option.type)
+			var result : Variant = _parse_value(current_key, arg, current_option.type)
 			if result != null:
 				dictionary[current_option.name] = result
 			current_option = null
@@ -229,8 +229,8 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 						push_warning("Parsing shorthand alias containing '%s', perhaps you meant '--%s'? Skipping argument." % [c, arg])
 						break
 					var alias_found := false
-					for o in option_array:
-						if o.aliases.any(func(v): return c == v):
+					for o : ArgumentOption in option_array:
+						if o.aliases.any(func(v : StringName) -> bool: return c == v):
 							if o.type == TYPE_BOOL:
 								dictionary[o.name] = true
 							else:
@@ -258,7 +258,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 				key = key.substr(1)
 
 			for o in option_array:
-				if key == o.name or o.aliases.any(func(v): return key == v):
+				if key == o.name or o.aliases.any(func(v : StringName) -> bool: return key == v):
 					current_option = o
 					break
 
@@ -268,7 +268,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 
 			current_key = key
 			if first_equal > -1:
-				var arg_result = _parse_value(key, value, current_option.type)
+				var arg_result : Variant = _parse_value(key, value, current_option.type)
 				if arg_result != null:
 					dictionary[current_option.name] = arg_result
 					current_option = null
@@ -279,7 +279,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 
 	return dictionary
 
-func _print_help():
+func _print_help() -> void:
 	var project_name : StringName = ProjectSettings.get_setting_with_override(&"application/config/name")
 	var project_version : String = _GIT_INFO_.tag
 	var project_hash : String = _GIT_INFO_.short_hash
@@ -310,7 +310,7 @@ Options:
 			option.description
 		])
 
-func _ready():
+func _ready() -> void:
 	if Engine.is_editor_hint(): return
 	_set_argument_setting()
 	GameDebug._singleton = GameDebug.new()
