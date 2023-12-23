@@ -1,11 +1,13 @@
 extends Control
 
-const LoadingScreen = preload("res://src/Game/LoadingScreen.gd")
-const SoundTabScene = preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
+const LoadingScreen := preload("res://src/Game/LoadingScreen.gd")
+const SoundTabScene := preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
+const GameMenuScene := preload("res://src/Game/GameMenu.tscn")
 
 @export_subgroup("Nodes")
 @export var loading_screen : LoadingScreen
 
+@export_subgroup("")
 @export var section_name : String = "general"
 @export var setting_name : String = "base_defines_path"
 var _settings_base_path : String = ""
@@ -103,7 +105,7 @@ func _initialize_game() -> void:
 	print("Loading took ", float(end - start) / 1000000, " seconds")
 
 	# change scene in a thread-safe way
-	get_tree().call_deferred("change_scene_to_file", "res://src/Game/GameMenu.tscn")
+	get_tree().change_scene_to_packed.call_deferred(GameMenuScene)
 
 func _on_splash_container_splash_end():
 	loading_screen.show()
