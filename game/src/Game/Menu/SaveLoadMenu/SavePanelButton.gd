@@ -26,7 +26,7 @@ func set_text(value : StringName) -> void:
 	if resource != null:
 		resource.save_name = value
 
-func _ready():
+func _ready() -> void:
 	_resource_changed()
 
 func _is_start_date() -> bool:

@@ -10,14 +10,14 @@ var setting_name : String = "setting_hslider"
 @export
 var default_value : float = 0
 
-func _ready():
+func _ready() -> void:
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 	Events.Options.reset_settings.connect(reset_setting)
 
-func load_setting(file : ConfigFile):
+func load_setting(file : ConfigFile) -> void:
 	if file == null: return
-	var load_value = file.get_value(section_name, setting_name, default_value)
+	var load_value : Variant = file.get_value(section_name, setting_name, default_value)
 	match typeof(load_value):
 		TYPE_FLOAT, TYPE_INT:
 			if value == load_value: value_changed.emit(value)
@@ -33,9 +33,9 @@ func load_setting(file : ConfigFile):
 	push_error("Setting value '%s' invalid for setting [%s] \"%s\"" % [load_value, section_name, setting_name])
 	value = default_value
 
-func save_setting(file : ConfigFile):
+func save_setting(file : ConfigFile) -> void:
 	if file == null: return
 	file.set_value(section_name, setting_name, value)
 
-func reset_setting():
+func reset_setting() -> void:
 	value = default_value

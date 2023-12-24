@@ -2,11 +2,11 @@ extends Node
 
 const VideoOptions = preload("res://src/Game/Menu/OptionMenu/VideoTab.tscn")
 
-func _init():
+func _init() -> void:
 	var window_id := DisplayServer.get_window_list()[0]
 	DisplayServer.window_set_size(Vector2(1280.0, 720.0), window_id)
 
-func _ready():
+func _ready() -> void:
 	if ArgumentParser.get_argument(&"help"): return
 	_on_SceneTree_idle()
 	# Hack to ensure Video Options load
@@ -15,7 +15,7 @@ func _ready():
 	add_child(video)
 	video.queue_free()
 
-func _on_SceneTree_idle():
+func _on_SceneTree_idle() -> void:
 	var window := get_window()
 	window.set_mode(Window.MODE_FULLSCREEN)
 	await get_tree().process_frame

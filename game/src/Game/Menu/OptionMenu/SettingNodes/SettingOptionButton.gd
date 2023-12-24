@@ -21,13 +21,13 @@ var default_selected : int = -1:
 func _valid_index(index : int) -> bool:
 	return 0 <= index and index < item_count
 
-func _get_value_for_file(select_value : int):
+func _get_value_for_file(select_value : int) -> Variant:
 	if _valid_index(select_value):
 		return select_value
 	else:
 		return null
 
-func _set_value_from_file(load_value) -> void:
+func _set_value_from_file(load_value : Variant) -> void:
 	match typeof(load_value):
 		TYPE_INT:
 			if _valid_index(load_value):
@@ -50,11 +50,11 @@ func _set_value_from_file(load_value) -> void:
 func _setup_button() -> void:
 	pass
 
-func _ready():
+func _ready() -> void:
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 	Events.Options.reset_settings.connect(reset_setting)
-	item_selected.connect(func(index : int): option_selected.emit(index, true))
+	item_selected.connect(func(index : int) -> void: option_selected.emit(index, true))
 	_setup_button()
 	if not _valid_index(default_selected) or selected == -1:
 		var msg := "Failed to generate any valid %s %s options." % [setting_name, section_name]

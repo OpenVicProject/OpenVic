@@ -31,6 +31,6 @@ var _settings_file := ConfigFile.new()
 # * SS-9
 # * UIFUN-7, UIFUN-12
 # * FS-562
-func _init():
+func _init() -> void:
 	if FileAccess.file_exists(_settings_file_path):
 		_settings_file.load(_settings_file_path)

@@ -73,7 +73,7 @@ func _get_draw_mode_style() -> StyleBox:
 		return background_button.get_theme_stylebox(_get_draw_mode_name(false))
 	return result
 
-func _notification(what) -> void:
+func _notification(what : int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN:
 		var _size := size
 		var offset := Vector2()
@@ -89,14 +89,14 @@ func _notification(what) -> void:
 
 			fit_child_in_rect(child, Rect2(offset, _size))
 
-func _on_background_button_button_down():
+func _on_background_button_button_down() -> void:
 	button_down.emit()
 
-func _on_background_button_button_up():
+func _on_background_button_button_up() -> void:
 	button_up.emit()
 
-func _on_background_button_pressed():
+func _on_background_button_pressed() -> void:
 	pressed.emit()
 
-func _on_background_button_toggled(button_pressed : bool):
+func _on_background_button_toggled(button_pressed : bool) -> void:
 	toggled.emit(button_pressed)

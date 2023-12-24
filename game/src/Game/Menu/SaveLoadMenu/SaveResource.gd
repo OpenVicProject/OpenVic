@@ -27,7 +27,7 @@ var file_path : String:
 		emit_changed()
 var file : ConfigFile = ConfigFile.new()
 
-func set_file_path(name : StringName, path : String):
+func set_file_path(name : StringName, path : String) -> void:
 	file_path = path
 	save_name = name
 

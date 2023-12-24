@@ -7,7 +7,7 @@ signal back_button_pressed
 
 @export var _tab_container : TabContainer
 
-func _ready():
+func _ready() -> void:
 	_tab_container.set_tab_title(0, "OPTIONS_GENERAL")
 	_tab_container.set_tab_title(1, "OPTIONS_VIDEO")
 	_tab_container.set_tab_title(2, "OPTIONS_SOUND")
@@ -41,19 +41,19 @@ func _ready():
 	button_list.add_child(back_button)
 	get_viewport().get_window().close_requested.connect(_on_window_close_requested)
 	_save_overrides.call_deferred()
-	Events.Options.save_settings.connect(func(_f): self._save_overrides.call_deferred())
+	Events.Options.save_settings.connect(func(_f : ConfigFile) -> void: self._save_overrides.call_deferred())
 
-func _notification(what):
+func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_CRASH:
 			_on_window_close_requested()
 
-func _input(event):
+func _input(event : InputEvent) -> void:
 	if self.is_visible_in_tree():
 		if event.is_action_pressed("ui_cancel"):
 			_on_back_button_pressed()
 
-func _on_back_button_pressed():
+func _on_back_button_pressed() -> void:
 	Events.Options.save_settings_to_file()
 	back_button_pressed.emit()
 

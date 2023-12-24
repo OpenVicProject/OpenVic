@@ -41,7 +41,7 @@ func _save_setting(file : ConfigFile) -> void:
 	if file == null: return
 	file.set_value(section_name, setting_name, _settings_base_path)
 
-func _load_compatibility_mode():
+func _load_compatibility_mode() -> void:
 	# Set this to your Vic2 install dir or a mod's dir to enable compatibility mode
 	# (this won't work for mods which rely on vanilla map assets, copy missing assets
 	# into the mod's dir for a temporary fix)
@@ -107,5 +107,5 @@ func _initialize_game() -> void:
 	# change scene in a thread-safe way
 	get_tree().change_scene_to_packed.call_deferred(GameMenuScene)
 
-func _on_splash_container_splash_end():
+func _on_splash_container_splash_end() -> void:
 	loading_screen.show()

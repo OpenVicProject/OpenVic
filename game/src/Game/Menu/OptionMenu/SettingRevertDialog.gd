@@ -16,12 +16,12 @@ func show_dialog(button : SettingRevertButton, time : float = 0) -> void:
 	popup_centered(Vector2(1,1))
 	_revert_node = button
 
-func _notification(what):
+func _notification(what : int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
 		set_process(visible)
 		if not visible: _revert_node = null
 
-func _process(_delta) -> void:
+func _process(_delta : float) -> void:
 	dialog_text = tr(dialog_text_key).format({ "time": Localisation.tr_number(int(timer.time_left)) })
 
 func _on_canceled_or_close_requested() -> void:

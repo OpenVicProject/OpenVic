@@ -13,7 +13,7 @@ signal song_scrubbed(percentage : float, seconds : float)
 
 @export var _audio_stream_player : AudioStreamPlayer
 
-var _selected_track = 0
+var _selected_track := 0
 var _available_songs : Array[SongInfo] = []
 var _auto_play_next_song : bool = true
 
@@ -76,9 +76,9 @@ func select_previous_song() -> void:
 
 # REQUIREMENTS
 # * SND-2, SND-3
-func _ready():
-	var dir = DirAccess.open(music_directory)
-	for fname in dir.get_files():
+func _ready() -> void:
+	var dir := DirAccess.open(music_directory)
+	for fname : String in dir.get_files():
 		if fname.ends_with(".import"):
 			fname = fname.get_basename()
 			if fname.get_basename() == first_song_name:
@@ -91,7 +91,7 @@ func set_startup_music(play : bool) -> void:
 		_has_startup_happened = true
 		set_paused(not play)
 
-func _on_audio_stream_player_finished():
+func _on_audio_stream_player_finished() -> void:
 	song_finished.emit(_selected_track)
 	if _auto_play_next_song:
 		select_next_song()

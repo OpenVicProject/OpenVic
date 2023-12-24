@@ -10,7 +10,7 @@ var current_session_tag : StringName
 var _save_dictionary : Dictionary = {}
 var _dirty_save : SaveResource
 
-func _ready():
+func _ready() -> void:
 	var saves_dir_path : String = ProjectSettings.get_setting_with_override(save_directory_setting)
 	assert(saves_dir_path != null, "'%s' setting could not be found." % save_directory_setting)
 

@@ -22,14 +22,14 @@ func start_loading_screen(thread_safe_function : Callable) -> void:
 
 	thread.start(thread_safe_function)
 
-func try_update_loading_screen(percent_complete: float, quote_should_change = false):
+func try_update_loading_screen(percent_complete: float, quote_should_change := false) -> void:
 	# forces the function to behave as if deferred
 	await get_tree().process_frame
 	progress_bar.value = percent_complete
 	if quote_should_change:
 		quote_label.text = quotes[randi() % quotes.size()]
 
-func _ready():
+func _ready() -> void:
 	if Engine.is_editor_hint(): return
 	thread = Thread.new()
 	# FS-3, UI-30, UIFUN-35
@@ -39,6 +39,6 @@ func _ready():
 		quotes = [""]
 	animation_player.play("loadingscreen_gear")
 
-func _exit_tree():
+func _exit_tree() -> void:
 	if thread != null and thread.is_started():
 		thread.wait_to_finish()

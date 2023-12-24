@@ -23,12 +23,12 @@ static func load_localisation(dir_path : String) -> void:
 # REQUIREMENTS
 # * SS-57
 # * FS-17
-static func initialize():
+static func initialize() -> void:
 	var localisation_dir_path : String = ProjectSettings.get_setting("internationalization/locale/localisation_path", "")
 	if localisation_dir_path.is_empty():
 		push_error("internationalization/locale/localisation_path setting is empty!")
 	else:
 		Localisation.load_localisation(localisation_dir_path)
 
-static func tr_number(num) -> String:
+static func tr_number(num : Variant) -> String:
 	return TextServerManager.get_primary_interface().format_number(str(num))
