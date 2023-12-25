@@ -37,7 +37,7 @@ namespace OpenVic {
 		/* Search for a GFX::MaskedFlag with the specfied name and, if successful, set it using set_gfx_masked_flag. */
 		godot::Error set_gfx_masked_flag_name(godot::String const& gfx_masked_flag_name);
 
-		/* Return the name of the GFX::MaskedFlag, or an empty String if it's null */
+		/* Return the name of the GFX::MaskedFlag, or an empty String if it's null. */
 		godot::String get_gfx_masked_flag_name() const;
 
 		/* Set flag_country and flag_type and update the combined image to use that flag, or no flag if it doesn't exist. */
@@ -49,7 +49,14 @@ namespace OpenVic {
 			godot::String const& new_flag_country_name, godot::StringName const& new_flag_type
 		);
 
-		/* Return the name of the selected flag's country, or an empty String if it's null */
+		/* Look up the specified country's current flag type, then call set_flag_country_and_type
+		 * with the country and its flag type as arguments. */
+		godot::Error set_flag_country(Country const* new_flag_country);
+
+		/* Look up the country with the specified identifier, then call set_flag_country with the country its argument. */
+		godot::Error set_flag_country_name(godot::String const& new_flag_country_name);
+
+		/* Return the name of the selected flag's country, or an empty String if it's null. */
 		godot::String get_flag_country_name() const;
 	};
 }

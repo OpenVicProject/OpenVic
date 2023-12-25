@@ -122,3 +122,18 @@ Ref<FontFile> Utilities::load_godot_font(String const& fnt_path, Ref<Image> cons
 	}
 	return font;
 }
+
+Ref<Image> Utilities::make_solid_colour_image(Color const& colour, int32_t width, int32_t height, Image::Format format) {
+	const Ref<Image> result = Image::create(width, height, false, format);
+	ERR_FAIL_NULL_V(result, nullptr);
+	result->fill(colour);
+	return result;
+}
+
+Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int32_t width, int32_t height, Image::Format format) {
+	const Ref<Image> image = make_solid_colour_image(colour, width, height, format);
+	ERR_FAIL_NULL_V(image, nullptr);
+	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);
+	ERR_FAIL_NULL_V(result, nullptr);
+	return result;
+}

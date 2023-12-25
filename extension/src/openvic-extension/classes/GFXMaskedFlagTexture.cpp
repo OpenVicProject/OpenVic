@@ -1,10 +1,9 @@
 #include "GFXMaskedFlagTexture.hpp"
 
-#include <godot_cpp/variant/utility_functions.hpp>
-
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -66,6 +65,7 @@ void GFXMaskedFlagTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_gfx_masked_flag_name);
 
 	OV_BIND_METHOD(GFXMaskedFlagTexture::set_flag_country_name_and_type, { "new_flag_country_name", "new_flag_type" });
+	OV_BIND_METHOD(GFXMaskedFlagTexture::set_flag_country_name, { "new_flag_country_name" });
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_country_name);
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_type);
 }
@@ -123,12 +123,8 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_fl
 	if (gfx_masked_flag_name.is_empty()) {
 		return set_gfx_masked_flag(nullptr);
 	}
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	GFX::Sprite const* sprite = game_singleton->get_game_manager().get_ui_manager().get_sprite_by_identifier(
-		godot_to_std_string(gfx_masked_flag_name)
-	);
-	ERR_FAIL_NULL_V_MSG(sprite, FAILED, vformat("GFX sprite not found: %s", gfx_masked_flag_name));
+	GFX::Sprite const* sprite = UITools::get_gfx_sprite(gfx_masked_flag_name);
+	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::MaskedFlag const* new_masked_flag = sprite->cast_to<GFX::MaskedFlag>();
 	ERR_FAIL_NULL_V_MSG(
 		new_masked_flag, FAILED, vformat(
@@ -158,6 +154,7 @@ Error GFXMaskedFlagTexture::set_flag_country_and_type(Country const* new_flag_co
 		flag_type = new_flag_type;
 		flag_image = new_flag_image;
 	} else {
+		// TODO - use REB flag as default/error flag
 		flag_country = nullptr;
 		flag_type = String {};
 		flag_image.unref();
@@ -176,6 +173,24 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(String const& new_fla
 	);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
 	return set_flag_country_and_type(new_flag_country, new_flag_type);
+}
+
+Error GFXMaskedFlagTexture::set_flag_country(Country const* new_flag_country) {
+	// TODO - get country's current flag type from the game state
+	return set_flag_country_and_type( new_flag_country, {});
+}
+
+Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country_name) {
+	if (new_flag_country_name.is_empty()) {
+		return set_flag_country(nullptr);
+	}
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, FAILED);
+	Country const* new_flag_country = game_singleton->get_game_manager().get_country_manager().get_country_by_identifier(
+		godot_to_std_string(new_flag_country_name)
+	);
+	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
+	return set_flag_country(new_flag_country);
 }
 
 String GFXMaskedFlagTexture::get_flag_country_name() const {

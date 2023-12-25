@@ -1,11 +1,9 @@
 #include "GFXPieChartTexture.hpp"
 
-#include <godot_cpp/variant/utility_functions.hpp>
-
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-extension/utility/UITools.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -14,14 +12,14 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
-#define PI std::numbers::pi_v<float>
+static constexpr float PI = std::numbers::pi_v<float>;
 
 Error GFXPieChartTexture::_generate_pie_chart_image() {
 	ERR_FAIL_NULL_V(gfx_pie_chart, FAILED);
-	if (gfx_pie_chart->get_size() <= 0) {
-		UtilityFunctions::push_error("Invalid GFX::PieChart size for GFXPieChartTexture - ", gfx_pie_chart->get_size());
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		gfx_pie_chart->get_size() <= 0, FAILED,
+		vformat("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
+	);
 	const int32_t pie_chart_size = 2 * gfx_pie_chart->get_size();
 	bool can_update = true;
 	if (
@@ -75,7 +73,7 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 	return OK;
 }
 
-Error GFXPieChartTexture::set_slices(Array const& new_slices) {
+Error GFXPieChartTexture::set_slices_array(TypedArray<Dictionary> const& new_slices) {
 	static const StringName colour_key = "colour";
 	static const StringName weight_key = "weight";
 
@@ -83,15 +81,11 @@ Error GFXPieChartTexture::set_slices(Array const& new_slices) {
 	total_weight = 0.0f;
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
-		if (!slice_dict.has(colour_key) || !slice_dict.has(weight_key)) {
-			UtilityFunctions::push_error("Invalid slice keys at index ", i, " - ", slice_dict);
-			continue;
-		}
+		ERR_CONTINUE_MSG(
+			!slice_dict.has(colour_key) || !slice_dict.has(weight_key), vformat("Invalid slice keys at index %d", i)
+		);
 		const slice_t slice = std::make_pair(slice_dict[colour_key], slice_dict[weight_key]);
-		if (slice.second <= 0.0f) {
-			UtilityFunctions::push_error("Invalid slice weight at index ", i, " - ", slice.second);
-			continue;
-		}
+		ERR_CONTINUE_MSG(slice.second <= 0.0f, vformat("Invalid slice values at index %d", i));
 		total_weight += slice.second;
 		slices.emplace_back(std::move(slice));
 	}
@@ -104,10 +98,10 @@ void GFXPieChartTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXPieChartTexture::set_gfx_pie_chart_name, { "gfx_pie_chart_name" });
 	OV_BIND_METHOD(GFXPieChartTexture::get_gfx_pie_chart_name);
 
-	OV_BIND_METHOD(GFXPieChartTexture::set_slices, { "new_slices" });
+	OV_BIND_METHOD(GFXPieChartTexture::set_slices_array, { "new_slices" });
 }
 
-GFXPieChartTexture::GFXPieChartTexture() : total_weight { 0.0f } {}
+GFXPieChartTexture::GFXPieChartTexture() : gfx_pie_chart { nullptr }, total_weight { 0.0f } {}
 
 Ref<GFXPieChartTexture> GFXPieChartTexture::make_gfx_pie_chart_texture(GFX::PieChart const* gfx_pie_chart) {
 	Ref<GFXPieChartTexture> pie_chart_texture;
@@ -146,12 +140,8 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	if (gfx_pie_chart_name.is_empty()) {
 		return set_gfx_pie_chart(nullptr);
 	}
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	GFX::Sprite const* sprite = game_singleton->get_game_manager().get_ui_manager().get_sprite_by_identifier(
-		godot_to_std_string(gfx_pie_chart_name)
-	);
-	ERR_FAIL_NULL_V_MSG(sprite, FAILED, vformat("GFX sprite not found: %s", gfx_pie_chart_name));
+	GFX::Sprite const* sprite = UITools::get_gfx_sprite(gfx_pie_chart_name);
+	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::PieChart const* new_pie_chart = sprite->cast_to<GFX::PieChart>();
 	ERR_FAIL_NULL_V_MSG(
 		new_pie_chart, FAILED, vformat(

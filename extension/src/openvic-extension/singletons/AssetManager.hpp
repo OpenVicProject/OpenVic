@@ -44,17 +44,6 @@ namespace OpenVic {
 		 * or texture creation fails. */
 		godot::Ref<godot::ImageTexture> get_texture(godot::StringName path);
 
-		/* Extract the specified frame of the texture, which is treated as a single row of frame_count frames. */
-		static godot::Ref<godot::AtlasTexture> make_icon(
-			godot::Ref<godot::Texture2D> texture, GFX::frame_t frame, GFX::frame_t frame_count
-		);
-
-		/* Load a texture as with get_texture, and extract the specified frame as with make_icon. */
-		godot::Ref<godot::AtlasTexture> get_icon(godot::StringName path, GFX::frame_t frame, GFX::frame_t frame_count);
-
-		/* Load a texture as with get_texture if frame_count <= 1 otherwise as with get_icon. */
-		godot::Ref<godot::Texture2D> get_texture_or_icon(godot::StringName path, GFX::frame_t frame, GFX::frame_t frame_count);
-
 		/* Search for and load a font with the specified name from the game defines' font directory, first checking the
 		 * AssetManager's font cache in case it has already been loaded, and returning nullptr if font loading fails. */
 		godot::Ref<godot::Font> get_font(godot::StringName name);

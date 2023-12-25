@@ -8,6 +8,8 @@
 
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -48,7 +50,9 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 
-	OV_BIND_METHOD(GameSingleton::expand_building, { "province_index", "building_type_identifier" });
+	OV_BIND_METHOD(GameSingleton::get_province_building_count);
+	OV_BIND_METHOD(GameSingleton::get_province_building_identifier, { "building_index" });
+	OV_BIND_METHOD(GameSingleton::expand_selected_province_building, { "building_index" });
 	OV_BIND_METHOD(GameSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_rgo_owner_pop_icon_index);
@@ -135,51 +139,23 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
 }
 
-template<std::derived_from<HasIdentifierAndColour> T>
-static Array _distribution_to_pie_chart_array(fixed_point_map_t<T const*> const& dist) {
-	using entry_t = std::pair<T const*, fixed_point_t>;
-	std::vector<entry_t> sorted_dist;
-	sorted_dist.reserve(dist.size());
-	for (entry_t const& entry : dist) {
-		if (entry.first != nullptr) {
-			sorted_dist.push_back(entry);
-		} else {
-			UtilityFunctions::push_error("Null distribution key with value ", entry.second.to_float());
-		}
-	}
-	std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
-		return lhs.second < rhs.second;
-	});
-	static const StringName identifier_key = "identifier";
-	static const StringName colour_key = "colour";
-	static const StringName weight_key = "weight";
-	Array array;
-	for (auto const& [key, val] : sorted_dist) {
-		Dictionary sub_dict;
-		sub_dict[identifier_key] = std_view_to_godot_string(key->get_identifier());
-		sub_dict[colour_key] = Utilities::to_godot_color(key->get_colour());
-		sub_dict[weight_key] = val.to_float();
-		array.push_back(sub_dict);
-	}
-	return array;
-}
-
 Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_province_key = "province";
 	static const StringName province_info_region_key = "region";
-	static const StringName province_info_controller_key = "controller";
-	static const StringName province_info_life_rating_key = "life_rating";
+	static const StringName province_info_slave_status_key = "slave_status";
+	static const StringName province_info_colony_status_key = "colony_status";
 	static const StringName province_info_terrain_type_key = "terrain_type";
+	static const StringName province_info_life_rating_key = "life_rating";
+	static const StringName province_info_controller_key = "controller";
+	static const StringName province_info_rgo_name_key = "rgo_name";
+	static const StringName province_info_rgo_icon_key = "rgo_icon";
 	static const StringName province_info_crime_name_key = "crime_name";
 	static const StringName province_info_crime_icon_key = "crime_icon";
 	static const StringName province_info_total_population_key = "total_population";
 	static const StringName province_info_pop_types_key = "pop_types";
 	static const StringName province_info_pop_ideologies_key = "pop_ideologies";
 	static const StringName province_info_pop_cultures_key = "pop_cultures";
-	static const StringName province_info_rgo_name_key = "rgo_name";
-	static const StringName province_info_rgo_icon_key = "rgo_icon";
-	static const StringName province_info_colony_status_key = "colony_status";
-	static const StringName province_info_slave_status_key = "slave_status";
+	static const StringName province_info_cores_key = "cores";
 	static const StringName province_info_buildings_key = "buildings";
 
 	Province const* province = game_manager.get_map().get_province_by_index(index);
@@ -195,6 +171,17 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_region_key] = std_view_to_godot_string(region->get_identifier());
 	}
 
+	ret[province_info_slave_status_key] = province->get_slave();
+
+	ret[province_info_colony_status_key] = static_cast<int32_t>(province->get_colony_status());
+
+	TerrainType const* terrain_type = province->get_terrain_type();
+	if (terrain_type != nullptr) {
+		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
+	}
+
+	ret[province_info_life_rating_key] = province->get_life_rating();
+
 	Country const* controller = province->get_controller();
 	if (controller != nullptr) {
 		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
@@ -206,37 +193,39 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
 	}
 
-	ret[province_info_life_rating_key] = province->get_life_rating();
-
-	TerrainType const* terrain_type = province->get_terrain_type();
-	if (terrain_type != nullptr) {
-		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
-	}
-
 	Crime const* crime = province->get_crime();
 	if (crime != nullptr) {
 		ret[province_info_crime_name_key] = std_view_to_godot_string(crime->get_identifier());
 		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
 	}
 
-	ret[province_info_colony_status_key] = static_cast<int32_t>(province->get_colony_status());
-	ret[province_info_slave_status_key] = province->get_slave();
-
 	ret[province_info_total_population_key] = province->get_total_population();
+
 	fixed_point_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
 	if (!pop_types.empty()) {
-		ret[province_info_pop_types_key] = _distribution_to_pie_chart_array(pop_types);
-	}
-	fixed_point_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
-	if (!ideologies.empty()) {
-		ret[province_info_pop_ideologies_key] = _distribution_to_pie_chart_array(ideologies);
-	}
-	fixed_point_map_t<Culture const*> const& cultures = province->get_culture_distribution();
-	if (!cultures.empty()) {
-		ret[province_info_pop_cultures_key] = _distribution_to_pie_chart_array(cultures);
+		ret[province_info_pop_types_key] = GFXPieChartTexture::distribution_to_slices_array(pop_types);
 	}
 
-	static const StringName building_info_building_key = "building";
+	fixed_point_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
+	if (!ideologies.empty()) {
+		ret[province_info_pop_ideologies_key] = GFXPieChartTexture::distribution_to_slices_array(ideologies);
+	}
+
+	fixed_point_map_t<Culture const*> const& cultures = province->get_culture_distribution();
+	if (!cultures.empty()) {
+		ret[province_info_pop_cultures_key] = GFXPieChartTexture::distribution_to_slices_array(cultures);
+	}
+
+	std::vector<Country const*> const& cores = province->get_cores();
+	if (!cores.empty()) {
+		PackedStringArray cores_array;
+		cores_array.resize(cores.size());
+		for (size_t idx = 0; idx < cores.size(); ++idx) {
+			cores_array[idx] = std_view_to_godot_string(cores[idx]->get_identifier());
+		}
+		ret[province_info_cores_key] = cores_array;
+	}
+
 	static const StringName building_info_level_key = "level";
 	static const StringName building_info_expansion_state_key = "expansion_state";
 	static const StringName building_info_start_date_key = "start_date";
@@ -245,13 +234,14 @@ Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
 
 	std::vector<BuildingInstance> const& buildings = province->get_buildings();
 	if (!buildings.empty()) {
-		Array buildings_array;
+		/* This system relies on the province buildings all being present in the right order. It will have to
+		 * be changed if we want to support variable combinations and permutations of province buildings. */
+		TypedArray<Dictionary> buildings_array;
 		buildings_array.resize(buildings.size());
 		for (size_t idx = 0; idx < buildings.size(); ++idx) {
 			BuildingInstance const& building = buildings[idx];
 
 			Dictionary building_dict;
-			building_dict[building_info_building_key] = std_view_to_godot_string(building.get_identifier());
 			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
@@ -321,14 +311,14 @@ Error GameSingleton::_update_colour_image() {
 		return FAILED;
 	}
 	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
-	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * 4);
-	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_t);
+	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * CHAR_BIT / 2);
+	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_argb_t);
 	/* Province count + null province, rounded up to next multiple of PROVINCE_INDEX_SQRT.
 	 * Rearranged from: (map.get_province_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
 	static const int32_t colour_image_height = (map.get_province_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
 
 	static PackedByteArray colour_data_array;
-	static const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_t);
+	static const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
 	colour_data_array.resize(colour_data_array_size);
 
 	Error err = OK;
@@ -386,12 +376,25 @@ void GameSingleton::set_selected_province(int32_t index) {
 	emit_signal("province_selected", index);
 }
 
-Error GameSingleton::expand_building(int32_t province_index, String const& building_type_identifier) {
-	if (!game_manager.expand_building(province_index, godot_to_std_string(building_type_identifier))) {
-		UtilityFunctions::push_error("Failed to expand ", building_type_identifier, " at province index ", province_index);
-		return FAILED;
+int32_t GameSingleton::get_province_building_count() const {
+	return game_manager.get_economy_manager().get_building_type_manager().get_province_building_types().size();
+}
+
+String GameSingleton::get_province_building_identifier(int32_t index) const {
+	std::vector<BuildingType const*> const& province_building_types =
+		game_manager.get_economy_manager().get_building_type_manager().get_province_building_types();
+	ERR_FAIL_COND_V_MSG(
+		index < 0 || index >= province_building_types.size(), {}, vformat("Invalid province building index: %d", index)
+	);
+	return std_view_to_godot_string(province_building_types[index]->get_identifier());
+}
+
+Error GameSingleton::expand_selected_province_building(int32_t building_index) {
+	const bool ret = game_manager.expand_selected_province_building(building_index);
+	if (!ret) {
+		UtilityFunctions::push_error("Failed to expand the currently selected province's building index ", building_index);
 	}
-	return OK;
+	return ERR(ret);
 }
 
 int32_t GameSingleton::get_slave_pop_icon_index() const {
@@ -493,7 +496,7 @@ Error GameSingleton::_load_map_images(bool flip_vertical) {
 
 	Map::shape_pixel_t const* province_shape_data = game_manager.get_map().get_province_shape_image().data();
 	const Vector2i divided_dims = province_dims / image_subdivisions;
-	Array province_shape_images;
+	TypedArray<Image> province_shape_images;
 	province_shape_images.resize(image_subdivisions.x * image_subdivisions.y);
 	for (int32_t v = 0; v < image_subdivisions.y; ++v) {
 		for (int32_t u = 0; u < image_subdivisions.x; ++u) {
@@ -561,12 +564,14 @@ Error GameSingleton::_load_terrain_variants() {
 	}
 	const int32_t slice_size = sheet_width / SHEET_DIMS;
 
-	Array terrain_images;
+	TypedArray<Image> terrain_images;
 	{
-		static constexpr colour_t TERRAIN_WATER_INDEX_COLOUR = 0xFFFFFF;
-		Ref<Image> water_image = Image::create(slice_size, slice_size, false, terrain_sheet->get_format());
+		// TODO - load "map/terrain/water.dds" instead of using a solid colour (issue is that it's 512x512
+		//        while the texturesheet slices are 256x256, so they can't share a Texture2DArray)
+		const Ref<Image> water_image = Utilities::make_solid_colour_image(
+			{ 0.1f, 0.1f, 0.5f }, slice_size, slice_size, terrain_sheet->get_format()
+		);
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
-		water_image->fill({ 0.1f, 0.1f, 0.5f });
 		terrain_images.append(water_image);
 	}
 	Error err = OK;

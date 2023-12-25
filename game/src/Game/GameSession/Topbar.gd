@@ -7,7 +7,7 @@ var _speed_indicator_texture : GFXIconTexture
 var _date_label : Label
 var _country_name_label : Label
 
-func _ready():
+func _ready() -> void:
 	GameSingleton.state_updated.connect(_update_info)
 
 	add_gui_element("topbar.gui", "topbar")
@@ -19,30 +19,30 @@ func _ready():
 
 	const player_country : String = "SLV"
 
-	var player_flag_texture : GFXMaskedFlagTexture = get_gfx_masked_flag_texture_from_node(^"./topbar/player_flag")
+	var player_flag_texture : GFXMaskedFlagTexture = get_gfx_masked_flag_texture_from_nodepath(^"./topbar/player_flag")
 	if player_flag_texture:
-		player_flag_texture.set_flag_country_name_and_type(player_country, &"")
+		player_flag_texture.set_flag_country_name(player_country)
 
-	_speed_up_button = get_button_node(^"./topbar/button_speedup")
+	_speed_up_button = get_button_from_nodepath(^"./topbar/button_speedup")
 	if _speed_up_button:
 		_speed_up_button.pressed.connect(_on_increase_speed_button_pressed)
 
-	_speed_down_button = get_button_node(^"./topbar/button_speeddown")
+	_speed_down_button = get_button_from_nodepath(^"./topbar/button_speeddown")
 	if _speed_down_button:
 		_speed_down_button.pressed.connect(_on_decrease_speed_button_pressed)
 
-	var pause_bg_button : Button = get_button_node(^"./topbar/pause_bg")
+	var pause_bg_button : Button = get_button_from_nodepath(^"./topbar/pause_bg")
 	if pause_bg_button:
 		pause_bg_button.pressed.connect(_on_play_pause_button_pressed)
 
-	_date_label = get_label_node(^"./topbar/DateText")
+	_date_label = get_label_from_nodepath(^"./topbar/DateText")
 
-	_country_name_label = get_label_node(^"./topbar/CountryName")
+	_country_name_label = get_label_from_nodepath(^"./topbar/CountryName")
 	if _country_name_label:
 		_country_name_label.text = player_country
 
-	_speed_indicator_button = get_button_node(^"./topbar/speed_indicator")
-	_speed_indicator_texture = get_gfx_icon_texture_from_node(^"./topbar/speed_indicator")
+	_speed_indicator_button = get_button_from_nodepath(^"./topbar/speed_indicator")
+	_speed_indicator_texture = get_gfx_icon_texture_from_nodepath(^"./topbar/speed_indicator")
 
 func _update_info() -> void:
 	if _date_label:
@@ -64,21 +64,21 @@ func _update_info() -> void:
 
 # REQUIREMENTS:
 # * UIFUN-71
-func _on_play_pause_button_pressed():
+func _on_play_pause_button_pressed() -> void:
 	print("Toggling pause!")
 	GameSingleton.toggle_paused()
 	_update_info()
 
 # REQUIREMENTS:
 # * UIFUN-72
-func _on_increase_speed_button_pressed():
+func _on_increase_speed_button_pressed() -> void:
 	print("Speed up!")
 	GameSingleton.increase_speed()
 	_update_info()
 
 # REQUIREMENTS:
 # * UIFUN-73
-func _on_decrease_speed_button_pressed():
+func _on_decrease_speed_button_pressed() -> void:
 	print("Speed down!")
 	GameSingleton.decrease_speed()
 	_update_info()

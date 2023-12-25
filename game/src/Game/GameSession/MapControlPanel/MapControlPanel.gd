@@ -24,10 +24,10 @@ func _add_mapmode_button(identifier : String) -> void:
 	if _mapmode_button_group.get_pressed_button() == null:
 		button.button_pressed = true
 
-func _ready():
+func _ready() -> void:
 	_mapmode_button_group = ButtonGroup.new()
 	_mapmode_button_group.pressed.connect(_mapmode_pressed)
-	for index in GameSingleton.get_mapmode_count():
+	for index : int in GameSingleton.get_mapmode_count():
 		_add_mapmode_button(GameSingleton.get_mapmode_identifier(index))
 
 # REQUIREMENTS:
