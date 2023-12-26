@@ -114,6 +114,12 @@ jobs:
         if: ${{ matrix.platform == 'windows' }}
         run: |
           Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
+      
+      - name: Sign Binary
+        if: ${{ matrix.platform == 'macos' }}
+        uses: OpenVicProject/apple-code-sign-action@main
+        with:
+          input_path: ${{ github.workspace }}/game/bin/openvic/*
 
       - name: Upload extension artifact
         uses: actions/upload-artifact@v3
