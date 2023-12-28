@@ -1,0 +1,44 @@
+Budget:
+  Loan interest per day:
+    formula: (NBD + FBD * (1 + FIM)) * max(0.01, LBI+BIM)/30
+    NBD: National bank debt = debt owed to your national bank.
+    FBD: Foreign bank debt = debt owed to foreign national banks and private investors.
+    1+FIM: Foreign interest modifier = sum of loan_interest modifiers from non-tech
+    max(0.01: Hardcoded value. Reasoning unknown.
+    LBI: defines.economy.LOAN_BASE_INTEREST
+    BIM: Base interest modifier = sum of loan_interest modifiers from technology.
+    /30: Hardcoded value to represent days in a month.
+  Gold income daily:
+    formula: MGQ * GOLD_TO_CASH_RATE
+    MGQ: Money good quanity = total production of goods with money = yes
+    GOLD_TO_CASH_RATE: defines.country.GOLD_TO_CASH_RATE
+Diplomacy:
+  Monthly diplomatic points gain:
+    formula: defines.country.BASE_MONTHLY_DIPLOPOINTS * (1 + sum of diplomatic_points + sum of diplomatic_points_modifier)
+  Total base influence gain:
+    formula: defines.country.BASE_GREATPOWER_DAILY_INFLUENCE * (1 + sum of influence) * (1 + sum of influence_modifier)
+  Base influence gain per country:
+    if total priority bars > 0:
+      formula: Total base influence gain * priority bars / total priority bars
+    else:
+      formula: Total base influence gain / number of countries (excluding banned)
+  Colonisable life rating:
+    formula: defines.country.COLONIAL_LIFERATING + sum of colonial_life_rating
+POPs:
+  Monthly pop growth:
+    formula: BASE_POPGROWTH + (min(40, LR * (1 + LRM)) - MIN_LIFE_RATING_FOR_GROWTH) * LIFE_RATING_GROWTH_BONUS + population_growth + pop_growth + global_population_growth/10
+    BASE_POPGROWTH: defines.pops.BASE_POPGROWTH
+    min(40,: Hardcoded limit to life rating.Reasoning unknown.
+    LR: Province life rating
+    1+LRM: Life rating modifier = sum of life_rating modifiers
+    MIN_LIFE_RATING_FOR_GROWTH: defines.pops.MIN_LIFE_RATING_FOR_GROWTH
+    LIFE_RATING_GROWTH_BONUS: defines.pops.LIFE_RATING_GROWTH_BONUS
+    population_growth: Sum of population_growth modifiers
+    pop_growth: Sum of pop_growth modifiers
+    global_population_growth/10: Sum of global_population_growth modifiers
+  Consciousness from literacy:
+    formula: defines.pops.CON_LITERACY * Plurality * POP literacy * (1 + literacy_con_impact)
+  Life needs scalar:
+    formula: (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand) * defines.pop.BASE_GOODS_DEMAND * POP size / 200000
+  Everyday & luxury needs scalar:
+    formula: Life needs scalar * (1 + number of inventions * defines.pops.INVENTION_IMPACT_ON_DEMAND)
