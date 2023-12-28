@@ -33,10 +33,9 @@ LoadLocalisation::~LoadLocalisation() {
 Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> translation) const {
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
-	if (err != OK || file.is_null()) {
-		UtilityFunctions::push_error("Failed to load localisation file: ", file_path);
-		return err == OK ? FAILED : err;
-	}
+	ERR_FAIL_COND_V_MSG(
+		err != OK  || file.is_null(), err == OK ? FAILED : err, vformat("Failed to open localisation file: %s", file_path)
+	);
 	int line_number = 0;
 	while (!file->eof_reached()) {
 		static const String delimeter = ";";
@@ -81,10 +80,10 @@ Error LoadLocalisation::load_file(String const& file_path, String const& locale)
  * FS-18, FS-24, FS-25
  */
 Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) const {
-	if (!DirAccess::dir_exists_absolute(dir_path)) {
-		UtilityFunctions::push_error("Locale directory does not exist: ", dir_path);
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		!DirAccess::dir_exists_absolute(dir_path), FAILED, vformat("Locale directory does not exist: %s", dir_path)
+	);
+
 	/* This will add the locale to the list of loaded locales even if it has no
 	 * localisation files - this is useful for testing other aspects of localisation
 	 * such as number formatting and text direction. To disable this behaviour and
@@ -93,10 +92,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 	 */
 	const Ref<Translation> translation = _get_translation(locale);
 	const PackedStringArray files = DirAccess::get_files_at(dir_path);
-	if (files.size() < 1) {
-		UtilityFunctions::push_error("Locale directory does not contain any files: ", dir_path);
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(files.size() < 1, FAILED, vformat("Locale directory does not contain any files: %s", dir_path));
 	Error err = OK;
 	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
@@ -112,15 +108,13 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
  * FS-23
  */
 Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
-	if (!DirAccess::dir_exists_absolute(dir_path)) {
-		UtilityFunctions::push_error("Localisation directory does not exist: ", dir_path);
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		!DirAccess::dir_exists_absolute(dir_path), FAILED, vformat("Localisation directory does not exist: %s", dir_path)
+	);
 	PackedStringArray const dirs = DirAccess::get_directories_at(dir_path);
-	if (dirs.size() < 1) {
-		UtilityFunctions::push_error("Localisation directory does not contain any sub-directories: ", dir_path);
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		dirs.size() < 1, FAILED, vformat("Localisation directory does not contain any sub-directories: %s", dir_path)
+	);
 	TranslationServer* server = TranslationServer::get_singleton();
 	ERR_FAIL_NULL_V(server, FAILED);
 	Error err = OK;
@@ -138,10 +132,9 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	Ref<Translation>& translation = translations[locale];
 	if (translation.is_null()) {
 		translation = _singleton->_get_translation(Dataloader::locale_names[locale]);
-		if (translation.is_null()) {
-			UtilityFunctions::push_error("Failed to get translation object: ", Dataloader::locale_names[locale]);
-			return false;
-		}
+		ERR_FAIL_NULL_V_MSG(
+			translation, false, vformat("Failed to get translation object: %s", Dataloader::locale_names[locale])
+		);
 	}
 	const StringName godot_key = Utilities::std_view_to_godot_string_name(key);
 	const StringName godot_localisation = Utilities::std_view_to_godot_string_name(localisation);

@@ -76,11 +76,8 @@ Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(GFX
 	Ref<GFXMaskedFlagTexture> masked_flag_texture;
 	masked_flag_texture.instantiate();
 	ERR_FAIL_NULL_V(masked_flag_texture, nullptr);
-	if (masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag) == OK) {
-		return masked_flag_texture;
-	} else {
-		return nullptr;
-	}
+	ERR_FAIL_COND_V(masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag) != OK, nullptr);
+	return masked_flag_texture;
 }
 
 void GFXMaskedFlagTexture::clear() {

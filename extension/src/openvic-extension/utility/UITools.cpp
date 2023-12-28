@@ -86,8 +86,7 @@ static T* new_control(GUI::Element const& element, String const& name) {
 	if (it != orientation_map.end()) {
 		node->set_anchors_and_offsets_preset(it->second);
 	} else {
-		UtilityFunctions::push_error("Invalid orientation for GUI element ",
-			std_view_to_godot_string(element.get_name()));
+		UtilityFunctions::push_error("Invalid orientation for GUI element ", std_view_to_godot_string(element.get_name()));
 	}
 	node->set_position(Utilities::to_godot_fvec2(element.get_position()));
 	node->set_h_size_flags(Control::SizeFlags::SIZE_SHRINK_BEGIN);
@@ -426,12 +425,10 @@ static bool generate_element(GUI::Element const* element, String const& name, As
 		{ GUI::Window::get_type_static(), &generate_window }
 	};
 	const decltype(type_map)::const_iterator it = type_map.find(element->get_type());
-	if (it != type_map.end()) {
-		return it->second({ *element, name, asset_manager, result });
-	} else {
-		UtilityFunctions::push_error("Invalid GUI element type: ", std_view_to_godot_string(element->get_type()));
-		return false;
-	}
+	ERR_FAIL_COND_V_MSG(
+		it == type_map.end(), false, vformat("Invalid GUI element type: %s", std_view_to_godot_string(element->get_type()))
+	);
+	return it->second({ *element, name, asset_manager, result });
 }
 
 bool UITools::generate_gui_element(
