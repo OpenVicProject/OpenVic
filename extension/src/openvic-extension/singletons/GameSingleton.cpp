@@ -118,10 +118,7 @@ Dataloader const& GameSingleton::get_dataloader() const {
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
 	Bookmark const* bookmark = game_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index);
-	if (bookmark == nullptr) {
-		UtilityFunctions::push_error("Failed to get bookmark with index: ", bookmark_index);
-		return FAILED;
-	}
+	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.load_bookmark(bookmark);
 	for (Province& province : game_manager.get_map().get_provinces()) {
 		province.set_crime(
@@ -272,24 +269,18 @@ Ref<Texture> GameSingleton::get_terrain_texture() const {
 }
 
 Ref<Image> GameSingleton::get_flag_image(Country const* country, StringName const& flag_type) const {
-	if (country != nullptr) {
-		const typename decltype(flag_image_map)::const_iterator it = flag_image_map.find(country);
-		if (it != flag_image_map.end()) {
-			const typename decltype(it->second)::const_iterator it2 = it->second.find(flag_type);
-			if (it2 != it->second.end()) {
-				return it2->second;
-			} else {
-				UtilityFunctions::push_error(
-					"Failed to find ", flag_type, " flag for country: ", std_view_to_godot_string(country->get_identifier())
-				);
-			}
-		} else {
-			UtilityFunctions::push_error(
-				"Failed to find flags for country: ", std_view_to_godot_string(country->get_identifier())
-			);
-		}
-	}
-	return nullptr;
+	ERR_FAIL_NULL_V(country, nullptr);
+	const typename decltype(flag_image_map)::const_iterator it = flag_image_map.find(country);
+	ERR_FAIL_COND_V_MSG(
+		it == flag_image_map.end(), nullptr,
+		vformat("Failed to find flags for country: %s", std_view_to_godot_string(country->get_identifier()))
+	);
+	const typename decltype(it->second)::const_iterator it2 = it->second.find(flag_type);
+	ERR_FAIL_COND_V_MSG(
+		it2 == it->second.end(), nullptr,
+		vformat("Failed to find %s flag for country: %s", flag_type, std_view_to_godot_string(country->get_identifier()))
+	);
+	return it2->second;
 }
 
 Vector2i GameSingleton::get_province_shape_image_subdivisions() const {
@@ -306,10 +297,10 @@ Ref<Texture> GameSingleton::get_province_colour_texture() const {
 
 Error GameSingleton::_update_colour_image() {
 	Map const& map = game_manager.get_map();
-	if (!map.provinces_are_locked()) {
-		UtilityFunctions::push_error("Cannot generate province colour image before provinces are locked!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		!map.provinces_are_locked(), FAILED, "Cannot generate province colour image before provinces are locked!"
+	);
+
 	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * CHAR_BIT / 2);
 	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_argb_t);
@@ -357,13 +348,9 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 
 Error GameSingleton::set_mapmode(String const& identifier) {
 	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_identifier(godot_to_std_string(identifier));
-	if (mapmode == nullptr) {
-		UtilityFunctions::push_error("Failed to set mapmode to: ", identifier);
-		return FAILED;
-	}
+	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
 	mapmode_index = mapmode->get_index();
-	_update_colour_image();
-	return OK;
+	return _update_colour_image();
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
@@ -390,37 +377,28 @@ String GameSingleton::get_province_building_identifier(int32_t index) const {
 }
 
 Error GameSingleton::expand_selected_province_building(int32_t building_index) {
-	const bool ret = game_manager.expand_selected_province_building(building_index);
-	if (!ret) {
-		UtilityFunctions::push_error("Failed to expand the currently selected province's building index ", building_index);
-	}
-	return ERR(ret);
+	ERR_FAIL_COND_V_MSG(
+		!game_manager.expand_selected_province_building(building_index), FAILED,
+		vformat("Failed to expand the currently selected province's building index %d", building_index)
+	);
+	return OK;
 }
 
 int32_t GameSingleton::get_slave_pop_icon_index() const {
 	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_slave_sprite();
-	if (sprite <= 0) {
-		UtilityFunctions::push_error("Slave sprite unset!");
-		return 0;
-	}
+	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Slave sprite unset!");
 	return sprite;
 }
 
 int32_t GameSingleton::get_administrative_pop_icon_index() const {
 	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_administrative_sprite();
-	if (sprite <= 0) {
-		UtilityFunctions::push_error("Administrative sprite unset!");
-		return 0;
-	}
+	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Administrative sprite unset!");
 	return sprite;
 }
 
 int32_t GameSingleton::get_rgo_owner_pop_icon_index() const {
 	const PopType::sprite_t sprite = game_manager.get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
-	if (sprite <= 0) {
-		UtilityFunctions::push_error("RGO owner sprite unset!");
-		return 0;
-	}
+	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
 }
 
@@ -473,10 +451,7 @@ void GameSingleton::try_tick() {
 }
 
 Error GameSingleton::_load_map_images(bool flip_vertical) {
-	if (province_shape_texture.is_valid()) {
-		UtilityFunctions::push_error("Map images have already been loaded!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(province_shape_texture.is_valid(), FAILED, "Map images have already been loaded!");
 
 	Error err = OK;
 
@@ -535,33 +510,26 @@ Error GameSingleton::_load_map_images(bool flip_vertical) {
 }
 
 Error GameSingleton::_load_terrain_variants() {
-	if (terrain_texture.is_valid()) {
-		UtilityFunctions::push_error("Terrain variants have already been loaded!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(terrain_texture.is_valid(), FAILED, "Terrain variants have already been loaded!");
 
-	static const String terrain_texturesheet_path = "map/terrain/texturesheet.tga";
+	static const StringName terrain_texturesheet_path = "map/terrain/texturesheet.tga";
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 	// Load the terrain texture sheet and prepare to slice it up
 	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path);
-	if (terrain_sheet.is_null()) {
-		UtilityFunctions::push_error("Failed to load terrain texture sheet: ", terrain_texturesheet_path);
-		return FAILED;
-	}
+	ERR_FAIL_NULL_V_MSG(terrain_sheet, FAILED, vformat("Failed to load terrain texture sheet: %s", terrain_texturesheet_path));
 
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
 	terrain_sheet->flip_y();
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
-	if (sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height) {
-		UtilityFunctions::push_error(
-			"Invalid terrain texture sheet dims: ", sheet_width, "x", sheet_height,
-			" (must be square with dims positive multiples of ", SHEET_DIMS, ")"
-		);
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED, vformat(
+			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)",
+			sheet_width, sheet_height, SHEET_DIMS
+		)
+	);
 	const int32_t slice_size = sheet_width / SHEET_DIMS;
 
 	TypedArray<Image> terrain_images;
@@ -588,29 +556,24 @@ Error GameSingleton::_load_terrain_variants() {
 	}
 
 	terrain_texture.instantiate();
-	if (terrain_texture->create_from_images(terrain_images) != OK) {
-		UtilityFunctions::push_error("Failed to create terrain texture array!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		terrain_texture->create_from_images(terrain_images) != OK, FAILED, "Failed to create terrain texture array!"
+	);
 	return err;
 }
 
 Error GameSingleton::_load_flag_images() {
-	if (!flag_image_map.empty()) {
-		UtilityFunctions::push_error("Flag images have already been loaded!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(!flag_image_map.empty(), FAILED, "Flag images have already been loaded!");
 
 	GovernmentTypeManager const& government_type_manager = game_manager.get_politics_manager().get_government_type_manager();
-	if (!government_type_manager.government_types_are_locked()) {
-		UtilityFunctions::push_error("Cannot load flag images before government types are locked!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		!government_type_manager.government_types_are_locked(), FAILED,
+		"Cannot load flag images before government types are locked!"
+	);
 	CountryManager const& country_manager = game_manager.get_country_manager();
-	if (!country_manager.countries_are_locked()) {
-		UtilityFunctions::push_error("Cannot load flag images before countries are locked!");
-		return FAILED;
-	}
+	ERR_FAIL_COND_V_MSG(
+		!country_manager.countries_are_locked(), FAILED, "Cannot load flag images before countries are locked!"
+	);
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
@@ -629,11 +592,8 @@ Error GameSingleton::_load_flag_images() {
 		std::map<StringName, Ref<Image>>& flag_images = flag_image_map[&country];
 		const String country_name = std_view_to_godot_string(country.get_identifier());
 		for (StringName const& flag_type : flag_types) {
-			String flag_path = flag_directory + country_name;
-			if (!flag_type.is_empty()) {
-				flag_path += flag_separator + flag_type;
-			}
-			flag_path += flag_extension;
+			const StringName flag_path =
+				flag_directory + country_name + (flag_type.is_empty() ? "" : flag_separator + flag_type) + flag_extension;
 			const Ref<Image> flag_image = asset_manager->get_image(flag_path);
 			if (flag_image.is_valid()) {
 				flag_images.emplace(flag_type, flag_image);
@@ -687,6 +647,6 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 	return err;
 }
 
-String GameSingleton::search_for_game_path(String hint_path) {
+String GameSingleton::search_for_game_path(String const& hint_path) {
 	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
 }

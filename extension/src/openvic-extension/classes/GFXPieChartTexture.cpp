@@ -107,11 +107,8 @@ Ref<GFXPieChartTexture> GFXPieChartTexture::make_gfx_pie_chart_texture(GFX::PieC
 	Ref<GFXPieChartTexture> pie_chart_texture;
 	pie_chart_texture.instantiate();
 	ERR_FAIL_NULL_V(pie_chart_texture, nullptr);
-	if (pie_chart_texture->set_gfx_pie_chart(gfx_pie_chart) == OK) {
-		return pie_chart_texture;
-	} else {
-		return nullptr;
-	}
+	ERR_FAIL_COND_V(pie_chart_texture->set_gfx_pie_chart(gfx_pie_chart) != OK, nullptr);
+	return pie_chart_texture;
 }
 
 void GFXPieChartTexture::clear() {
