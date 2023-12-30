@@ -8,7 +8,8 @@ var _date_label : Label
 var _country_name_label : Label
 
 func _ready() -> void:
-	GameSingleton.state_updated.connect(_update_info)
+	GameSingleton.gamestate_updated.connect(_update_info)
+	GameSingleton.clock_state_changed.connect(_update_speed_controls)
 
 	add_gui_element("topbar.gui", "topbar")
 
@@ -42,13 +43,25 @@ func _ready() -> void:
 		_country_name_label.text = player_country
 
 	_speed_indicator_button = get_button_from_nodepath(^"./topbar/speed_indicator")
-	_speed_indicator_texture = get_gfx_icon_texture_from_nodepath(^"./topbar/speed_indicator")
+	if _speed_indicator_button:
+		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
+		_speed_indicator_texture = get_gfx_icon_texture_from_node(_speed_indicator_button)
+
+	_update_info()
+	_update_speed_controls()
+
+func _notification(what : int) -> void:
+	match what:
+		NOTIFICATION_TRANSLATION_CHANGED:
+			_update_info()
 
 func _update_info() -> void:
 	if _date_label:
 		_date_label.text = GameSingleton.get_longform_date()
 
-	#  TODO - add disabled state textures so this doesn't hide the buttons
+func _update_speed_controls() -> void:
+	#  TODO - decide whether to disable these or not
+	# (they don't appear to get disabled in the base game)
 	#if _speed_up_button:
 	#	_speed_up_button.disabled = not GameSingleton.can_increase_speed()
 
@@ -67,18 +80,15 @@ func _update_info() -> void:
 func _on_play_pause_button_pressed() -> void:
 	print("Toggling pause!")
 	GameSingleton.toggle_paused()
-	_update_info()
 
 # REQUIREMENTS:
 # * UIFUN-72
 func _on_increase_speed_button_pressed() -> void:
 	print("Speed up!")
 	GameSingleton.increase_speed()
-	_update_info()
 
 # REQUIREMENTS:
 # * UIFUN-73
 func _on_decrease_speed_button_pressed() -> void:
 	print("Speed down!")
 	GameSingleton.decrease_speed()
-	_update_info()

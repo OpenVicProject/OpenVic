@@ -17,6 +17,10 @@ namespace OpenVic {
 		float total_weight;
 		godot::Ref<godot::Image> pie_chart_image;
 
+		static godot::StringName const& _slice_identifier_key();
+		static godot::StringName const& _slice_colour_key();
+		static godot::StringName const& _slice_weight_key();
+
 		godot::Error _generate_pie_chart_image();
 
 	protected:
@@ -34,34 +38,31 @@ namespace OpenVic {
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<std::derived_from<HasIdentifierAndColour> T>
 		static godot::TypedArray<godot::Dictionary> distribution_to_slices_array(fixed_point_map_t<T const*> const& dist) {
+			using namespace godot;
 			using entry_t = std::pair<T const*, fixed_point_t>;
 			std::vector<entry_t> sorted_dist;
 			sorted_dist.reserve(dist.size());
 			for (entry_t const& entry : dist) {
 				ERR_CONTINUE_MSG(
-					entry.first == nullptr, godot::vformat("Null distribution key with value %f", entry.second.to_float())
+					entry.first == nullptr, vformat("Null distribution key with value %f", entry.second.to_float())
 				);
 				sorted_dist.push_back(entry);
 			}
 			std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
 				return lhs.second < rhs.second;
 			});
-			static const godot::StringName identifier_key = "identifier";
-			static const godot::StringName colour_key = "colour";
-			static const godot::StringName weight_key = "weight";
-			godot::TypedArray<godot::Dictionary> array;
+			TypedArray<Dictionary> array;
 			for (auto const& [key, val] : sorted_dist) {
-				godot::Dictionary sub_dict;
-				sub_dict[identifier_key] = Utilities::std_view_to_godot_string(key->get_identifier());
-				sub_dict[colour_key] = Utilities::to_godot_color(key->get_colour());
-				sub_dict[weight_key] = val.to_float();
+				Dictionary sub_dict;
+				sub_dict[_slice_identifier_key()] = Utilities::std_view_to_godot_string(key->get_identifier());
+				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
+				sub_dict[_slice_weight_key()] = val.to_float();
 				array.push_back(sub_dict);
 			}
 			return array;
 		}
 
-		/* Create a GFXPieChartTexture using the specific GFX::PieChart.
-		 * Returns nullptr if setting gfx_pie_chart fails. */
+		/* Create a GFXPieChartTexture using the specified GFX::PieChart. Returns nullptr if gfx_pie_chart fails. */
 		static godot::Ref<GFXPieChartTexture> make_gfx_pie_chart_texture(GFX::PieChart const* gfx_pie_chart);
 
 		/* Reset gfx_pie_chart, flag_country and flag_type to nullptr/an empty string, and unreference all images.

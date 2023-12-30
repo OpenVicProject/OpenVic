@@ -49,6 +49,9 @@ void GUINode::_bind_methods() {
 }
 
 GUINode::GUINode() {
+	set_anchors_and_offsets_preset(PRESET_FULL_RECT);
+	set_h_grow_direction(GROW_DIRECTION_BOTH);
+	set_v_grow_direction(GROW_DIRECTION_BOTH);
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
 }
 

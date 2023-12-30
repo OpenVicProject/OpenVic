@@ -120,6 +120,15 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 					name, child_count, new_count
 				)
 			);
+
+			static const StringName set_z_index_func_name = "set_z_index";
+			static const StringName mouse_entered_signal_name = "mouse_entered";
+			static const StringName mouse_exited_signal_name = "mouse_exited";
+
+			/* Move the child element in front of its neighbours when moused-over. */
+			child->connect(mouse_entered_signal_name, Callable { child, set_z_index_func_name }.bind(1), CONNECT_PERSIST);
+			child->connect(mouse_exited_signal_name, Callable { child, set_z_index_func_name }.bind(0), CONNECT_PERSIST);
+
 			add_child(child);
 			child_count++;
 		} while (child_count < new_count);

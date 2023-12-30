@@ -11,6 +11,7 @@
 #include <godot_cpp/classes/theme.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 #include "openvic-extension/classes/GFXIconTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -138,27 +139,74 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
 			);
 
-			const StringName back_texture_file =
-				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::ProgressBar>()->get_back_texture_file());
-			const Ref<ImageTexture> back_texture = args.asset_manager.get_texture(back_texture_file);
+			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
+
+			Ref<ImageTexture> back_texture;
+			if (!progress_bar->get_back_texture_file().empty()) {
+				const StringName back_texture_file = std_view_to_godot_string_name(progress_bar->get_back_texture_file());
+				back_texture = args.asset_manager.get_texture(back_texture_file);
+				if (back_texture.is_null()) {
+					UtilityFunctions::push_error(
+						"Failed to load progress bar sprite back texture ", back_texture_file, " for GUI icon ", icon_name
+					);
+					ret = false;
+				}
+			}
+			if (back_texture.is_null()) {
+				const Color back_colour = Utilities::to_godot_color(progress_bar->get_back_colour());
+				back_texture = Utilities::make_solid_colour_texture(
+					back_colour, progress_bar->get_size().x, progress_bar->get_size().y
+				);
+				if (back_texture.is_null()) {
+					UtilityFunctions::push_error(
+						"Failed to generate progress bar sprite ", back_colour, " back texture for GUI icon ", icon_name
+					);
+					ret = false;
+				}
+			}
 			if (back_texture.is_valid()) {
 				godot_progress_bar->set_under_texture(back_texture);
 			} else {
-				UtilityFunctions::push_error("Failed to load progress bar base sprite ", back_texture_file, " for GUI icon ", icon_name);
+				UtilityFunctions::push_error(
+					"Failed to create and set progress bar sprite back texture for GUI icon ", icon_name
+				);
 				ret = false;
 			}
 
-			const StringName progress_texture_file =
-				std_view_to_godot_string_name(icon.get_sprite()->cast_to<GFX::ProgressBar>()->get_progress_texture_file());
-			const Ref<ImageTexture> progress_texture = args.asset_manager.get_texture(progress_texture_file);
+			Ref<ImageTexture> progress_texture;
+			if (!progress_bar->get_progress_texture_file().empty()) {
+				const StringName progress_texture_file = std_view_to_godot_string_name(progress_bar->get_progress_texture_file());
+				progress_texture = args.asset_manager.get_texture(progress_texture_file);
+				if (progress_texture.is_null()) {
+					UtilityFunctions::push_error(
+						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ", icon_name
+					);
+					ret = false;
+				}
+			}
+			if (progress_texture.is_null()) {
+				const Color progress_colour = Utilities::to_godot_color(progress_bar->get_progress_colour());
+				progress_texture = Utilities::make_solid_colour_texture(
+					progress_colour, progress_bar->get_size().x, progress_bar->get_size().y
+				);
+				if (progress_texture.is_null()) {
+					UtilityFunctions::push_error(
+						"Failed to generate progress bar sprite ", progress_colour, " progress texture for GUI icon ", icon_name
+					);
+					ret = false;
+				}
+			}
 			if (progress_texture.is_valid()) {
 				godot_progress_bar->set_progress_texture(progress_texture);
 			} else {
 				UtilityFunctions::push_error(
-					"Failed to load progress bar base sprite ", progress_texture_file, " for GUI icon ", icon_name
+					"Failed to create and set progress bar sprite progress texture for GUI icon ", icon_name
 				);
 				ret = false;
 			}
+
+			// TODO - work out why progress bar is missing bottom border pixel (e.g. province building expansion bar)
+			godot_progress_bar->set_custom_minimum_size(Utilities::to_godot_fvec2(static_cast<fvec2_t>(progress_bar->get_size())));
 
 			args.result = godot_progress_bar;
 		} else if (icon.get_sprite()->is_type<GFX::PieChart>()) {
@@ -202,23 +250,43 @@ static bool generate_button(generate_gui_args_t&& args) {
 	Button* godot_button = new_control<Button>(button, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI button %s", button_name));
 
+	godot_button->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+
 	if (!button.get_text().empty()) {
 		godot_button->set_text(std_view_to_godot_string(button.get_text()));
 	}
 
 	bool ret = true;
+
+	using enum GFXButtonStateTexture::ButtonState;
+	static constexpr std::array<GFXButtonStateTexture::ButtonState, 3> button_states { HOVER, PRESSED, DISABLED };
+
+	std::vector<Ref<GFXButtonStateTexture>> button_state_textures;
+	for (GFXButtonStateTexture::ButtonState button_state : button_states) {
+		Ref<GFXButtonStateTexture> button_state_texture = GFXButtonStateTexture::make_gfx_button_state_texture(button_state);
+		if (button_state_texture.is_valid()) {
+			button_state_textures.push_back(button_state_texture);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to make ", GFXButtonStateTexture::button_state_to_theme_name(button_state),
+				" GFXButtonStateTexture for GUI button ", button_name
+			);
+			ret = false;
+		}
+	}
+
 	if (button.get_sprite() != nullptr) {
 		Ref<Texture2D> texture;
 		if (button.get_sprite()->is_type<GFX::TextureSprite>()) {
 			GFX::TextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::TextureSprite>();
-			texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite);
+			texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, 0, button_state_textures);
 			if (texture.is_null()) {
 				UtilityFunctions::push_error("Failed to make GFXIconTexture for GUI button ", button_name);
 				ret = false;
 			}
 		} else if (button.get_sprite()->is_type<GFX::MaskedFlag>()) {
 			GFX::MaskedFlag const* masked_flag = button.get_sprite()->cast_to<GFX::MaskedFlag>();
-			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
+			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag, button_state_textures);
 			if (texture.is_null()) {
 				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI button ", button_name);
 				ret = false;
@@ -231,15 +299,21 @@ static bool generate_button(generate_gui_args_t&& args) {
 
 		if (texture.is_valid()) {
 			godot_button->set_custom_minimum_size(texture->get_size());
-			Ref<StyleBoxTexture> stylebox;
-			stylebox.instantiate();
-			if (stylebox.is_valid()) {
-				static const StringName theme_name_normal = "normal";
+
+			const auto add_stylebox = [godot_button, &button_name](StringName const& theme_name, Ref<Texture2D> const& texture) -> bool {
+				Ref<StyleBoxTexture> stylebox;
+				stylebox.instantiate();
+				ERR_FAIL_NULL_V(stylebox, false);
 				stylebox->set_texture(texture);
-				godot_button->add_theme_stylebox_override(theme_name_normal, stylebox);
-			} else {
-				UtilityFunctions::push_error("Failed to load instantiate texture stylebox for GUI button ", button_name);
-				ret = false;
+				godot_button->add_theme_stylebox_override(theme_name, stylebox);
+				return true;
+			};
+
+			static const StringName theme_name_normal = "normal";
+			ret &= add_stylebox(theme_name_normal, texture);
+
+			for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
+				ret &= add_stylebox(button_state_texture->get_button_state_theme(), button_state_texture);
 			}
 		}
 	} else {
@@ -256,8 +330,14 @@ static bool generate_button(generate_gui_args_t&& args) {
 			UtilityFunctions::push_error("Failed to load font for GUI button ", button_name);
 			ret = false;
 		}
+
+		static const std::vector<StringName> button_font_themes {
+			"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
+		};
 		const Color colour = Utilities::to_godot_color(button.get_font()->get_colour());
-		godot_button->add_theme_color_override("font_color", colour);
+		for (StringName const& theme_name : button_font_themes) {
+			godot_button->add_theme_color_override(theme_name, colour);
+		}
 	}
 
 	args.result = godot_button;
