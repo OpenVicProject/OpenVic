@@ -17,7 +17,7 @@ events = [SubResource("InputEventAction_5nck3")]
 
 [node name="MapControlPanel" type="PanelContainer" node_paths=PackedStringArray("_mapmodes_grid")]
 editor_description = "SS-103, UI-548"
-mouse_filter = 1
+mouse_force_pass_scroll_events = false
 script = ExtResource("1_ign64")
 _mapmodes_grid = NodePath("MapPanelMargin/MapPanelList/MapDisplayList/MapmodesGrid")
 

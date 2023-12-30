@@ -27,6 +27,12 @@ func _ready() -> void:
 
 	const player_country : String = "SLV"
 
+	# Disables all consuming invisible panel
+	var topbar := get_panel_from_nodepath(^"./topbar")
+	if topbar:
+		topbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_click_mask_from_nodepaths([^"./topbar/topbar_bg", ^"./topbar/topbar_paper"])
+
 	# Player country info
 	var player_flag_texture : GFXMaskedFlagTexture = get_gfx_masked_flag_texture_from_nodepath(^"./topbar/player_flag")
 	if player_flag_texture:
