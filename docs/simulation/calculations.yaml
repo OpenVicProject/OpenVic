@@ -15,10 +15,40 @@ Budget:
 Diplomacy:
   Monthly diplomatic points gain: defines.country.BASE_MONTHLY_DIPLOPOINTS * (1 + sum of diplomatic_points + sum of diplomatic_points_modifier)
   Influence:
-    Total base influence gain:  defines.country.BASE_GREATPOWER_DAILY_INFLUENCE * (1 + sum of influence) * (1 + sum of influence_modifier)
-    Base influence gain per country:
+    Total base daily influence gain:  defines.country.BASE_GREATPOWER_DAILY_INFLUENCE * (1 + sum of influence) * (1 + sum of influence_modifier)
+    Base daily influence gain per country:
       if total priority bars > 0: Total base influence gain * priority bars / total priority bars
       else: Total base influence gain / number of countries (excluding banned)
+    Country influence gain modifier:
+      note: 'our' and 'we' refers to the influencer. 'target' is the country being influenced.
+      formula: 1 + score mod + relations mod + population mod + investment mod + puppet mod + neighbour mod + continent mod + discredit mod
+      score mod: 1 - target score / our score
+      relations mod: relations / defines.diplomacy.RELATION_INFLUENCE_MODIFIER
+      population mod:
+        if target population > LARGE_POPULATION_LIMIT:
+          formula: floor((target population - LARGE_POPULATION_LIMIT) / LARGE_POPULATION_INFLUENCE_PENALTY_CHUNK) * LARGE_POPULATION_INFLUENCE_PENALTY
+          target population: total of pop sizes
+          LARGE_POPULATION_LIMIT: defines.pops.LARGE_POPULATION_LIMIT
+          LARGE_POPULATION_INFLUENCE_PENALTY_CHUNK: defines.pops.LARGE_POPULATION_INFLUENCE_PENALTY_CHUNK
+          LARGE_POPULATION_INFLUENCE_PENALTY: defines.diplomacy.LARGE_POPULATION_INFLUENCE_PENALTY
+        else: 0
+      investment mod:
+        if value of total investments in target > 0: (1 - value of our investment / value of total investments in target) * - defines.diplomacy.INVESTMENT_INFLUENCE_DEFENSE
+        else: 0
+      puppet mod:
+        if is our puppet: defines.diplomacy.PUPPET_BONUS_INFLUENCE_PERCENT
+        else: 0
+      neighbour mod:
+        if target is direct neighbour: defines.diplomacy.NEIGHBOUR_BONUS_INFLUENCE_PERCENT
+        else if target has a sphereling as neighbour: defines.diplomacy.SPHERE_NEIGHBOUR_BONUS_INFLUENCE_PERCENT
+        else: 0
+      continent mod:
+        if target is on a different continent: defines.diplomacy.OTHER_CONTINENT_BONUS_INFLUENCE_PERCENT
+        else: 0
+      discredit mod:
+        if we are discredited: defines.diplomacy.DISCREDIT_INFLUENCE_GAIN_FACTOR
+        else: 0
+    Daily influence gain per country: Base daily influence gain per country * Country influence gain modifier
   Colonisable life rating: defines.country.COLONIAL_LIFERATING + sum of colonial_life_rating
 POPs:
   Monthly pop growth:
