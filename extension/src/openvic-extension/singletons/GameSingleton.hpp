@@ -25,6 +25,10 @@ namespace OpenVic {
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 		std::map<Country const*, std::map<godot::StringName, godot::Ref<godot::Image>>> flag_image_map;
 
+		static godot::StringName const& _signal_gamestate_updated();
+		static godot::StringName const& _signal_province_selected();
+		static godot::StringName const& _signal_clock_state_changed();
+
 		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images(bool flip_vertical);
 		godot::Error _load_terrain_variants();
@@ -32,7 +36,8 @@ namespace OpenVic {
 
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
-		void _on_state_updated();
+		void _on_gamestate_updated();
+		void _on_clock_state_changed();
 
 	protected:
 		static void _bind_methods();

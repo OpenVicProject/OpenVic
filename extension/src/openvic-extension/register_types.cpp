@@ -2,6 +2,7 @@
 
 #include <godot_cpp/classes/engine.hpp>
 
+#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 #include "openvic-extension/classes/GFXIconTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -43,6 +44,7 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	Engine::get_singleton()->register_singleton("AssetManager", AssetManager::get_singleton());
 
 	ClassDB::register_class<MapMesh>();
+	ClassDB::register_class<GFXButtonStateTexture>();
 	ClassDB::register_class<GFXIconTexture>();
 	ClassDB::register_class<GFXMaskedFlagTexture>();
 	ClassDB::register_class<GFXPieChartTexture>();

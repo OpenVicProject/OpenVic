@@ -119,7 +119,7 @@ var _province_info : Dictionary
 
 func _ready() -> void:
 	GameSingleton.province_selected.connect(_on_province_selected)
-	GameSingleton.state_updated.connect(_update_info)
+	GameSingleton.gamestate_updated.connect(_update_info)
 
 	if add_gui_element("province_interface.gui", "province_view") != OK:
 		push_error("Failed to generate province overview panel!")

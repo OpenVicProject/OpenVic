@@ -25,6 +25,21 @@ using OpenVic::Utilities::std_view_to_godot_string;
 /* Maximum width or height a GPU texture can have. */
 static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 
+/* StringNames cannot be constructed until Godot has called StringName::setup(),
+ * so we must use these wrapper functions to delay their initialisation. */
+StringName const& GameSingleton::_signal_gamestate_updated() {
+	static const StringName signal_gamestate_updated = "gamestate_updated";
+	return signal_gamestate_updated;
+}
+StringName const& GameSingleton::_signal_province_selected() {
+	static const StringName signal_province_selected = "province_selected";
+	return signal_province_selected;
+}
+StringName const& GameSingleton::_signal_clock_state_changed() {
+	static const StringName signal_clock_state_changed = "clock_state_changed";
+	return signal_clock_state_changed;
+}
+
 void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
@@ -70,24 +85,31 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_longform_date);
 	OV_BIND_METHOD(GameSingleton::try_tick);
 
-	ADD_SIGNAL(MethodInfo("state_updated"));
-	ADD_SIGNAL(MethodInfo("province_selected", PropertyInfo(Variant::INT, "index")));
+	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
+	ADD_SIGNAL(MethodInfo(_signal_province_selected(), PropertyInfo(Variant::INT, "index")));
+	ADD_SIGNAL(MethodInfo(_signal_clock_state_changed()));
 }
 
 GameSingleton* GameSingleton::get_singleton() {
 	return singleton;
 }
 
-void GameSingleton::_on_state_updated() {
+void GameSingleton::_on_gamestate_updated() {
 	_update_colour_image();
-	emit_signal("state_updated");
+	emit_signal(_signal_gamestate_updated());
+}
+
+void GameSingleton::_on_clock_state_changed() {
+	emit_signal(_signal_clock_state_changed());
 }
 
 /* REQUIREMENTS:
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
-	: game_manager { std::bind(&GameSingleton::_on_state_updated, this) } {
+	: game_manager {
+		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
+	} {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -360,7 +382,7 @@ int32_t GameSingleton::get_selected_province_index() const {
 void GameSingleton::set_selected_province(int32_t index) {
 	game_manager.get_map().set_selected_province(index);
 	_update_colour_image();
-	emit_signal("province_selected", index);
+	emit_signal(_signal_province_selected(), index);
 }
 
 int32_t GameSingleton::get_province_building_count() const {
@@ -411,35 +433,35 @@ String GameSingleton::float_to_formatted_string(float val) {
 }
 
 void GameSingleton::set_paused(bool paused) {
-	game_manager.get_clock().is_paused = paused;
+	game_manager.get_simulation_clock().set_paused(paused);
 }
 
 void GameSingleton::toggle_paused() {
-	game_manager.get_clock().is_paused = !game_manager.get_clock().is_paused;
+	game_manager.get_simulation_clock().toggle_paused();
 }
 
 bool GameSingleton::is_paused() const {
-	return game_manager.get_clock().is_paused;
+	return game_manager.get_simulation_clock().is_paused();
 }
 
 void GameSingleton::increase_speed() {
-	game_manager.get_clock().increase_simulation_speed();
+	game_manager.get_simulation_clock().increase_simulation_speed();
 }
 
 void GameSingleton::decrease_speed() {
-	game_manager.get_clock().decrease_simulation_speed();
+	game_manager.get_simulation_clock().decrease_simulation_speed();
 }
 
 int32_t GameSingleton::get_speed() const {
-	return game_manager.get_clock().get_simulation_speed();
+	return game_manager.get_simulation_clock().get_simulation_speed();
 }
 
 bool GameSingleton::can_increase_speed() const {
-	return game_manager.get_clock().can_increase_simulation_speed();
+	return game_manager.get_simulation_clock().can_increase_simulation_speed();
 }
 
 bool GameSingleton::can_decrease_speed() const {
-	return game_manager.get_clock().can_decrease_simulation_speed();
+	return game_manager.get_simulation_clock().can_decrease_simulation_speed();
 }
 
 String GameSingleton::get_longform_date() const {
@@ -447,7 +469,7 @@ String GameSingleton::get_longform_date() const {
 }
 
 void GameSingleton::try_tick() {
-	game_manager.get_clock().conditionally_advance_game();
+	game_manager.get_simulation_clock().conditionally_advance_game();
 }
 
 Error GameSingleton::_load_map_images(bool flip_vertical) {

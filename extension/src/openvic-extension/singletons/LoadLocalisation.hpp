@@ -12,7 +12,7 @@ namespace OpenVic {
 
 		godot::Ref<godot::Translation> translations[Dataloader::_LocaleCount];
 
-		godot::Error _load_file(godot::String const& file_path, godot::Ref<godot::Translation> translation) const;
+		godot::Error _load_file(godot::String const& file_path, godot::Ref<godot::Translation> const& translation) const;
 		godot::Ref<godot::Translation> _get_translation(godot::String const& locale) const;
 
 	protected:

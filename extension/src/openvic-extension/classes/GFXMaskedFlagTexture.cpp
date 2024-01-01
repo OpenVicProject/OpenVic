@@ -13,15 +13,22 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
+StringName const& GFXMaskedFlagTexture::_signal_image_updated() {
+	static const StringName signal_image_updated = "image_updated";
+	return signal_image_updated;
+}
+
 Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
-	bool can_update = true;
-	if (combined_image.is_null() || combined_image->get_size() != overlay_image->get_size()) {
+	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
+	 * and so can update it without creating and setting a new image, or not. */
+	const bool can_update = combined_image.is_valid() && combined_image->get_size() == overlay_image->get_size()
+		&& combined_image->get_format() == overlay_image->get_format();
+	if (!can_update) {
 		combined_image = Image::create(
 			overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format()
 		);
 		ERR_FAIL_NULL_V(combined_image, FAILED);
-		can_update = false;
 	}
 
 	if (mask_image.is_valid() && flag_image.is_valid()) {
@@ -55,6 +62,7 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 	} else {
 		set_image(combined_image);
 	}
+	emit_signal(_signal_image_updated(), combined_image);
 	return OK;
 }
 
@@ -68,14 +76,29 @@ void GFXMaskedFlagTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXMaskedFlagTexture::set_flag_country_name, { "new_flag_country_name" });
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_country_name);
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_type);
+
+	ADD_SIGNAL(
+		MethodInfo(_signal_image_updated(), PropertyInfo(Variant::OBJECT, "source_image", PROPERTY_HINT_RESOURCE_TYPE, "Image"))
+	);
 }
 
 GFXMaskedFlagTexture::GFXMaskedFlagTexture() : gfx_masked_flag { nullptr }, flag_country { nullptr } {}
 
-Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(GFX::MaskedFlag const* gfx_masked_flag) {
+Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(
+	GFX::MaskedFlag const* gfx_masked_flag, std::vector<Ref<GFXButtonStateTexture>> const& button_state_textures
+) {
 	Ref<GFXMaskedFlagTexture> masked_flag_texture;
 	masked_flag_texture.instantiate();
 	ERR_FAIL_NULL_V(masked_flag_texture, nullptr);
+
+	for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
+		masked_flag_texture->connect(
+			_signal_image_updated(),
+			Callable { *button_state_texture, GFXButtonStateTexture::get_generate_state_image_func_name() },
+			CONNECT_PERSIST
+		);
+	}
+
 	ERR_FAIL_COND_V(masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag) != OK, nullptr);
 	return masked_flag_texture;
 }

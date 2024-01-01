@@ -12,6 +12,19 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
+StringName const& GFXPieChartTexture::_slice_identifier_key() {
+	static StringName const slice_identifier_key = "identifier";
+	return slice_identifier_key;
+}
+StringName const& GFXPieChartTexture::_slice_colour_key() {
+	static StringName const slice_colour_key = "colour";
+	return slice_colour_key;
+}
+StringName const& GFXPieChartTexture::_slice_weight_key() {
+	static StringName const slice_weight_key = "weight";
+	return slice_weight_key;
+}
+
 static constexpr float PI = std::numbers::pi_v<float>;
 
 Error GFXPieChartTexture::_generate_pie_chart_image() {
@@ -21,14 +34,13 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 		vformat("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
 	);
 	const int32_t pie_chart_size = 2 * gfx_pie_chart->get_size();
-	bool can_update = true;
-	if (
-		pie_chart_image.is_null() || pie_chart_image->get_width() != pie_chart_size ||
-		pie_chart_image->get_height() != pie_chart_size
-	) {
+	/* Whether we've already set the ImageTexture to an image of the right dimensions,
+	 * and so can update it without creating and setting a new image, or not. */
+	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_size
+		&& pie_chart_image->get_height() == pie_chart_size;
+	if (!can_update) {
 		pie_chart_image = Image::create(pie_chart_size, pie_chart_size, false, Image::FORMAT_RGBA8);
 		ERR_FAIL_NULL_V(pie_chart_image, FAILED);
-		can_update = false;
 	}
 
 	static const Color background_colour { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -74,17 +86,14 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 }
 
 Error GFXPieChartTexture::set_slices_array(TypedArray<Dictionary> const& new_slices) {
-	static const StringName colour_key = "colour";
-	static const StringName weight_key = "weight";
-
 	slices.clear();
 	total_weight = 0.0f;
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(colour_key) || !slice_dict.has(weight_key), vformat("Invalid slice keys at index %d", i)
+			!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()), vformat("Invalid slice keys at index %d", i)
 		);
-		const slice_t slice = std::make_pair(slice_dict[colour_key], slice_dict[weight_key]);
+		slice_t slice = std::make_pair(slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]);
 		ERR_CONTINUE_MSG(slice.second <= 0.0f, vformat("Invalid slice values at index %d", i));
 		total_weight += slice.second;
 		slices.emplace_back(std::move(slice));

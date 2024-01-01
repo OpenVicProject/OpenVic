@@ -4,6 +4,8 @@
 
 #include <openvic-simulation/interface/GFX.hpp>
 
+#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
+
 namespace OpenVic {
 	class GFXIconTexture : public godot::AtlasTexture {
 		GDCLASS(GFXIconTexture, godot::AtlasTexture)
@@ -16,14 +18,22 @@ namespace OpenVic {
 		GFX::frame_t PROPERTY(icon_index);
 		GFX::frame_t PROPERTY(icon_count);
 
+		godot::Ref<godot::Image> sprite_image;
+
+		static godot::StringName const& _signal_image_updated();
+
 	protected:
 		static void _bind_methods();
 
 	public:
 		GFXIconTexture();
 
+		/* Create a GFXIconTexture using the specified GFX::TextureSprite and icon index. Returns nullptr if
+		 * set_gfx_texture_sprite fails. Connects the provided GFXButtonStateTextures (if any) to the
+		* GFXIconTexture's image_updated signal. */
 		static godot::Ref<GFXIconTexture> make_gfx_icon_texture(
-			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
+			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES,
+			std::vector<godot::Ref<GFXButtonStateTexture>> const& button_state_textures = {}
 		);
 
 		/* Discard the GFX::TextureSprite, atlas texture and icon index. */

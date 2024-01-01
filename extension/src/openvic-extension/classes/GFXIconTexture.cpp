@@ -15,6 +15,11 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
+StringName const& GFXIconTexture::_signal_image_updated() {
+	static const StringName signal_image_updated = "image_updated";
+	return signal_image_updated;
+}
+
 void GFXIconTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXIconTexture::clear);
 
@@ -26,16 +31,32 @@ void GFXIconTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXIconTexture::get_icon_count);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "icon_index"), "set_icon_index", "get_icon_index");
+
+	ADD_SIGNAL(
+		MethodInfo(_signal_image_updated(), PropertyInfo(Variant::OBJECT, "source_image", PROPERTY_HINT_RESOURCE_TYPE, "Image"))
+	);
 }
 
 GFXIconTexture::GFXIconTexture()
 	: gfx_texture_sprite { nullptr }, icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
-Ref<GFXIconTexture> GFXIconTexture::make_gfx_icon_texture(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
+Ref<GFXIconTexture> GFXIconTexture::make_gfx_icon_texture(
+	GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon,
+	std::vector<Ref<GFXButtonStateTexture>> const& button_state_textures
+) {
 	Ref<GFXIconTexture> icon_texture;
 	icon_texture.instantiate();
 	ERR_FAIL_NULL_V(icon_texture, nullptr);
-	icon_texture->set_gfx_texture_sprite(gfx_texture_sprite, icon);
+
+	for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
+		icon_texture->connect(
+			_signal_image_updated(),
+			Callable { *button_state_texture, GFXButtonStateTexture::get_generate_state_image_func_name() },
+			CONNECT_PERSIST
+		);
+	}
+
+	ERR_FAIL_COND_V(icon_texture->set_gfx_texture_sprite(gfx_texture_sprite, icon) != OK, nullptr);
 	return icon_texture;
 }
 
@@ -57,9 +78,15 @@ Error GFXIconTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx_t
 		ERR_FAIL_NULL_V(asset_manager, FAILED);
 
 		const StringName texture_file = std_view_to_godot_string_name(new_gfx_texture_sprite->get_texture_file());
+
+		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will re-use this image from its internal cache. */
+		const Ref<Image> image = asset_manager->get_image(texture_file);
+		ERR_FAIL_NULL_V_MSG(image, FAILED, vformat("Failed to load image: %s", texture_file));
+
 		const Ref<ImageTexture> texture = asset_manager->get_texture(texture_file);
 		ERR_FAIL_NULL_V_MSG(texture, FAILED, vformat("Failed to load texture: %s", texture_file));
 
+		sprite_image = image;
 		gfx_texture_sprite = new_gfx_texture_sprite;
 		set_atlas(texture);
 		icon_index = GFX::NO_FRAMES;
@@ -98,6 +125,7 @@ Error GFXIconTexture::set_icon_index(int32_t new_icon_index) {
 		}
 		icon_index = GFX::NO_FRAMES;
 		set_region({ {}, size });
+		emit_signal(_signal_image_updated(), sprite_image);
 		return OK;
 	}
 	if (GFX::NO_FRAMES < new_icon_index && new_icon_index <= icon_count) {
@@ -111,5 +139,6 @@ Error GFXIconTexture::set_icon_index(int32_t new_icon_index) {
 		}
 	}
 	set_region({ (icon_index - 1) * size.x / icon_count, 0, size.x / icon_count, size.y });
+	emit_signal(_signal_image_updated(), sprite_image->get_region(get_region()));
 	return OK;
 }

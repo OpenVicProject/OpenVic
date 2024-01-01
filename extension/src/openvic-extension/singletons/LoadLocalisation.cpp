@@ -30,7 +30,7 @@ LoadLocalisation::~LoadLocalisation() {
 	_singleton = nullptr;
 }
 
-Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> translation) const {
+Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> const& translation) const {
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
