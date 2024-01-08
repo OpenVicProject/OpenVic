@@ -23,7 +23,7 @@ namespace OpenVic {
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode::index_t mapmode_index = 0;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
-		std::map<Country const*, std::map<godot::StringName, godot::Ref<godot::Image>>> flag_image_map;
+		ordered_map<Country const*, ordered_map<godot::StringName, godot::Ref<godot::Image>>> flag_image_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
 		static godot::StringName const& _signal_province_selected();

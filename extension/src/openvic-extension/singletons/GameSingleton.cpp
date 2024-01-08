@@ -609,9 +609,12 @@ Error GameSingleton::_load_flag_images() {
 		flag_types.emplace_back(std_to_godot_string_name(type));
 	}
 
+	flag_image_map.reserve(country_manager.get_countries().size());
+
 	Error ret = OK;
 	for (Country const& country : country_manager.get_countries()) {
-		std::map<StringName, Ref<Image>>& flag_images = flag_image_map[&country];
+		ordered_map<StringName, Ref<Image>>& flag_images = flag_image_map[&country];
+		flag_images.reserve(flag_types.size());
 		const String country_name = std_view_to_godot_string(country.get_identifier());
 		for (StringName const& flag_type : flag_types) {
 			const StringName flag_path =
