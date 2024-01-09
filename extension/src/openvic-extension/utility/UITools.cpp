@@ -71,7 +71,7 @@ static T* new_control(GUI::Element const& element, String const& name) {
 
 	using enum GUI::Element::orientation_t;
 	using enum Control::LayoutPreset;
-	static const std::map<GUI::Element::orientation_t, Control::LayoutPreset> orientation_map {
+	static const ordered_map<GUI::Element::orientation_t, Control::LayoutPreset> orientation_map {
 		{ UPPER_LEFT, PRESET_TOP_LEFT }, { LOWER_LEFT, PRESET_BOTTOM_LEFT },
 		{ LOWER_RIGHT, PRESET_BOTTOM_RIGHT }, { UPPER_RIGHT, PRESET_TOP_RIGHT },
 		{ CENTER, PRESET_CENTER }
@@ -400,7 +400,7 @@ static bool generate_text(generate_gui_args_t&& args) {
 	godot_label->set_custom_minimum_size(Utilities::to_godot_fvec2(text.get_max_size()));
 
 	using enum GUI::AlignedElement::format_t;
-	static const std::map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {
+	static const ordered_map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {
 		{ left, HORIZONTAL_ALIGNMENT_LEFT },
 		{ centre, HORIZONTAL_ALIGNMENT_CENTER },
 		{ right, HORIZONTAL_ALIGNMENT_RIGHT }
@@ -495,7 +495,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 
 static bool generate_element(GUI::Element const* element, String const& name, AssetManager& asset_manager, Control*& result) {
 	ERR_FAIL_NULL_V(element, false);
-	static const std::map<std::string_view, bool (*)(generate_gui_args_t&&)> type_map {
+	static const ordered_map<std::string_view, bool (*)(generate_gui_args_t&&)> type_map {
 		{ GUI::Icon::get_type_static(), &generate_icon },
 		{ GUI::Button::get_type_static(), &generate_button },
 		{ GUI::Checkbox::get_type_static(), &generate_checkbox },

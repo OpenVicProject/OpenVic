@@ -45,34 +45,34 @@ Ref<Image> AssetManager::_load_image(StringName const& path) {
 	return image;
 }
 
-AssetManager::image_asset_map_t::iterator AssetManager::_get_image_asset(StringName const& path) {
-	const image_asset_map_t::iterator it = image_assets.find(path);
+AssetManager::image_asset_t* AssetManager::_get_image_asset(StringName const& path) {
+	image_asset_map_t::iterator it = image_assets.find(path);
 	if (it != image_assets.end()) {
-		return it;
+		return &it.value();
 	}
 	const Ref<Image> image = _load_image(path);
-	ERR_FAIL_NULL_V(image, image_assets.end());
-	return image_assets.emplace(std::move(path), AssetManager::image_asset_t { image, nullptr }).first;
+	ERR_FAIL_NULL_V(image, nullptr);
+	return &image_assets.emplace(std::move(path), AssetManager::image_asset_t { image, nullptr }).first.value();
 }
 
 Ref<Image> AssetManager::get_image(StringName const& path, bool cache) {
 	if (cache) {
-		const image_asset_map_t::const_iterator it = _get_image_asset(path);
-		ERR_FAIL_COND_V(it == image_assets.end(), nullptr);
-		return it->second.image;
+		image_asset_t const* asset = _get_image_asset(path);
+		ERR_FAIL_NULL_V(asset, nullptr);
+		return asset->image;
 	} else {
 		return _load_image(path);
 	}
 }
 
 Ref<ImageTexture> AssetManager::get_texture(StringName const& path) {
-	const image_asset_map_t::iterator it = _get_image_asset(path);
-	ERR_FAIL_COND_V(it == image_assets.end(), nullptr);
-	if (it->second.texture.is_null()) {
-		it->second.texture = ImageTexture::create_from_image(it->second.image);
-		ERR_FAIL_NULL_V_MSG(it->second.texture, nullptr, vformat("Failed to turn image into texture: %s", path));
+	image_asset_t* asset = _get_image_asset(path);
+	ERR_FAIL_NULL_V(asset, nullptr);
+	if (asset->texture.is_null()) {
+		asset->texture = ImageTexture::create_from_image(asset->image);
+		ERR_FAIL_NULL_V_MSG(asset->texture, nullptr, vformat("Failed to turn image into texture: %s", path));
 	}
-	return it->second.texture;
+	return asset->texture;
 }
 
 Ref<Font> AssetManager::get_font(StringName const& name) {

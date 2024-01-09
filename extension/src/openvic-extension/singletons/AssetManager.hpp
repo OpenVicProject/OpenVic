@@ -17,14 +17,15 @@ namespace OpenVic {
 			godot::Ref<godot::Image> image;
 			godot::Ref<godot::ImageTexture> texture;
 		};
-		using image_asset_map_t = std::map<godot::StringName, image_asset_t>;
-		using font_map_t = std::map<godot::StringName, godot::Ref<godot::Font>>;
+		/* deque_ordered_map to avoid the need to reallocate. */
+		using image_asset_map_t = deque_ordered_map<godot::StringName, image_asset_t>;
+		using font_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::Font>>;
 
 		image_asset_map_t image_assets;
 		font_map_t fonts;
 
 		static godot::Ref<godot::Image> _load_image(godot::StringName const& path);
-		image_asset_map_t::iterator _get_image_asset(godot::StringName const& path);
+		image_asset_t* _get_image_asset(godot::StringName const& path);
 
 	protected:
 		static void _bind_methods();
