@@ -94,18 +94,31 @@ POPs:
               max(0.5: Hardcoded minimum of half the RGO income.
               2*: Hardcoded value.
 Military:
+  Maximum units per soldier POP:
+    if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
+    else:
+      formula: ceil(POP size / (POP_SIZE_PER_REGIMENT * location factor))
+      POP_SIZE_PER_REGIMENT: defines.military.POP_SIZE_PER_REGIMENT
+      location factor:
+        if is protectorate: defines.military.POP_MIN_SIZE_FOR_REGIMENT_PROTECTORATE_MULTIPLIER
+        else if is colony: defines.military.POP_MIN_SIZE_FOR_REGIMENT_COLONY_MULTIPLIER
+        else if location is core: 1
+        else: defines.military.POP_MIN_SIZE_FOR_REGIMENT_NONCORE_MULTIPLIER
   Reinforcements per army:
     formula: 5 * round(supply factor * sum of unit reinforcements * REINFORCE_SPEED * local reinforce rate * (1 + reinforce_rate) * (1 + reinforce_speed) / 5)
     supply factor:
       if unit received all its supplies: 1
-      else: complex graph, see https://www.desmos.com/calculator/gu1zpo01qz
+      else:
+        formula: ((x^(n+1) - 1)/(x - 1) - 1) / n
+        x: received supply
+        n: number of units in the army
     unit reinforcements: 1000 * max_strength * unit reinforce rate
       max_strength: as defined in /units/<unit>.txt
       1000: (max_)strength is defined in thousands of soldiers. Reinforcements per army uses the number of soldiers.
       unit reinforce rate:
         if unit is mobilised: 0.5
         else if pop is too small for a single unit: 0.5
-        else if pop supports too many units: number of units it can support / number of supported units
+        else if pop supports too many units: Maximum units per soldier POP / number of supported units
         else: 1
     REINFORCE_SPEED: defines.military.REINFORCE_SPEED
     local reinforce rate:
