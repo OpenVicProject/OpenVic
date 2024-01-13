@@ -57,6 +57,7 @@ func _load_compatibility_mode() -> void:
 			push_warning("Exact base path and search base path arguments both used:\nBase: ", arg_base_path, "\nSearch: ", arg_search_path)
 		actual_base_path = arg_base_path
 	elif arg_search_path:
+		# This will also search for a Steam install if the hint doesn't help
 		actual_base_path = GameSingleton.search_for_game_path(arg_search_path)
 		if not actual_base_path:
 			push_warning("Failed to find assets using search hint: ", arg_search_path)
@@ -65,7 +66,9 @@ func _load_compatibility_mode() -> void:
 		if _settings_base_path:
 			actual_base_path = _settings_base_path
 		else:
-			actual_base_path = GameSingleton.search_for_game_path()
+			# Check if the program is being run from inside the install directory,
+			# and if not also search for a Steam install
+			actual_base_path = GameSingleton.search_for_game_path("..")
 		if not actual_base_path:
 			var title : String = "Failed to find game asset path!"
 			var msg : String = "The path can be specified with the \"base-path\" command line option."
@@ -80,8 +83,10 @@ func _load_compatibility_mode() -> void:
 
 	var paths : PackedStringArray = [actual_base_path]
 
-	# Example for adding mod paths
-	#paths.push_back(actual_base_path + "/mod/TGC")
+	# Add mod paths
+	var settings_mod_names : PackedStringArray = ArgumentParser.get_argument(&"mod", "")
+	for mod_name : String in settings_mod_names:
+		paths.push_back(actual_base_path + "/mod/" + mod_name)
 
 	if GameSingleton.load_defines_compatibility_mode(paths) != OK:
 		push_error("Errors loading game defines!")

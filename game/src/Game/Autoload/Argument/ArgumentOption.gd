@@ -14,6 +14,7 @@ extends Resource
 			TYPE_FLOAT: default_value = 0.0
 			TYPE_STRING: default_value = ""
 			TYPE_STRING_NAME: default_value = &""
+			TYPE_PACKED_STRING_ARRAY: default_value = PackedStringArray()
 			TYPE_COLOR: default_value = Color()
 			_: default_value = null
 		notify_property_list_changed()
@@ -38,6 +39,7 @@ func get_type_string() -> StringName:
 		TYPE_INT: return "integer"
 		TYPE_FLOAT: return "float"
 		TYPE_STRING, TYPE_STRING_NAME: return "string"
+		TYPE_PACKED_STRING_ARRAY: return "string array"
 		TYPE_COLOR: return "color"
 	return "<invalid type>"
 
@@ -52,7 +54,7 @@ func _set(property : StringName, value : Variant) -> bool:
 	return false
 
 func _get_property_list() -> Array[Dictionary]:
-	var properties := []
+	var properties := [] as Array[Dictionary]
 
 	properties.append({
 		"name": "default_value",
