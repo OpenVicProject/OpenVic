@@ -50,6 +50,53 @@ Diplomacy:
         else: 0
     Daily influence gain per country: Base daily influence gain per country * Country influence gain modifier
   Colonisable life rating: defines.country.COLONIAL_LIFERATING + sum of colonial_life_rating
+Military:
+  Maximum units per soldier POP:
+    if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
+    else:
+      formula: ceil(POP size / (POP_SIZE_PER_REGIMENT * location factor))
+      POP_SIZE_PER_REGIMENT: defines.military.POP_SIZE_PER_REGIMENT
+      location factor:
+        if is protectorate: defines.military.POP_MIN_SIZE_FOR_REGIMENT_PROTECTORATE_MULTIPLIER
+        else if is colony: defines.military.POP_MIN_SIZE_FOR_REGIMENT_COLONY_MULTIPLIER
+        else if location is core: 1
+        else: defines.military.POP_MIN_SIZE_FOR_REGIMENT_NONCORE_MULTIPLIER
+  Reinforcements per army:
+    formula: 5 * round(supply factor * sum of unit reinforcements * REINFORCE_SPEED * local reinforce rate * (1 + reinforce_rate) * (1 + reinforce_speed) / 5)
+    supply factor:
+      if unit received all its supplies: 1
+      else:
+        formula: ((x^(n+1) - 1)/(x - 1) - 1) / n
+        x: received supply
+        n: number of units in the army
+    unit reinforcements: 1000 * max_strength * unit reinforce rate
+      max_strength: as defined in /units/<unit>.txt
+      1000: (max_)strength is defined in thousands of soldiers. Reinforcements per army uses the number of soldiers.
+      unit reinforce rate:
+        if unit is mobilised: 0.5
+        else if pop is too small for a single unit: 0.5
+        else if pop supports too many units: Maximum units per soldier POP / number of supported units
+        else: 1
+    REINFORCE_SPEED: defines.military.REINFORCE_SPEED
+    local reinforce rate:
+      if location owner == army owner: 2
+      else if army is exiled: 0
+      else if location is uncolonised: 0
+      else if location controller is hostile:
+        if location neighbours a province controlled by an ally in this war: 0.5
+        else if location is coastal & not blockaded: 0.25
+        else: 0.1
+      else: 1
+    reinforce_rate: sum of reinforce_rate modifiers from tech
+    reinforce_speed: sum of reinforce_speed modifiers on country
+    5 * round(... /5): round to multiple of 5
+Politics:
+  Westernisation:
+    Upper house reform support:
+      formula: sum of (Ideology support factor * Ideology upper house share)
+      Ideology support factor: common/ideologies.txt add_economic_reform or add_military_reform
+    Economic reform cost modifier: defines.country.ECONOMIC_REFORM_UH_FACTOR * Upper house reform support + self_unciv_economic_modifier
+    Military reform cost modifier: defines.country.MILITARY_REFORM_UH_FACTOR * Upper house reform support + self_unciv_military_modifier
 POPs:
   Monthly pop growth:
     formula: BASE_POPGROWTH + (min(40, LR * (1 + LRM)) - MIN_LIFE_RATING_FOR_GROWTH) * LIFE_RATING_GROWTH_BONUS + population_growth + pop_growth + global_population_growth/10
@@ -93,43 +140,3 @@ POPs:
               workers: number of employed workers in RGO
               max(0.5: Hardcoded minimum of half the RGO income.
               2*: Hardcoded value.
-Military:
-  Maximum units per soldier POP:
-    if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
-    else:
-      formula: ceil(POP size / (POP_SIZE_PER_REGIMENT * location factor))
-      POP_SIZE_PER_REGIMENT: defines.military.POP_SIZE_PER_REGIMENT
-      location factor:
-        if is protectorate: defines.military.POP_MIN_SIZE_FOR_REGIMENT_PROTECTORATE_MULTIPLIER
-        else if is colony: defines.military.POP_MIN_SIZE_FOR_REGIMENT_COLONY_MULTIPLIER
-        else if location is core: 1
-        else: defines.military.POP_MIN_SIZE_FOR_REGIMENT_NONCORE_MULTIPLIER
-  Reinforcements per army:
-    formula: 5 * round(supply factor * sum of unit reinforcements * REINFORCE_SPEED * local reinforce rate * (1 + reinforce_rate) * (1 + reinforce_speed) / 5)
-    supply factor:
-      if unit received all its supplies: 1
-      else:
-        formula: ((x^(n+1) - 1)/(x - 1) - 1) / n
-        x: received supply
-        n: number of units in the army
-    unit reinforcements: 1000 * max_strength * unit reinforce rate
-      max_strength: as defined in /units/<unit>.txt
-      1000: (max_)strength is defined in thousands of soldiers. Reinforcements per army uses the number of soldiers.
-      unit reinforce rate:
-        if unit is mobilised: 0.5
-        else if pop is too small for a single unit: 0.5
-        else if pop supports too many units: Maximum units per soldier POP / number of supported units
-        else: 1
-    REINFORCE_SPEED: defines.military.REINFORCE_SPEED
-    local reinforce rate:
-      if location owner == army owner: 2
-      else if army is exiled: 0
-      else if location is uncolonised: 0
-      else if location controller is hostile:
-        if location neighbours a province controlled by an ally in this war: 0.5
-        else if location is coastal & not blockaded: 0.25
-        else: 0.1
-      else: 1
-    reinforce_rate: sum of reinforce_rate modifiers from tech
-    reinforce_speed: sum of reinforce_speed modifiers on country
-    5 * round(... /5): round to multiple of 5
