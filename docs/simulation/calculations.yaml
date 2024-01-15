@@ -112,13 +112,17 @@ POPs:
   Attitudes:
     Consciousness from literacy: defines.pops.CON_LITERACY * Plurality * POP literacy * (1 + literacy_con_impact)
   Needs:
-    Life needs scalar: (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand) * defines.pop.BASE_GOODS_DEMAND * POP size / 200000
-    Everyday & luxury needs scalar: Life needs scalar * (1 + number of inventions * defines.pops.INVENTION_IMPACT_ON_DEMAND)
+    Base needs scalar: (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand) * defines.pop.BASE_GOODS_DEMAND * POP size / 200000
+    Life needs scalar: Base needs scalar * (1 + <strata>_life_needs modifier)
+    Invention needs scalar: 1 + number of inventions * defines.pops.INVENTION_IMPACT_ON_DEMAND
+    Everyday needs scalar: Base needs scalar * Invention needs scalar * (1 + <strata>_everyday_needs modifier)
+    Luxury needs scalar: Base needs scalar * Invention needs scalar * (1 + <strata>_luxury_needs modifier)
   POP income:
-    Pensions: 2 * pension_level * administrative efficiency * social spending slider * base life needs price * (1 - effective tax) * POP size / 200000
-    Unemployment subsidies: 2 * unemployment_benefit * administrative efficiency * social spending slider * base life needs price * (1 - effective tax) * POP size / 200000
+    Base life needs costs: Base needs scalar * sum of (life need quantity * good price)
+    Pensions: 2 * pension_level * administrative efficiency * social spending slider * Base life needs costs * (1 - effective tax) * POP size / 200000
+    Unemployment subsidies: 2 * unemployment_benefit * administrative efficiency * social spending slider * Base life needs costs * (1 - effective tax) * POP size / 200000
     Wages:
-      Minimum (worker) wage: 2 * minimum_wage * administrative efficiency * base life needs price * (1 - effective tax) * POP size / 200000
+      Minimum (worker) wage: 2 * minimum_wage * administrative efficiency * Base life needs costs * (1 - effective tax) * POP size / 200000
       RGO wages:
         Owners:
           if minimum worker wages > normal worker wage:
