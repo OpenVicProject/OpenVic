@@ -472,7 +472,7 @@ void GameSingleton::try_tick() {
 	game_manager.get_simulation_clock().conditionally_advance_game();
 }
 
-Error GameSingleton::_load_map_images(bool flip_vertical) {
+Error GameSingleton::_load_map_images() {
 	ERR_FAIL_COND_V_MSG(province_shape_texture.is_valid(), FAILED, "Map images have already been loaded!");
 
 	Error err = OK;
@@ -544,7 +544,6 @@ Error GameSingleton::_load_terrain_variants() {
 
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
-	terrain_sheet->flip_y();
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
 	ERR_FAIL_COND_V_MSG(
 		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED, vformat(
@@ -566,7 +565,7 @@ Error GameSingleton::_load_terrain_variants() {
 	}
 	Error err = OK;
 	for (int32_t idx = 0; idx < SHEET_SIZE; ++idx) {
-		const Rect2i slice { (idx % SHEET_DIMS) * slice_size, (7 - (idx / SHEET_DIMS)) * slice_size, slice_size, slice_size };
+		const Rect2i slice { idx % SHEET_DIMS * slice_size, idx / SHEET_DIMS * slice_size, slice_size, slice_size };
 		const Ref<Image> terrain_image = terrain_sheet->get_region(slice);
 		if (terrain_image.is_null() || terrain_image->is_empty()) {
 			UtilityFunctions::push_error(
@@ -655,7 +654,7 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to load flag textures!");
 		err = FAILED;
 	}
-	if (_load_map_images(true) != OK) {
+	if (_load_map_images() != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}
