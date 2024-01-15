@@ -107,7 +107,7 @@ func _parse_value(arg_name : StringName, value_string : String, type : Variant.T
 				return value_string.to_float()
 			push_error("'%s' must be a valid float, '%s' is an invalid value." % [arg_name, value_string])
 			return null
-		TYPE_STRING, TYPE_STRING_NAME:
+		TYPE_STRING, TYPE_STRING_NAME, TYPE_PACKED_STRING_ARRAY:
 			return value_string
 		TYPE_COLOR:
 			if Color.html_is_valid(value_string) or value_string.to_lower() in color_name_array:
@@ -196,24 +196,30 @@ func _parse_value(arg_name : StringName, value_string : String, type : Variant.T
 # TYPE_PACKED_INT64_ARRAY = 31
 # TYPE_PACKED_FLOAT32_ARRAY = 32
 # TYPE_PACKED_FLOAT64_ARRAY = 33
-# TYPE_PACKED_STRING_ARRAY = 34
 # TYPE_PACKED_VECTOR2_ARRAY = 35
 # TYPE_PACKED_VECTOR3_ARRAY = 36
 # TYPE_PACKED_COLOR_ARRAY = 37
+
+func _add_argument(dictionary : Dictionary, option : ArgumentOption, argument : Variant) -> void:
+	if option.type == TYPE_PACKED_STRING_ARRAY:
+		dictionary[option.name] += PackedStringArray([argument])
+	else:
+		dictionary[option.name] = argument
+
 
 func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray) -> Dictionary:
 	var current_key : String = ""
 	var current_option : ArgumentOption = null
 	for arg in arg_list:
-		if current_option != null and not arg.begins_with("-"):
-			var result : Variant = _parse_value(current_key, arg, current_option.type)
-			if result != null:
-				dictionary[current_option.name] = result
-			current_option = null
-			continue
-
 		if current_option != null:
-			push_warning("Valid argument '%s' was not set as a value, skipping." % current_key)
+			if not arg.begins_with("-"):
+				var result : Variant = _parse_value(current_key, arg, current_option.type)
+				if result != null:
+					_add_argument(dictionary, current_option, result)
+				current_option = null
+				continue
+			else:
+				push_warning("Valid argument '%s' was not set as a value, skipping." % current_key)
 
 		if arg.begins_with("-"):
 			current_option = null
@@ -270,12 +276,14 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 			if first_equal > -1:
 				var arg_result : Variant = _parse_value(key, value, current_option.type)
 				if arg_result != null:
-					dictionary[current_option.name] = arg_result
+					_add_argument(dictionary, current_option, arg_result)
 					current_option = null
 			elif current_option.type == TYPE_BOOL:
 				dictionary[current_option.name] = true
 			else:
 				push_warning("Argument '%s' treated like a boolean but does not support a boolean value, skipping." % key)
+		else:
+			push_warning("Non argument '%s' found, skipping." % arg)
 
 	return dictionary
 
