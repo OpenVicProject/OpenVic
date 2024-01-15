@@ -66,18 +66,20 @@ func _ready() -> void:
 		return
 	_map_shader_material = map_material
 
-	if not _map_mesh_instance.mesh is MapMesh:
-		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
-		return
-	_map_mesh = _map_mesh_instance.mesh
-
-	const pixels_per_terrain_tile : float = 20.0
+	const pixels_per_terrain_tile : float = 16.0
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_terrain_tile_factor,
 		float(GameSingleton.get_map_height()) / pixels_per_terrain_tile)
 
 	const pixels_per_stripe_tile : float = 16.0
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_stripe_tile_factor,
 		float(GameSingleton.get_map_height()) / pixels_per_stripe_tile)
+
+	if not _map_mesh_instance.mesh is MapMesh:
+		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
+		return
+	_map_mesh = _map_mesh_instance.mesh
+
+	_map_mesh.set_aspect_ratio(GameSingleton.get_map_aspect_ratio())
 
 	# Get map mesh bounds
 	var map_mesh_aabb : AABB = _map_mesh.get_core_aabb() * _map_mesh_instance.transform

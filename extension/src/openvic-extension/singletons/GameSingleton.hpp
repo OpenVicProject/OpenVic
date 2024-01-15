@@ -30,7 +30,7 @@ namespace OpenVic {
 		static godot::StringName const& _signal_clock_state_changed();
 
 		godot::Error _generate_terrain_texture_array();
-		godot::Error _load_map_images(bool flip_vertical);
+		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
 		godot::Error _load_flag_images();
 
