@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cgdnixsyh7bja" path="res://assets/graphics/splash_image.png" id="4_5b6yq"]
 [ext_resource type="VideoStream" path="res://assets/graphics/splash_startup.ogv" id="5_8euyy"]
 
-[node name="GameStartup" type="Control" node_paths=PackedStringArray("loading_screen")]
+[node name="GameStartup" type="Control" node_paths=PackedStringArray("loading_screen", "vic2_dir_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,6 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_e0cos")
 loading_screen = NodePath("LoadingScreen")
+vic2_dir_dialog = NodePath("Vic2DirDialog")
 
 [node name="LoadingScreen" parent="." instance=ExtResource("2_h0oiw")]
 visible = false
@@ -50,6 +51,18 @@ layout_mode = 2
 stream = ExtResource("5_8euyy")
 autoplay = true
 expand = true
+
+[node name="Vic2DirDialog" type="FileDialog" parent="."]
+process_mode = 2
+disable_3d = true
+title = "VIC2_DIR_DIALOG_TITLE"
+size = Vector2i(935, 159)
+ok_button_text = "VIC2_DIR_DIALOG_SELECT"
+cancel_button_text = "VIC2_DIR_DIALOG_CANCEL"
+mode_overrides_title = false
+file_mode = 2
+access = 2
+show_hidden_files = true
 
 [connection signal="splash_end" from="SplashContainer" to="." method="_on_splash_container_splash_end"]
 [connection signal="finished" from="SplashContainer/SplashVideo" to="SplashContainer" method="_on_splash_startup_finished"]

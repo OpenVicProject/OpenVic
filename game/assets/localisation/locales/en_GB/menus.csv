@@ -123,6 +123,10 @@ DIALOG_CANCEL;Cancel
 DIALOG_SAVE_AND_RESIGN;Save and Resign
 DIALOG_SAVE_AND_QUIT;Save and Quit
 
+VIC2_DIR_DIALOG_TITLE;Select your Victoria 2 Game Directory
+VIC2_DIR_DIALOG_SELECT;Select
+VIC2_DIR_DIALOG_CANCEL;Cancel
+
 ;; Province Overview Panel
 province_MISSING;No Province
 region_MISSING;No Region
