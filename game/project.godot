@@ -18,7 +18,9 @@ config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
 boot_splash/image="res://splash_assets/splash_image.png"
-config/icon="res://icon.svg"
+config/icon="res://art/OpenVicLogo.png"
+config/macos_native_icon="res://art/OpenVic.icns"
+config/windows_native_icon="res://art/OpenVic.ico"
 config/project_settings_override.template="user://settings.cfg"
 
 [autoload]
