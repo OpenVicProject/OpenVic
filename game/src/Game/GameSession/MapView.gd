@@ -22,16 +22,21 @@ var _drag_active : bool = false
 var _mouse_over_viewport : bool = true
 var _window_in_focus : bool = true
 
-@export var _zoom_target_min : float = 0.05
+@export var _zoom_target_min : float = 0.15
 @export var _zoom_target_max : float = 5.0
-@export var _zoom_target_step : float = 0.1
+@export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 64.0
 @export var _zoom_epsilon : float = _zoom_target_step * 0.005
 @export var _zoom_speed : float = 5.0
-@export var _zoom_target : float = 1.0:
+# _zoom_target's starting value is ignored as it is updated to the camera's height by _ready,
+# hence why it is not exported and just has _zoom_target_max as a placeholder.
+var _zoom_target : float = _zoom_target_max:
 	get: return _zoom_target
 	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
 const _zoom_position_multiplier = 3.14159 # Horizontal movement coefficient during zoom
 var _zoom_position : Vector2
+
+# Display the detailed terrain map below this height, and the parchment map above it
+@export var _zoom_parchment_threshold : float = _zoom_target_min + (_zoom_target_max - _zoom_target_min) / 4
 
 @export var _map_mesh_instance : MeshInstance3D
 var _map_mesh : MapMesh
@@ -65,14 +70,6 @@ func _ready() -> void:
 		push_error("Failed to set up map shader")
 		return
 	_map_shader_material = map_material
-
-	const pixels_per_terrain_tile : float = 16.0
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_terrain_tile_factor,
-		float(GameSingleton.get_map_height()) / pixels_per_terrain_tile)
-
-	const pixels_per_stripe_tile : float = 16.0
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_stripe_tile_factor,
-		float(GameSingleton.get_map_height()) / pixels_per_stripe_tile)
 
 	if not _map_mesh_instance.mesh is MapMesh:
 		push_error("Invalid map mesh class: ", _map_mesh_instance.mesh.get_class(), "(expected MapMesh)")
@@ -220,11 +217,19 @@ func _zoom_process(delta : float) -> void:
 	# Set to target if height is within _zoom_epsilon of it or has overshot past it
 	if abs(zoom - zoom_delta) < _zoom_epsilon or sign(zoom) != sign(zoom - zoom_delta):
 		zoom_delta = zoom
-	_camera.position += Vector3(_zoom_position.x * zoom_delta * int(_mouse_over_viewport), zoom_delta, _zoom_position.y * zoom_delta * int(_mouse_over_viewport))
+	_camera.position += Vector3(
+		_zoom_position.x * zoom_delta * int(_mouse_over_viewport),
+		zoom_delta,
+		_zoom_position.y * zoom_delta * int(_mouse_over_viewport)
+	)
+	# TODO - smooth transition similar to smooth zoom
+	var parchment_mapmode : bool = GameSingleton.is_parchment_mapmode_allowed() and _camera.position.y > _zoom_parchment_threshold
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_parchment_mix, float(parchment_mapmode))
 
 func _update_orientation() -> void:
-	var dir := Vector3(0, -1, -exp(-_camera.position.y - 1))
-	_camera.look_at(_camera.position + dir)
+	const up := Vector3(0, 0, -1)
+	var dir := Vector3(0, -1, -1.25 * exp(-10 * _camera.position.y - _zoom_target_min))
+	_camera.look_at(_camera.position + dir, up)
 
 func _update_minimap_viewport() -> void:
 	var near_left := _viewport_to_map_coords(Vector2(0, _viewport_dims.y))

@@ -45,7 +45,7 @@ func _ready() -> void:
 	_speed_indicator_button = get_button_from_nodepath(^"./topbar/speed_indicator")
 	if _speed_indicator_button:
 		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
-		_speed_indicator_texture = get_gfx_icon_texture_from_node(_speed_indicator_button)
+		_speed_indicator_texture = GUINode.get_gfx_icon_texture_from_node(_speed_indicator_button)
 
 	_update_info()
 	_update_speed_controls()

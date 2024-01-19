@@ -176,7 +176,7 @@ func _ready() -> void:
 		var target_slot_count : int = GameSingleton.get_province_building_count()
 		var slot_y : float = 0.0
 		for current_slot_count : int in target_slot_count:
-			var slot := generate_gui_element("province_interface.gui", "building", "building_slot_%d" % current_slot_count)
+			var slot := GUINode.generate_gui_element("province_interface.gui", "building", "building_slot_%d" % current_slot_count)
 			if slot:
 				_buildings_panel.add_child(slot)
 				slot.set_position(Vector2(0.0, slot_y))
@@ -220,7 +220,9 @@ enum ColonyStatus { STATE, PROTECTORATE, COLONY }
 
 # This assumes _cores_overlapping_elements_box is non-null
 func _set_core_flag(core_index : int, country : String) -> void:
-	var core_flag_texture : GFXMaskedFlagTexture = get_gfx_masked_flag_texture_from_node(_cores_overlapping_elements_box.get_child(core_index).get_node(^"./country_flag"))
+	var core_flag_texture : GFXMaskedFlagTexture = GUINode.get_gfx_masked_flag_texture_from_node(
+		_cores_overlapping_elements_box.get_child(core_index).get_node(^"./country_flag")
+	)
 	if core_flag_texture:
 		core_flag_texture.set_flag_country_name(country)
 
@@ -278,7 +280,9 @@ func _update_info() -> void:
 			# TODO - replace example icons with those from the province's list of modifier instances
 			_province_modifiers_overlapping_elements_box.set_child_count(8)
 			for i : int in _province_modifiers_overlapping_elements_box.get_child_count():
-				var icon : GFXIconTexture = get_gfx_icon_texture_from_node(_province_modifiers_overlapping_elements_box.get_child(i).get_node(^"./modifier"))
+				var icon : GFXIconTexture = GUINode.get_gfx_icon_texture_from_node(
+					_province_modifiers_overlapping_elements_box.get_child(i).get_node(^"./modifier")
+				)
 				if icon:
 					icon.set_icon_index(2 * i + (i & 1) + 1)
 

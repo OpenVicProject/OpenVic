@@ -62,6 +62,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_mapmode_count);
 	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier);
 	OV_BIND_METHOD(GameSingleton::set_mapmode, { "identifier" });
+	OV_BIND_METHOD(GameSingleton::is_parchment_mapmode_allowed);
 	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 
@@ -286,7 +287,7 @@ float GameSingleton::get_map_aspect_ratio() const {
 	return static_cast<float>(get_map_width()) / static_cast<float>(get_map_height());
 }
 
-Ref<Texture> GameSingleton::get_terrain_texture() const {
+Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
 	return terrain_texture;
 }
 
@@ -309,11 +310,11 @@ Vector2i GameSingleton::get_province_shape_image_subdivisions() const {
 	return image_subdivisions;
 }
 
-Ref<Texture> GameSingleton::get_province_shape_texture() const {
+Ref<Texture2DArray> GameSingleton::get_province_shape_texture() const {
 	return province_shape_texture;
 }
 
-Ref<Texture> GameSingleton::get_province_colour_texture() const {
+Ref<ImageTexture> GameSingleton::get_province_colour_texture() const {
 	return province_colour_texture;
 }
 
@@ -373,6 +374,15 @@ Error GameSingleton::set_mapmode(String const& identifier) {
 	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
 	mapmode_index = mapmode->get_index();
 	return _update_colour_image();
+}
+
+bool GameSingleton::is_parchment_mapmode_allowed() const {
+	// TODO - parchment bool per mapmode?
+	// TODO - move mapmode index to SIM/Map?
+	/* Disallows parchment mapmode for the cosmetic terrain mapmode */
+	static constexpr std::string_view cosmetic_terrain_mapmode = "mapmode_terrain";
+	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_index(mapmode_index);
+	return mapmode != nullptr && mapmode->get_identifier() != cosmetic_terrain_mapmode;
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
@@ -555,10 +565,10 @@ Error GameSingleton::_load_terrain_variants() {
 
 	TypedArray<Image> terrain_images;
 	{
-		// TODO - load "map/terrain/water.dds" instead of using a solid colour (issue is that it's 512x512
-		//        while the texturesheet slices are 256x256, so they can't share a Texture2DArray)
+		/* This is a placeholder image so that we don't have to branch to avoid looking up terrain index 0 (water).
+		 * It should never appear in game, and so is bright red to to make it obvious if it slips through. */
 		const Ref<Image> water_image = Utilities::make_solid_colour_image(
-			{ 0.1f, 0.1f, 0.5f }, slice_size, slice_size, terrain_sheet->get_format()
+			{ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format()
 		);
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
 		terrain_images.append(water_image);

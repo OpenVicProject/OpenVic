@@ -73,7 +73,7 @@ namespace OpenVic {
 		float get_map_aspect_ratio() const;
 
 		/* The cosmetic terrain textures stored in a Texture2DArray. */
-		godot::Ref<godot::Texture> get_terrain_texture() const;
+		godot::Ref<godot::Texture2DArray> get_terrain_texture() const;
 
 		/* The flag image corresponding to the requested country / flag_type
 		 * combination, or nullptr if no such flag can be found. */
@@ -87,14 +87,15 @@ namespace OpenVic {
 		/* The map, encoded in RGB8 with RG representing province index and B representing terrain texture.
 		 * To support a wider range of GPUs, the image is divided so that no piece has a dimension
 		 * greater than 16383 and the pieces are stored in a Texture2DArray. */
-		godot::Ref<godot::Texture> get_province_shape_texture() const;
+		godot::Ref<godot::Texture2DArray> get_province_shape_texture() const;
 
 		/* The base and stripe colours for each province. */
-		godot::Ref<godot::Texture> get_province_colour_texture() const;
+		godot::Ref<godot::ImageTexture> get_province_colour_texture() const;
 
 		int32_t get_mapmode_count() const;
 		godot::String get_mapmode_identifier(int32_t index) const;
 		godot::Error set_mapmode(godot::String const& identifier);
+		bool is_parchment_mapmode_allowed() const;
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);
 
