@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://bp5n3mlu45ygw"]
 
-[ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://theme/main_menu.tres" id="1_1yri4"]
+[ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://assets/graphics/theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" path="res://src/Game/Menu/MainMenu/MainMenu.gd" id="2_nm1fq"]
-[ext_resource type="Texture2D" uid="uid://dxys0wg0f0ic5" path="res://theme/assets/OpenVicFINALREALTRANS.png" id="3_58ess"]
+[ext_resource type="Texture2D" uid="uid://dxys0wg0f0ic5" path="res://assets/graphics/OpenVicFINALREALTRANS.png" id="3_58ess"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/Game/LocaleButton.tscn" id="3_amonp"]
 [ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/Game/Menu/MainMenu/ReleaseInfoBox.tscn" id="3_km0er"]
 

@@ -1,9 +1,9 @@
 [gd_scene load_steps=11 format=3 uid="uid://3kktdpfnc0sn"]
 
 [ext_resource type="Script" path="res://src/Game/LoadingScreen.gd" id="1_b0p3w"]
-[ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://theme/assets/loading_screen.png" id="2_ny153"]
-[ext_resource type="Texture2D" uid="uid://hlouxrjm7pqy" path="res://splash_assets/ovgear.png" id="3_avohi"]
-[ext_resource type="Texture2D" uid="uid://oirhxlyiogv8" path="res://splash_assets/globe.png" id="4_eyeeb"]
+[ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://assets/graphics/loading_screen.png" id="2_ny153"]
+[ext_resource type="Texture2D" uid="uid://hlouxrjm7pqy" path="res://assets/graphics/ovgear.png" id="3_avohi"]
+[ext_resource type="Texture2D" uid="uid://oirhxlyiogv8" path="res://assets/graphics/globe.png" id="4_eyeeb"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3fggo"]
 texture = ExtResource("2_ny153")
