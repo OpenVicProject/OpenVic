@@ -9,8 +9,10 @@ shader = ExtResource("1_upocn")
 shader_parameter/province_shape_subdivisions = null
 shader_parameter/hover_index = null
 shader_parameter/selected_index = null
+shader_parameter/parchment_mix = null
 shader_parameter/terrain_tile_factor = null
 shader_parameter/stripe_tile_factor = null
+shader_parameter/overlay_tile_factor = null
 
 [sub_resource type="MapMesh" id="MapMesh_3gtsd"]
 
