@@ -17,9 +17,15 @@ config/use_custom_user_dir=true
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
-boot_splash/image="res://splash_assets/splash_image.png"
-config/icon="res://icon.svg"
+boot_splash/image="res://assets/graphics/splash_image.png"
+config/icon="res://assets/OpenVic.svg"
+config/macos_native_icon="res://assets/OpenVic.icns"
+config/windows_native_icon="res://assets/OpenVic.ico"
 config/project_settings_override.template="user://settings.cfg"
+
+[audio]
+
+buses/default_bus_layout="res://assets/audio/default_bus_layout.tres"
 
 [autoload]
 
@@ -54,7 +60,7 @@ enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/open
 
 [gui]
 
-theme/custom="res://theme/default_theme.tres"
+theme/custom="res://assets/graphics/theme/default_theme.tres"
 
 [input]
 
@@ -131,7 +137,7 @@ locale/country_short_name={
 "United Kingdom": "UK",
 "United States of America": "USA"
 }
-locale/localisation_path="res://localisation"
+locale/localisation_path="res://assets/localisation/locales"
 
 [memory]
 

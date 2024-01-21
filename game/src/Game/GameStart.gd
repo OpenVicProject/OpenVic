@@ -42,11 +42,8 @@ func _save_setting(file : ConfigFile) -> void:
 	file.set_value(section_name, setting_name, _settings_base_path)
 
 func _load_compatibility_mode() -> void:
-	# Set this to your Vic2 install dir or a mod's dir to enable compatibility mode
-	# (this won't work for mods which rely on vanilla map assets, copy missing assets
-	# into the mod's dir for a temporary fix)
-	# Usage: OpenVic --compatibility-mode <path>
-
+	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
+	
 	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
 	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
 
@@ -70,9 +67,7 @@ func _load_compatibility_mode() -> void:
 			# and if not also search for a Steam install
 			actual_base_path = GameSingleton.search_for_game_path("..")
 		if not actual_base_path:
-			var title : String = "Failed to find game asset path!"
-			var msg : String = "The path can be specified with the \"base-path\" command line option."
-			OS.alert(msg, title)
+			OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
 			get_tree().quit()
 			return
 

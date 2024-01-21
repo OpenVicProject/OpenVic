@@ -4,7 +4,7 @@
 
 [node name="MusicConductor" type="Node" node_paths=PackedStringArray("_audio_stream_player")]
 script = ExtResource("1_56t1b")
-music_directory = "res://audio/music"
+music_directory = "res://assets/audio/music"
 first_song_name = "The_Crown"
 _audio_stream_player = NodePath("AudioStreamPlayer")
 

@@ -3,7 +3,7 @@ extends Node
 # REQUIREMENTS:
 # * SS-68
 
-const _audio_directory_path : StringName = &"res://audio/sfx/"
+const _audio_directory_path : StringName = &"res://assets/audio/sfx/"
 
 var _loaded_sound : Dictionary = {}
 

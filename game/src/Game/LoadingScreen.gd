@@ -1,6 +1,6 @@
 extends Control
 
-@export var quote_file_path : String = "res://common/quotes.txt"
+@export var quote_file_path : String = "res://assets/localisation/quotes.txt"
 
 @export_subgroup("Nodes")
 @export var progress_bar: ProgressBar
@@ -15,7 +15,10 @@ func start_loading_screen(thread_safe_function : Callable) -> void:
 		await ready
 	# set first quote
 	progress_bar.value = 0
-	quote_label.text = quotes[randi() % quotes.size()]
+	if quotes.size() > 0:
+		quote_label.text = quotes[randi() % quotes.size()]
+	else:
+		quote_label.text = "NO QUOTES DEFINED!"
 
 	if thread != null and thread.is_started():
 		thread.wait_to_finish()
@@ -26,7 +29,7 @@ func try_update_loading_screen(percent_complete: float, quote_should_change := f
 	# forces the function to behave as if deferred
 	await get_tree().process_frame
 	progress_bar.value = percent_complete
-	if quote_should_change:
+	if quote_should_change and quotes.size() > 0:
 		quote_label.text = quotes[randi() % quotes.size()]
 
 func _ready() -> void:
