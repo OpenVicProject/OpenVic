@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cdwymd51i4b2f"]
 
-[ext_resource type="PackedScene" uid="uid://by4gggse2nsdx" path="res://addons/keychain/ShortcutEdit.tscn" id="1_fv8sh"]
+[ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="1_fv8sh"]
 
 [node name="Controls" type="Control"]
 layout_mode = 3

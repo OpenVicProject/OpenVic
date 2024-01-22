@@ -82,7 +82,7 @@ func _set_argument_setting() -> void:
 		argument_dictionary[option.name] = option.default_value
 
 	_parse_argument_list(argument_dictionary, OS.get_cmdline_args())
-	_parse_argument_list(argument_dictionary, OS.get_cmdline_user_args())
+	_parse_argument_list(argument_dictionary, OS.get_cmdline_user_args(), true)
 
 	ProjectSettings.set_setting(argument_setting_path, argument_dictionary)
 
@@ -207,7 +207,7 @@ func _add_argument(dictionary : Dictionary, option : ArgumentOption, argument : 
 		dictionary[option.name] = argument
 
 
-func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray) -> Dictionary:
+func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray, is_game_args : bool = false) -> Dictionary:
 	var current_key : String = ""
 	var current_option : ArgumentOption = null
 	for arg in arg_list:
@@ -282,8 +282,8 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray)
 				dictionary[current_option.name] = true
 			else:
 				push_warning("Argument '%s' treated like a boolean but does not support a boolean value, skipping." % key)
-		else:
-			push_warning("Non argument '%s' found, skipping." % arg)
+		elif is_game_args:
+			push_warning("Non-argument '%s' found, skipping." % arg)
 
 	return dictionary
 
