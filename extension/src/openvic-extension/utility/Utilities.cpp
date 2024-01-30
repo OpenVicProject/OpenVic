@@ -46,13 +46,13 @@ String Utilities::float_to_formatted_string(float val) {
 
 /* Date formatted like this: "January 1, 1836" (with the month localised, if possible). */
 String Utilities::date_to_formatted_string(Date date) {
-	std::string const& month_name = date.get_month_name();
+	const String month_name = std_view_to_godot_string_name(date.get_month_name());
 	const String day_and_year = " " + String::num_int64(date.get_day()) + ", " + String::num_int64(date.get_year());
 	TranslationServer const* server = TranslationServer::get_singleton();
 	if (server != nullptr) {
-		return server->translate(std_to_godot_string_name(month_name)) + day_and_year;
+		return server->translate(month_name) + day_and_year;
 	} else {
-		return std_to_godot_string(month_name) + day_and_year;
+		return month_name + day_and_year;
 	}
 }
 
