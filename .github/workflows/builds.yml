@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
         with:
           submodules: recursive
 
@@ -77,7 +77,7 @@ jobs:
         uses: OpenVicProject/openvic-env@master
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: "3.x"
 
@@ -116,29 +116,11 @@ jobs:
           Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
 
       - name: Upload extension artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.0
         with:
-          name: ${{ github.event.repository.name }}-extension
+          name: ${{ github.event.repository.name }}-${{ matrix.identifier }}-extension
           path: |
             ${{ github.workspace }}/game/bin/openvic/*
-
-      - name: Archive Release
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: "zip"
-          filename: "../../../libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip"
-          directory: "${{ github.workspace }}/game/bin/openvic/"
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-
-      - name: Create and upload asset
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "libopenvic.${{ matrix.platform }}.${{ matrix.arch }}.zip"
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
   godot-debug-checks:
     runs-on: ubuntu-latest
@@ -147,16 +129,17 @@ jobs:
     name: Peform Godot Debug Checks
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Environment
         uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.1
         with:
-          name: ${{ github.event.repository.name }}-extension
           path: game/bin/openvic
+          pattern: ${{ github.event.repository.name }}-*-extension
+          merge-multiple: true
 
       - name: Export pack file
         id: export_game
@@ -173,9 +156,10 @@ jobs:
       - run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
 
       - name: Upload pack artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.0
         with:
           name: ${{ github.event.repository.name }}-debug-pck
+          compression-level: 9
           path: |
             ./game/export/${{ github.event.repository.name }}.pck
 
@@ -187,16 +171,17 @@ jobs:
     name: Export
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4.1.1
 
       - name: Setup Environment
         uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.1
         with:
-          name: ${{ github.event.repository.name }}-extension
           path: game/bin/openvic
+          pattern: ${{ github.event.repository.name }}-*-extension
+          merge-multiple: true
 
       - name: Install WINE
         id: wine_install
@@ -218,7 +203,7 @@ jobs:
 
       - name: Create release
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1.13.0
         with:
           allowUpdates: true
           omitNameDuringUpdate: true
@@ -227,9 +212,48 @@ jobs:
           artifacts: ${{ steps.export_game.outputs.archive_directory }}/*
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.3.0
         with:
           name: ${{ github.event.repository.name }}
-          retention-days: 15
+          retention-days: 30
+          compression-level: 9
           path: |
             ${{ steps.export_game.outputs.archive_directory }}
+
+  merge-files:
+    runs-on: ubuntu-latest
+    needs: [export]
+    name: 📚 Merge Files
+    steps:
+      - name: Download extension artifacts
+        uses: actions/download-artifact@v4.1.1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        with:
+          path: artifacts
+          pattern: ${{ github.event.repository.name }}-*-extension
+          merge-multiple: true
+
+      - name: Merge extension artifacts
+        uses: actions/upload-artifact/merge@v4.3.0
+        with:
+          delete-merged: true
+          name: ${{ github.event.repository.name }}-extension
+          pattern: ${{ github.event.repository.name }}-*-extension
+
+      - name: Archive release
+        uses: thedoctor0/zip-release@0.7.6
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        with:
+          type: "zip"
+          filename: "release/libopenvic.zip"
+          directory: "${{ github.workspace }}/artifacts"
+
+      - name: Upload extension release asset
+        uses: ncipollo/release-action@v1.13.0
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        with:
+          allowUpdates: true
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: release/*
