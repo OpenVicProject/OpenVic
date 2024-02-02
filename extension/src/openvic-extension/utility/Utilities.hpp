@@ -11,23 +11,23 @@
 
 namespace OpenVic::Utilities {
 
-	inline std::string godot_to_std_string(godot::String const& str) {
+	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
 		return str.ascii().get_data();
 	}
 
-	inline godot::String std_to_godot_string(std::string const& str) {
+	_FORCE_INLINE_ godot::String std_to_godot_string(std::string const& str) {
 		return str.c_str();
 	}
 
-	inline godot::String std_view_to_godot_string(std::string_view str) {
+	_FORCE_INLINE_ godot::String std_view_to_godot_string(std::string_view const& str) {
 		return std_to_godot_string(static_cast<std::string>(str));
 	}
 
-	inline godot::StringName std_to_godot_string_name(std::string const& str) {
+	_FORCE_INLINE_ godot::StringName std_to_godot_string_name(std::string const& str) {
 		return str.c_str();
 	}
 
-	inline godot::StringName std_view_to_godot_string_name(std::string_view str) {
+	_FORCE_INLINE_ godot::StringName std_view_to_godot_string_name(std::string_view const& str) {
 		return std_to_godot_string_name(static_cast<std::string>(str));
 	}
 
@@ -37,15 +37,15 @@ namespace OpenVic::Utilities {
 
 	godot::String date_to_formatted_string(Date date);
 
-	inline godot::Color to_godot_color(IsColour auto colour) {
+	_FORCE_INLINE_ godot::Color to_godot_color(IsColour auto colour) {
 		return { colour.redf(), colour.greenf(), colour.bluef(), colour.alphaf() };
 	}
 
-	inline godot::Vector2i to_godot_ivec2(ivec2_t vec) {
+	_FORCE_INLINE_ godot::Vector2i to_godot_ivec2(ivec2_t vec) {
 		return { vec.x, vec.y };
 	}
 
-	inline godot::Vector2 to_godot_fvec2(fvec2_t vec) {
+	_FORCE_INLINE_ godot::Vector2 to_godot_fvec2(fvec2_t vec) {
 		return { vec.x, vec.y };
 	}
 

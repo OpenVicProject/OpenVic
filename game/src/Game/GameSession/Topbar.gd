@@ -1,5 +1,7 @@
 extends GUINode
 
+@export var _outliner_guinode : GUINode
+
 var _speed_up_button : Button
 var _speed_down_button : Button
 var _speed_indicator_button : Button
@@ -7,11 +9,16 @@ var _speed_indicator_texture : GFXIconTexture
 var _date_label : Label
 var _country_name_label : Label
 
+# NationManagement.Screen-Button
+var _nation_management_buttons : Dictionary
+# NationManagement.Screen-GFXIconTexture
+var _nation_management_button_textures : Dictionary
+
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
 	GameSingleton.clock_state_changed.connect(_update_speed_controls)
 
-	add_gui_element("topbar.gui", "topbar")
+	add_gui_element("topbar", "topbar")
 
 	hide_nodes([
 		^"./topbar/topbar_outlinerbutton_bg",
@@ -20,10 +27,12 @@ func _ready() -> void:
 
 	const player_country : String = "SLV"
 
+	# Player country info
 	var player_flag_texture : GFXMaskedFlagTexture = get_gfx_masked_flag_texture_from_nodepath(^"./topbar/player_flag")
 	if player_flag_texture:
 		player_flag_texture.set_flag_country_name(player_country)
 
+	# Time controls
 	_speed_up_button = get_button_from_nodepath(^"./topbar/button_speedup")
 	if _speed_up_button:
 		_speed_up_button.pressed.connect(_on_increase_speed_button_pressed)
@@ -46,6 +55,31 @@ func _ready() -> void:
 	if _speed_indicator_button:
 		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
 		_speed_indicator_texture = GUINode.get_gfx_icon_texture_from_node(_speed_indicator_button)
+
+	# Nation management screens
+	const screen_nodepaths : Dictionary = {
+		NationManagement.Screen.PRODUCTION : ^"./topbar/topbarbutton_production",
+		NationManagement.Screen.BUDGET     : ^"./topbar/topbarbutton_budget",
+		NationManagement.Screen.TECHNOLOGY : ^"./topbar/topbarbutton_tech",
+		NationManagement.Screen.POLITICS   : ^"./topbar/topbarbutton_politics",
+		NationManagement.Screen.POPULATION : ^"./topbar/topbarbutton_pops",
+		NationManagement.Screen.TRADE      : ^"./topbar/topbarbutton_trade",
+		NationManagement.Screen.DIPLOMACY  : ^"./topbar/topbarbutton_diplomacy",
+		NationManagement.Screen.MILITARY   : ^"./topbar/topbarbutton_military"
+	}
+	for screen in screen_nodepaths:
+		var button : Button = get_button_from_nodepath(screen_nodepaths[screen])
+		if button:
+			button.pressed.connect(
+				Events.NationManagementScreens.toggle_nation_management_screen.bind(screen)
+			)
+			var icon : GFXIconTexture = get_gfx_icon_texture_from_node(button)
+			if icon:
+				_nation_management_buttons[screen] = button
+				_nation_management_button_textures[screen] = icon
+	Events.NationManagementScreens.update_active_nation_management_screen.connect(
+		_on_update_active_nation_management_screen
+	)
 
 	_update_info()
 	_update_speed_controls()
@@ -92,3 +126,8 @@ func _on_increase_speed_button_pressed() -> void:
 func _on_decrease_speed_button_pressed() -> void:
 	print("Speed down!")
 	GameSingleton.decrease_speed()
+
+func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
+	for screen in _nation_management_buttons:
+		_nation_management_button_textures[screen].set_icon_index(1 + int(screen == active_screen))
+		_nation_management_buttons[screen].queue_redraw()

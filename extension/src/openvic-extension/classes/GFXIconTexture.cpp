@@ -3,7 +3,6 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -11,7 +10,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 

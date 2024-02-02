@@ -48,7 +48,7 @@ func _save_setting(file : ConfigFile) -> void:
 
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
-	
+
 	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
 	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
 
