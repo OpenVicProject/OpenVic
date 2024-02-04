@@ -1,0 +1,62 @@
+name: Mod Feature Request
+description: Request a feature for the sake of mods
+labels: ["enhancement", "mod feature proposal", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - If this feature was in Victoria II, please report a [Victoria II discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
+        - If this feature only intends to include mechanical additions to the vanilla experience, please report it as a [gameplay feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-gameplay-feature-request.yml).
+        - Write a descriptive proposal title above.
+
+  - type: checkboxes
+    attributes:
+      label: Duplicate Proposal?
+      description: "Search [open](https://github.com/OpenVicProject/OpenVic/issues) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aissue+is%3Aclosed) proposals to ensure this feature has not already been proposed. If there is a match, you can bump it or leave a comment with your ideas and concerns. If you don't find a relevant match or if you're not sure, don't hesitate to **open a new issue**. Contributors will handle it from there if it's a duplicate."
+      options:
+      - label: I have checked for an existing feature request.
+        required: true
+
+  - type: dropdown
+    id: mod-type
+    attributes:
+      label: Purpose
+      description: |
+        For what purpose does this request seek to serve?
+      options:
+        - Mods
+        - Source Code Extensions
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-dependent-mod
+    attributes:
+      label: Project
+      description: If you need this for a specific modding project, specify above. This is important so that we know the *context* in which the feature is being proposed. Features used in real projects are more likely to be added.
+      placeholder: Example - "A cold war overhaul mod"
+
+  - type: textarea
+    attributes:
+      label: Problem
+      description: Describe the problem or limitation within OpenVic you are running into in your project.
+      placeholder: Example - "Victoria II's modding script doesn't have a traditional if statement, which makes our code more roundabout and less readable."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Solution
+      description: Describe the feature / enhancement you're proposing and how it helps to overcome the problem or limitation you're running into.
+      placeholder: Example - "Add an if statement to OpenVic, so that we don't have to use if-emulation, and can clean up and simplify our code."
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Existing Workaround?
+      description: If this enhancement will not be used often, can it be worked around with a few lines of script?
+      placeholder: Example - "This can be worked around, but it is not particularly convenient."
+    validations:
+      required: true
