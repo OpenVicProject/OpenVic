@@ -1,6 +1,22 @@
 name: Builds
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '.github/**'
+      - '.vscode/**'
+      - 'docs/**'
+      - 'LICENSE-EXCEPTIONS.md'
+      - 'LICENSE.md'
+      - 'README.md'
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - '.vscode/**'
+      - 'docs/**'
+      - 'LICENSE-EXCEPTIONS.md'
+      - 'LICENSE.md'
+      - 'README.md'
 
 env:
   GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
