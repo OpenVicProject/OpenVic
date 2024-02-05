@@ -7,7 +7,11 @@ MAINMENU_MULTIPLAYER;Multiplayer
 MAINMENU_OPTIONS;Options
 MAINMENU_CREDITS;Credits
 MAINMENU_EXIT;Exit
-MAINMENU_CHECKSUM;Checksum {checksum}
+MAIMENU_LATEST_RELEASE_NAME;Latest Release Name: {release_name}
+MAIMENU_COMMIT;Commit: {short_hash}
+MAINMENU_CHECKSUM;Checksum: {short_checksum}
+MAINMENU_CHECKSUM_TOOLTIP;Checksum {checksum}
+MAINMENU_GAME_INFO;Game Info
 
 ;; Options
 OPTIONS_RESET;R
