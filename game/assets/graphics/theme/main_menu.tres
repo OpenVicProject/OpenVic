@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=32 format=3 uid="uid://qoi3oec48jp0"]
+[gd_resource type="Theme" load_steps=37 format=3 uid="uid://qoi3oec48jp0"]
 
 [ext_resource type="Script" path="res://src/Game/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
 [ext_resource type="Script" path="res://src/Game/Theme/TextureSetting.gd" id="2_7bwl2"]
@@ -80,6 +80,16 @@ texture_settings = Array[ExtResource("2_7bwl2")]([SubResource("Resource_hxpog"),
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kmfi1"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1qcrh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yfar7"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_m16nl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_exmmj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_k4wq5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nm664"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dd2b8"]
 content_margin_left = 20.0
@@ -169,6 +179,15 @@ CommitLabel/styles/focus = SubResource("StyleBoxEmpty_1qwxu")
 CommitLabel/styles/hover = SubResource("StyleBoxEmpty_myxhv")
 CommitLabel/styles/normal = SubResource("StyleBoxEmpty_kmfi1")
 CommitLabel/styles/pressed = SubResource("StyleBoxEmpty_1qcrh")
+GameInfoButton/base_type = &"Button"
+GameInfoButton/colors/font_hover_color = Color(0.360784, 0.360784, 0.360784, 1)
+GameInfoButton/colors/font_hover_pressed_color = Color(0.215686, 0.215686, 0.215686, 1)
+GameInfoButton/colors/font_pressed_color = Color(0.215686, 0.215686, 0.215686, 1)
+GameInfoButton/styles/disabled = SubResource("StyleBoxEmpty_yfar7")
+GameInfoButton/styles/focus = SubResource("StyleBoxEmpty_m16nl")
+GameInfoButton/styles/hover = SubResource("StyleBoxEmpty_exmmj")
+GameInfoButton/styles/normal = SubResource("StyleBoxEmpty_k4wq5")
+GameInfoButton/styles/pressed = SubResource("StyleBoxEmpty_nm664")
 TitleButton/base_type = &"Button"
 TitleButton/colors/font_color = Color(0.87451, 0.87451, 0.87451, 1)
 TitleButton/colors/font_disabled_color = Color(0.87451, 0.87451, 0.87451, 0.501961)
