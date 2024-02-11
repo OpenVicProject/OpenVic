@@ -1,0 +1,60 @@
+name: Update Scripts Submodule
+
+env:
+  UPDATE_BOT_NAME: 'Git bot'
+  UPDATE_BRANCH_NAME: update/scripts
+  UPDATE_BASE_BRANCH_NAME: master
+
+on:
+  # Allows you to run this workflow manually from the Actions tab or through HTTP API
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.CI_TOKEN }}
+        submodules: true
+
+    # Update references
+    - name: Git Submodule Update
+      run: |
+        cd scripts
+        git pull --recurse-submodules
+        git submodule update --remote --recursive
+        echo "UPDATE_SCRIPTS_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        cd ..
+        git checkout -b ${{ env.UPDATE_BRANCH_NAME }}
+
+    - name: Commit update
+      id: commit_update
+      run: |
+        git config --global user.name ${{ env.UPDATE_BOT_NAME }}
+        git config --global user.email 'bot@noreply.github.com'
+        git commit -am "Update scripts to OpenVicProject/scripts@$UPDATE_SCRIPTS_COMMIT" && git push https://{{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} || echo "status=No changes to commit" >> $GITHUB_OUTPUT
+
+    - name: Create Pull Request
+      if: ${{ steps.commit_update.outputs.status != "No changes to commit" }}
+      run: |
+        gh pr create -B ${{ env.UPDATE_BASE_BRANCH_NAME }} -H ${{ env.UPDATE_BRANCH_NAME }} --title 'Update scripts to OpenVicProject/scripts@$UPDATE_SCRIPTS_COMMIT' --body 'Auto-managed PR created by Github action'
+        echo "UPDATE_PR_URL=$(gh pr view --json 'url' --jq '.url')" >> $GITHUB_ENV"
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Approve and Auto-Merge Pull Request
+      if: ${{ steps.commit_update.outputs.status != "No changes to commit" }}
+      run: |
+        gh pr review --approve "${{ env.UPDATE_PR_URL }}"
+        gh pr merge --auto "${{ env.UPDATE_PR_URL }}"
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
