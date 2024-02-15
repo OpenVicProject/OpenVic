@@ -1,17 +1,3 @@
-Budget:
-  Loan interest per day:
-    formula: (NBD + FBD * (1 + FIM)) * max(0.01, LBI+BIM)/30
-    NBD: National bank debt = debt owed to your national bank.
-    FBD: Foreign bank debt = debt owed to foreign national banks and private investors.
-    1+FIM: Foreign interest modifier = sum of loan_interest modifiers from non-tech
-    max(0.01: Hardcoded value. Reasoning unknown.
-    LBI: defines.economy.LOAN_BASE_INTEREST
-    BIM: Base interest modifier = sum of loan_interest modifiers from technology.
-    /30: Hardcoded value to represent days in a month.
-  Gold income daily:
-    formula: MGQ * GOLD_TO_CASH_RATE
-    MGQ: Money good quanity = total production of goods with money = yes
-    GOLD_TO_CASH_RATE: defines.country.GOLD_TO_CASH_RATE
 Diplomacy:
   Monthly diplomatic points gain: defines.country.BASE_MONTHLY_DIPLOPOINTS * (1 + sum of diplomatic_points + sum of diplomatic_points_modifier)
   Influence:
@@ -50,6 +36,37 @@ Diplomacy:
         else: 0
     Daily influence gain per country: Base daily influence gain per country * Country influence gain modifier
   Colonisable life rating: defines.country.COLONIAL_LIFERATING + sum of colonial_life_rating
+Economy:
+  Budget:
+    Loan interest per day:
+      formula: (NBD + FBD * (1 + FIM)) * max(0.01, LBI+BIM)/30
+      NBD: National bank debt = debt owed to your national bank.
+      FBD: Foreign bank debt = debt owed to foreign national banks and private investors.
+      1+FIM: Foreign interest modifier = sum of loan_interest modifiers from non-tech
+      max(0.01: Hardcoded value. Reasoning unknown.
+      LBI: defines.economy.LOAN_BASE_INTEREST
+      BIM: Base interest modifier = sum of loan_interest modifiers from technology.
+      /30: Hardcoded value to represent days in a month.
+    Gold income daily:
+      formula: MGQ * GOLD_TO_CASH_RATE
+      MGQ: Money good quanity = total production of goods with money = yes
+      GOLD_TO_CASH_RATE: defines.country.GOLD_TO_CASH_RATE
+  Production:
+    Human resource management:
+      Vacancies: max employees - employees count
+      Maximum employees hired per day:
+        formula: max(employees available, relative maximum)
+        employees available: unemployed employee pops in state
+        relative maximum:
+            if employees count = 0 & max employees >= 6667: 0.2775 * Vacancies
+            else: ceil(0.15 * Vacancies) - 1
+          0.15: Hardcoded value
+          0.2775: 1 - (1 - 0.15)^2
+          note: Rounding is unknown for the 0.2775 case. See https://discord.com/channels/1063392556160909312/1063416834650554398/1204520366643347476
+      Minimum employees hired per day:
+        formula: max(absolute minimum, relative minimum)
+        absolute minimum: 50 (hardcoded value)
+        relative minimum: floor(defines.economy.EMPLOYMENT_HIRE_LOWEST * employees count)
 Military:
   Maximum units per soldier POP:
     if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
