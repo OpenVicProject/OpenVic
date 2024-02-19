@@ -13,28 +13,31 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
-StringName const& GFXMaskedFlagTexture::_signal_image_updated() {
-	static const StringName signal_image_updated = "image_updated";
-	return signal_image_updated;
-}
-
 Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	 * and so can update it without creating and setting a new image, or not. */
-	const bool can_update = combined_image.is_valid() && combined_image->get_size() == overlay_image->get_size()
-		&& combined_image->get_format() == overlay_image->get_format();
+	bool can_update = button_image.is_valid() && button_image->get_size() == overlay_image->get_size()
+		&& button_image->get_format() == overlay_image->get_format();
 	if (!can_update) {
-		combined_image = Image::create(
+		button_image = Image::create(
 			overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format()
 		);
-		ERR_FAIL_NULL_V(combined_image, FAILED);
+		ERR_FAIL_NULL_V(button_image, FAILED);
+	}
+
+	if (combined_texture.is_null()) {
+		can_update = false;
+		combined_texture.instantiate();
+		ERR_FAIL_NULL_V(combined_texture, FAILED);
+		set_atlas(combined_texture);
+		set_region({ {}, button_image->get_size() });
 	}
 
 	if (mask_image.is_valid() && flag_image.is_valid()) {
-		const Vector2i centre_translation = (mask_image->get_size() - combined_image->get_size()) / 2;
-		for (Vector2i combined_image_point { 0, 0 }; combined_image_point.y < combined_image->get_height(); ++combined_image_point.y) {
-			for (combined_image_point.x = 0; combined_image_point.x < combined_image->get_width(); ++combined_image_point.x) {
+		const Vector2i centre_translation = (mask_image->get_size() - button_image->get_size()) / 2;
+		for (Vector2i combined_image_point { 0, 0 }; combined_image_point.y < button_image->get_height(); ++combined_image_point.y) {
+			for (combined_image_point.x = 0; combined_image_point.x < button_image->get_width(); ++combined_image_point.x) {
 				const Color overlay_image_colour = overlay_image->get_pixelv(combined_image_point);
 				// Translate to mask_image coordinates, keeping the centres of each image aligned.
 				const Vector2i mask_image_point = combined_image_point + centre_translation;
@@ -47,22 +50,22 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 					const Vector2i flag_image_point = mask_image_point * flag_image->get_size() / mask_image->get_size();
 					Color flag_image_colour = flag_image->get_pixelv(flag_image_point);
 					flag_image_colour.a = mask_image_colour.a;
-					combined_image->set_pixelv(combined_image_point, flag_image_colour.blend(overlay_image_colour));
+					button_image->set_pixelv(combined_image_point, flag_image_colour.blend(overlay_image_colour));
 				} else {
-					combined_image->set_pixelv(combined_image_point, overlay_image_colour);
+					button_image->set_pixelv(combined_image_point, overlay_image_colour);
 				}
 			}
 		}
 	} else {
-		combined_image->blit_rect(overlay_image, overlay_image->get_used_rect(), {});
+		button_image->blit_rect(overlay_image, overlay_image->get_used_rect(), {});
 	}
 
 	if (can_update) {
-		update(combined_image);
+		combined_texture->update(button_image);
 	} else {
-		set_image(combined_image);
+		combined_texture->set_image(button_image);
 	}
-	emit_signal(_signal_image_updated(), combined_image);
+	_update_button_states();
 	return OK;
 }
 
@@ -76,29 +79,14 @@ void GFXMaskedFlagTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXMaskedFlagTexture::set_flag_country_name, { "new_flag_country_name" });
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_country_name);
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_type);
-
-	ADD_SIGNAL(
-		MethodInfo(_signal_image_updated(), PropertyInfo(Variant::OBJECT, "source_image", PROPERTY_HINT_RESOURCE_TYPE, "Image"))
-	);
 }
 
 GFXMaskedFlagTexture::GFXMaskedFlagTexture() : gfx_masked_flag { nullptr }, flag_country { nullptr } {}
 
-Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(
-	GFX::MaskedFlag const* gfx_masked_flag, std::vector<Ref<GFXButtonStateTexture>> const& button_state_textures
-) {
+Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(GFX::MaskedFlag const* gfx_masked_flag) {
 	Ref<GFXMaskedFlagTexture> masked_flag_texture;
 	masked_flag_texture.instantiate();
 	ERR_FAIL_NULL_V(masked_flag_texture, nullptr);
-
-	for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
-		masked_flag_texture->connect(
-			_signal_image_updated(),
-			Callable { *button_state_texture, GFXButtonStateTexture::get_generate_state_image_func_name() },
-			CONNECT_PERSIST
-		);
-	}
-
 	ERR_FAIL_COND_V(masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag) != OK, nullptr);
 	return masked_flag_texture;
 }
@@ -107,6 +95,8 @@ void GFXMaskedFlagTexture::clear() {
 	gfx_masked_flag = nullptr;
 	flag_country = nullptr;
 	flag_type = String {};
+
+	_clear_button_states();
 
 	overlay_image.unref();
 	mask_image.unref();

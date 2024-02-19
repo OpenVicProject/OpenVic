@@ -20,7 +20,7 @@ using namespace OpenVic;
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box)
 
 #define APPLY_TO_TEXTURE_TYPES(F) \
-	F(GFXIconTexture, gfx_icon_texture) \
+	F(GFXSpriteTexture, gfx_sprite_texture) \
 	F(GFXMaskedFlagTexture, gfx_masked_flag_texture) \
 	F(GFXPieChartTexture, gfx_pie_chart_texture)
 

@@ -9,7 +9,7 @@
 
 #include <openvic-simulation/interface/GUI.hpp>
 
-#include "openvic-extension/classes/GFXIconTexture.hpp"
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
@@ -52,12 +52,12 @@ namespace OpenVic {
 
 		/* Helper functions to get textures from TextureRects and Buttons. */
 		static godot::Ref<godot::Texture2D> get_texture_from_node(godot::Node* node);
-		static godot::Ref<GFXIconTexture> get_gfx_icon_texture_from_node(godot::Node* node);
+		static godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture_from_node(godot::Node* node);
 		static godot::Ref<GFXMaskedFlagTexture> get_gfx_masked_flag_texture_from_node(godot::Node* node);
 		static godot::Ref<GFXPieChartTexture> get_gfx_pie_chart_texture_from_node(godot::Node* node);
 
 		godot::Ref<godot::Texture2D> get_texture_from_nodepath(godot::NodePath const& path) const;
-		godot::Ref<GFXIconTexture> get_gfx_icon_texture_from_nodepath(godot::NodePath const& path) const;
+		godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture_from_nodepath(godot::NodePath const& path) const;
 		godot::Ref<GFXMaskedFlagTexture> get_gfx_masked_flag_texture_from_nodepath(godot::NodePath const& path) const;
 		godot::Ref<GFXPieChartTexture> get_gfx_pie_chart_texture_from_nodepath(godot::NodePath const& path) const;
 
