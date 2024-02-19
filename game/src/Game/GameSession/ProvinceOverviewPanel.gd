@@ -5,23 +5,23 @@ var _province_name_label : Label
 var _region_name_label : Label
 var _slave_status_icon : TextureRect
 var _colony_status_button : Button
-var _colony_status_button_texture : GFXIconTexture
+var _colony_status_button_texture : GFXSpriteTexture
 var _administrative_percentage_label : Label
 var _owner_percentage_label : Label
 var _province_modifiers_overlapping_elements_box : GUIOverlappingElementsBox
-var _terrain_type_texture : GFXIconTexture
+var _terrain_type_texture : GFXSpriteTexture
 var _life_rating_bar : TextureProgressBar
 var _controller_flag_texture : GFXMaskedFlagTexture
 
 # Statistics
-var _rgo_icon_texture : GFXIconTexture
+var _rgo_icon_texture : GFXSpriteTexture
 var _rgo_produced_label : Label
 var _rgo_income_label : Label
-var _rgo_employment_percentage_texture : GFXIconTexture
+var _rgo_employment_percentage_texture : GFXSpriteTexture
 var _rgo_employment_population_label : Label
 var _rgo_employment_percentage_label : Label
 var _crime_name_label : Label
-var _crime_icon_texture : GFXIconTexture
+var _crime_icon_texture : GFXSpriteTexture
 var _crime_fighting_label : Label
 var _total_population_label : Label
 var _migration_label : Label
@@ -44,7 +44,7 @@ class BuildingSlot:
 	var _slot_index : int
 	var _slot_node : Control
 
-	var _building_icon : GFXIconTexture
+	var _building_icon : GFXSpriteTexture
 	var _expand_button : Button
 	var _expanding_icon : TextureRect
 	var _expanding_progress_bar : TextureProgressBar
@@ -64,7 +64,7 @@ class BuildingSlot:
 			var icon := _slot_node.get_node("build_icon%d" % icon_index)
 			if icon:
 				if icon_index == _slot_index:
-					_building_icon = GUINode.get_gfx_icon_texture_from_node(icon)
+					_building_icon = GUINode.get_gfx_sprite_texture_from_node(icon)
 				else:
 					icon.hide()
 
@@ -133,12 +133,12 @@ func _ready() -> void:
 	_province_name_label = get_label_from_nodepath(^"./province_view/province_view_header/province_name")
 	_region_name_label = get_label_from_nodepath(^"./province_view/province_view_header/state_name")
 	_slave_status_icon = get_texture_rect_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
-	var slave_status_icon_texture : GFXIconTexture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
+	var slave_status_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
 	if slave_status_icon_texture:
 		slave_status_icon_texture.set_icon_index(GameSingleton.get_slave_pop_icon_index())
 	_colony_status_button = get_button_from_nodepath(^"./province_view/province_view_header/colony_button")
-	_colony_status_button_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_view_header/colony_button")
-	var admin_icon_texture : GFXIconTexture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_view_header/admin_icon")
+	_colony_status_button_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/colony_button")
+	var admin_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/admin_icon")
 	if admin_icon_texture:
 		admin_icon_texture.set_icon_index(GameSingleton.get_administrative_pop_icon_index())
 	_administrative_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/admin_efficiency")
@@ -146,19 +146,19 @@ func _ready() -> void:
 	_province_modifiers_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_view_header/province_modifiers")
 	if _province_modifiers_overlapping_elements_box and _province_modifiers_overlapping_elements_box.set_gui_child_element_name("province_interface", "prov_state_modifier") != OK:
 		_province_modifiers_overlapping_elements_box = null # hide province modifiers box since we can't do anything with it
-	_terrain_type_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_view_header/prov_terrain")
+	_terrain_type_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/prov_terrain")
 	_life_rating_bar = get_progress_bar_from_nodepath(^"./province_view/province_view_header/liferating")
 	_controller_flag_texture = get_gfx_masked_flag_texture_from_nodepath(^"./province_view/province_view_header/controller_flag")
 
 	# Statistics
-	_rgo_icon_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_statistics/goods_type")
+	_rgo_icon_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/goods_type")
 	_rgo_produced_label = get_label_from_nodepath(^"./province_view/province_statistics/produced")
 	_rgo_income_label = get_label_from_nodepath(^"./province_view/province_statistics/income")
-	_rgo_employment_percentage_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_statistics/employment_ratio")
+	_rgo_employment_percentage_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/employment_ratio")
 	_rgo_employment_population_label = get_label_from_nodepath(^"./province_view/province_statistics/rgo_population")
 	_rgo_employment_percentage_label = get_label_from_nodepath(^"./province_view/province_statistics/rgo_percent")
 	_crime_name_label = get_label_from_nodepath(^"./province_view/province_statistics/crime_name")
-	_crime_icon_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_statistics/crime_icon")
+	_crime_icon_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/crime_icon")
 	_crime_fighting_label = get_label_from_nodepath(^"./province_view/province_statistics/crimefight_percent")
 	_total_population_label = get_label_from_nodepath(^"./province_view/province_statistics/total_population")
 	_migration_label = get_label_from_nodepath(^"./province_view/province_statistics/migration")
@@ -280,7 +280,7 @@ func _update_info() -> void:
 			# TODO - replace example icons with those from the province's list of modifier instances
 			_province_modifiers_overlapping_elements_box.set_child_count(8)
 			for i : int in _province_modifiers_overlapping_elements_box.get_child_count():
-				var icon : GFXIconTexture = GUINode.get_gfx_icon_texture_from_node(
+				var icon : GFXSpriteTexture = GUINode.get_gfx_sprite_texture_from_node(
 					_province_modifiers_overlapping_elements_box.get_child(i).get_node(^"./modifier")
 				)
 				if icon:

@@ -1,23 +1,20 @@
 #pragma once
 
-#include <godot_cpp/classes/image_texture.hpp>
-
 #include <openvic-simulation/country/Country.hpp>
 #include <openvic-simulation/interface/GFX.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 
 namespace OpenVic {
-	class GFXMaskedFlagTexture : public godot::ImageTexture {
-		GDCLASS(GFXMaskedFlagTexture, godot::ImageTexture)
+	class GFXMaskedFlagTexture : public GFXButtonStateHavingTexture {
+		GDCLASS(GFXMaskedFlagTexture, GFXButtonStateHavingTexture)
 
 		GFX::MaskedFlag const* PROPERTY(gfx_masked_flag);
 		Country const* PROPERTY(flag_country);
 		godot::StringName PROPERTY(flag_type);
 
-		godot::Ref<godot::Image> overlay_image, mask_image, flag_image, combined_image;
-
-		static godot::StringName const& _signal_image_updated();
+		godot::Ref<godot::Image> overlay_image, mask_image, flag_image;
+		godot::Ref<godot::ImageTexture> combined_texture;
 
 		godot::Error _generate_combined_image();
 
@@ -27,12 +24,8 @@ namespace OpenVic {
 	public:
 		GFXMaskedFlagTexture();
 
-		/* Create a GFXMaskedFlagTexture using the specified GFX::MaskedFlag. Returns nullptr if gfx_masked_flag fails.
-		 * Connects the provided GFXButtonStateTextures (if any) to the GFXMaskedFlagTexture's image_updated signal. */
-		static godot::Ref<GFXMaskedFlagTexture> make_gfx_masked_flag_texture(
-			GFX::MaskedFlag const* gfx_masked_flag,
-			std::vector<godot::Ref<GFXButtonStateTexture>> const& button_state_textures = {}
-		);
+		/* Create a GFXMaskedFlagTexture using the specified GFX::MaskedFlag. Returns nullptr if gfx_masked_flag fails. */
+		static godot::Ref<GFXMaskedFlagTexture> make_gfx_masked_flag_texture(GFX::MaskedFlag const* gfx_masked_flag);
 
 		/* Reset gfx_masked_flag, flag_country and flag_type to nullptr/an empty string, and unreference all images.
 		 * This does not affect the godot::ImageTexture, which cannot be reset to a null or empty image. */

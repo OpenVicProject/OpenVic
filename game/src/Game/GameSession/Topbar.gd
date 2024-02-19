@@ -5,13 +5,13 @@ extends GUINode
 var _speed_up_button : Button
 var _speed_down_button : Button
 var _speed_indicator_button : Button
-var _speed_indicator_texture : GFXIconTexture
+var _speed_indicator_texture : GFXSpriteTexture
 var _date_label : Label
 var _country_name_label : Label
 
 # NationManagement.Screen-Button
 var _nation_management_buttons : Dictionary
-# NationManagement.Screen-GFXIconTexture
+# NationManagement.Screen-GFXSpriteTexture
 var _nation_management_button_textures : Dictionary
 
 func _ready() -> void:
@@ -54,7 +54,7 @@ func _ready() -> void:
 	_speed_indicator_button = get_button_from_nodepath(^"./topbar/speed_indicator")
 	if _speed_indicator_button:
 		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
-		_speed_indicator_texture = GUINode.get_gfx_icon_texture_from_node(_speed_indicator_button)
+		_speed_indicator_texture = GUINode.get_gfx_sprite_texture_from_node(_speed_indicator_button)
 
 	# Nation management screens
 	const screen_nodepaths : Dictionary = {
@@ -73,7 +73,7 @@ func _ready() -> void:
 			button.pressed.connect(
 				Events.NationManagementScreens.toggle_nation_management_screen.bind(screen)
 			)
-			var icon : GFXIconTexture = get_gfx_icon_texture_from_node(button)
+			var icon : GFXSpriteTexture = get_gfx_sprite_texture_from_node(button)
 			if icon:
 				_nation_management_buttons[screen] = button
 				_nation_management_button_textures[screen] = icon

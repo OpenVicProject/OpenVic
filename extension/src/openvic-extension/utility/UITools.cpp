@@ -12,7 +12,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
-#include "openvic-extension/classes/GFXIconTexture.hpp"
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
@@ -128,17 +128,17 @@ static bool generate_icon(generate_gui_args_t&& args) {
 	/* Change to use sprite type to choose Godot node type! */
 	bool ret = true;
 	if (icon.get_sprite() != nullptr) {
-		if (icon.get_sprite()->is_type<GFX::TextureSprite>()) {
+		if (icon.get_sprite()->is_type<GFX::IconTextureSprite>()) {
 			TextureRect* godot_texture_rect = nullptr;
 			ret &= new_control(godot_texture_rect, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
-			GFX::TextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::TextureSprite>();
-			Ref<GFXIconTexture> texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, icon.get_frame());
+			GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>();
+			Ref<GFXSpriteTexture> texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, icon.get_frame());
 			if (texture.is_valid()) {
 				godot_texture_rect->set_texture(texture);
 			} else {
-				UtilityFunctions::push_error("Failed to make GFXIconTexture for GUI icon ", icon_name);
+				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI icon ", icon_name);
 				ret = false;
 			}
 
@@ -290,35 +290,18 @@ static bool generate_button(generate_gui_args_t&& args) {
 		godot_button->set_text(std_view_to_godot_string(button.get_text()));
 	}
 
-	using enum GFXButtonStateTexture::ButtonState;
-	static constexpr std::array<GFXButtonStateTexture::ButtonState, 3> button_states { HOVER, PRESSED, DISABLED };
-
-	std::vector<Ref<GFXButtonStateTexture>> button_state_textures;
-	for (GFXButtonStateTexture::ButtonState button_state : button_states) {
-		Ref<GFXButtonStateTexture> button_state_texture = GFXButtonStateTexture::make_gfx_button_state_texture(button_state);
-		if (button_state_texture.is_valid()) {
-			button_state_textures.push_back(button_state_texture);
-		} else {
-			UtilityFunctions::push_error(
-				"Failed to make ", GFXButtonStateTexture::button_state_to_theme_name(button_state),
-				" GFXButtonStateTexture for GUI button ", button_name
-			);
-			ret = false;
-		}
-	}
-
 	if (button.get_sprite() != nullptr) {
-		Ref<Texture2D> texture;
-		if (button.get_sprite()->is_type<GFX::TextureSprite>()) {
-			GFX::TextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::TextureSprite>();
-			texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, 0, button_state_textures);
+		Ref<GFXButtonStateHavingTexture> texture;
+		if (button.get_sprite()->is_type<GFX::IconTextureSprite>()) {
+			GFX::IconTextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::IconTextureSprite>();
+			texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
 			if (texture.is_null()) {
-				UtilityFunctions::push_error("Failed to make GFXIconTexture for GUI button ", button_name);
+				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI button ", button_name);
 				ret = false;
 			}
 		} else if (button.get_sprite()->is_type<GFX::MaskedFlag>()) {
 			GFX::MaskedFlag const* masked_flag = button.get_sprite()->cast_to<GFX::MaskedFlag>();
-			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag, button_state_textures);
+			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
 			if (texture.is_null()) {
 				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI button ", button_name);
 				ret = false;
@@ -332,20 +315,23 @@ static bool generate_button(generate_gui_args_t&& args) {
 		if (texture.is_valid()) {
 			godot_button->set_custom_minimum_size(texture->get_size());
 
-			const auto add_stylebox = [godot_button, &button_name](StringName const& theme_name, Ref<Texture2D> const& texture) -> bool {
-				Ref<StyleBoxTexture> stylebox;
-				stylebox.instantiate();
-				ERR_FAIL_NULL_V(stylebox, false);
-				stylebox->set_texture(texture);
-				godot_button->add_theme_stylebox_override(theme_name, stylebox);
-				return true;
-			};
-
 			static const StringName theme_name_normal = "normal";
 			ret &= add_theme_stylebox(godot_button, theme_name_normal, texture);
 
-			for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
-				ret &= add_theme_stylebox(godot_button, button_state_texture->get_button_state_theme(), button_state_texture);
+			using enum GFXButtonStateTexture::ButtonState;
+			for (GFXButtonStateTexture::ButtonState button_state : { HOVER, PRESSED, DISABLED }) {
+				Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
+				if (button_state_texture.is_valid()) {
+					ret &= add_theme_stylebox(
+						godot_button, button_state_texture->get_button_state_theme(), button_state_texture
+					);
+				} else {
+					UtilityFunctions::push_error(
+						"Failed to make ", GFXButtonStateTexture::button_state_to_theme_name(button_state),
+						" GFXButtonStateTexture for GUI button ", button_name
+					);
+					ret = false;
+				}
 			}
 		}
 	} else {
@@ -387,21 +373,21 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(godot_checkbox, false, vformat("Failed to create CheckBox for GUI checkbox %s", checkbox_name));
 
 	if (checkbox.get_sprite() != nullptr) {
-		GFX::TextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::TextureSprite>();
+		GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
 		if (texture_sprite != nullptr) {
-			Ref<GFXIconTexture> icon_texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, 1);
+			Ref<GFXSpriteTexture> icon_texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, 1);
 			if (icon_texture.is_valid()) {
 				godot_checkbox->set_custom_minimum_size(icon_texture->get_size());
 				godot_checkbox->add_theme_icon_override("unchecked", icon_texture);
 			} else {
-				UtilityFunctions::push_error("Failed to make unchecked GFXIconTexture for GUI checkbox ", checkbox_name);
+				UtilityFunctions::push_error("Failed to make unchecked GFXSpriteTexture for GUI checkbox ", checkbox_name);
 				ret = false;
 			}
-			icon_texture = GFXIconTexture::make_gfx_icon_texture(texture_sprite, 2);
+			icon_texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, 2);
 			if (icon_texture.is_valid()) {
 				godot_checkbox->add_theme_icon_override("checked", icon_texture);
 			} else {
-				UtilityFunctions::push_error("Failed to make checked GFXIconTexture for GUI checkbox ", checkbox_name);
+				UtilityFunctions::push_error("Failed to make checked GFXSpriteTexture for GUI checkbox ", checkbox_name);
 				ret = false;
 			}
 		} else {
