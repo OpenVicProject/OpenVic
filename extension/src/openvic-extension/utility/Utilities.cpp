@@ -1,7 +1,5 @@
 #include "Utilities.hpp"
 
-#include <numbers>
-
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/translation_server.hpp>

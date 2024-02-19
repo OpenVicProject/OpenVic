@@ -1,0 +1,13 @@
+class_name NationManagement
+
+enum Screen {
+	NONE,
+	PRODUCTION,
+	BUDGET,
+	TECHNOLOGY,
+	POLITICS,
+	POPULATION,
+	TRADE,
+	DIPLOMACY,
+	MILITARY
+}

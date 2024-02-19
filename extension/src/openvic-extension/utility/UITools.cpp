@@ -37,15 +37,26 @@ GFX::Sprite const* UITools::get_gfx_sprite(godot::String const& gfx_sprite) {
 	return sprite;
 }
 
-GUI::Element const* UITools::get_gui_element(godot::String const& gui_file, godot::String const& gui_element) {
+GUI::Element const* UITools::get_gui_element(godot::String const& gui_scene, godot::String const& gui_element) {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene =
-		game_singleton->get_game_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_file));
-	ERR_FAIL_NULL_V_MSG(scene, nullptr, vformat("Failed to find GUI file %s", gui_file));
+		game_singleton->get_game_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
+	ERR_FAIL_NULL_V_MSG(scene, nullptr, vformat("Failed to find GUI scene %s", gui_scene));
 	GUI::Element const* element = scene->get_scene_element_by_identifier(godot_to_std_string(gui_element));
-	ERR_FAIL_NULL_V_MSG(element, nullptr, vformat("Failed to find GUI element %s in GUI file %s", gui_element, gui_file));
+	ERR_FAIL_NULL_V_MSG(element, nullptr, vformat("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene));
 	return element;
+}
+
+GUI::Position const* UITools::get_gui_position(String const& gui_scene, String const& gui_position) {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, nullptr);
+	GUI::Scene const* scene =
+		game_singleton->get_game_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
+	ERR_FAIL_NULL_V_MSG(scene, nullptr, vformat("Failed to find GUI scene %s", gui_scene));
+	GUI::Position const* position = scene->get_scene_position_by_identifier(godot_to_std_string(gui_position));
+	ERR_FAIL_NULL_V_MSG(position, nullptr, vformat("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene));
+	return position;
 }
 
 /* GUI::Element tree -> godot::Control tree conversion code below: */
@@ -65,9 +76,9 @@ namespace OpenVic {
 }
 
 template<std::derived_from<Control> T>
-static T* new_control(GUI::Element const& element, String const& name) {
-	T* node = memnew(T);
-	ERR_FAIL_NULL_V(node, nullptr);
+static bool new_control(T*& node, GUI::Element const& element, String const& name) {
+	node = memnew(T);
+	ERR_FAIL_NULL_V(node, false);
 
 	using enum GUI::Element::orientation_t;
 	using enum Control::LayoutPreset;
@@ -83,19 +94,31 @@ static T* new_control(GUI::Element const& element, String const& name) {
 		node->set_name(name);
 	}
 
+	bool ret = true;
 	const decltype(orientation_map)::const_iterator it = orientation_map.find(element.get_orientation());
 	if (it != orientation_map.end()) {
 		node->set_anchors_and_offsets_preset(it->second);
 	} else {
 		UtilityFunctions::push_error("Invalid orientation for GUI element ", std_view_to_godot_string(element.get_name()));
+		ret = false;
 	}
+
 	node->set_position(Utilities::to_godot_fvec2(element.get_position()));
 	node->set_h_size_flags(Control::SizeFlags::SIZE_SHRINK_BEGIN);
 	node->set_v_size_flags(Control::SizeFlags::SIZE_SHRINK_BEGIN);
 	node->set_focus_mode(Control::FOCUS_NONE);
 
-	return node;
+	return ret;
 }
+
+static bool add_theme_stylebox(Control* control, StringName const& theme_name, Ref<Texture2D> const& texture) {
+	Ref<StyleBoxTexture> stylebox;
+	stylebox.instantiate();
+	ERR_FAIL_NULL_V(stylebox, false);
+	stylebox->set_texture(texture);
+	control->add_theme_stylebox_override(theme_name, stylebox);
+	return true;
+};
 
 static bool generate_icon(generate_gui_args_t&& args) {
 	GUI::Icon const& icon = static_cast<GUI::Icon const&>(args.element);
@@ -106,7 +129,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 	bool ret = true;
 	if (icon.get_sprite() != nullptr) {
 		if (icon.get_sprite()->is_type<GFX::TextureSprite>()) {
-			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, args.name);
+			TextureRect* godot_texture_rect = nullptr;
+			ret &= new_control(godot_texture_rect, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
 			GFX::TextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::TextureSprite>();
@@ -120,7 +144,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			args.result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::MaskedFlag>()) {
-			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, args.name);
+			TextureRect* godot_texture_rect = nullptr;
+			ret &= new_control(godot_texture_rect, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
 			GFX::MaskedFlag const* masked_flag = icon.get_sprite()->cast_to<GFX::MaskedFlag>();
@@ -134,7 +159,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			args.result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::ProgressBar>()) {
-			TextureProgressBar* godot_progress_bar = new_control<TextureProgressBar>(icon, args.name);
+			TextureProgressBar* godot_progress_bar = nullptr;
+			ret &= new_control(godot_progress_bar, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
 				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
 			);
@@ -210,7 +236,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			args.result = godot_progress_bar;
 		} else if (icon.get_sprite()->is_type<GFX::PieChart>()) {
-			TextureRect* godot_texture_rect = new_control<TextureRect>(icon, args.name);
+			TextureRect* godot_texture_rect = nullptr;
+			ret &= new_control(godot_texture_rect, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
 
 			GFX::PieChart const* pie_chart = icon.get_sprite()->cast_to<GFX::PieChart>();
@@ -219,7 +246,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_texture_rect->set_texture(texture);
 				// TODO - work out why this is needed
 				Vector2 pos = godot_texture_rect->get_position();
-				pos.x -= texture->get_width() / 2;
+				pos.x -= texture->get_width() / 2.0f;
 				godot_texture_rect->set_position(pos);
 			} else {
 				UtilityFunctions::push_error("Failed to make GFXPieChartTexture for GUI icon ", icon_name);
@@ -228,11 +255,17 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			args.result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::LineChart>()) {
-
+			// TODO - generate line chart
 		} else {
 			UtilityFunctions::push_error("Invalid sprite type ", std_view_to_godot_string(icon.get_sprite()->get_type()),
 				" for GUI icon ", icon_name);
 			ret = false;
+		}
+
+		if (args.result != nullptr) {
+			const float scale = icon.get_scale();
+			args.result->set_scale({ scale, scale });
+			// TODO - rotation (may have to translate as godot rotates around the top left corner)
 		}
 	} else {
 		UtilityFunctions::push_error("Null sprite for GUI icon ", icon_name);
@@ -247,7 +280,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 	// TODO - shortcut, sprite, text
 	const String button_name = std_view_to_godot_string(button.get_name());
 
-	Button* godot_button = new_control<Button>(button, args.name);
+	Button* godot_button = nullptr;
+	bool ret = new_control(godot_button, button, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI button %s", button_name));
 
 	godot_button->set_mouse_filter(Control::MOUSE_FILTER_PASS);
@@ -255,8 +289,6 @@ static bool generate_button(generate_gui_args_t&& args) {
 	if (!button.get_text().empty()) {
 		godot_button->set_text(std_view_to_godot_string(button.get_text()));
 	}
-
-	bool ret = true;
 
 	using enum GFXButtonStateTexture::ButtonState;
 	static constexpr std::array<GFXButtonStateTexture::ButtonState, 3> button_states { HOVER, PRESSED, DISABLED };
@@ -310,10 +342,10 @@ static bool generate_button(generate_gui_args_t&& args) {
 			};
 
 			static const StringName theme_name_normal = "normal";
-			ret &= add_stylebox(theme_name_normal, texture);
+			ret &= add_theme_stylebox(godot_button, theme_name_normal, texture);
 
 			for (Ref<GFXButtonStateTexture> const& button_state_texture : button_state_textures) {
-				ret &= add_stylebox(button_state_texture->get_button_state_theme(), button_state_texture);
+				ret &= add_theme_stylebox(godot_button, button_state_texture->get_button_state_theme(), button_state_texture);
 			}
 		}
 	} else {
@@ -350,10 +382,10 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	// TODO - shortcut, sprite, text
 	const String checkbox_name = std_view_to_godot_string(checkbox.get_name());
 
-	CheckBox* godot_checkbox = new_control<CheckBox>(checkbox, args.name);
+	CheckBox* godot_checkbox = nullptr;
+	bool ret = new_control(godot_checkbox, checkbox, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_checkbox, false, vformat("Failed to create CheckBox for GUI checkbox %s", checkbox_name));
 
-	bool ret = true;
 	if (checkbox.get_sprite() != nullptr) {
 		GFX::TextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::TextureSprite>();
 		if (texture_sprite != nullptr) {
@@ -393,7 +425,8 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	const String text_name = std_view_to_godot_string(text.get_name());
 
-	Label* godot_label = new_control<Label>(text, args.name);
+	Label* godot_label = nullptr;
+	bool ret = new_control(godot_label, text, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_label, false, vformat("Failed to create Label for GUI text %s", text_name));
 
 	godot_label->set_text(std_view_to_godot_string(text.get_text()));
@@ -411,9 +444,9 @@ static bool generate_text(generate_gui_args_t&& args) {
 		godot_label->set_horizontal_alignment(it->second);
 	} else {
 		UtilityFunctions::push_error("Invalid text format (horizontal alignment) for GUI text ", text_name);
+		ret = false;
 	}
 
-	bool ret = true;
 	if (text.get_font() != nullptr) {
 		const StringName font_file = std_view_to_godot_string_name(text.get_font()->get_fontname());
 		const Ref<Font> font = args.asset_manager.get_font(font_file);
@@ -436,29 +469,55 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 
 	const String overlapping_elements_name = std_view_to_godot_string(overlapping_elements.get_name());
 
-	GUIOverlappingElementsBox* box = new_control<GUIOverlappingElementsBox>(overlapping_elements, args.name);
+	GUIOverlappingElementsBox* box = nullptr;
+	bool ret = new_control(box, overlapping_elements, args.name);
 	ERR_FAIL_NULL_V_MSG(
 		box, false,
 		vformat("Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name)
 	);
-	const bool ret = box->set_gui_overlapping_elements_box(&overlapping_elements) == OK;
+	ret &= box->set_gui_overlapping_elements_box(&overlapping_elements) == OK;
 	args.result = box;
 	return ret;
 }
 
-static bool generate_listbox(generate_gui_args_t&& args) {
-	GUI::ListBox const& listbox = static_cast<GUI::ListBox const&>(args.element);
+template<std::derived_from<GUI::Element> T>
+requires requires(T const& element) {
+	{ element.get_size() } -> std::same_as<fvec2_t>;
+}
+static bool generate_placeholder(generate_gui_args_t&& args, Color colour) {
+	T const& cast_element = static_cast<T const&>(args.element);
 
-	const String listbox_name = std_view_to_godot_string(listbox.get_name());
+	static const String type_name = std_view_to_godot_string(T::get_type_static());
+	const String placeholder_name = std_view_to_godot_string(cast_element.get_name());
+	const Vector2 godot_size = Utilities::to_godot_fvec2(cast_element.get_size());
 
-	ColorRect* godot_rect = new_control<ColorRect>(listbox, args.name);
-	ERR_FAIL_NULL_V_MSG(godot_rect, false, vformat("Failed to create ColorRect for GUI listbox %s", listbox_name));
+	UtilityFunctions::push_warning(
+		"Generating placeholder ColorRect for GUI ", type_name, " ", placeholder_name, " (size ", godot_size, ")"
+	);
 
-	godot_rect->set_custom_minimum_size(Utilities::to_godot_fvec2(listbox.get_size()));
-	godot_rect->set_color({ 1.0f, 0.5f, 0.0f, 0.2f });
+	ColorRect* godot_rect = nullptr;
+	bool ret = new_control(godot_rect, cast_element, args.name);
+	ERR_FAIL_NULL_V_MSG(
+		godot_rect, false, vformat("Failed to create placeholder ColorRect for GUI %s %s", type_name, placeholder_name)
+	);
+
+	godot_rect->set_custom_minimum_size(godot_size);
+	godot_rect->set_color(colour);
 
 	args.result = godot_rect;
-	return true;
+	return ret;
+}
+
+static bool generate_listbox(generate_gui_args_t&& args) {
+	return generate_placeholder<GUI::ListBox>(std::move(args), { 0.0f, 0.0f, 1.0f, 0.3f });
+}
+
+static bool generate_texteditbox(generate_gui_args_t&& args) {
+	return generate_placeholder<GUI::TextEditBox>(std::move(args), { 0.0f, 1.0f, 0.0f, 0.3f });
+}
+
+static bool generate_scrollbar(generate_gui_args_t&& args) {
+	return generate_placeholder<GUI::Scrollbar>(std::move(args), { 1.0f, 0.0f, 0.0f, 0.3f });
 }
 
 /* Forward declaration for use in generate_window. */
@@ -470,13 +529,13 @@ static bool generate_window(generate_gui_args_t&& args) {
 	// TODO - moveable, fullscreen, dontRender (disable visibility?)
 	const String window_name = std_view_to_godot_string(window.get_name());
 
-	Panel* godot_panel = new_control<Panel>(window, args.name);
+	Panel* godot_panel = nullptr;
+	bool ret = new_control(godot_panel, window, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_panel, false, vformat("Failed to create Panel for GUI window %s", window_name));
 
 	godot_panel->set_custom_minimum_size(Utilities::to_godot_fvec2(window.get_size()));
 	godot_panel->set_self_modulate({ 1.0f, 1.0f, 1.0f, 0.0f });
 
-	bool ret = true;
 	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;
 		const bool element_ret = generate_element(element.get(), "", args.asset_manager, node);
@@ -502,6 +561,8 @@ static bool generate_element(GUI::Element const* element, String const& name, As
 		{ GUI::Text::get_type_static(), &generate_text },
 		{ GUI::OverlappingElementsBox::get_type_static(), &generate_overlapping_elements },
 		{ GUI::ListBox::get_type_static(), &generate_listbox },
+		{ GUI::TextEditBox::get_type_static(), &generate_texteditbox },
+		{ GUI::Scrollbar::get_type_static(), &generate_scrollbar },
 		{ GUI::Window::get_type_static(), &generate_window }
 	};
 	const decltype(type_map)::const_iterator it = type_map.find(element->get_type());
@@ -521,7 +582,7 @@ bool UITools::generate_gui_element(
 }
 
 bool UITools::generate_gui_element(
-	godot::String const& gui_file, godot::String const& gui_element, godot::String const& name, godot::Control*& result
+	godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name, godot::Control*& result
 ) {
-	return generate_gui_element(get_gui_element(gui_file, gui_element), name, result);
+	return generate_gui_element(get_gui_element(gui_scene, gui_element), name, result);
 }

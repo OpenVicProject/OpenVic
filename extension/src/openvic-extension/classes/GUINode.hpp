@@ -25,12 +25,14 @@ namespace OpenVic {
 		GUINode();
 
 		static godot::Control* generate_gui_element(
-			godot::String const& gui_file, godot::String const& gui_element, godot::String const& name = ""
+			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
 		);
 
 		godot::Error add_gui_element(
-			godot::String const& gui_file, godot::String const& gui_element, godot::String const& name = ""
+			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
 		);
+
+		static godot::Vector2 get_gui_position(godot::String const& gui_scene, godot::String const& gui_position);
 
 		static godot::Button* get_button_from_node(godot::Node* node);
 		static godot::CheckBox* get_check_box_from_node(godot::Node* node);

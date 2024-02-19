@@ -10,9 +10,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
-using OpenVic::Utilities::std_view_to_godot_string;
-
 #define APPLY_TO_CHILD_TYPES(F) \
 	F(Button, button) \
 	F(CheckBox, check_box) \
@@ -28,8 +25,9 @@ using OpenVic::Utilities::std_view_to_godot_string;
 	F(GFXPieChartTexture, gfx_pie_chart_texture)
 
 void GUINode::_bind_methods() {
-	OV_BIND_SMETHOD(generate_gui_element, { "gui_file", "gui_element", "name" }, DEFVAL(String {}));
-	OV_BIND_METHOD(GUINode::add_gui_element, { "gui_file", "gui_element", "name" }, DEFVAL(String {}));
+	OV_BIND_SMETHOD(generate_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
+	OV_BIND_METHOD(GUINode::add_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
+	OV_BIND_SMETHOD(get_gui_position, { "gui_scene", "gui_position" });
 
 #define GET_BINDINGS(type, name) \
 	OV_BIND_SMETHOD(get_##name##_from_node, { "node" }); \
@@ -55,25 +53,31 @@ GUINode::GUINode() {
 	set_mouse_filter(MOUSE_FILTER_IGNORE);
 }
 
-Control* GUINode::generate_gui_element(String const& gui_file, String const& gui_element, String const& name) {
+Control* GUINode::generate_gui_element(String const& gui_scene, String const& gui_element, String const& name) {
 	Control* result = nullptr;
-	if (!UITools::generate_gui_element(gui_file, gui_element, name, result)) {
-		UtilityFunctions::push_error("Error generating GUI element ", gui_element, " from GUI file ", gui_file);
+	if (!UITools::generate_gui_element(gui_scene, gui_element, name, result)) {
+		UtilityFunctions::push_error("Error generating GUI element ", gui_element, " from GUI scene ", gui_scene);
 	}
 	return result;
 }
 
-Error GUINode::add_gui_element(String const& gui_file, String const& gui_element, String const& name) {
+Error GUINode::add_gui_element(String const& gui_scene, String const& gui_element, String const& name) {
 	Error err = OK;
 	Control* result = nullptr;
-	if (!UITools::generate_gui_element(gui_file, gui_element, name, result)) {
-		UtilityFunctions::push_error("Error generating GUI element ", gui_element, " from GUI file ", gui_file);
+	if (!UITools::generate_gui_element(gui_scene, gui_element, name, result)) {
+		UtilityFunctions::push_error("Error generating GUI element ", gui_element, " from GUI scene ", gui_scene);
 		err = FAILED;
 	}
 	if (result != nullptr) {
 		add_child(result);
 	}
 	return err;
+}
+
+Vector2 GUINode::get_gui_position(String const& gui_scene, String const& gui_position) {
+	GUI::Position const* position = UITools::get_gui_position(gui_scene, gui_position);
+	ERR_FAIL_NULL_V(position, {});
+	return Utilities::to_godot_fvec2(position->get_position());
 }
 
 template<std::derived_from<godot::Node> T>

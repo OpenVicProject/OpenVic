@@ -121,7 +121,7 @@ func _ready() -> void:
 	GameSingleton.province_selected.connect(_on_province_selected)
 	GameSingleton.gamestate_updated.connect(_update_info)
 
-	if add_gui_element("province_interface.gui", "province_view") != OK:
+	if add_gui_element("province_interface", "province_view") != OK:
 		push_error("Failed to generate province overview panel!")
 		return
 
@@ -144,7 +144,7 @@ func _ready() -> void:
 	_administrative_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/admin_efficiency")
 	_owner_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/owner_presence")
 	_province_modifiers_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_view_header/province_modifiers")
-	if _province_modifiers_overlapping_elements_box and _province_modifiers_overlapping_elements_box.set_gui_child_element_name("province_interface.gui", "prov_state_modifier") != OK:
+	if _province_modifiers_overlapping_elements_box and _province_modifiers_overlapping_elements_box.set_gui_child_element_name("province_interface", "prov_state_modifier") != OK:
 		_province_modifiers_overlapping_elements_box = null # hide province modifiers box since we can't do anything with it
 	_terrain_type_texture = get_gfx_icon_texture_from_nodepath(^"./province_view/province_view_header/prov_terrain")
 	_life_rating_bar = get_progress_bar_from_nodepath(^"./province_view/province_view_header/liferating")
@@ -168,7 +168,7 @@ func _ready() -> void:
 	_pop_cultures_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/culture_chart")
 	_supply_limit_label = get_label_from_nodepath(^"./province_view/province_statistics/supply_limit_label")
 	_cores_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_statistics/core_icons")
-	if _cores_overlapping_elements_box and _cores_overlapping_elements_box.set_gui_child_element_name("province_interface.gui", "province_core") != OK:
+	if _cores_overlapping_elements_box and _cores_overlapping_elements_box.set_gui_child_element_name("province_interface", "province_core") != OK:
 		_cores_overlapping_elements_box = null # hide cores box since we can't do anything with it
 
 	_buildings_panel = get_panel_from_nodepath(^"./province_view/province_buildings")
@@ -176,7 +176,7 @@ func _ready() -> void:
 		var target_slot_count : int = GameSingleton.get_province_building_count()
 		var slot_y : float = 0.0
 		for current_slot_count : int in target_slot_count:
-			var slot := GUINode.generate_gui_element("province_interface.gui", "building", "building_slot_%d" % current_slot_count)
+			var slot := GUINode.generate_gui_element("province_interface", "building", "building_slot_%d" % current_slot_count)
 			if slot:
 				_buildings_panel.add_child(slot)
 				slot.set_position(Vector2(0.0, slot_y))

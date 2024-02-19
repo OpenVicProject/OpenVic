@@ -1,16 +1,14 @@
 #include "GFXPieChartTexture.hpp"
 
-#include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/singletons/GameSingleton.hpp"
+#include <numbers>
+
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
-using OpenVic::Utilities::std_view_to_godot_string_name;
 
 StringName const& GFXPieChartTexture::_slice_identifier_key() {
 	static StringName const slice_identifier_key = "identifier";
