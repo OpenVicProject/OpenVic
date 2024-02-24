@@ -17,7 +17,8 @@ using namespace OpenVic;
 	F(Panel, panel) \
 	F(TextureProgressBar, progress_bar) \
 	F(TextureRect, texture_rect) \
-	F(GUIOverlappingElementsBox, gui_overlapping_elements_box)
+	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
+	F(GUIScrollbar, gui_scrollbar)
 
 #define APPLY_TO_TEXTURE_TYPES(F) \
 	F(GFXSpriteTexture, gfx_sprite_texture) \
@@ -44,6 +45,9 @@ void GUINode::_bind_methods() {
 
 	OV_BIND_METHOD(GUINode::hide_node, { "path" });
 	OV_BIND_METHOD(GUINode::hide_nodes, { "paths" });
+
+	OV_BIND_SMETHOD(int_to_formatted_string, { "val" });
+	OV_BIND_SMETHOD(float_to_formatted_string, { "val", "decimal_places" });
 }
 
 GUINode::GUINode() {
@@ -176,4 +180,12 @@ Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
 		}
 	}
 	return ret;
+}
+
+String GUINode::int_to_formatted_string(int64_t val) {
+	return Utilities::int_to_formatted_string(val);
+}
+
+String GUINode::float_to_formatted_string(float val, int32_t decimal_places) {
+	return Utilities::float_to_formatted_string(val, decimal_places);
 }

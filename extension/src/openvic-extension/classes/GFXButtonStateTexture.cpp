@@ -1,11 +1,39 @@
 #include "GFXButtonStateTexture.hpp"
 
+#include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/utility/ClassBindings.hpp"
 
 using namespace OpenVic;
 using namespace godot;
+
+void GFXCorneredTileSupportingTexture::_bind_methods() {
+	OV_BIND_METHOD(GFXCorneredTileSupportingTexture::get_cornered_tile_border_size);
+	OV_BIND_METHOD(GFXCorneredTileSupportingTexture::is_cornered_tile_texture);
+	OV_BIND_METHOD(GFXCorneredTileSupportingTexture::draw_rect_cornered, { "to_canvas_item", "rect" });
+}
+
+GFXCorneredTileSupportingTexture::GFXCorneredTileSupportingTexture() : cornered_tile_border_size {} {}
+
+bool GFXCorneredTileSupportingTexture::is_cornered_tile_texture() const {
+	return cornered_tile_border_size != Vector2i {};
+}
+
+void GFXCorneredTileSupportingTexture::draw_rect_cornered(RID const& to_canvas_item, Rect2 const& rect) const {
+	if (is_cornered_tile_texture()) {
+		RenderingServer* rendering_server = RenderingServer::get_singleton();
+		if (rendering_server != nullptr) {
+			const Size2 size = get_size();
+			rendering_server->canvas_item_add_nine_patch(
+				to_canvas_item, rect, { {}, size }, get_rid(),
+				cornered_tile_border_size, size - cornered_tile_border_size
+			);
+		}
+	} else {
+		draw_rect(to_canvas_item, rect, false);
+	}
+}
 
 void GFXButtonStateTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXButtonStateTexture::set_button_state, { "new_button_state" });
@@ -21,17 +49,19 @@ void GFXButtonStateTexture::_bind_methods() {
 	BIND_ENUM_CONSTANT(DISABLED);
 }
 
-GFXButtonStateTexture::GFXButtonStateTexture() : button_state { HOVER } {}
+GFXButtonStateTexture::GFXButtonStateTexture() : button_state { HOVER }, state_image {}, state_texture {} {}
 
 Ref<GFXButtonStateTexture> GFXButtonStateTexture::make_gfx_button_state_texture(
-	ButtonState button_state, Ref<Image> const& source_image, Rect2i const& region
+	ButtonState button_state, Ref<Image> const& source_image, Rect2i const& region, Vector2i const& cornered_tile_border_size
 ) {
 	Ref<GFXButtonStateTexture> button_state_texture;
 	button_state_texture.instantiate();
 	ERR_FAIL_NULL_V(button_state_texture, nullptr);
 	button_state_texture->set_button_state(button_state);
 	if (source_image.is_valid()) {
-		ERR_FAIL_COND_V(button_state_texture->generate_state_image(source_image, region) != OK, nullptr);
+		ERR_FAIL_COND_V(
+			button_state_texture->generate_state_image(source_image, region, cornered_tile_border_size) != OK, nullptr
+		);
 	}
 	return button_state_texture;
 }
@@ -41,18 +71,30 @@ void GFXButtonStateTexture::set_button_state(ButtonState new_button_state) {
 	button_state = new_button_state;
 }
 
-Error GFXButtonStateTexture::generate_state_image(Ref<Image> const& source_image, Rect2i const& region) {
+Error GFXButtonStateTexture::generate_state_image(
+	Ref<Image> const& source_image, Rect2i const& region, Vector2i const& new_cornered_tile_border_size
+) {
 	ERR_FAIL_COND_V(source_image.is_null() || source_image->is_empty(), FAILED);
 	const Rect2i source_image_rect { {}, source_image->get_size() };
 	ERR_FAIL_COND_V(!region.has_area() || !source_image_rect.encloses(region), FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	* and so can update it without creating and setting a new image, or not. */
-	const bool can_update = state_image.is_valid() && state_image->get_size() == region.get_size()
+	bool can_update = state_image.is_valid() && state_image->get_size() == region.get_size()
 		&& state_image->get_format() == source_image->get_format();
 	if (!can_update) {
 		state_image = Image::create(region.size.width, region.size.height, false, source_image->get_format());
 		ERR_FAIL_NULL_V(state_image, FAILED);
 	}
+
+	if (state_texture.is_null()) {
+		can_update = false;
+		state_texture.instantiate();
+		ERR_FAIL_NULL_V(state_texture, FAILED);
+		set_atlas(state_texture);
+		set_region({ {}, state_image->get_size() });
+	}
+
+	cornered_tile_border_size = new_cornered_tile_border_size;
 
 	static constexpr auto hover_colour = [](Color const& colour) -> Color {
 		return { std::min(colour.r + 0.1f, 1.0f), std::min(colour.g + 0.1f, 1.0f), std::min(colour.b + 0.1f, 1.0f), colour.a };
@@ -74,9 +116,9 @@ Error GFXButtonStateTexture::generate_state_image(Ref<Image> const& source_image
 	}
 
 	if (can_update) {
-		update(state_image);
+		state_texture->update(state_image);
 	} else {
-		set_image(state_image);
+		state_texture->set_image(state_image);
 	}
 	return OK;
 }
@@ -109,7 +151,7 @@ void GFXButtonStateHavingTexture::_bind_methods() {
 void GFXButtonStateHavingTexture::_update_button_states() {
 	for (Ref<GFXButtonStateTexture>& button_state_texture : button_state_textures) {
 		if (button_state_texture.is_valid()) {
-			button_state_texture->generate_state_image(button_image, get_region());
+			button_state_texture->generate_state_image(button_image, get_region(), cornered_tile_border_size);
 		}
 	}
 }
@@ -132,7 +174,9 @@ Ref<GFXButtonStateTexture> GFXButtonStateHavingTexture::get_button_state_texture
 	ERR_FAIL_COND_V(button_state_index >= button_state_textures.size(), nullptr);
 	Ref<GFXButtonStateTexture>& button_state_texture = button_state_textures[button_state_index];
 	if (button_state_texture.is_null()) {
-		button_state_texture = GFXButtonStateTexture::make_gfx_button_state_texture(button_state, button_image, get_region());
+		button_state_texture = GFXButtonStateTexture::make_gfx_button_state_texture(
+			button_state, button_image, get_region(), cornered_tile_border_size
+		);
 		ERR_FAIL_NULL_V(button_state_texture, nullptr);
 	}
 	return button_state_texture;

@@ -36,9 +36,8 @@ String Utilities::int_to_formatted_string(int64_t val) {
 	return (negative ? "-" : "") + String::num_int64(val);
 }
 
-/* Float to formatted to 4 decimal place string. */
-String Utilities::float_to_formatted_string(float val) {
-	static constexpr int64_t decimal_places = 4;
+/* Float to string formatted with the specified number of decimal places. */
+String Utilities::float_to_formatted_string(float val, int32_t decimal_places) {
 	return String::num(val, decimal_places).pad_decimals(decimal_places);
 }
 

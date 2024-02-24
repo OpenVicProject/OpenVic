@@ -8,6 +8,7 @@
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
+#include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
@@ -44,13 +45,20 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	Engine::get_singleton()->register_singleton("AssetManager", AssetManager::get_singleton());
 
 	ClassDB::register_class<MapMesh>();
+	ClassDB::register_abstract_class<GFXCorneredTileSupportingTexture>();
+
+	/* Depend on GFXCorneredTileSupportingTexture */
 	ClassDB::register_class<GFXButtonStateTexture>();
 	ClassDB::register_abstract_class<GFXButtonStateHavingTexture>();
+
+	/* Depend on GFXButtonStateHavingTexture */
 	ClassDB::register_class<GFXSpriteTexture>();
 	ClassDB::register_class<GFXMaskedFlagTexture>();
+
 	ClassDB::register_class<GFXPieChartTexture>();
 	ClassDB::register_class<GUINode>();
 	ClassDB::register_class<GUIOverlappingElementsBox>();
+	ClassDB::register_class<GUIScrollbar>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {

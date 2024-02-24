@@ -16,6 +16,7 @@
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
+#include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -132,6 +133,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			TextureRect* godot_texture_rect = nullptr;
 			ret &= new_control(godot_texture_rect, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
+
+			godot_texture_rect->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
 			GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>();
 			Ref<GFXSpriteTexture> texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, icon.get_frame());
@@ -461,6 +464,7 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 		box, false,
 		vformat("Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name)
 	);
+	box->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 	ret &= box->set_gui_overlapping_elements_box(&overlapping_elements) == OK;
 	args.result = box;
 	return ret;
@@ -503,7 +507,21 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 }
 
 static bool generate_scrollbar(generate_gui_args_t&& args) {
-	return generate_placeholder<GUI::Scrollbar>(std::move(args), { 1.0f, 0.0f, 0.0f, 0.3f });
+	GUI::Scrollbar const& scrollbar = static_cast<GUI::Scrollbar const&>(args.element);
+
+	const String scrollbar_name = std_view_to_godot_string(scrollbar.get_name());
+
+	GUIScrollbar* gui_scrollbar = nullptr;
+	bool ret = new_control(gui_scrollbar, scrollbar, args.name);
+	ERR_FAIL_NULL_V_MSG(gui_scrollbar, false, vformat("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name));
+
+	if (gui_scrollbar->set_gui_scrollbar(&scrollbar) != OK) {
+		UtilityFunctions::push_error("Error initialising GUIScrollbar for GUI scrollbar ", scrollbar_name);
+		ret = false;
+	}
+
+	args.result = gui_scrollbar;
+	return ret;
 }
 
 /* Forward declaration for use in generate_window. */
