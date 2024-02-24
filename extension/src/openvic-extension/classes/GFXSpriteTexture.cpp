@@ -24,15 +24,11 @@ void GFXSpriteTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXSpriteTexture::get_icon_index);
 	OV_BIND_METHOD(GFXSpriteTexture::get_icon_count);
 
-	OV_BIND_METHOD(GFXSpriteTexture::is_cornered_tile_texture);
-	OV_BIND_METHOD(GFXSpriteTexture::draw_rect_cornered, { "to_canvas_item", "rect" });
-
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "icon_index"), "set_icon_index", "get_icon_index");
 }
 
 GFXSpriteTexture::GFXSpriteTexture()
-  : gfx_texture_sprite { nullptr }, icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES },
-	cornered_tile_texture { false }, cornered_tile_border_size {} {}
+  : gfx_texture_sprite { nullptr }, icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
 Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
 	Ref<GFXSpriteTexture> texture;
@@ -47,7 +43,6 @@ void GFXSpriteTexture::clear() {
 	_clear_button_states();
 	icon_index = GFX::NO_FRAMES;
 	icon_count = GFX::NO_FRAMES;
-	cornered_tile_texture = false;
 	cornered_tile_border_size = {};
 }
 
@@ -84,10 +79,8 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 		GFX::CorneredTileTextureSprite const* const cornered_tile_texture_sprite =
 			gfx_texture_sprite->cast_to<GFX::CorneredTileTextureSprite>();
 		if (cornered_tile_texture_sprite != nullptr) {
-			cornered_tile_texture = true;
 			cornered_tile_border_size = Utilities::to_godot_ivec2(cornered_tile_texture_sprite->get_border_size());
 		} else {
-			cornered_tile_texture = false;
 			cornered_tile_border_size = {};
 		}
 	}
@@ -139,21 +132,4 @@ Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
 	}
 	_update_button_states();
 	return OK;
-}
-
-void GFXSpriteTexture::draw_rect_cornered(RID const& to_canvas_item, Rect2 const& rect) const {
-	const Ref<Texture2D> atlas_texture = get_atlas();
-	if (atlas_texture.is_valid()) {
-		if (cornered_tile_texture) {
-			RenderingServer* rendering_server = RenderingServer::get_singleton();
-			if (rendering_server != nullptr) {
-				rendering_server->canvas_item_add_nine_patch(
-					to_canvas_item, rect, { {}, atlas_texture->get_size() }, atlas_texture->get_rid(),
-					cornered_tile_border_size, atlas_texture->get_size() - cornered_tile_border_size
-				);
-			}
-		} else {
-			draw_rect(to_canvas_item, rect, false);
-		}
-	}
 }

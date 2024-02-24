@@ -309,14 +309,14 @@ func _update_info() -> void:
 
 		if _rgo_income_label:
 			# TODO - add £ sign and replace placeholder with actual value
-			_rgo_income_label.text = GameSingleton.float_to_formatted_string(12.34567)
+			_rgo_income_label.text = GUINode.float_to_formatted_string(12.34567, 3)
 
 		if _rgo_employment_percentage_texture:
 			pass
 
 		if _rgo_employment_population_label:
 			# TODO - replace placeholder with actual value
-			_rgo_employment_population_label.text = GameSingleton.int_to_formatted_string(_province_info.get(_province_info_total_population_key, 0) / 10)
+			_rgo_employment_population_label.text = GUINode.int_to_formatted_string(_province_info.get(_province_info_total_population_key, 0) / 10)
 
 		if _rgo_employment_percentage_label:
 			pass
@@ -331,7 +331,7 @@ func _update_info() -> void:
 			pass
 
 		if _total_population_label:
-			_total_population_label.text = GameSingleton.int_to_formatted_string(_province_info.get(_province_info_total_population_key, 0))
+			_total_population_label.text = GUINode.int_to_formatted_string(_province_info.get(_province_info_total_population_key, 0))
 
 		if _migration_label:
 			pass

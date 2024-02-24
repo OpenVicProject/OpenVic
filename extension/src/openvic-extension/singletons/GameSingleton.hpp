@@ -105,8 +105,6 @@ namespace OpenVic {
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
-		static godot::String int_to_formatted_string(int64_t val);
-		static godot::String float_to_formatted_string(float val);
 
 		void set_paused(bool paused);
 		void toggle_paused();

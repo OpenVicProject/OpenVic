@@ -33,7 +33,7 @@ namespace OpenVic::Utilities {
 
 	godot::String int_to_formatted_string(int64_t val);
 
-	godot::String float_to_formatted_string(float val);
+	godot::String float_to_formatted_string(float val, int32_t decimal_places);
 
 	godot::String date_to_formatted_string(Date date);
 

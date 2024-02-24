@@ -72,8 +72,6 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_rgo_owner_pop_icon_index);
-	OV_BIND_SMETHOD(int_to_formatted_string, { "val" });
-	OV_BIND_SMETHOD(float_to_formatted_string, { "val" });
 
 	OV_BIND_METHOD(GameSingleton::set_paused, { "paused" });
 	OV_BIND_METHOD(GameSingleton::toggle_paused);
@@ -432,14 +430,6 @@ int32_t GameSingleton::get_rgo_owner_pop_icon_index() const {
 	const PopType::sprite_t sprite = game_manager.get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
-}
-
-String GameSingleton::int_to_formatted_string(int64_t val) {
-	return Utilities::int_to_formatted_string(val);
-}
-
-String GameSingleton::float_to_formatted_string(float val) {
-	return Utilities::float_to_formatted_string(val);
 }
 
 void GameSingleton::set_paused(bool paused) {

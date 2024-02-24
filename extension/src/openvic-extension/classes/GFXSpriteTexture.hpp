@@ -13,13 +13,10 @@ namespace OpenVic {
 		/* PROPERTY automatically defines getter functions:
 		 * - get_gfx_texture_sprite
 		 * - get_icon_index
-		 * - get_icon_count
-		 * - is_cornered_tile_texture */
+		 * - get_icon_count */
 		GFX::TextureSprite const* PROPERTY(gfx_texture_sprite);
 		GFX::frame_t PROPERTY(icon_index);
 		GFX::frame_t PROPERTY(icon_count);
-		bool PROPERTY_CUSTOM_PREFIX(cornered_tile_texture, is);
-		godot::Vector2i cornered_tile_border_size;
 
 	protected:
 		static void _bind_methods();
@@ -56,8 +53,5 @@ namespace OpenVic {
 		 * If zero is used but icon_count is non-zero, icon_index defaults to icon_count (the last frame,
 		 * not the first frame because it is often empty). */
 		godot::Error set_icon_index(GFX::frame_t new_icon_index);
-
-		/* Equivalent to draw_rect, but draws a 9 patch texture if this is a cornered tile texture. */
-		void draw_rect_cornered(godot::RID const& to_canvas_item, godot::Rect2 const& rect) const;
 	};
 }
