@@ -54,6 +54,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
 window/per_pixel_transparency/allowed=true
 
+[dotnet]
+
+project/assembly_name="OpenVic"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
