@@ -24,14 +24,14 @@ func _ready() -> void:
 	#setup the window since the gui file doesnt store positions, can probably be optimised
 	for folder_item in folder_windows:
 		country_technology.add_child(folder_item)
-	folder_windows = null
+	folder_windows.clear()
 	for tech_group_item in tech_groups:
 		country_technology.add_child(tech_group_item)
-	tech_groups = null
+	tech_groups.clear()
 	for research_item_column in tech_windows:
 		for research_item_row in research_item_column:
 			country_technology.add_child(research_item_row)
-	tech_windows = null
+	tech_windows.clear()
 	
 
 	var close_button : Button = get_button_from_nodepath(^"./country_technology/close_button")
