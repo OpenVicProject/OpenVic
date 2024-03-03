@@ -10,16 +10,15 @@ var folder_windows = []
 var tech_group : Control = generate_gui_element("country_technology", "tech_group")
 var tech_groups = []
 var tech_window : Control = generate_gui_element("country_technology", "tech_window")
-var tech_windows = generate_tech_windows(5,6)
+var tech_windows = generate_tech_windows()
 
 #populate godot dictionaries from the simulation backend
 var tech_folder_dict : Dictionary = GameSingleton.get_tech_folders()
 var tech_area_dict : Dictionary = GameSingleton.get_tech_areas()
 var tech_dict : Dictionary = GameSingleton.get_technologies()
 
-
-
-
+#defines the selected tech UI so we arent running expensive get_node repeatedly
+var selected_tech_ui : Control
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
@@ -40,7 +39,7 @@ func _ready() -> void:
 			country_technology.add_child(research_item_row)
 	tech_windows.clear()
 	
-	#in vic2, army tech is the initial window selected
+	selected_tech_ui = get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/selected_tech_window")
 	populate_areas("army_tech")
 	
 
@@ -71,6 +70,7 @@ func generate_interface():
 	for i in 5:
 		var temp = folder_window.duplicate()
 		temp.name = tech_folder_dict[i].identifier
+		temp.get_child(0).connect("pressed",Callable(self,"_folder_button_pressed").bind(temp.name))
 		temp.get_child(2).text = tech_folder_dict[i].identifier
 		temp.position.x = 28+(194*i)
 		temp.position.y = 55
@@ -106,23 +106,27 @@ func populate_techs(identifier):
 		"army_tech":
 			offset = 0
 		"navy_tech":
-			offset = 30
-		"commerce_tech":
-			offset = 60
-		"culture_tech":
-			offset = 90
-		"industry_tech":
 			offset = 120
+		"commerce_tech":
+			offset = 30
+		"culture_tech":
+			offset = 60
+		"industry_tech":
+			offset = 90
+	var shift = 0
 	for x in 5:
 		for y in 6:
 			var node = get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/tech_window"+str(x)+"_"+str(y))
-			node.get_child(1).text = tech_dict[offset+x+y].identifier
+			node.get_child(1).text = tech_dict[offset+(shift+y)].identifier
+			if(node.get_child(0).is_connected("pressed",Callable(self,"_tech_button_pressed").bind(tech_dict[offset+(shift+y)])) == false):
+				node.get_child(0).connect("pressed",Callable(self,"_tech_button_pressed").bind(tech_dict[offset+(shift+y)]))
+		shift = shift + 6
 
-func generate_tech_windows(x,y):
+func generate_tech_windows():
 	var matrix = []
-	for xi in range(x):
+	for xi in range(5):
 		var row = []
-		for yi in range(y):
+		for yi in range(6):
 			var temp = tech_window.duplicate()
 			temp.name = temp.name+str(xi)+"_"+str(yi)
 			temp.position.x = 28+(194*xi)
@@ -130,4 +134,14 @@ func generate_tech_windows(x,y):
 			row.append(temp)
 		matrix.append(row)
 	return matrix
+	
+func _folder_button_pressed(selected_folder):
+	populate_areas(selected_folder)
+	#selected_tech_ui.get_child(1).text = "NO_TECH_SELECTED"
+	
+func _tech_button_pressed(item):
+	selected_tech_ui.get_child(1).text = item.identifier
+	selected_tech_ui.get_child(6).text = str(item.cost)
+	selected_tech_ui.get_child(8).text = str(item.year)
+	
 	
