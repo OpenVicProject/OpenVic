@@ -467,24 +467,24 @@ Dictionary GameSingleton::get_tech_areas() const{
 
 Dictionary GameSingleton::get_technologies() const{
 	std::vector<Technology> const& fetched_technologies = game_manager.get_research_manager().get_technology_manager().get_technologies();
+	static const StringName technology_info_identifier_key = "identifier";
 	static const StringName technology_info_area_key = "area";
 	static const StringName technology_info_year_key = "year";
 	static const StringName technology_info_cost_key = "cost";
 	static const StringName technology_info_unit_key = "unit";
 	static const StringName technology_info_activated_unit_key = "activated_units";
 	static const StringName technology_info_activated_buildings_key = "activated_buildings";
-	static const StringName technology_info_values_key = "values";
 	static const StringName technology_info_ai_chance_key = "ai_chance";
 	Dictionary techs;
 	for (size_t i = 0; i < fetched_technologies.size(); i++) {
 		Dictionary tech;
+		tech[technology_info_identifier_key] = std_to_godot_string(std::string(fetched_technologies[i].get_identifier()));
 		tech[technology_info_area_key] = std_to_godot_string(std::string(fetched_technologies[i].get_area().get_identifier()));
 		tech[technology_info_year_key] = static_cast<int32_t>(fetched_technologies[i].get_year());
 		tech[technology_info_cost_key] = static_cast<int32_t>(fetched_technologies[i].get_cost());
 		tech[technology_info_unit_key] = std_to_godot_string("WIP");
 		tech[technology_info_activated_unit_key] = std_to_godot_string("WIP");
 		tech[technology_info_activated_buildings_key] = std_to_godot_string("WIP");
-		tech[technology_info_values_key] = std_to_godot_string("WIP");
 		tech[technology_info_ai_chance_key] = std_to_godot_string("WIP");
 		techs[i] = tech;
 	}
