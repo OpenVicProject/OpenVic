@@ -129,14 +129,6 @@ void GameSingleton::setup_logger() {
 	});
 }
 
-GameManager const& GameSingleton::get_game_manager() const {
-	return game_manager;
-}
-
-Dataloader const& GameSingleton::get_dataloader() const {
-	return dataloader;
-}
-
 Error GameSingleton::setup_game(int32_t bookmark_index) {
 	Bookmark const* bookmark = game_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index);
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));

@@ -69,5 +69,6 @@ namespace OpenVic {
 
 		static godot::String int_to_formatted_string(int64_t val);
 		static godot::String float_to_formatted_string(float val, int32_t decimal_places);
+		static godot::String format_province_name(godot::String const& province_identifier);
 	};
 }

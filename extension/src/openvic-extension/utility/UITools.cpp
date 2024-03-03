@@ -117,6 +117,11 @@ static bool add_theme_stylebox(Control* control, StringName const& theme_name, R
 	stylebox.instantiate();
 	ERR_FAIL_NULL_V(stylebox, false);
 	stylebox->set_texture(texture);
+
+	static const StringName changed_signal = "changed";
+	static const StringName emit_changed_func = "emit_changed";
+	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
+
 	control->add_theme_stylebox_override(theme_name, stylebox);
 	return true;
 };
@@ -145,6 +150,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				ret = false;
 			}
 
+			const float scale = icon.get_scale();
+			godot_texture_rect->set_scale({ scale, scale });
+
 			args.result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::MaskedFlag>()) {
 			TextureRect* godot_texture_rect = nullptr;
@@ -168,12 +176,15 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
 			);
 
+			godot_progress_bar->set_nine_patch_stretch(true);
+			godot_progress_bar->set_max(1.0);
+
 			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
 
 			Ref<ImageTexture> back_texture;
 			if (!progress_bar->get_back_texture_file().empty()) {
 				const StringName back_texture_file = std_view_to_godot_string_name(progress_bar->get_back_texture_file());
-				back_texture = args.asset_manager.get_texture(back_texture_file);
+				back_texture = args.asset_manager.get_texture(back_texture_file, true);
 				if (back_texture.is_null()) {
 					UtilityFunctions::push_error(
 						"Failed to load progress bar sprite back texture ", back_texture_file, " for GUI icon ", icon_name
@@ -205,7 +216,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			Ref<ImageTexture> progress_texture;
 			if (!progress_bar->get_progress_texture_file().empty()) {
 				const StringName progress_texture_file = std_view_to_godot_string_name(progress_bar->get_progress_texture_file());
-				progress_texture = args.asset_manager.get_texture(progress_texture_file);
+				progress_texture = args.asset_manager.get_texture(progress_texture_file, true);
 				if (progress_texture.is_null()) {
 					UtilityFunctions::push_error(
 						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ", icon_name
@@ -266,9 +277,13 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		}
 
 		if (args.result != nullptr) {
-			const float scale = icon.get_scale();
-			args.result->set_scale({ scale, scale });
-			// TODO - rotation (may have to translate as godot rotates around the top left corner)
+			const float rotation = icon.get_rotation();
+			if (rotation != 0.0f) {
+				args.result->set_position(
+					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 { sin(rotation), cos(rotation) - 1.0f }
+				);
+				args.result->set_rotation(-rotation);
+			}
 		}
 	} else {
 		UtilityFunctions::push_error("Null sprite for GUI icon ", icon_name);
