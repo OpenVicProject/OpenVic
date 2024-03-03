@@ -7,13 +7,13 @@ var texture_settings : Array[TextureSetting] = []:
 	get: return texture_settings.duplicate()
 	set(v):
 		texture_settings = v
-		for setting in texture_settings:
+		for setting : TextureSetting in texture_settings:
 			setting.changed.connect(emit_changed)
 		emit_changed()
 
 func _get_draw_rect(rect : Rect2) -> Rect2:
 	var combined_rect : Rect2 = Rect2()
-	for setting in texture_settings:
+	for setting : TextureSetting in texture_settings:
 		if combined_rect.position.x > setting.expand_margin_left:
 			combined_rect.position.x = setting.expand_margin_left
 		if combined_rect.position.y > setting.expand_margin_top:
@@ -25,7 +25,7 @@ func _get_draw_rect(rect : Rect2) -> Rect2:
 	return rect.grow_individual(combined_rect.position.x, combined_rect.position.y, combined_rect.end.x, combined_rect.end.y)
 
 func _draw(to_canvas_item : RID, rect : Rect2) -> void:
-	for setting in texture_settings:
+	for setting : TextureSetting in texture_settings:
 		if setting == null or setting.texture == null:
 			continue
 		var inner_rect : Rect2 = rect

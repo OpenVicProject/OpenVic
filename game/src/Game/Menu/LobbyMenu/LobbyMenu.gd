@@ -21,7 +21,7 @@ signal start_date_selected(index : int)
 @export var delete_dialog : ConfirmationDialog
 
 func filter_for_tag(tag : StringName) -> void:
-	for child in game_select_save_list.get_children():
+	for child : Control in game_select_save_list.get_children():
 		if tag == &"":
 			child.show()
 		else:

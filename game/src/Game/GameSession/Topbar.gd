@@ -67,7 +67,7 @@ func _ready() -> void:
 		NationManagement.Screen.DIPLOMACY  : ^"./topbar/topbarbutton_diplomacy",
 		NationManagement.Screen.MILITARY   : ^"./topbar/topbarbutton_military"
 	}
-	for screen in screen_nodepaths:
+	for screen : NationManagement.Screen in screen_nodepaths:
 		var button : Button = get_button_from_nodepath(screen_nodepaths[screen])
 		if button:
 			button.pressed.connect(
@@ -127,5 +127,5 @@ func _on_decrease_speed_button_pressed() -> void:
 	GameSingleton.decrease_speed()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
-	for screen in _nation_management_buttons:
+	for screen : NationManagement.Screen in _nation_management_buttons:
 		_nation_management_button_textures[screen].set_icon_index(1 + int(screen == active_screen))

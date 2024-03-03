@@ -78,7 +78,7 @@ func _set_argument_setting() -> void:
 	var argument_dictionary : Dictionary = {}
 	if ProjectSettings.has_setting(argument_setting_path):
 		argument_dictionary = ProjectSettings.get_setting_with_override(argument_setting_path)
-	for option in option_array:
+	for option : ArgumentOption in option_array:
 		argument_dictionary[option.name] = option.default_value
 
 	_parse_argument_list(argument_dictionary, OS.get_cmdline_args())
@@ -125,7 +125,7 @@ func _parse_value(arg_name : StringName, value_string : String, type : Variant.T
 		TYPE_RECT2I:
 			push_warning("Value type '%s' may not be supported." % type)
 			var data_array := value_string.lstrip("(").rstrip(")").split(",", false)
-			for index in range(data_array.size()):
+			for index : int in data_array.size():
 				data_array[index] = " " + data_array[index].strip_edges()
 			match type:
 				TYPE_VECTOR2:
@@ -210,7 +210,7 @@ func _add_argument(dictionary : Dictionary, option : ArgumentOption, argument : 
 func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray, is_game_args : bool = false) -> Dictionary:
 	var current_key : String = ""
 	var current_option : ArgumentOption = null
-	for arg in arg_list:
+	for arg : String in arg_list:
 		if current_option != null:
 			if not arg.begins_with("-"):
 				var result : Variant = _parse_value(current_key, arg, current_option.type)
@@ -230,7 +230,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray,
 			# Support for Unix shorthand of multiple boolean arguments
 			# eg: "-abc" means a == true, b == true, c == true
 			if arg.length() > 1 and arg[0] != "-" and arg[1] != "=":
-				for c in arg:
+				for c : String in arg:
 					if not ((c >= "a" and c <= "z") or (c >= "A" and c <= "Z")):
 						push_warning("Parsing shorthand alias containing '%s', perhaps you meant '--%s'? Skipping argument." % [c, arg])
 						break
@@ -263,7 +263,7 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray,
 			if key.length() > 2 and key.begins_with("-"):
 				key = key.substr(1)
 
-			for o in option_array:
+			for o : ArgumentOption in option_array:
 				if key == o.name or o.aliases.any(func(v : StringName) -> bool: return key == v):
 					current_option = o
 					break
@@ -311,7 +311,7 @@ Options:
 			"usage: %s [options]" % OS.get_executable_path().get_file()
 		]
 	)
-	for option in option_array:
+	for option : ArgumentOption in option_array:
 		print_rich("  --%s%s%s" % [
 			(option.name + (",-%s" % (",-".join(option.aliases)) if option.aliases.size() > 0 else "")).rpad(45),
 			("Type: %s - Default Value: %s" % [option.get_type_string(), option.default_value]).rpad(45),

@@ -4,12 +4,12 @@ extends RefCounted
 # REQUIREMENTS
 # * SS-59, SS-60, SS-61
 static func get_default_locale() -> String:
-	var locales := TranslationServer.get_loaded_locales()
+	var locales : PackedStringArray = TranslationServer.get_loaded_locales()
 	var default_locale := OS.get_locale()
 	if default_locale in locales:
 		return default_locale
 	var default_language := OS.get_locale_language()
-	for locale in locales:
+	for locale : String in locales:
 		if locale.begins_with(default_language):
 			return default_language
 	return ProjectSettings.get_setting("internationalization/locale/fallback", "en_GB")

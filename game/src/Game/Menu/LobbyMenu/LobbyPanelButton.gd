@@ -29,8 +29,7 @@ func set_text(value : StringName) -> void:
 
 func _get_minimum_size() -> Vector2:
 	var result := Vector2()
-	for child in get_children():
-		child = child as Control
+	for child : Control in get_children():
 		if child == null or not child.visible:
 			continue
 		if child.top_level:
@@ -82,8 +81,7 @@ func _notification(what : int) -> void:
 			_size -= style.get_minimum_size()
 			offset += style.get_offset()
 
-		for child in get_children():
-			child = child as Control
+		for child : Control in get_children():
 			if child == null or not child.is_visible_in_tree() or child.top_level:
 				continue
 
