@@ -11,8 +11,6 @@ namespace OpenVic {
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
 
-		static godot::StringName const& _signal_value_changed();
-
 		GUI::Scrollbar const* PROPERTY(gui_scrollbar);
 
 		godot::Ref<GFXSpriteTexture> slider_texture;
@@ -33,6 +31,7 @@ namespace OpenVic {
 		godot::Rect2 range_limit_max_rect;
 
 		godot::Orientation PROPERTY(orientation);
+		real_t PROPERTY(length_override);
 
 		int32_t PROPERTY(value);
 		int32_t PROPERTY(min_value);
@@ -78,6 +77,8 @@ namespace OpenVic {
 		void _notification(int what);
 
 	public:
+		static godot::StringName const& signal_value_changed();
+
 		GUIScrollbar();
 
 		godot::Vector2 _get_minimum_size() const override;
@@ -98,5 +99,8 @@ namespace OpenVic {
 
 		godot::Error set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true);
 		godot::Error set_limits(int32_t new_min_value, int32_t new_max_value, bool signal = true);
+
+		/* Override the main dimension of gui_scollbar's size with the specified length. */
+		void set_length_override(real_t new_length_override);
 	};
 }

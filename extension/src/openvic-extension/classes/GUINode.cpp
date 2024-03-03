@@ -18,7 +18,8 @@ using namespace OpenVic;
 	F(TextureProgressBar, progress_bar) \
 	F(TextureRect, texture_rect) \
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
-	F(GUIScrollbar, gui_scrollbar)
+	F(GUIScrollbar, gui_scrollbar) \
+	F(GUIListBox, gui_listbox)
 
 #define APPLY_TO_TEXTURE_TYPES(F) \
 	F(GFXSpriteTexture, gfx_sprite_texture) \

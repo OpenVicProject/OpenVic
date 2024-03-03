@@ -15,6 +15,7 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
@@ -485,6 +486,24 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 	return ret;
 }
 
+static bool generate_listbox(generate_gui_args_t&& args) {
+	GUI::ListBox const& listbox = static_cast<GUI::ListBox const&>(args.element);
+
+	const String listbox_name = std_view_to_godot_string(listbox.get_name());
+
+	GUIListBox* gui_listbox = nullptr;
+	bool ret = new_control(gui_listbox, listbox, args.name);
+	ERR_FAIL_NULL_V_MSG(gui_listbox, false, vformat("Failed to create GUIListBox for GUI listbox %s", listbox_name));
+
+	if (gui_listbox->set_gui_listbox(&listbox) != OK) {
+		UtilityFunctions::push_error("Error initialising GUIListBox for GUI listbox ", listbox_name);
+		ret = false;
+	}
+
+	args.result = gui_listbox;
+	return ret;
+}
+
 template<std::derived_from<GUI::Element> T>
 requires requires(T const& element) {
 	{ element.get_size() } -> std::same_as<fvec2_t>;
@@ -511,10 +530,6 @@ static bool generate_placeholder(generate_gui_args_t&& args, Color colour) {
 
 	args.result = godot_rect;
 	return ret;
-}
-
-static bool generate_listbox(generate_gui_args_t&& args) {
-	return generate_placeholder<GUI::ListBox>(std::move(args), { 0.0f, 0.0f, 1.0f, 0.3f });
 }
 
 static bool generate_texteditbox(generate_gui_args_t&& args) {
