@@ -19,13 +19,13 @@ var tech_dict : Dictionary = GameSingleton.get_technologies()
 
 #defines the selected tech UI so we arent running expensive get_node repeatedly
 var selected_tech_ui : Control
+var selected_tech_folder : String
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
 	add_child(country_technology)
 	Events.NationManagementScreens.update_active_nation_management_screen.connect(_on_update_active_nation_management_screen)
 
-	
 	generate_interface()
 	#setup the window since the gui file doesnt store positions, can probably be optimised
 	for folder_item in folder_windows:
@@ -40,9 +40,15 @@ func _ready() -> void:
 	tech_windows.clear()
 	
 	selected_tech_ui = get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/selected_tech_window")
-	populate_areas("army_tech")
+	selected_tech_folder = "army_tech"
+	populate_areas(selected_tech_folder)
 	
-
+	#sets initial status of progress bar
+	get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/research_progress_name").text = "No research selected"
+	get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/research_progress_category").text = ""
+	
+	var start_research_button : Button = get_button_from_nodepath(^"./country_technology/selected_tech_window/start")
+	start_research_button.connect("pressed",Callable(self,"_tech_start_button_pressed").bind())
 	var close_button : Button = get_button_from_nodepath(^"./country_technology/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))
@@ -60,7 +66,9 @@ func _on_update_active_nation_management_screen(active_screen : NationManagement
 
 func _update_info() -> void:
 	if _active:
-		
+		populate_techs(selected_tech_folder)
+		var date = GameSingleton.get_longform_date().right(4).to_int()
+		var date2 = GameSingleton.get_longform_date()
 		show()
 	else:
 		hide()
@@ -72,6 +80,7 @@ func generate_interface():
 		temp.name = tech_folder_dict[i].identifier
 		temp.get_child(0).connect("pressed",Callable(self,"_folder_button_pressed").bind(temp.name))
 		temp.get_child(2).text = tech_folder_dict[i].identifier
+		temp.get_child(5).text = "0/30"
 		temp.position.x = 28+(194*i)
 		temp.position.y = 55
 		folder_windows.append(temp)
@@ -98,7 +107,7 @@ func populate_areas(identifier):
 	for i in 5:
 		var node = get_node("/root/GameSession/Topbar/TechnologyMenu/country_technology/tech_group"+str(i))
 		node.get_child(0).text = tech_area_dict[offset+i].identifier
-	populate_techs(identifier)
+
 
 func populate_techs(identifier):
 	var offset
@@ -120,6 +129,10 @@ func populate_techs(identifier):
 			node.get_child(1).text = tech_dict[offset+(shift+y)].identifier
 			if(node.get_child(0).is_connected("pressed",Callable(self,"_tech_button_pressed").bind(tech_dict[offset+(shift+y)])) == false):
 				node.get_child(0).connect("pressed",Callable(self,"_tech_button_pressed").bind(tech_dict[offset+(shift+y)]))
+			if (GameSingleton.get_longform_date().right(4).to_int() >= tech_dict[offset+(shift+y)].year ):
+				node.get_child(0).disabled = false
+			else:
+				node.get_child(0).disabled = true
 		shift = shift + 6
 
 func generate_tech_windows():
@@ -136,12 +149,19 @@ func generate_tech_windows():
 	return matrix
 	
 func _folder_button_pressed(selected_folder):
-	populate_areas(selected_folder)
+	selected_tech_folder = selected_folder
+	populate_areas(selected_tech_folder)
+	populate_techs(selected_tech_folder)
 	#selected_tech_ui.get_child(1).text = "NO_TECH_SELECTED"
 	
 func _tech_button_pressed(item):
 	selected_tech_ui.get_child(1).text = item.identifier
 	selected_tech_ui.get_child(6).text = str(item.cost)
 	selected_tech_ui.get_child(8).text = str(item.year)
-	
+	#selected_tech_ui.get_child(8).text = GameSingleton.get_longform_date().right(4)
+
+func _tech_start_button_pressed():
+	print("WIP")
+	#get_node(^"./Topbar/TechnologyMenu/country_technology/research_progress_name").text = selected_tech_ui.get_child(1).text
+	#get_node(^"./Topbar/TechnologyMenu/country_technology/research_progress_category").text = selected_tech_folder+", "+""
 	

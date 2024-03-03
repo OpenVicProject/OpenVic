@@ -472,6 +472,7 @@ Dictionary GameSingleton::get_technologies() const{
 	static const StringName technology_info_year_key = "year";
 	static const StringName technology_info_cost_key = "cost";
 	static const StringName technology_info_unit_key = "unit";
+	static const StringName technology_info_icon_key = "icon";
 	static const StringName technology_info_activated_unit_key = "activated_units";
 	static const StringName technology_info_activated_buildings_key = "activated_buildings";
 	static const StringName technology_info_ai_chance_key = "ai_chance";
@@ -483,6 +484,7 @@ Dictionary GameSingleton::get_technologies() const{
 		tech[technology_info_year_key] = static_cast<int32_t>(fetched_technologies[i].get_year());
 		tech[technology_info_cost_key] = static_cast<int32_t>(fetched_technologies[i].get_cost());
 		tech[technology_info_unit_key] = std_to_godot_string("WIP");
+		tech[technology_info_icon_key] = std_to_godot_string("WIP");
 		tech[technology_info_activated_unit_key] = std_to_godot_string("WIP");
 		tech[technology_info_activated_buildings_key] = std_to_godot_string("WIP");
 		tech[technology_info_ai_chance_key] = std_to_godot_string("WIP");
