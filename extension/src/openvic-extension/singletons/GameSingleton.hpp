@@ -1,5 +1,6 @@
 #pragma once
 
+#include "godot_cpp/variant/dictionary.hpp"
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
@@ -105,6 +106,9 @@ namespace OpenVic {
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
+		godot::Dictionary get_tech_folders() const;
+		godot::Dictionary get_tech_areas() const;
+		godot::Dictionary get_technologies() const;
 
 		void set_paused(bool paused);
 		void toggle_paused();

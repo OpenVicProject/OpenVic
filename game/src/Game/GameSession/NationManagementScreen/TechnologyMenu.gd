@@ -12,9 +12,18 @@ var tech_groups = []
 var tech_window : Control = generate_gui_element("country_technology", "tech_window")
 var tech_windows = generate_tech_windows(5,6)
 
+var tech_folder_dict : Dictionary
+var tech_area_dict : Dictionary
+var tech_dict : Dictionary
+
+
+
 
 
 func _ready() -> void:
+	tech_folder_dict = GameSingleton.get_tech_folders()
+	tech_area_dict = GameSingleton.get_tech_areas()
+	tech_dict = GameSingleton.get_technologies()
 	GameSingleton.gamestate_updated.connect(_update_info)
 	add_child(country_technology)
 	Events.NationManagementScreens.update_active_nation_management_screen.connect(_on_update_active_nation_management_screen)

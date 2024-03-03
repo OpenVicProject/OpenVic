@@ -8,11 +8,13 @@
 
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include "godot_cpp/variant/dictionary.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/research/Technology.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -72,6 +74,9 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(GameSingleton::get_rgo_owner_pop_icon_index);
+	OV_BIND_METHOD(GameSingleton::get_tech_folders);
+	OV_BIND_METHOD(GameSingleton::get_tech_areas);
+	OV_BIND_METHOD(GameSingleton::get_technologies);
 
 	OV_BIND_METHOD(GameSingleton::set_paused, { "paused" });
 	OV_BIND_METHOD(GameSingleton::toggle_paused);
@@ -431,6 +436,61 @@ int32_t GameSingleton::get_rgo_owner_pop_icon_index() const {
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
 }
+
+Dictionary GameSingleton::get_tech_folders() const{
+	std::vector<TechnologyFolder> const& fetched_folders = game_manager.get_research_manager().get_technology_manager().get_technology_folders();
+	static const StringName technology_folder_identifier_key = "identifier";
+
+	Dictionary folders;
+	for (size_t i = 0; i < fetched_folders.size(); i++) {
+		Dictionary folder;
+		folder[technology_folder_identifier_key] = std_to_godot_string(std::string(fetched_folders[i].get_identifier()));
+		folders[i] = folder;
+	}
+	return folders;
+}
+
+Dictionary GameSingleton::get_tech_areas() const{
+	std::vector<TechnologyArea> const& fetched_areas = game_manager.get_research_manager().get_technology_manager().get_technology_areas();
+	static const StringName technology_area_identifier_key = "identifier";
+	static const StringName technology_area_folder_key = "folder";
+	
+	Dictionary areas;
+	for (size_t i = 0; i < fetched_areas.size(); i++) {
+		Dictionary area;
+		area[technology_area_identifier_key] = std_to_godot_string(std::string(fetched_areas[i].get_identifier()));
+		area[technology_area_folder_key] = std_to_godot_string(std::string(fetched_areas[i].get_folder().get_identifier()));
+		areas[i] = area;
+	}
+	return areas;
+}
+
+Dictionary GameSingleton::get_technologies() const{
+	std::vector<Technology> const& fetched_technologies = game_manager.get_research_manager().get_technology_manager().get_technologies();
+	static const StringName technology_info_area_key = "area";
+	static const StringName technology_info_year_key = "year";
+	static const StringName technology_info_cost_key = "cost";
+	static const StringName technology_info_unit_key = "unit";
+	static const StringName technology_info_activated_unit_key = "activated_units";
+	static const StringName technology_info_activated_buildings_key = "activated_buildings";
+	static const StringName technology_info_values_key = "values";
+	static const StringName technology_info_ai_chance_key = "ai_chance";
+	Dictionary techs;
+	for (size_t i = 0; i < fetched_technologies.size(); i++) {
+		Dictionary tech;
+		tech[technology_info_area_key] = std_to_godot_string(std::string(fetched_technologies[i].get_area().get_identifier()));
+		tech[technology_info_year_key] = static_cast<int32_t>(fetched_technologies[i].get_year());
+		tech[technology_info_cost_key] = static_cast<int32_t>(fetched_technologies[i].get_cost());
+		tech[technology_info_unit_key] = std_to_godot_string("WIP");
+		tech[technology_info_activated_unit_key] = std_to_godot_string("WIP");
+		tech[technology_info_activated_buildings_key] = std_to_godot_string("WIP");
+		tech[technology_info_values_key] = std_to_godot_string("WIP");
+		tech[technology_info_ai_chance_key] = std_to_godot_string("WIP");
+		techs[i] = tech;
+	}
+	return techs;
+}
+
 
 void GameSingleton::set_paused(bool paused) {
 	game_manager.get_simulation_clock().set_paused(paused);
