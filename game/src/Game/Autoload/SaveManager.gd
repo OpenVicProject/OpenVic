@@ -16,7 +16,7 @@ func _ready() -> void:
 
 	DirAccess.make_dir_recursive_absolute(saves_dir_path)
 	var saves_dir := DirAccess.open(saves_dir_path)
-	for file in saves_dir.get_files():
+	for file : String in saves_dir.get_files():
 		var save := SaveResource.new()
 		save.load_save(saves_dir_path.path_join(file))
 		add_or_replace_save(save, true)

@@ -40,7 +40,7 @@ func _set_value_from_file(load_value : Variant) -> void:
 				if _valid_index(load_int):
 					selected = load_int
 					return
-			for item_index in item_count:
+			for item_index : int in item_count:
 				if load_string == get_item_text(item_index):
 					selected = item_index
 					return

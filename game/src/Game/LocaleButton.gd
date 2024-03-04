@@ -53,7 +53,7 @@ func load_setting(file : ConfigFile) -> void:
 	reset_setting()
 
 func _select_locale_by_string(locale : String) -> bool:
-	for idx in item_count:
+	for idx : int in item_count:
 		if get_item_metadata(idx) == locale:
 			selected = idx
 			return true

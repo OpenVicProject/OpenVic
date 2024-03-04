@@ -10,7 +10,7 @@ extends Control
 var _is_user_dragging_progress_slider : bool = false
 
 func _ready() -> void:
-	for songName in MusicConductor.get_all_song_names():
+	for songName : String in MusicConductor.get_all_song_names():
 		_song_selector_button.add_item(songName, _song_selector_button.item_count)
 	_on_song_set(MusicConductor.get_current_song_index())
 	MusicConductor.song_started.connect(_on_song_set)

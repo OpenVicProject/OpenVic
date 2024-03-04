@@ -8,7 +8,7 @@ extends SettingOptionButton
 var default_value : float = GuiScale.error_guiscale
 
 func _find_guiscale_index_by_value(value : float) -> int:
-	for item_index in item_count:
+	for item_index : int in item_count:
 		if get_item_metadata(item_index) == value:
 			return item_index
 	return -1

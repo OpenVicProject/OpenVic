@@ -15,7 +15,7 @@ var is_save_menu : bool = true
 var _id_to_tag : Array[StringName] = []
 
 func filter_for_tag(tag : StringName) -> void:
-	for child in _scroll_list.get_children():
+	for child : Control in _scroll_list.get_children():
 		if tag == &"":
 			child.show()
 		else:
@@ -44,7 +44,7 @@ func show_for_save() -> void:
 
 func _build_save_list() -> void:
 	_tag_selection_tab.add_tab("SAVELOADMENU_TABSELECTIONTABBAR_ALL")
-	for save_name in SaveManager._save_dictionary:
+	for save_name : StringName in SaveManager._save_dictionary:
 		var save : SaveResource = SaveManager._save_dictionary[save_name]
 		var save_node := _create_save_node(save)
 		_scroll_list.add_child(save_node)
@@ -60,7 +60,7 @@ func _create_save_node(resource : SaveResource) -> Control:
 	return save_node
 
 func _queue_clear_scroll_list() -> void:
-	for child in _scroll_list.get_children():
+	for child : Node in _scroll_list.get_children():
 		child.queue_free()
 	_tag_selection_tab.clear_tabs()
 	_id_to_tag.clear()

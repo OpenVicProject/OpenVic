@@ -23,9 +23,9 @@ var is_music_player_visible : bool = true
 
 var _has_startup_happened : bool = false
 
-func get_all_song_names() -> Array[String]:
-	var songNames : Array[String] = []
-	for si in _available_songs:
+func get_all_song_names() -> PackedStringArray:
+	var songNames : PackedStringArray = []
+	for si : SongInfo in _available_songs:
 		songNames.append(si.song_name)
 	return songNames
 

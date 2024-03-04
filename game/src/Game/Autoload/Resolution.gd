@@ -29,7 +29,7 @@ var _regex : RegEx
 
 func _ready() -> void:
 	assert(minimum_resolution.x > 0 and minimum_resolution.y > 0, "Minimum resolution must be positive!")
-	for resolution_value in _starting_resolutions:
+	for resolution_value : Vector2i in _starting_resolutions:
 		add_resolution(resolution_value)
 	assert(not _resolutions.is_empty(), "No valid starting resolutions!")
 

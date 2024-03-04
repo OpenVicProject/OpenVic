@@ -40,7 +40,7 @@ func add_volume_row(bus_name : String, bus_index : int) -> HSlider:
 # REQUIREMENTS
 # * UI-22
 func _ready() -> void:
-	for bus_index in AudioServer.bus_count:
+	for bus_index : int in AudioServer.bus_count:
 		add_volume_row(AudioServer.get_bus_name(bus_index), bus_index)
 
 func _notification(what : int) -> void:

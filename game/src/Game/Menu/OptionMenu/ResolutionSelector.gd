@@ -6,7 +6,7 @@ extends SettingRevertButton
 @export var default_value : Vector2i = Resolution.error_resolution
 
 func _find_resolution_index_by_value(value : Vector2i) -> int:
-	for item_index in item_count:
+	for item_index : int in item_count:
 		if get_item_metadata(item_index) == value:
 			return item_index
 	return -1
@@ -16,7 +16,7 @@ func _sync_resolutions() -> void:
 	default_selected = -1
 	selected = -1
 	var current_resolution := Resolution.get_current_resolution()
-	for resolution_value in Resolution.get_resolution_value_list():
+	for resolution_value : Vector2i in Resolution.get_resolution_value_list():
 		# Placeholder option text awaiting _update_resolution_options_text()
 		add_item(str(resolution_value))
 		set_item_metadata(item_count - 1, resolution_value)
@@ -40,7 +40,7 @@ func _notification(what : int) -> void:
 			_update_resolution_options_text()
 
 func _update_resolution_options_text() -> void:
-	for index in get_item_count():
+	for index : int in get_item_count():
 		var resolution_value : Vector2i = get_item_metadata(index)
 		var format_dict := { "width": resolution_value.x, "height": resolution_value.y }
 		format_dict["name"] = tr("OPTIONS_VIDEO_RESOLUTION_{width}x{height}".format(format_dict))
