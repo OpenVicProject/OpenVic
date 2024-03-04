@@ -70,7 +70,7 @@ func _setup_compatibility_mode_paths() -> void:
 		else:
 			# Check if the program is being run from inside the install directory,
 			# and if not also search for a Steam install
-			actual_base_path = GameSingleton.search_for_game_path("..")
+			actual_base_path = GameSingleton.search_for_game_path(".")
 		if not actual_base_path:
 			get_tree().paused = true
 			vic2_dir_dialog.popup_centered_ratio()

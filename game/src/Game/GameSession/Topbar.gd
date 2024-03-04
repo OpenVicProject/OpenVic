@@ -73,7 +73,7 @@ func _ready() -> void:
 			button.pressed.connect(
 				Events.NationManagementScreens.toggle_nation_management_screen.bind(screen)
 			)
-			var icon : GFXSpriteTexture = get_gfx_sprite_texture_from_node(button)
+			var icon : GFXSpriteTexture = GUINode.get_gfx_sprite_texture_from_node(button)
 			if icon:
 				_nation_management_buttons[screen] = button
 				_nation_management_button_textures[screen] = icon
@@ -107,7 +107,6 @@ func _update_speed_controls() -> void:
 		if not GameSingleton.is_paused():
 			index += GameSingleton.get_speed() + 1
 		_speed_indicator_texture.set_icon_index(index)
-		_speed_indicator_button.queue_redraw()
 
 # REQUIREMENTS:
 # * UIFUN-71
@@ -130,4 +129,3 @@ func _on_decrease_speed_button_pressed() -> void:
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	for screen in _nation_management_buttons:
 		_nation_management_button_textures[screen].set_icon_index(1 + int(screen == active_screen))
-		_nation_management_buttons[screen].queue_redraw()

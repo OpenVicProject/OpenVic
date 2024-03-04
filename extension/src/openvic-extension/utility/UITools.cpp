@@ -15,6 +15,7 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
@@ -117,6 +118,11 @@ static bool add_theme_stylebox(Control* control, StringName const& theme_name, R
 	stylebox.instantiate();
 	ERR_FAIL_NULL_V(stylebox, false);
 	stylebox->set_texture(texture);
+
+	static const StringName changed_signal = "changed";
+	static const StringName emit_changed_func = "emit_changed";
+	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
+
 	control->add_theme_stylebox_override(theme_name, stylebox);
 	return true;
 };
@@ -145,6 +151,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				ret = false;
 			}
 
+			const float scale = icon.get_scale();
+			godot_texture_rect->set_scale({ scale, scale });
+
 			args.result = godot_texture_rect;
 		} else if (icon.get_sprite()->is_type<GFX::MaskedFlag>()) {
 			TextureRect* godot_texture_rect = nullptr;
@@ -168,12 +177,15 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
 			);
 
+			godot_progress_bar->set_nine_patch_stretch(true);
+			godot_progress_bar->set_max(1.0);
+
 			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
 
 			Ref<ImageTexture> back_texture;
 			if (!progress_bar->get_back_texture_file().empty()) {
 				const StringName back_texture_file = std_view_to_godot_string_name(progress_bar->get_back_texture_file());
-				back_texture = args.asset_manager.get_texture(back_texture_file);
+				back_texture = args.asset_manager.get_texture(back_texture_file, true);
 				if (back_texture.is_null()) {
 					UtilityFunctions::push_error(
 						"Failed to load progress bar sprite back texture ", back_texture_file, " for GUI icon ", icon_name
@@ -205,7 +217,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			Ref<ImageTexture> progress_texture;
 			if (!progress_bar->get_progress_texture_file().empty()) {
 				const StringName progress_texture_file = std_view_to_godot_string_name(progress_bar->get_progress_texture_file());
-				progress_texture = args.asset_manager.get_texture(progress_texture_file);
+				progress_texture = args.asset_manager.get_texture(progress_texture_file, true);
 				if (progress_texture.is_null()) {
 					UtilityFunctions::push_error(
 						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ", icon_name
@@ -266,9 +278,13 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		}
 
 		if (args.result != nullptr) {
-			const float scale = icon.get_scale();
-			args.result->set_scale({ scale, scale });
-			// TODO - rotation (may have to translate as godot rotates around the top left corner)
+			const float rotation = icon.get_rotation();
+			if (rotation != 0.0f) {
+				args.result->set_position(
+					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 { sin(rotation), cos(rotation) - 1.0f }
+				);
+				args.result->set_rotation(-rotation);
+			}
 		}
 	} else {
 		UtilityFunctions::push_error("Null sprite for GUI icon ", icon_name);
@@ -470,6 +486,24 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 	return ret;
 }
 
+static bool generate_listbox(generate_gui_args_t&& args) {
+	GUI::ListBox const& listbox = static_cast<GUI::ListBox const&>(args.element);
+
+	const String listbox_name = std_view_to_godot_string(listbox.get_name());
+
+	GUIListBox* gui_listbox = nullptr;
+	bool ret = new_control(gui_listbox, listbox, args.name);
+	ERR_FAIL_NULL_V_MSG(gui_listbox, false, vformat("Failed to create GUIListBox for GUI listbox %s", listbox_name));
+
+	if (gui_listbox->set_gui_listbox(&listbox) != OK) {
+		UtilityFunctions::push_error("Error initialising GUIListBox for GUI listbox ", listbox_name);
+		ret = false;
+	}
+
+	args.result = gui_listbox;
+	return ret;
+}
+
 template<std::derived_from<GUI::Element> T>
 requires requires(T const& element) {
 	{ element.get_size() } -> std::same_as<fvec2_t>;
@@ -496,10 +530,6 @@ static bool generate_placeholder(generate_gui_args_t&& args, Color colour) {
 
 	args.result = godot_rect;
 	return ret;
-}
-
-static bool generate_listbox(generate_gui_args_t&& args) {
-	return generate_placeholder<GUI::ListBox>(std::move(args), { 0.0f, 0.0f, 1.0f, 0.3f });
 }
 
 static bool generate_texteditbox(generate_gui_args_t&& args) {

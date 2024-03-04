@@ -16,7 +16,7 @@ using OpenVic::Utilities::std_view_to_godot_string;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
  * so we must use wrapper functions to delay their initialisation. */
-StringName const& GUIScrollbar::_signal_value_changed() {
+StringName const& GUIScrollbar::signal_value_changed() {
 	static const StringName signal_value_changed = "value_changed";
 	return signal_value_changed;
 }
@@ -44,7 +44,10 @@ void GUIScrollbar::_bind_methods() {
 	OV_BIND_METHOD(GUIScrollbar::set_range_limits, { "new_range_limit_min", "new_range_limit_max", "signal" }, DEFVAL(true));
 	OV_BIND_METHOD(GUIScrollbar::set_limits, { "new_min_value", "new_max_value", "signal" }, DEFVAL(true));
 
-	ADD_SIGNAL(MethodInfo(_signal_value_changed(), PropertyInfo(Variant::INT, "value")));
+	OV_BIND_METHOD(GUIScrollbar::get_length_override);
+	OV_BIND_METHOD(GUIScrollbar::set_length_override, { "new_length_override" });
+
+	ADD_SIGNAL(MethodInfo(signal_value_changed(), PropertyInfo(Variant::INT, "value")));
 }
 
 GUIScrollbar::GUIScrollbar() {
@@ -220,24 +223,30 @@ void GUIScrollbar::_constrain_value() {
 
 /* _constrain_value() should be called sometime after this. */
 Error GUIScrollbar::_constrain_range_limits() {
-	range_limit_min = std::clamp(range_limit_min, min_value, max_value);
-	range_limit_max = std::clamp(range_limit_max, min_value, max_value);
+	if (range_limited) {
+		range_limit_min = std::clamp(range_limit_min, min_value, max_value);
+		range_limit_max = std::clamp(range_limit_max, min_value, max_value);
 
-	Error err = OK;
-	if (range_limit_min > range_limit_max) {
-		UtilityFunctions::push_error(
-			"GUIScrollbar range max ", range_limit_max, " is less than range min ", range_limit_min, " - swapping values."
-		);
-		std::swap(range_limit_min, range_limit_max);
-		err = FAILED;
+		Error err = OK;
+		if (range_limit_min > range_limit_max) {
+			UtilityFunctions::push_error(
+				"GUIScrollbar range max ", range_limit_max, " is less than range min ", range_limit_min, " - swapping values."
+			);
+			std::swap(range_limit_min, range_limit_max);
+			err = FAILED;
+		}
+
+		const int axis = orientation == HORIZONTAL ? 0 : 1;
+		range_limit_min_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_min);
+		range_limit_max_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_max)
+			+ slider_rect.size[axis] / 2.0f;
+
+		return err;
+	} else {
+		range_limit_min = min_value;
+		range_limit_max = max_value;
+		return OK;
 	}
-
-	const int axis = orientation == HORIZONTAL ? 0 : 1;
-	range_limit_min_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_min);
-	range_limit_max_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_max)
-		+ slider_rect.size[axis] / 2.0f;
-
-	return err;
 }
 
 /* _constrain_range_limits() should be called sometime after this. */
@@ -265,6 +274,10 @@ Vector2 GUIScrollbar::_get_minimum_size() const {
 			size[axis] = std::max(size[axis], more_texture->get_size()[axis]);
 		}
 
+		if (length_override > 0.0f) {
+			size[1 - axis] = length_override;
+		}
+
 		return size;
 	} else {
 		return {};
@@ -272,7 +285,7 @@ Vector2 GUIScrollbar::_get_minimum_size() const {
 }
 
 void GUIScrollbar::emit_value_changed() {
-	emit_signal(_signal_value_changed(), value);
+	emit_signal(signal_value_changed(), value);
 }
 
 Error GUIScrollbar::reset() {
@@ -291,7 +304,7 @@ Error GUIScrollbar::reset() {
 	pressed_less = false;
 	pressed_more = false;
 
-	value = (max_value - min_value) / 2;
+	value = min_value;
 	range_limit_min = min_value;
 	range_limit_max = max_value;
 
@@ -321,6 +334,7 @@ void GUIScrollbar::clear() {
 	range_limit_max_rect = {};
 
 	orientation = HORIZONTAL;
+	length_override = 0.0f;
 	min_value = 0;
 	max_value = 100;
 	range_limited = false;
@@ -347,6 +361,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	const String gui_scrollbar_name = std_view_to_godot_string(gui_scrollbar->get_name());
 
 	orientation = gui_scrollbar->is_horizontal() ? HORIZONTAL : VERTICAL;
+	length_override = 0.0f;
 	range_limited = gui_scrollbar->is_range_limited();
 
 	/* _Element is either GUI::Button or GUI::Icon, both of which have their own
@@ -475,6 +490,19 @@ Error GUIScrollbar::set_limits(int32_t new_min_value, int32_t new_max_value, boo
 	ret &= _constrain_range_limits() == OK;
 	set_value(value, signal);
 	return ERR(ret);
+}
+
+void GUIScrollbar::set_length_override(real_t new_length_override) {
+	ERR_FAIL_COND_MSG(
+		length_override < 0, vformat("Invalid GUIScrollbar length override: %f - cannot be negative!", length_override)
+	);
+
+	length_override = new_length_override;
+
+	_calculate_rects();
+	_constrain_limits();
+	_constrain_range_limits();
+	_constrain_value();
 }
 
 void GUIScrollbar::_gui_input(Ref<InputEvent> const& event) {

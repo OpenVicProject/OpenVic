@@ -25,7 +25,7 @@ namespace OpenVic {
 		font_map_t fonts;
 
 		static godot::Ref<godot::Image> _load_image(godot::StringName const& path);
-		image_asset_t* _get_image_asset(godot::StringName const& path);
+		image_asset_t* _get_image_asset(godot::StringName const& path, bool flip_y);
 
 	protected:
 		static void _bind_methods();
@@ -38,12 +38,12 @@ namespace OpenVic {
 
 		/* Search for and load an image at the specified path relative to the game defines, first checking the AssetManager's
 		 * image cache (if cache is true) in case it has already been loaded, and returning nullptr if image loading fails. */
-		godot::Ref<godot::Image> get_image(godot::StringName const& path, bool cache = true);
+		godot::Ref<godot::Image> get_image(godot::StringName const& path, bool cache = true, bool flip_y = false);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking
 		 * AssetManager's texture cache in case it has already been loaded, and returning nullptr if image loading
 		 * or texture creation fails. */
-		godot::Ref<godot::ImageTexture> get_texture(godot::StringName const& path);
+		godot::Ref<godot::ImageTexture> get_texture(godot::StringName const& path, bool flip_y = false);
 
 		/* Search for and load a font with the specified name from the game defines' font directory, first checking the
 		 * AssetManager's font cache in case it has already been loaded, and returning nullptr if font loading fails. */

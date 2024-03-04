@@ -40,7 +40,7 @@ alignment = 1
 [node name="MapmodesGrid" type="GridContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
 editor_description = "UI-750"
 layout_mode = 2
-columns = 11
+columns = 7
 
 [node name="Minimap" type="PanelContainer" parent="MapPanelMargin/MapPanelList/MapDisplayList"]
 editor_description = "UI-549"

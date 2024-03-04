@@ -251,8 +251,7 @@ func _update_info() -> void:
 	if _province_info:
 		# Header
 		if _province_name_label:
-			_province_name_label.text = "PROV" + _province_info.get(_province_info_province_key,
-				_province_info_province_key + _missing_suffix)
+			_province_name_label.text = GUINode.format_province_name(_province_info.get(_province_info_province_key, _missing_suffix))
 
 		if _region_name_label:
 			_region_name_label.text = _province_info.get(_province_info_region_key,
@@ -294,7 +293,7 @@ func _update_info() -> void:
 					push_error("Failed to set terrain type texture: ", terrain_type)
 
 		if _life_rating_bar:
-			_life_rating_bar.value = _province_info.get(_province_info_life_rating_key, 0)
+			_life_rating_bar.value = _province_info.get(_province_info_life_rating_key, 0) / 100.0
 
 		if _controller_flag_texture:
 			_controller_flag_texture.set_flag_country_name(_province_info.get(_province_info_controller_key, ""))

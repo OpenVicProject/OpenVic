@@ -1,6 +1,5 @@
 #pragma once
 
-#include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
@@ -14,8 +13,8 @@ namespace OpenVic {
 
 		static inline GameSingleton* singleton = nullptr;
 
-		GameManager game_manager;
-		Dataloader dataloader;
+		GameManager PROPERTY(game_manager);
+		Dataloader PROPERTY(dataloader);
 
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
@@ -29,7 +28,6 @@ namespace OpenVic {
 		static godot::StringName const& _signal_province_selected();
 		static godot::StringName const& _signal_clock_state_changed();
 
-		godot::Error _generate_terrain_texture_array();
 		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
 		godot::Error _load_flag_images();
@@ -49,9 +47,6 @@ namespace OpenVic {
 		~GameSingleton();
 
 		static void setup_logger();
-
-		GameManager const& get_game_manager() const;
-		Dataloader const& get_dataloader() const;
 
 		/* Load the game's defines in compatiblity mode from the filepath
 		 * pointing to the defines folder. */

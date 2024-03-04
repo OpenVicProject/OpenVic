@@ -13,8 +13,8 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
 
 void AssetManager::_bind_methods() {
-	OV_BIND_METHOD(AssetManager::get_image, { "path" });
-	OV_BIND_METHOD(AssetManager::get_texture, { "path" });
+	OV_BIND_METHOD(AssetManager::get_image, { "path", "cache", "flip_y" }, DEFVAL(true), DEFVAL(false));
+	OV_BIND_METHOD(AssetManager::get_texture, { "path", "flip_y" }, DEFVAL(false));
 	OV_BIND_METHOD(AssetManager::get_font, { "name" });
 }
 
@@ -45,19 +45,22 @@ Ref<Image> AssetManager::_load_image(StringName const& path) {
 	return image;
 }
 
-AssetManager::image_asset_t* AssetManager::_get_image_asset(StringName const& path) {
+AssetManager::image_asset_t* AssetManager::_get_image_asset(StringName const& path, bool flip_y) {
 	image_asset_map_t::iterator it = image_assets.find(path);
 	if (it != image_assets.end()) {
 		return &it.value();
 	}
 	const Ref<Image> image = _load_image(path);
 	ERR_FAIL_NULL_V(image, nullptr);
+	if (flip_y) {
+		image->flip_y();
+	}
 	return &image_assets.emplace(std::move(path), AssetManager::image_asset_t { image, nullptr }).first.value();
 }
 
-Ref<Image> AssetManager::get_image(StringName const& path, bool cache) {
+Ref<Image> AssetManager::get_image(StringName const& path, bool cache, bool flip_y) {
 	if (cache) {
-		image_asset_t const* asset = _get_image_asset(path);
+		image_asset_t const* asset = _get_image_asset(path, flip_y);
 		ERR_FAIL_NULL_V(asset, nullptr);
 		return asset->image;
 	} else {
@@ -65,8 +68,8 @@ Ref<Image> AssetManager::get_image(StringName const& path, bool cache) {
 	}
 }
 
-Ref<ImageTexture> AssetManager::get_texture(StringName const& path) {
-	image_asset_t* asset = _get_image_asset(path);
+Ref<ImageTexture> AssetManager::get_texture(StringName const& path, bool flip_y) {
+	image_asset_t* asset = _get_image_asset(path, flip_y);
 	ERR_FAIL_NULL_V(asset, nullptr);
 	if (asset->texture.is_null()) {
 		asset->texture = ImageTexture::create_from_image(asset->image);

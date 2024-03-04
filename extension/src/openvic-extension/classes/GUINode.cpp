@@ -18,7 +18,8 @@ using namespace OpenVic;
 	F(TextureProgressBar, progress_bar) \
 	F(TextureRect, texture_rect) \
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
-	F(GUIScrollbar, gui_scrollbar)
+	F(GUIScrollbar, gui_scrollbar) \
+	F(GUIListBox, gui_listbox)
 
 #define APPLY_TO_TEXTURE_TYPES(F) \
 	F(GFXSpriteTexture, gfx_sprite_texture) \
@@ -48,6 +49,7 @@ void GUINode::_bind_methods() {
 
 	OV_BIND_SMETHOD(int_to_formatted_string, { "val" });
 	OV_BIND_SMETHOD(float_to_formatted_string, { "val", "decimal_places" });
+	OV_BIND_SMETHOD(format_province_name, { "province_identifier" });
 }
 
 GUINode::GUINode() {
@@ -188,4 +190,9 @@ String GUINode::int_to_formatted_string(int64_t val) {
 
 String GUINode::float_to_formatted_string(float val, int32_t decimal_places) {
 	return Utilities::float_to_formatted_string(val, decimal_places);
+}
+
+String GUINode::format_province_name(String const& province_identifier) {
+	static const String province_prefix = "PROV";
+	return province_prefix + province_identifier;
 }

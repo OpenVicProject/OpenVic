@@ -108,7 +108,7 @@ DIALOG_SAVE_AND_RESIGN;Сохраниться и выйти в главное м
 DIALOG_SAVE_AND_QUIT;Сохраниться и выйти из игры
 
 ;; Province Overview Panel
-province_MISSING;Нет провинции
+PROV_MISSING;Нет провинции
 region_MISSING;Нет региона
 LIFE_RATING_TOOLTIP;Уровень жизни: {life_rating}
 rgo_MISSING;Нет ДП
