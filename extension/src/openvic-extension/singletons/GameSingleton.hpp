@@ -13,7 +13,7 @@ namespace OpenVic {
 
 		static inline GameSingleton* singleton = nullptr;
 
-		GameManager PROPERTY(game_manager);
+		GameManager PROPERTY_REF(game_manager);
 		Dataloader PROPERTY(dataloader);
 
 		godot::Vector2i image_subdivisions;
@@ -59,10 +59,6 @@ namespace OpenVic {
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 
-		/* Get info to display in Province Overview Panel, packaged in
-		 * a Dictionary using StringName constants as keys. */
-		godot::Dictionary get_province_info_from_index(int32_t index) const;
-
 		int32_t get_map_width() const;
 		int32_t get_map_height() const;
 		float get_map_aspect_ratio() const;
@@ -94,22 +90,6 @@ namespace OpenVic {
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);
 
-		int32_t get_province_building_count() const;
-		godot::String get_province_building_identifier(int32_t building_index) const;
-		godot::Error expand_selected_province_building(int32_t building_index);
-		int32_t get_slave_pop_icon_index() const;
-		int32_t get_administrative_pop_icon_index() const;
-		int32_t get_rgo_owner_pop_icon_index() const;
-
-		void set_paused(bool paused);
-		void toggle_paused();
-		bool is_paused() const;
-		void increase_speed();
-		void decrease_speed();
-		int32_t get_speed() const;
-		bool can_increase_speed() const;
-		bool can_decrease_speed() const;
-		godot::String get_longform_date() const;
 		void try_tick();
 	};
 }

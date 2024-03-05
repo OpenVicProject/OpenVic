@@ -91,40 +91,40 @@ func _notification(what : int) -> void:
 
 func _update_info() -> void:
 	if _date_label:
-		_date_label.text = GameSingleton.get_longform_date()
+		_date_label.text = MenuSingleton.get_longform_date()
 
 func _update_speed_controls() -> void:
 	#  TODO - decide whether to disable these or not
 	# (they don't appear to get disabled in the base game)
 	#if _speed_up_button:
-	#	_speed_up_button.disabled = not GameSingleton.can_increase_speed()
+	#	_speed_up_button.disabled = not MenuSingleton.can_increase_speed()
 
 	#if _speed_down_button:
-	#	_speed_down_button.disabled = not GameSingleton.can_decrease_speed()
+	#	_speed_down_button.disabled = not MenuSingleton.can_decrease_speed()
 
 	if _speed_indicator_button and _speed_indicator_texture:
 		var index : int = 1
-		if not GameSingleton.is_paused():
-			index += GameSingleton.get_speed() + 1
+		if not MenuSingleton.is_paused():
+			index += MenuSingleton.get_speed() + 1
 		_speed_indicator_texture.set_icon_index(index)
 
 # REQUIREMENTS:
 # * UIFUN-71
 func _on_play_pause_button_pressed() -> void:
 	print("Toggling pause!")
-	GameSingleton.toggle_paused()
+	MenuSingleton.toggle_paused()
 
 # REQUIREMENTS:
 # * UIFUN-72
 func _on_increase_speed_button_pressed() -> void:
 	print("Speed up!")
-	GameSingleton.increase_speed()
+	MenuSingleton.increase_speed()
 
 # REQUIREMENTS:
 # * UIFUN-73
 func _on_decrease_speed_button_pressed() -> void:
 	print("Speed down!")
-	GameSingleton.decrease_speed()
+	MenuSingleton.decrease_speed()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	for screen : NationManagement.Screen in _nation_management_buttons:

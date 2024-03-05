@@ -60,7 +60,7 @@ class BuildingSlot:
 			return
 		_slot_node = new_slot_node
 
-		for icon_index : int in GameSingleton.get_province_building_count():
+		for icon_index : int in MenuSingleton.get_province_building_count():
 			var icon := _slot_node.get_node("build_icon%d" % icon_index)
 			if icon:
 				if icon_index == _slot_index:
@@ -70,10 +70,10 @@ class BuildingSlot:
 
 		var building_name := GUINode.get_label_from_node(_slot_node.get_node(^"./description"))
 		if building_name:
-			building_name.text = GameSingleton.get_province_building_identifier(_slot_index)
+			building_name.text = MenuSingleton.get_province_building_identifier(_slot_index)
 		_expand_button = GUINode.get_button_from_node(_slot_node.get_node(^"./expand"))
 		if _expand_button:
-			_expand_button.pressed.connect(func() -> void: GameSingleton.expand_selected_province_building(_slot_index))
+			_expand_button.pressed.connect(func() -> void: MenuSingleton.expand_selected_province_building(_slot_index))
 		_expanding_icon = GUINode.get_texture_rect_from_node(_slot_node.get_node(^"./underconstruction_icon"))
 		_expanding_progress_bar = GUINode.get_progress_bar_from_node(_slot_node.get_node(^"./building_progress"))
 		if _expanding_progress_bar:
@@ -135,12 +135,12 @@ func _ready() -> void:
 	_slave_status_icon = get_texture_rect_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
 	var slave_status_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
 	if slave_status_icon_texture:
-		slave_status_icon_texture.set_icon_index(GameSingleton.get_slave_pop_icon_index())
+		slave_status_icon_texture.set_icon_index(MenuSingleton.get_slave_pop_icon_index())
 	_colony_status_button = get_button_from_nodepath(^"./province_view/province_view_header/colony_button")
 	_colony_status_button_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/colony_button")
 	var admin_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/admin_icon")
 	if admin_icon_texture:
-		admin_icon_texture.set_icon_index(GameSingleton.get_administrative_pop_icon_index())
+		admin_icon_texture.set_icon_index(MenuSingleton.get_administrative_pop_icon_index())
 	_administrative_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/admin_efficiency")
 	_owner_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/owner_presence")
 	_province_modifiers_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_view_header/province_modifiers")
@@ -173,7 +173,7 @@ func _ready() -> void:
 
 	_buildings_panel = get_panel_from_nodepath(^"./province_view/province_buildings")
 	if _buildings_panel:
-		var target_slot_count : int = GameSingleton.get_province_building_count()
+		var target_slot_count : int = MenuSingleton.get_province_building_count()
 		var slot_y : float = 0.0
 		for current_slot_count : int in target_slot_count:
 			var slot := GUINode.generate_gui_element("province_interface", "building", "building_slot_%d" % current_slot_count)
@@ -247,7 +247,7 @@ func _update_info() -> void:
 
 	const _missing_suffix : String = "_MISSING"
 
-	_province_info = GameSingleton.get_province_info_from_index(_selected_index)
+	_province_info = MenuSingleton.get_province_info_from_index(_selected_index)
 	if _province_info:
 		# Header
 		if _province_name_label:
