@@ -1,0 +1,52 @@
+name: Victoria 2 Discrepency
+description: |
+  File a discrepency from Victoria 2 if you have noticed a difference with Victoria 2. DO NOT INCLUDE CRASHES
+labels: ["bug", "victoria 2 discrepency", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - Write a descriptive title above.
+        - Search [open](https://github.com/OpenVicProject/OpenVic/labels/victoria%202%20discrepency) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=label%3A%22victoria+2+discrepency%22+is%3Aclosed) proposals to ensure the discrepency has not already been suggested.
+        - Only file if you have noticed a difference with Victoria 2.
+        - **DO NOT FILE CRASHES HERE!** Please use the [bug report](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=1-bug-report.yml) template instead.
+
+  - type: input
+    attributes:
+      label: Game Info
+      description: "Left empty for the second (TODO: prepare)"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Tested versions
+      description: |
+        Please specify the versions you found the issue in, including the **Git commit hash** if using a development or non-official build. The exact version (including the commit hash) can be copied by clicking TODO: prepare
+
+      placeholder: |
+        - Reproducible in: v0.02_Mappa_Mundi [c65b2a795fd35e81f7a1906d07d15c47cd94cf9c].
+        - Not reproducible in: v0.01_Primum_Mobile [1980012045ea4c6b314d6d12a796eda23ae8d7fa].
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: What mode does this pertain to?
+      multiple: true
+      options:
+        - Compatibility Mode
+        - Out-of-the-Box/Custom Mode
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the discrepency you are having with OpenVic compared to Victroia 2
+      description: |
+        If the feature exists in OpenVic, describe in detail the divergent behavior from Victoria 2 that you have noticed.
+        You can include images or videos with drag and drop.
+      placeholder: Example - "TODO"
+    validations:
+      required: true
