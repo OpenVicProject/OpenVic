@@ -2,13 +2,11 @@
 
 #include <functional>
 
-#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/utility/Logger.hpp>
 
-#include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -49,7 +47,6 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 
 	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
-	OV_BIND_METHOD(GameSingleton::get_province_info_from_index, { "index" });
 
 	OV_BIND_METHOD(GameSingleton::get_map_width);
 	OV_BIND_METHOD(GameSingleton::get_map_height);
@@ -66,22 +63,6 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 
-	OV_BIND_METHOD(GameSingleton::get_province_building_count);
-	OV_BIND_METHOD(GameSingleton::get_province_building_identifier, { "building_index" });
-	OV_BIND_METHOD(GameSingleton::expand_selected_province_building, { "building_index" });
-	OV_BIND_METHOD(GameSingleton::get_slave_pop_icon_index);
-	OV_BIND_METHOD(GameSingleton::get_administrative_pop_icon_index);
-	OV_BIND_METHOD(GameSingleton::get_rgo_owner_pop_icon_index);
-
-	OV_BIND_METHOD(GameSingleton::set_paused, { "paused" });
-	OV_BIND_METHOD(GameSingleton::toggle_paused);
-	OV_BIND_METHOD(GameSingleton::is_paused);
-	OV_BIND_METHOD(GameSingleton::increase_speed);
-	OV_BIND_METHOD(GameSingleton::decrease_speed);
-	OV_BIND_METHOD(GameSingleton::get_speed);
-	OV_BIND_METHOD(GameSingleton::can_increase_speed);
-	OV_BIND_METHOD(GameSingleton::can_decrease_speed);
-	OV_BIND_METHOD(GameSingleton::get_longform_date);
 	OV_BIND_METHOD(GameSingleton::try_tick);
 
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
@@ -112,6 +93,7 @@ GameSingleton::GameSingleton()
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
+
 GameSingleton::~GameSingleton() {
 	ERR_FAIL_COND(singleton != this);
 	singleton = nullptr;
@@ -147,122 +129,6 @@ int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) 
 	const size_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_map_width();
 	const size_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_map_height();
 	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
-}
-
-Dictionary GameSingleton::get_province_info_from_index(int32_t index) const {
-	static const StringName province_info_province_key = "province";
-	static const StringName province_info_region_key = "region";
-	static const StringName province_info_slave_status_key = "slave_status";
-	static const StringName province_info_colony_status_key = "colony_status";
-	static const StringName province_info_terrain_type_key = "terrain_type";
-	static const StringName province_info_life_rating_key = "life_rating";
-	static const StringName province_info_controller_key = "controller";
-	static const StringName province_info_rgo_name_key = "rgo_name";
-	static const StringName province_info_rgo_icon_key = "rgo_icon";
-	static const StringName province_info_crime_name_key = "crime_name";
-	static const StringName province_info_crime_icon_key = "crime_icon";
-	static const StringName province_info_total_population_key = "total_population";
-	static const StringName province_info_pop_types_key = "pop_types";
-	static const StringName province_info_pop_ideologies_key = "pop_ideologies";
-	static const StringName province_info_pop_cultures_key = "pop_cultures";
-	static const StringName province_info_cores_key = "cores";
-	static const StringName province_info_buildings_key = "buildings";
-
-	Province const* province = game_manager.get_map().get_province_by_index(index);
-	if (province == nullptr) {
-		return {};
-	}
-	Dictionary ret;
-
-	ret[province_info_province_key] = std_view_to_godot_string(province->get_identifier());
-
-	Region const* region = province->get_region();
-	if (region != nullptr) {
-		ret[province_info_region_key] = std_view_to_godot_string(region->get_identifier());
-	}
-
-	ret[province_info_slave_status_key] = province->get_slave();
-
-	ret[province_info_colony_status_key] = static_cast<int32_t>(province->get_colony_status());
-
-	TerrainType const* terrain_type = province->get_terrain_type();
-	if (terrain_type != nullptr) {
-		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
-	}
-
-	ret[province_info_life_rating_key] = province->get_life_rating();
-
-	Country const* controller = province->get_controller();
-	if (controller != nullptr) {
-		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
-	}
-
-	Good const* rgo = province->get_rgo();
-	if (rgo != nullptr) {
-		ret[province_info_rgo_name_key] = std_view_to_godot_string(rgo->get_identifier());
-		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
-	}
-
-	Crime const* crime = province->get_crime();
-	if (crime != nullptr) {
-		ret[province_info_crime_name_key] = std_view_to_godot_string(crime->get_identifier());
-		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
-	}
-
-	ret[province_info_total_population_key] = province->get_total_population();
-
-	fixed_point_map_t<PopType const*> const& pop_types = province->get_pop_type_distribution();
-	if (!pop_types.empty()) {
-		ret[province_info_pop_types_key] = GFXPieChartTexture::distribution_to_slices_array(pop_types);
-	}
-
-	fixed_point_map_t<Ideology const*> const& ideologies = province->get_ideology_distribution();
-	if (!ideologies.empty()) {
-		ret[province_info_pop_ideologies_key] = GFXPieChartTexture::distribution_to_slices_array(ideologies);
-	}
-
-	fixed_point_map_t<Culture const*> const& cultures = province->get_culture_distribution();
-	if (!cultures.empty()) {
-		ret[province_info_pop_cultures_key] = GFXPieChartTexture::distribution_to_slices_array(cultures);
-	}
-
-	std::vector<Country const*> const& cores = province->get_cores();
-	if (!cores.empty()) {
-		PackedStringArray cores_array;
-		cores_array.resize(cores.size());
-		for (size_t idx = 0; idx < cores.size(); ++idx) {
-			cores_array[idx] = std_view_to_godot_string(cores[idx]->get_identifier());
-		}
-		ret[province_info_cores_key] = cores_array;
-	}
-
-	static const StringName building_info_level_key = "level";
-	static const StringName building_info_expansion_state_key = "expansion_state";
-	static const StringName building_info_start_date_key = "start_date";
-	static const StringName building_info_end_date_key = "end_date";
-	static const StringName building_info_expansion_progress_key = "expansion_progress";
-
-	std::vector<BuildingInstance> const& buildings = province->get_buildings();
-	if (!buildings.empty()) {
-		/* This system relies on the province buildings all being present in the right order. It will have to
-		 * be changed if we want to support variable combinations and permutations of province buildings. */
-		TypedArray<Dictionary> buildings_array;
-		buildings_array.resize(buildings.size());
-		for (size_t idx = 0; idx < buildings.size(); ++idx) {
-			BuildingInstance const& building = buildings[idx];
-
-			Dictionary building_dict;
-			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
-			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
-			building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
-			building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
-			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
-
-			buildings_array[idx] = building_dict;
-		}
-		ret[province_info_buildings_key] = buildings_array;
-	}
-	return ret;
 }
 
 int32_t GameSingleton::get_map_width() const {
@@ -383,81 +249,6 @@ void GameSingleton::set_selected_province(int32_t index) {
 	game_manager.get_map().set_selected_province(index);
 	_update_colour_image();
 	emit_signal(_signal_province_selected(), index);
-}
-
-int32_t GameSingleton::get_province_building_count() const {
-	return game_manager.get_economy_manager().get_building_type_manager().get_province_building_types().size();
-}
-
-String GameSingleton::get_province_building_identifier(int32_t index) const {
-	std::vector<BuildingType const*> const& province_building_types =
-		game_manager.get_economy_manager().get_building_type_manager().get_province_building_types();
-	ERR_FAIL_COND_V_MSG(
-		index < 0 || index >= province_building_types.size(), {}, vformat("Invalid province building index: %d", index)
-	);
-	return std_view_to_godot_string(province_building_types[index]->get_identifier());
-}
-
-Error GameSingleton::expand_selected_province_building(int32_t building_index) {
-	ERR_FAIL_COND_V_MSG(
-		!game_manager.expand_selected_province_building(building_index), FAILED,
-		vformat("Failed to expand the currently selected province's building index %d", building_index)
-	);
-	return OK;
-}
-
-int32_t GameSingleton::get_slave_pop_icon_index() const {
-	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_slave_sprite();
-	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Slave sprite unset!");
-	return sprite;
-}
-
-int32_t GameSingleton::get_administrative_pop_icon_index() const {
-	const PopType::sprite_t sprite = game_manager.get_pop_manager().get_administrative_sprite();
-	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Administrative sprite unset!");
-	return sprite;
-}
-
-int32_t GameSingleton::get_rgo_owner_pop_icon_index() const {
-	const PopType::sprite_t sprite = game_manager.get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
-	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
-	return sprite;
-}
-
-void GameSingleton::set_paused(bool paused) {
-	game_manager.get_simulation_clock().set_paused(paused);
-}
-
-void GameSingleton::toggle_paused() {
-	game_manager.get_simulation_clock().toggle_paused();
-}
-
-bool GameSingleton::is_paused() const {
-	return game_manager.get_simulation_clock().is_paused();
-}
-
-void GameSingleton::increase_speed() {
-	game_manager.get_simulation_clock().increase_simulation_speed();
-}
-
-void GameSingleton::decrease_speed() {
-	game_manager.get_simulation_clock().decrease_simulation_speed();
-}
-
-int32_t GameSingleton::get_speed() const {
-	return game_manager.get_simulation_clock().get_simulation_speed();
-}
-
-bool GameSingleton::can_increase_speed() const {
-	return game_manager.get_simulation_clock().can_increase_simulation_speed();
-}
-
-bool GameSingleton::can_decrease_speed() const {
-	return game_manager.get_simulation_clock().can_decrease_simulation_speed();
-}
-
-String GameSingleton::get_longform_date() const {
-	return Utilities::date_to_formatted_string(game_manager.get_today());
 }
 
 void GameSingleton::try_tick() {
