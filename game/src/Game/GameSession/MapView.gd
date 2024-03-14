@@ -44,6 +44,8 @@ var _map_shader_material : ShaderMaterial
 var _map_mesh_corner : Vector2
 var _map_mesh_dims : Vector2
 
+@export var _map_background_instance : MeshInstance3D
+
 var _mouse_pos_viewport : Vector2 = Vector2(0.5, 0.5)
 var _mouse_pos_map : Vector2 = Vector2(0.5, 0.5)
 var _viewport_dims : Vector2 = Vector2(1, 1)
@@ -56,12 +58,12 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 # editor, GDExtension, my own extension, or a combination of them.
 # This was an absolute pain to track down. --- hop311
 func _ready() -> void:
-	if _camera == null:
+	if not _camera:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
 	_zoom_target = _camera.position.y
-	if _map_mesh_instance == null:
-		push_error("MapView's _map_mesh variable hasn't been set!")
+	if not _map_mesh_instance:
+		push_error("MapView's _map_mesh_instance variable hasn't been set!")
 		return
 
 	# Shader Material
@@ -90,6 +92,18 @@ func _ready() -> void:
 	))
 
 	GameSingleton.province_selected.connect(_on_province_selected)
+
+	if not _map_background_instance:
+		push_error("MapView's _map_background_instance variable hasn't been set!")
+		return
+
+	if not _map_background_instance.mesh is PlaneMesh:
+		push_error("Invalid map background mesh class: ", _map_background_instance.mesh.get_class(), "(expected PlaneMesh)")
+		return
+	var scaled_dims : Vector3 = _map_background_instance.transform.affine_inverse() * Vector3(_map_mesh_dims.x, 0.0, _map_mesh_dims.y)
+	scaled_dims.x *= 1.0 + 2.0 * _map_mesh.get_repeat_proportion()
+	scaled_dims.z *= 2.0
+	(_map_background_instance.mesh as PlaneMesh).set_size(Vector2(scaled_dims.x, scaled_dims.z))
 
 func _notification(what : int) -> void:
 	match what:
