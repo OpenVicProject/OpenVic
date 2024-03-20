@@ -166,6 +166,15 @@ func _ready() -> void:
 	_pop_types_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/workforce_chart")
 	_pop_ideologies_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/ideology_chart")
 	_pop_cultures_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/culture_chart")
+	var population_menu_button : Button = get_button_from_nodepath(^"./province_view/province_statistics/open_popscreen")
+	if population_menu_button:
+		population_menu_button.pressed.connect(
+			func() -> void:
+				pass
+				MenuSingleton.population_menu_select_province(_selected_index)
+				_on_close_button_pressed()
+				Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.POPULATION)
+		)
 	_supply_limit_label = get_label_from_nodepath(^"./province_view/province_statistics/supply_limit_label")
 	_cores_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_statistics/core_icons")
 	if _cores_overlapping_elements_box and _cores_overlapping_elements_box.set_gui_child_element_name("province_interface", "province_core") != OK:

@@ -1,7 +1,5 @@
 #include "MenuSingleton.hpp"
 
-#include <godot_cpp/variant/utility_functions.hpp>
-
 #include <openvic-simulation/GameManager.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -14,6 +12,19 @@ using namespace OpenVic;
 
 using OpenVic::Utilities::std_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string;
+
+StringName const& MenuSingleton::_signal_population_menu_province_list_changed() {
+	static const StringName signal_population_menu_province_list_changed = "population_menu_province_list_changed";
+	return signal_population_menu_province_list_changed;
+}
+StringName const& MenuSingleton::_signal_population_menu_province_list_selected_changed() {
+	static const StringName signal_population_menu_province_list_selected_changed = "population_menu_province_list_selected_changed";
+	return signal_population_menu_province_list_selected_changed;
+}
+StringName const& MenuSingleton::_signal_population_menu_pops_changed() {
+	static const StringName signal_population_menu_pops_changed = "population_menu_pops_changed";
+	return signal_population_menu_pops_changed;
+}
 
 void MenuSingleton::_bind_methods() {
 	/* PROVINCE OVERVIEW PANEL */
@@ -35,6 +46,60 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::can_increase_speed);
 	OV_BIND_METHOD(MenuSingleton::can_decrease_speed);
 	OV_BIND_METHOD(MenuSingleton::get_longform_date);
+
+	/* POPULATION MENU */
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_province_list_row_count);
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_province_list_rows, { "start", "count" });
+	OV_BIND_METHOD(
+		MenuSingleton::population_menu_select_province_list_entry, { "select_index", "set_scroll_index" }, DEFVAL(false)
+	);
+	OV_BIND_METHOD(MenuSingleton::population_menu_select_province, { "province_index" });
+	OV_BIND_METHOD(MenuSingleton::population_menu_toggle_expanded, { "toggle_index", "emit_selected_changed" }, DEFVAL(true));
+
+	OV_BIND_METHOD(MenuSingleton::population_menu_select_sort_key, { "sort_key" });
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_rows, { "start", "count" });
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_row_count);
+
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_filter_setup_info);
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_filter_info);
+	OV_BIND_METHOD(MenuSingleton::population_menu_toggle_pop_filter, { "filter_index" });
+	OV_BIND_METHOD(MenuSingleton::population_menu_select_all_pop_filters);
+	OV_BIND_METHOD(MenuSingleton::population_menu_deselect_all_pop_filters);
+
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_distribution_setup_info);
+	OV_BIND_METHOD(MenuSingleton::get_population_menu_distribution_info);
+
+	ADD_SIGNAL(MethodInfo(_signal_population_menu_province_list_changed()));
+	ADD_SIGNAL(
+		MethodInfo(_signal_population_menu_province_list_selected_changed(), PropertyInfo(Variant::INT, "scroll_index"))
+	);
+	ADD_SIGNAL(MethodInfo(_signal_population_menu_pops_changed()));
+
+	using enum population_menu_t::ProvinceListEntry;
+	BIND_ENUM_CONSTANT(LIST_ENTRY_NONE);
+	BIND_ENUM_CONSTANT(LIST_ENTRY_COUNTRY);
+	BIND_ENUM_CONSTANT(LIST_ENTRY_STATE);
+	BIND_ENUM_CONSTANT(LIST_ENTRY_PROVINCE);
+
+	using enum population_menu_t::PopSortKey;
+	BIND_ENUM_CONSTANT(NONE);
+	BIND_ENUM_CONSTANT(SORT_SIZE);
+	BIND_ENUM_CONSTANT(SORT_TYPE);
+	BIND_ENUM_CONSTANT(SORT_CULTURE);
+	BIND_ENUM_CONSTANT(SORT_RELIGION);
+	BIND_ENUM_CONSTANT(SORT_LOCATION);
+	BIND_ENUM_CONSTANT(SORT_MILITANCY);
+	BIND_ENUM_CONSTANT(SORT_CONSCIOUSNESS);
+	BIND_ENUM_CONSTANT(SORT_IDEOLOGY);
+	BIND_ENUM_CONSTANT(SORT_ISSUES);
+	BIND_ENUM_CONSTANT(SORT_UNEMPLOYMENT);
+	BIND_ENUM_CONSTANT(SORT_CASH);
+	BIND_ENUM_CONSTANT(SORT_LIFE_NEEDS);
+	BIND_ENUM_CONSTANT(SORT_EVERYDAY_NEEDS);
+	BIND_ENUM_CONSTANT(SORT_LUXURY_NEEDS);
+	BIND_ENUM_CONSTANT(SORT_REBEL_FACTION);
+	BIND_ENUM_CONSTANT(SORT_SIZE_CHANGE);
+	BIND_ENUM_CONSTANT(SORT_LITERACY);
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {
