@@ -9,6 +9,7 @@
 
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
+#include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -115,6 +116,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	Bookmark const* bookmark = game_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index);
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.load_bookmark(bookmark);
+
 	for (Province& province : game_manager.get_map().get_provinces()) {
 		province.set_crime(
 			game_manager.get_crime_manager().get_crime_modifier_by_index(
@@ -122,6 +124,11 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 			)
 		);
 	}
+
+	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
+	ERR_FAIL_NULL_V(menu_singleton, FAILED);
+	menu_singleton->_population_menu_update_provinces();
+
 	return ERR(ret);
 }
 
