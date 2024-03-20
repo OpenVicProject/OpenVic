@@ -36,6 +36,8 @@ void GUIScrollbar::_bind_methods() {
 	OV_BIND_METHOD(GUIScrollbar::get_min_value);
 	OV_BIND_METHOD(GUIScrollbar::get_max_value);
 	OV_BIND_METHOD(GUIScrollbar::set_value, { "new_value", "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::increment_value, { "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::decrement_value, { "signal" }, DEFVAL(true));
 	OV_BIND_METHOD(GUIScrollbar::set_value_as_ratio, { "new_ratio", "signal" }, DEFVAL(true));
 
 	OV_BIND_METHOD(GUIScrollbar::is_range_limited);
@@ -464,6 +466,14 @@ void GUIScrollbar::set_value(int32_t new_value, bool signal) {
 	if (signal && value != old_value) {
 		emit_value_changed();
 	}
+}
+
+void GUIScrollbar::increment_value(bool signal) {
+	set_value(value + 1, signal);
+}
+
+void GUIScrollbar::decrement_value(bool signal) {
+	set_value(value - 1, signal);
 }
 
 float GUIScrollbar::get_value_as_ratio() const {

@@ -93,6 +93,8 @@ namespace OpenVic {
 		godot::String get_gui_scrollbar_name() const;
 
 		void set_value(int32_t new_value, bool signal = true);
+		void increment_value(bool signal = true);
+		void decrement_value(bool signal = true);
 
 		float get_value_as_ratio() const;
 		void set_value_as_ratio(float new_ratio, bool signal = true);

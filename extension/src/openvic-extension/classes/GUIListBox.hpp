@@ -14,18 +14,18 @@ namespace OpenVic {
 
 		GUIScrollbar* scrollbar;
 
-		struct child_data_t {
-			Control* child;
-			real_t start_pos, height;
-		};
-
-		std::vector<child_data_t> children_data;
-
 		/* The children_data index of the topmost visible child element. */
 		int32_t PROPERTY(scroll_index);
 		int32_t PROPERTY(max_scroll_index);
 
-		godot::Error _calculate_child_arrangement();
+		bool PROPERTY_CUSTOM_PREFIX(fixed, is);
+		int32_t PROPERTY(fixed_item_count);
+		int32_t PROPERTY(fixed_visible_items);
+		real_t PROPERTY(fixed_item_height);
+
+		static godot::StringName const& _signal_scroll_index_changed();
+
+		godot::Error _calculate_max_scroll_index(bool signal);
 		godot::Error _update_child_positions();
 
 	protected:
@@ -42,10 +42,13 @@ namespace OpenVic {
 		/* Reset gui_listbox to nullptr, and remove all child elements. */
 		void clear();
 
-		/* Remove all child elements except for the scrollbar. */
-		void clear_children();
+		/* Remove child elements until there are remaining_child_count left excluding the scrollbar. */
+		void clear_children(int32_t remaining_child_count = 0);
 
-		void set_scroll_index(int32_t new_scroll_index);
+		void set_scroll_index(int32_t new_scroll_index, bool signal = true);
+
+		godot::Error set_fixed(int32_t item_count, real_t item_height, bool signal = true);
+		godot::Error unset_fixed(bool signal = true);
 
 		/* Set the GUI::ListBox. This does not affect any existing child elements. */
 		godot::Error set_gui_listbox(GUI::ListBox const* new_gui_listbox);
