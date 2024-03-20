@@ -347,11 +347,11 @@ static bool generate_button(generate_gui_args_t&& args) {
 				Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
 				if (button_state_texture.is_valid()) {
 					ret &= add_theme_stylebox(
-						godot_button, button_state_texture->get_button_state_theme(), button_state_texture
+						godot_button, button_state_texture->get_button_state_name(), button_state_texture
 					);
 				} else {
 					UtilityFunctions::push_error(
-						"Failed to make ", GFXButtonStateTexture::button_state_to_theme_name(button_state),
+						"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
 						" GFXButtonStateTexture for GUI button ", button_name
 					);
 					ret = false;

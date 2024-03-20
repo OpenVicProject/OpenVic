@@ -39,14 +39,15 @@ void GFXButtonStateTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXButtonStateTexture::set_button_state, { "new_button_state" });
 	OV_BIND_METHOD(GFXButtonStateTexture::get_button_state);
 
-	OV_BIND_SMETHOD(button_state_to_theme_name, { "button_state" });
-	OV_BIND_METHOD(GFXButtonStateTexture::get_button_state_theme);
+	OV_BIND_SMETHOD(button_state_to_name, { "button_state" });
+	OV_BIND_METHOD(GFXButtonStateTexture::get_button_state_name);
 
 	OV_BIND_METHOD(GFXButtonStateTexture::generate_state_image, { "source_image" });
 
 	BIND_ENUM_CONSTANT(HOVER);
 	BIND_ENUM_CONSTANT(PRESSED);
 	BIND_ENUM_CONSTANT(DISABLED);
+	BIND_ENUM_CONSTANT(SELECTED);
 }
 
 GFXButtonStateTexture::GFXButtonStateTexture() : button_state { HOVER }, state_image {}, state_texture {} {}
@@ -67,7 +68,10 @@ Ref<GFXButtonStateTexture> GFXButtonStateTexture::make_gfx_button_state_texture(
 }
 
 void GFXButtonStateTexture::set_button_state(ButtonState new_button_state) {
-	ERR_FAIL_COND(new_button_state != HOVER && new_button_state != PRESSED && new_button_state != DISABLED);
+	ERR_FAIL_COND(
+		new_button_state != HOVER && new_button_state != PRESSED &&
+		new_button_state != DISABLED && new_button_state != SELECTED
+	);
 	button_state = new_button_state;
 }
 
@@ -106,8 +110,15 @@ Error GFXButtonStateTexture::generate_state_image(
 		const float luma = colour.get_luminance();
 		return { luma, luma, luma, colour.a };
 	};
+	static constexpr auto selected_colour = [](Color const& colour) -> Color {
+		return { std::max(colour.r - 0.3f, 0.0f), std::max(colour.g - 0.3f, 0.0f), std::max(colour.b - 0.3f, 0.0f), colour.a };
+	};
 
-	const auto colour_func = button_state == HOVER ? hover_colour : button_state == PRESSED ? pressed_colour : disabled_colour;
+	const auto colour_func =
+		button_state == HOVER ? hover_colour :
+		button_state == PRESSED ? pressed_colour :
+		button_state == DISABLED ? disabled_colour :
+		selected_colour;
 
 	for (Vector2i point { 0, 0 }; point.y < state_image->get_height(); ++point.y) {
 		for (point.x = 0; point.x < state_image->get_width(); ++point.x) {
@@ -123,25 +134,28 @@ Error GFXButtonStateTexture::generate_state_image(
 	return OK;
 }
 
-StringName const& GFXButtonStateTexture::button_state_to_theme_name(ButtonState button_state) {
-	static const StringName theme_name_hover = "hover";
-	static const StringName theme_name_pressed = "pressed";
-	static const StringName theme_name_disabled = "disabled";
-	static const StringName theme_name_error = "INVALID BUTTON STATE";
+StringName const& GFXButtonStateTexture::button_state_to_name(ButtonState button_state) {
+	static const StringName name_hover = "hover";
+	static const StringName name_pressed = "pressed";
+	static const StringName name_disabled = "disabled";
+	static const StringName name_selected = "selected";
+	static const StringName name_error = "INVALID BUTTON STATE";
 	switch (button_state) {
 		case HOVER:
-			return theme_name_hover;
+			return name_hover;
 		case PRESSED:
-			return theme_name_pressed;
+			return name_pressed;
 		case DISABLED:
-			return theme_name_disabled;
+			return name_disabled;
+		case SELECTED:
+			return name_selected;
 		default:
-			return theme_name_error;
+			return name_error;
 	}
 }
 
-StringName const& GFXButtonStateTexture::get_button_state_theme() const {
-	return button_state_to_theme_name(button_state);
+StringName const& GFXButtonStateTexture::get_button_state_name() const {
+	return button_state_to_name(button_state);
 }
 
 void GFXButtonStateHavingTexture::_bind_methods() {

@@ -394,7 +394,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 			for (GFXButtonStateTexture::ButtonState state : { HOVER, PRESSED }) {
 				ERR_FAIL_NULL_V_MSG(texture->get_button_state_texture(state), false, vformat(
 					"Failed to generate %s texture for %s element %s for GUIScrollbar %s!",
-					GFXButtonStateTexture::button_state_to_theme_name(state), target, element_name, gui_scrollbar_name
+					GFXButtonStateTexture::button_state_to_name(state), target, element_name, gui_scrollbar_name
 				));
 			}
 		}
