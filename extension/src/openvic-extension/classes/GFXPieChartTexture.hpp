@@ -29,15 +29,17 @@ namespace OpenVic {
 	public:
 		GFXPieChartTexture();
 
+		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
+
 		/* Set slices given an Array of Dictionaries, each with the following key-value entries:
 		 *  - colour: Color
 		 *  - weight: float */
-		godot::Error set_slices_array(godot::TypedArray<godot::Dictionary> const& new_slices);
+		godot::Error set_slices_array(godot_pie_chart_data_t const& new_slices);
 
 		/* Generate slice data from a distribution of HasIdentifierAndColour derived objects, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<std::derived_from<HasIdentifierAndColour> T>
-		static godot::TypedArray<godot::Dictionary> distribution_to_slices_array(fixed_point_map_t<T const*> const& dist) {
+		static godot_pie_chart_data_t distribution_to_slices_array(fixed_point_map_t<T const*> const& dist) {
 			using namespace godot;
 			using entry_t = std::pair<T const*, fixed_point_t>;
 			std::vector<entry_t> sorted_dist;
@@ -49,9 +51,9 @@ namespace OpenVic {
 				sorted_dist.push_back(entry);
 			}
 			std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
-				return lhs.second < rhs.second;
+				return lhs.first < rhs.first;
 			});
-			TypedArray<Dictionary> array;
+			godot_pie_chart_data_t array;
 			for (auto const& [key, val] : sorted_dist) {
 				Dictionary sub_dict;
 				sub_dict[_slice_identifier_key()] = Utilities::std_view_to_godot_string(key->get_identifier());

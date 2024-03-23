@@ -177,8 +177,13 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
 			);
 
+			static constexpr double MIN_VALUE = 0.0, MAX_VALUE = 1.0;
+			static constexpr uint32_t STEPS = 100;
+
 			godot_progress_bar->set_nine_patch_stretch(true);
-			godot_progress_bar->set_max(1.0);
+			godot_progress_bar->set_step((MAX_VALUE - MIN_VALUE) / STEPS);
+			godot_progress_bar->set_min(MIN_VALUE);
+			godot_progress_bar->set_max(MAX_VALUE);
 
 			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
 
@@ -342,11 +347,11 @@ static bool generate_button(generate_gui_args_t&& args) {
 				Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
 				if (button_state_texture.is_valid()) {
 					ret &= add_theme_stylebox(
-						godot_button, button_state_texture->get_button_state_theme(), button_state_texture
+						godot_button, button_state_texture->get_button_state_name(), button_state_texture
 					);
 				} else {
 					UtilityFunctions::push_error(
-						"Failed to make ", GFXButtonStateTexture::button_state_to_theme_name(button_state),
+						"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
 						" GFXButtonStateTexture for GUI button ", button_name
 					);
 					ret = false;
@@ -435,7 +440,12 @@ static bool generate_text(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(godot_label, false, vformat("Failed to create Label for GUI text %s", text_name));
 
 	godot_label->set_text(std_view_to_godot_string(text.get_text()));
-	godot_label->set_custom_minimum_size(Utilities::to_godot_fvec2(text.get_max_size()));
+
+	static const Vector2 default_padding { 1.0f, 0.0f };
+	const Vector2 border_size = Utilities::to_godot_fvec2(text.get_border_size()) + default_padding;
+	const Vector2 max_size = Utilities::to_godot_fvec2(text.get_max_size());
+	godot_label->set_position(godot_label->get_position() + border_size);
+	godot_label->set_custom_minimum_size(max_size - 2 * border_size);
 
 	using enum GUI::AlignedElement::format_t;
 	static const ordered_map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {

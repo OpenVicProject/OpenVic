@@ -32,6 +32,7 @@ namespace OpenVic {
 			HOVER,
 			PRESSED,
 			DISABLED,
+			SELECTED,
 			BUTTON_STATE_COUNT
 		};
 
@@ -62,8 +63,8 @@ namespace OpenVic {
 			godot::Vector2i const& new_cornered_tile_border_size
 		);
 
-		static godot::StringName const& button_state_to_theme_name(ButtonState button_state);
-		godot::StringName const& get_button_state_theme() const;
+		static godot::StringName const& button_state_to_name(ButtonState button_state);
+		godot::StringName const& get_button_state_name() const;
 	};
 
 	class GFXButtonStateHavingTexture : public GFXCorneredTileSupportingTexture {

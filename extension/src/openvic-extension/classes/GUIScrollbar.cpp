@@ -36,6 +36,8 @@ void GUIScrollbar::_bind_methods() {
 	OV_BIND_METHOD(GUIScrollbar::get_min_value);
 	OV_BIND_METHOD(GUIScrollbar::get_max_value);
 	OV_BIND_METHOD(GUIScrollbar::set_value, { "new_value", "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::increment_value, { "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::decrement_value, { "signal" }, DEFVAL(true));
 	OV_BIND_METHOD(GUIScrollbar::set_value_as_ratio, { "new_ratio", "signal" }, DEFVAL(true));
 
 	OV_BIND_METHOD(GUIScrollbar::is_range_limited);
@@ -394,7 +396,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 			for (GFXButtonStateTexture::ButtonState state : { HOVER, PRESSED }) {
 				ERR_FAIL_NULL_V_MSG(texture->get_button_state_texture(state), false, vformat(
 					"Failed to generate %s texture for %s element %s for GUIScrollbar %s!",
-					GFXButtonStateTexture::button_state_to_theme_name(state), target, element_name, gui_scrollbar_name
+					GFXButtonStateTexture::button_state_to_name(state), target, element_name, gui_scrollbar_name
 				));
 			}
 		}
@@ -464,6 +466,14 @@ void GUIScrollbar::set_value(int32_t new_value, bool signal) {
 	if (signal && value != old_value) {
 		emit_value_changed();
 	}
+}
+
+void GUIScrollbar::increment_value(bool signal) {
+	set_value(value + 1, signal);
+}
+
+void GUIScrollbar::decrement_value(bool signal) {
+	set_value(value - 1, signal);
 }
 
 float GUIScrollbar::get_value_as_ratio() const {

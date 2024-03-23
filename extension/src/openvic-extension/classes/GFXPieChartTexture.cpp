@@ -23,7 +23,7 @@ StringName const& GFXPieChartTexture::_slice_weight_key() {
 	return slice_weight_key;
 }
 
-static constexpr float PI = std::numbers::pi_v<float>;
+static constexpr float TWO_PI = 2.0f * std::numbers::pi_v<float>;
 
 Error GFXPieChartTexture::_generate_pie_chart_image() {
 	ERR_FAIL_NULL_V(gfx_pie_chart, FAILED);
@@ -31,40 +31,57 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 		gfx_pie_chart->get_size() <= 0, FAILED,
 		vformat("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
 	);
+
 	const int32_t pie_chart_size = 2 * gfx_pie_chart->get_size();
+
 	/* Whether we've already set the ImageTexture to an image of the right dimensions,
 	 * and so can update it without creating and setting a new image, or not. */
 	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_size
 		&& pie_chart_image->get_height() == pie_chart_size;
+
 	if (!can_update) {
 		pie_chart_image = Image::create(pie_chart_size, pie_chart_size, false, Image::FORMAT_RGBA8);
 		ERR_FAIL_NULL_V(pie_chart_image, FAILED);
 	}
 
 	static const Color background_colour { 0.0f, 0.0f, 0.0f, 0.0f };
+
 	if (!slices.empty()) {
 		const float pie_chart_radius = gfx_pie_chart->get_size();
+
 		const Vector2 centre_translation = Vector2 { 0.5f, 0.5f } - static_cast<Vector2>(pie_chart_image->get_size()) * 0.5f;
+
 		for (Vector2i point { 0, 0 }; point.y < pie_chart_image->get_height(); ++point.y) {
+
 			for (point.x = 0; point.x < pie_chart_image->get_width(); ++point.x) {
+
 				const Vector2 offset = centre_translation + point;
+
 				if (offset.length() <= pie_chart_radius) {
-					float theta = 0.5f * PI + atan2(offset.y, offset.x);
+
+					/* Calculate the anti-clockwise angle between the point and the centre of the image.
+					 * The y coordinate is negated as the image coordinate system's y increases downwards. */
+					float theta = atan2(-offset.y, offset.x);
 					if (theta < 0.0f) {
-						theta += 2.0f * PI;
+						theta += TWO_PI;
 					}
+
 					/* Rescale angle so that total_weight is a full rotation. */
-					theta *= total_weight / (2.0f * PI);
+					theta *= total_weight / TWO_PI;
+
+					/* Default to the first colour in case theta never reaches 0 due to floating point inaccuracy. */
 					Color colour = slices.front().first;
+
 					/* Find the slice theta lies in. */
 					for (slice_t const& slice : slices) {
-						if (theta <= slice.second) {
+						theta -= slice.second;
+
+						if (theta <= 0.0f) {
 							colour = slice.first;
 							break;
-						} else {
-							theta -= slice.second;
 						}
 					}
+
 					pie_chart_image->set_pixelv(point, colour);
 				} else {
 					pie_chart_image->set_pixelv(point, background_colour);
@@ -72,7 +89,9 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 			}
 		}
 	} else {
+
 		pie_chart_image->fill(background_colour);
+
 	}
 
 	if (can_update) {
@@ -80,10 +99,11 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 	} else {
 		set_image(pie_chart_image);
 	}
+
 	return OK;
 }
 
-Error GFXPieChartTexture::set_slices_array(TypedArray<Dictionary> const& new_slices) {
+Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_slices) {
 	slices.clear();
 	total_weight = 0.0f;
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
@@ -92,7 +112,9 @@ Error GFXPieChartTexture::set_slices_array(TypedArray<Dictionary> const& new_sli
 			!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()), vformat("Invalid slice keys at index %d", i)
 		);
 		slice_t slice = std::make_pair(slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]);
-		ERR_CONTINUE_MSG(slice.second <= 0.0f, vformat("Invalid slice values at index %d", i));
+		ERR_CONTINUE_MSG(
+			slice.second <= 0.0f, vformat("Invalid slice values at index %d \"%s\"", i, slice_dict[_slice_identifier_key()])
+		);
 		total_weight += slice.second;
 		slices.emplace_back(std::move(slice));
 	}
