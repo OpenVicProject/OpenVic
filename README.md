@@ -8,6 +8,9 @@ For detailed instructions, view the Contributor Quickstart Guide [here](docs/con
 * [Godot 4.2.1](https://github.com/godotengine/godot/releases/tag/4.2.1-stable)
 * [scons](https://scons.org/)
 
+> [!WARNING]
+> If you are using Arch Linux, do not use the Arch repo package, it is known to break under some GDExtensions, use the official release file.
+
 See [System Requirements](docs/contribution/system-requirements.md).
 
 ## Repo Setup
