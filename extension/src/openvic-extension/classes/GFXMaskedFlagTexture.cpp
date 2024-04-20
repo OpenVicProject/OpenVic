@@ -34,7 +34,7 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 		set_region({ {}, button_image->get_size() });
 	}
 
-	if (mask_image.is_valid() && flag_image.is_valid()) {
+	if (mask_image.is_valid() && flag_image.is_valid() && flag_image_rect.has_area()) {
 		const Vector2i centre_translation = (mask_image->get_size() - button_image->get_size()) / 2;
 		for (Vector2i combined_image_point { 0, 0 }; combined_image_point.y < button_image->get_height(); ++combined_image_point.y) {
 			for (combined_image_point.x = 0; combined_image_point.x < button_image->get_width(); ++combined_image_point.x) {
@@ -46,10 +46,14 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 					0 <= mask_image_point.y && mask_image_point.y < mask_image->get_height()
 				) {
 					const Color mask_image_colour = mask_image->get_pixelv(mask_image_point);
+
 					// Rescale from mask_image to flag_image coordinates.
-					const Vector2i flag_image_point = mask_image_point * flag_image->get_size() / mask_image->get_size();
+					const Vector2i flag_image_point =
+						flag_image_rect.position + mask_image_point * flag_image_rect.size / mask_image->get_size();
+
 					Color flag_image_colour = flag_image->get_pixelv(flag_image_point);
 					flag_image_colour.a = mask_image_colour.a;
+
 					button_image->set_pixelv(combined_image_point, flag_image_colour.blend(overlay_image_colour));
 				} else {
 					button_image->set_pixelv(combined_image_point, overlay_image_colour);
@@ -157,12 +161,12 @@ Error GFXMaskedFlagTexture::set_flag_country_and_type(Country const* new_flag_co
 		GameSingleton* game_singleton = GameSingleton::get_singleton();
 		ERR_FAIL_NULL_V(game_singleton, FAILED);
 
-		const Ref<Image> new_flag_image = game_singleton->get_flag_image(new_flag_country, new_flag_type);
-		ERR_FAIL_NULL_V(new_flag_image, FAILED);
+		flag_image_rect = game_singleton->get_flag_sheet_rect(new_flag_country->get_index(), new_flag_type);
+		ERR_FAIL_COND_V(!flag_image_rect.has_area(), FAILED);
 
 		flag_country = new_flag_country;
 		flag_type = new_flag_type;
-		flag_image = new_flag_image;
+		flag_image = game_singleton->get_flag_sheet_image();
 	} else {
 		// TODO - use REB flag as default/error flag
 		flag_country = nullptr;

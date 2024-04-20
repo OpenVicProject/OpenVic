@@ -14,6 +14,7 @@ namespace OpenVic {
 		godot::StringName PROPERTY(flag_type);
 
 		godot::Ref<godot::Image> overlay_image, mask_image, flag_image;
+		godot::Rect2i flag_image_rect;
 		godot::Ref<godot::ImageTexture> combined_texture;
 
 		godot::Error _generate_combined_image();

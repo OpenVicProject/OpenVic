@@ -54,6 +54,8 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_map_dims);
 	OV_BIND_METHOD(GameSingleton::get_map_aspect_ratio);
 	OV_BIND_METHOD(GameSingleton::get_terrain_texture);
+	OV_BIND_METHOD(GameSingleton::get_flag_dims);
+	OV_BIND_METHOD(GameSingleton::get_flag_sheet_texture);
 	OV_BIND_METHOD(GameSingleton::get_province_shape_image_subdivisions);
 	OV_BIND_METHOD(GameSingleton::get_province_shape_texture);
 	OV_BIND_METHOD(GameSingleton::get_province_colour_texture);
@@ -158,19 +160,36 @@ Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
 	return terrain_texture;
 }
 
-Ref<Image> GameSingleton::get_flag_image(Country const* country, StringName const& flag_type) const {
-	ERR_FAIL_NULL_V(country, nullptr);
-	const typename decltype(flag_image_map)::const_iterator it = flag_image_map.find(country);
+Ref<Image> GameSingleton::get_flag_sheet_image() const {
+	return flag_sheet_image;
+}
+
+Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
+	return flag_sheet_texture;
+}
+
+int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const {
 	ERR_FAIL_COND_V_MSG(
-		it == flag_image_map.end(), nullptr,
-		vformat("Failed to find flags for country: %s", std_view_to_godot_string(country->get_identifier()))
+		country_index < 0 || country_index >= game_manager.get_country_manager().get_country_count(), -1,
+		vformat("Invalid country index: %d", country_index)
 	);
-	const typename decltype(it->second)::const_iterator it2 = it->second.find(flag_type);
+
+	const typename decltype(flag_type_index_map)::const_iterator it = flag_type_index_map.find(flag_type);
+	ERR_FAIL_COND_V_MSG(it == flag_type_index_map.end(), -1, vformat("Invalid flag type %s", flag_type));
+
+	return flag_type_index_map.size() * country_index + it->second;
+}
+
+Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
 	ERR_FAIL_COND_V_MSG(
-		it2 == it->second.end(), nullptr,
-		vformat("Failed to find %s flag for country: %s", flag_type, std_view_to_godot_string(country->get_identifier()))
+		flag_index < 0 || flag_index >= flag_sheet_count, {}, vformat("Invalid flag sheet index: %d", flag_index)
 	);
-	return it2->second;
+
+	return { Vector2i { flag_index % flag_sheet_dims.x, flag_index / flag_sheet_dims.x } * flag_dims, flag_dims };
+}
+
+Rect2i GameSingleton::get_flag_sheet_rect(int32_t country_index, godot::StringName const& flag_type) const {
+	return get_flag_sheet_rect(get_flag_sheet_index(country_index, flag_type));
 }
 
 Vector2i GameSingleton::get_province_shape_image_subdivisions() const {
@@ -383,50 +402,115 @@ Error GameSingleton::_load_terrain_variants() {
 	return OK;
 }
 
-Error GameSingleton::_load_flag_images() {
-	ERR_FAIL_COND_V_MSG(!flag_image_map.empty(), FAILED, "Flag images have already been loaded!");
+const Vector2i GameSingleton::flag_dims { 128, 64 };
+
+Error GameSingleton::_load_flag_sheet() {
+	ERR_FAIL_COND_V_MSG(
+		flag_sheet_image.is_valid() || flag_sheet_texture.is_valid(), FAILED,
+		"Flag sheet image and/or texture has already been generated!"
+	);
 
 	GovernmentTypeManager const& government_type_manager = game_manager.get_politics_manager().get_government_type_manager();
 	ERR_FAIL_COND_V_MSG(
-		!government_type_manager.government_types_are_locked(), FAILED,
-		"Cannot load flag images before government types are locked!"
+		government_type_manager.get_flag_types().empty() || !government_type_manager.government_types_are_locked(), FAILED,
+		"Cannot load flag images if flag types are empty or government types are not locked!"
 	);
 	CountryManager const& country_manager = game_manager.get_country_manager();
 	ERR_FAIL_COND_V_MSG(
-		!country_manager.countries_are_locked(), FAILED, "Cannot load flag images before countries are locked!"
+		country_manager.countries_empty() || !country_manager.countries_are_locked(), FAILED,
+		"Cannot load flag images if countries are empty or not locked!"
 	);
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-	static const String flag_directory = "gfx/flags/";
-	static const String flag_separator = "_";
-	static const String flag_extension = ".tga";
-
-	std::vector<StringName> flag_types;
+	/* Generate flag type - index lookup map */
+	flag_type_index_map.clear();
 	for (std::string const& type : government_type_manager.get_flag_types()) {
-		flag_types.emplace_back(std_to_godot_string_name(type));
+		flag_type_index_map.emplace(std_to_godot_string_name(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
-	flag_image_map.reserve(country_manager.get_countries().size());
+	flag_sheet_count = country_manager.get_countries().size() * flag_type_index_map.size();
+
+	std::vector<Ref<Image>> flag_images;
+	flag_images.reserve(flag_sheet_count);
+
+	static constexpr Image::Format flag_format = Image::FORMAT_RGB8;
 
 	Error ret = OK;
 	for (Country const& country : country_manager.get_countries()) {
-		ordered_map<StringName, Ref<Image>>& flag_images = flag_image_map[&country];
-		flag_images.reserve(flag_types.size());
 		const String country_name = std_view_to_godot_string(country.get_identifier());
-		for (StringName const& flag_type : flag_types) {
+
+		for (auto const& [flag_type, flag_type_index] : flag_type_index_map) {
+			static const String flag_directory = "gfx/flags/";
+			static const String flag_separator = "_";
+			static const String flag_extension = ".tga";
+
 			const StringName flag_path =
 				flag_directory + country_name + (flag_type.is_empty() ? "" : flag_separator + flag_type) + flag_extension;
-			const Ref<Image> flag_image = asset_manager->get_image(flag_path);
+
+			/* Do not cache flag image, they should be freed after the flag sheet has been generated. */
+			const Ref<Image> flag_image = asset_manager->get_image(flag_path, AssetManager::LOAD_FLAG_NONE);
+
 			if (flag_image.is_valid()) {
-				flag_images.emplace(flag_type, flag_image);
+
+				if (flag_image->get_format() != flag_format) {
+					flag_image->convert(flag_format);
+				}
+
+				if (flag_image->get_size() != flag_dims) {
+					if (flag_image->get_width() > flag_dims.x || flag_image->get_height() > flag_dims.y) {
+						UtilityFunctions::push_warning(
+							"Flag image ", flag_path, " (", flag_image->get_size(), ") is larger than the sheet flag size (",
+							flag_dims, ")"
+						);
+					}
+
+					flag_image->resize(flag_dims.x, flag_dims.y, Image::INTERPOLATE_NEAREST);
+				}
 			} else {
 				UtilityFunctions::push_error("Failed to load flag image: ", flag_path);
 				ret = FAILED;
 			}
+
+			/* Add flag_image to the vector even if it's null to ensure each flag has the right index. */
+			flag_images.push_back(flag_image);
 		}
 	}
+
+	ERR_FAIL_COND_V(flag_images.size() != flag_sheet_count, FAILED);
+
+	/* Calculate the width that will make the sheet as close to a square as possible (taking flag dimensions into account.) */
+	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil();
+
+	/* Calculated corresponding height (rounded up). */
+	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1 ) / flag_sheet_dims.x;
+
+	const Vector2i sheet_dims = flag_sheet_dims * flag_dims;
+
+	flag_sheet_image = Image::create(sheet_dims.x, sheet_dims.y, false, flag_format);
+	ERR_FAIL_NULL_V_MSG(flag_sheet_image, FAILED, "Failed to create flag sheet image!");
+
+	static const Rect2i flag_rect { { 0, 0 }, flag_dims };
+
+	/* Fill the flag sheet with the flag images. */
+	for (int32_t index = 0; index < flag_images.size(); ++index) {
+		Ref<Image> const& flag_image = flag_images[index];
+
+		const Vector2i sheet_pos = Vector2i { index % flag_sheet_dims.x, index / flag_sheet_dims.x } * flag_dims;
+
+		if (flag_image.is_valid()) {
+			flag_sheet_image->blit_rect(flag_image, flag_rect, sheet_pos);
+		} else {
+			static const Color error_colour { 1.0f, 0.0f, 1.0f, 1.0f }; /* Magenta */
+
+			flag_sheet_image->fill_rect({ sheet_pos, flag_dims }, error_colour);
+		}
+	}
+
+	flag_sheet_texture = ImageTexture::create_from_image(flag_sheet_image);
+	ERR_FAIL_NULL_V_MSG(flag_sheet_texture, FAILED, "Failed to create flag sheet texture!");
+
 	return ret;
 }
 
@@ -450,8 +534,8 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
 	}
-	if (_load_flag_images() != OK) {
-		UtilityFunctions::push_error("Failed to load flag textures!");
+	if (_load_flag_sheet() != OK) {
+		UtilityFunctions::push_error("Failed to load flag sheet!");
 		err = FAILED;
 	}
 	if (_load_map_images() != OK) {
