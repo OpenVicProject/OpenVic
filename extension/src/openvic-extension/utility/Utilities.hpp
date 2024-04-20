@@ -41,11 +41,15 @@ namespace OpenVic::Utilities {
 		return { colour.redf(), colour.greenf(), colour.bluef(), colour.alphaf() };
 	}
 
-	_FORCE_INLINE_ godot::Vector2i to_godot_ivec2(ivec2_t vec) {
+	_FORCE_INLINE_ godot::Vector2i to_godot_ivec2(ivec2_t const& vec) {
 		return { vec.x, vec.y };
 	}
 
-	_FORCE_INLINE_ godot::Vector2 to_godot_fvec2(fvec2_t vec) {
+	_FORCE_INLINE_ godot::Vector2 to_godot_fvec2(fvec2_t const& vec) {
+		return { vec.x, vec.y };
+	}
+
+	_FORCE_INLINE_ ivec2_t from_godot_ivec2(godot::Vector2i const& vec) {
 		return { vec.x, vec.y };
 	}
 

@@ -51,6 +51,7 @@ void GameSingleton::_bind_methods() {
 
 	OV_BIND_METHOD(GameSingleton::get_map_width);
 	OV_BIND_METHOD(GameSingleton::get_map_height);
+	OV_BIND_METHOD(GameSingleton::get_map_dims);
 	OV_BIND_METHOD(GameSingleton::get_map_aspect_ratio);
 	OV_BIND_METHOD(GameSingleton::get_terrain_texture);
 	OV_BIND_METHOD(GameSingleton::get_province_shape_image_subdivisions);
@@ -133,9 +134,8 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 }
 
 int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
-	const size_t x_mod_w = UtilityFunctions::fposmod(coords.x, 1.0f) * get_map_width();
-	const size_t y_mod_h = UtilityFunctions::fposmod(coords.y, 1.0f) * get_map_height();
-	return game_manager.get_map().get_province_index_at(x_mod_w, y_mod_h);
+	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();
+	return game_manager.get_map().get_province_index_at(Utilities::from_godot_ivec2(pos));
 }
 
 int32_t GameSingleton::get_map_width() const {
@@ -144,6 +144,10 @@ int32_t GameSingleton::get_map_width() const {
 
 int32_t GameSingleton::get_map_height() const {
 	return game_manager.get_map().get_height();
+}
+
+Vector2i GameSingleton::get_map_dims() const {
+	return Utilities::to_godot_ivec2(game_manager.get_map().get_dims());
 }
 
 float GameSingleton::get_map_aspect_ratio() const {

@@ -61,6 +61,7 @@ namespace OpenVic {
 
 		int32_t get_map_width() const;
 		int32_t get_map_height() const;
+		godot::Vector2i get_map_dims() const;
 		float get_map_aspect_ratio() const;
 
 		/* The cosmetic terrain textures stored in a Texture2DArray. */
