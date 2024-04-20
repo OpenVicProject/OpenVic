@@ -92,7 +92,7 @@ bool MapMesh::is_valid_uv_coord(godot::Vector2 const& uv) const {
 
 Array MapMesh::_create_mesh_array() const {
 	Array arr;
-	arr.resize(Mesh::ARRAY_MAX);
+	ERR_FAIL_COND_V(arr.resize(Mesh::ARRAY_MAX) != OK, {});
 
 	const int32_t vertex_count = (subdivide_w + 2) * (subdivide_d + 2);
 	const int32_t indice_count = (subdivide_w + 1) * (subdivide_d + 1) * 6;
@@ -103,11 +103,11 @@ Array MapMesh::_create_mesh_array() const {
 	PackedVector2Array uvs;
 	PackedInt32Array indices;
 
-	points.resize(vertex_count);
-	normals.resize(vertex_count);
-	tangents.resize(vertex_count * 4);
-	uvs.resize(vertex_count);
-	indices.resize(indice_count);
+	ERR_FAIL_COND_V(points.resize(vertex_count) != OK, {});
+	ERR_FAIL_COND_V(normals.resize(vertex_count) != OK, {});
+	ERR_FAIL_COND_V(tangents.resize(vertex_count * 4) != OK, {});
+	ERR_FAIL_COND_V(uvs.resize(vertex_count) != OK, {});
+	ERR_FAIL_COND_V(indices.resize(indice_count) != OK, {});
 
 	static const Vector3 normal { 0.0f, 1.0f, 0.0f };
 	const Size2 uv_size { 1.0f + 2.0f * repeat_proportion, 1.0f };
@@ -153,11 +153,11 @@ Array MapMesh::_create_mesh_array() const {
 		thisrow = point_index;
 	}
 
-	arr[Mesh::ARRAY_VERTEX] = points;
-	arr[Mesh::ARRAY_NORMAL] = normals;
-	arr[Mesh::ARRAY_TANGENT] = tangents;
-	arr[Mesh::ARRAY_TEX_UV] = uvs;
-	arr[Mesh::ARRAY_INDEX] = indices;
+	arr[Mesh::ARRAY_VERTEX] = std::move(points);
+	arr[Mesh::ARRAY_NORMAL] = std::move(normals);
+	arr[Mesh::ARRAY_TANGENT] = std::move(tangents);
+	arr[Mesh::ARRAY_TEX_UV] = std::move(uvs);
+	arr[Mesh::ARRAY_INDEX] = std::move(indices);
 
 	return arr;
 }

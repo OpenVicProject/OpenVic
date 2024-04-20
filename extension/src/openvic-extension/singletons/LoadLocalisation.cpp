@@ -111,7 +111,7 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	ERR_FAIL_COND_V_MSG(
 		!DirAccess::dir_exists_absolute(dir_path), FAILED, vformat("Localisation directory does not exist: %s", dir_path)
 	);
-	PackedStringArray const dirs = DirAccess::get_directories_at(dir_path);
+	const PackedStringArray dirs = DirAccess::get_directories_at(dir_path);
 	ERR_FAIL_COND_V_MSG(
 		dirs.size() < 1, FAILED, vformat("Localisation directory does not contain any sub-directories: %s", dir_path)
 	);
