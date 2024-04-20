@@ -339,7 +339,7 @@ Error GameSingleton::_load_terrain_variants() {
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 	// Load the terrain texture sheet and prepare to slice it up
-	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path);
+	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path, AssetManager::LOAD_FLAG_NONE);
 	ERR_FAIL_NULL_V_MSG(terrain_sheet, FAILED, vformat("Failed to load terrain texture sheet: %s", terrain_texturesheet_path));
 
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
