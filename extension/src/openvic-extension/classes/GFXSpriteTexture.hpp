@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/atlas_texture.hpp>
 
-#include <openvic-simulation/interface/GFX.hpp>
+#include <openvic-simulation/interface/GFXSprite.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 

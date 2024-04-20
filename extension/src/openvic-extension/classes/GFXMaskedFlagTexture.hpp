@@ -1,7 +1,7 @@
 #pragma once
 
 #include <openvic-simulation/country/Country.hpp>
-#include <openvic-simulation/interface/GFX.hpp>
+#include <openvic-simulation/interface/GFXSprite.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 

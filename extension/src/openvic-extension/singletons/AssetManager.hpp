@@ -5,7 +5,7 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
-#include <openvic-simulation/interface/GFX.hpp>
+#include <openvic-simulation/interface/GFXSprite.hpp>
 
 namespace OpenVic {
 	class AssetManager : public godot::Object {

@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/control.hpp>
 
-#include <openvic-simulation/interface/GFX.hpp>
+#include <openvic-simulation/interface/GFXSprite.hpp>
 #include <openvic-simulation/interface/GUI.hpp>
 
 namespace OpenVic::UITools {
