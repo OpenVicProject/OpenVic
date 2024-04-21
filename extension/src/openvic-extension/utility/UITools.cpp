@@ -187,10 +187,12 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
 
+			using enum AssetManager::LoadFlags;
+
 			Ref<ImageTexture> back_texture;
 			if (!progress_bar->get_back_texture_file().empty()) {
 				const StringName back_texture_file = std_view_to_godot_string_name(progress_bar->get_back_texture_file());
-				back_texture = args.asset_manager.get_texture(back_texture_file, true);
+				back_texture = args.asset_manager.get_texture(back_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 				if (back_texture.is_null()) {
 					UtilityFunctions::push_error(
 						"Failed to load progress bar sprite back texture ", back_texture_file, " for GUI icon ", icon_name
@@ -221,11 +223,14 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			Ref<ImageTexture> progress_texture;
 			if (!progress_bar->get_progress_texture_file().empty()) {
-				const StringName progress_texture_file = std_view_to_godot_string_name(progress_bar->get_progress_texture_file());
-				progress_texture = args.asset_manager.get_texture(progress_texture_file, true);
+				const StringName progress_texture_file =
+					std_view_to_godot_string_name(progress_bar->get_progress_texture_file());
+				progress_texture =
+					args.asset_manager.get_texture(progress_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 				if (progress_texture.is_null()) {
 					UtilityFunctions::push_error(
-						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ", icon_name
+						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ",
+						icon_name
 					);
 					ret = false;
 				}
@@ -237,7 +242,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				);
 				if (progress_texture.is_null()) {
 					UtilityFunctions::push_error(
-						"Failed to generate progress bar sprite ", progress_colour, " progress texture for GUI icon ", icon_name
+						"Failed to generate progress bar sprite ", progress_colour, " progress texture for GUI icon ",
+						icon_name
 					);
 					ret = false;
 				}
@@ -252,7 +258,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			}
 
 			// TODO - work out why progress bar is missing bottom border pixel (e.g. province building expansion bar)
-			godot_progress_bar->set_custom_minimum_size(Utilities::to_godot_fvec2(static_cast<fvec2_t>(progress_bar->get_size())));
+			godot_progress_bar->set_custom_minimum_size(
+				Utilities::to_godot_fvec2(static_cast<fvec2_t>(progress_bar->get_size()))
+			);
 
 			args.result = godot_progress_bar;
 		} else if (icon.get_sprite()->is_type<GFX::PieChart>()) {
@@ -286,7 +294,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			const float rotation = icon.get_rotation();
 			if (rotation != 0.0f) {
 				args.result->set_position(
-					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 { sin(rotation), cos(rotation) - 1.0f }
+					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 {
+						sin(rotation), cos(rotation) - 1.0f
+					}
 				);
 				args.result->set_rotation(-rotation);
 			}
