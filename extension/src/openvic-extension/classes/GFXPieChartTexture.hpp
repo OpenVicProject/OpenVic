@@ -54,12 +54,14 @@ namespace OpenVic {
 				return lhs.first < rhs.first;
 			});
 			godot_pie_chart_data_t array;
-			for (auto const& [key, val] : sorted_dist) {
+			ERR_FAIL_COND_V(array.resize(sorted_dist.size()) != OK, {});
+			for (size_t idx = 0; idx < array.size(); ++idx) {
+				auto const& [key, val] = sorted_dist[idx];
 				Dictionary sub_dict;
 				sub_dict[_slice_identifier_key()] = Utilities::std_view_to_godot_string(key->get_identifier());
 				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
 				sub_dict[_slice_weight_key()] = val.to_float();
-				array.push_back(sub_dict);
+				array[idx] = std::move(sub_dict);
 			}
 			return array;
 		}

@@ -575,9 +575,10 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	// TODO - monthly change
 
 	TypedArray<Dictionary> array;
+	ERR_FAIL_COND_V(array.resize(count) != OK, {});
 
-	for (int32_t idx = start; idx < start + count; ++idx) {
-		Pop const* pop = population_menu.filtered_pops[idx];
+	for (int32_t idx = 0; idx < count; ++idx) {
+		Pop const* pop = population_menu.filtered_pops[start + idx];
 		Dictionary pop_dict;
 
 		pop_dict[pop_size_key] = pop->get_size();
@@ -598,7 +599,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_size_change_key] = pop->get_total_change();
 		pop_dict[pop_literacy_key] = pop->get_literacy().to_float();
 
-		array.push_back(pop_dict);
+		array[idx] = std::move(pop_dict);
 	}
 
 	return array;
@@ -619,9 +620,10 @@ PackedInt32Array MenuSingleton::get_population_menu_pop_filter_setup_info() {
 	ERR_FAIL_COND_V_MSG(population_menu.pop_filters.empty(), {}, "Failed to generate population menu pop filters!");
 
 	PackedInt32Array array;
+	ERR_FAIL_COND_V(array.resize(population_menu.pop_filters.size()) != OK, {});
 
-	for (auto const& [pop_type, filter] : population_menu.pop_filters) {
-		array.push_back(pop_type->get_sprite());
+	for (int32_t idx = 0; idx < array.size(); ++idx) {
+		array[idx] = population_menu.pop_filters.data()[idx].first->get_sprite();
 	}
 
 	return array;
@@ -633,13 +635,18 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 	static const StringName pop_filter_selected_key = "selected";
 
 	TypedArray<Dictionary> array;
+	ERR_FAIL_COND_V(array.resize(population_menu.pop_filters.size()) != OK, {});
 
-	for (auto const& [pop_type, filter] : population_menu.pop_filters) {
+	for (int32_t idx = 0; idx < array.size(); ++idx) {
+		population_menu_t::pop_filter_t const& filter = population_menu.pop_filters.data()[idx].second;
+
 		Dictionary filter_dict;
+
 		filter_dict[pop_filter_count_key] = filter.count;
 		filter_dict[pop_filter_change_key] = filter.promotion_demotion_change;
 		filter_dict[pop_filter_selected_key] = filter.selected;
-		array.push_back(filter_dict);
+
+		array[idx] = std::move(filter_dict);
 	}
 
 	return array;
@@ -688,17 +695,20 @@ void MenuSingleton::population_menu_deselect_all_pop_filters() {
 
 PackedStringArray MenuSingleton::get_population_menu_distribution_setup_info() const {
 	static const PackedStringArray distribution_names = []() -> PackedStringArray {
-		PackedStringArray array;
-
-		for (char const* name : std::array<char const*, population_menu_t::DISTRIBUTION_COUNT> {
+		constexpr std::array<char const*, population_menu_t::DISTRIBUTION_COUNT> NAMES {
 			/* Workforce (PopType)   */       "WORKFORCE_DISTTITLE",
 			/* Religion              */        "RELIGION_DISTTITLE",
 			/* Ideology              */        "IDEOLOGY_DISTTITLE",
 			/* Nationality (Culture) */     "NATIONALITY_DISTTITLE",
 			/* Issues                */ "DOMINANT_ISSUES_DISTTITLE",
 			/* Vote                  */      "ELECTORATE_DISTTITLE"
-		}) {
-			array.push_back(name);
+		};
+
+		PackedStringArray array;
+		ERR_FAIL_COND_V(array.resize(NAMES.size()) != OK, {});
+
+		for (int32_t idx = 0; idx < array.size(); ++idx) {
+			array[idx] = NAMES[idx];
 		}
 
 		return array;
@@ -709,9 +719,10 @@ PackedStringArray MenuSingleton::get_population_menu_distribution_setup_info() c
 
 TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	TypedArray<Array> array;
+	ERR_FAIL_COND_V(array.resize(population_menu.distributions.size()) != OK, {});
 
-	for (fixed_point_map_t<HasIdentifierAndColour const*> const& distribution : population_menu.distributions) {
-		array.push_back(GFXPieChartTexture::distribution_to_slices_array(distribution));
+	for (int32_t idx = 0; idx < array.size(); ++idx) {
+		array[idx] = GFXPieChartTexture::distribution_to_slices_array(population_menu.distributions[idx]);
 	}
 
 	return array;

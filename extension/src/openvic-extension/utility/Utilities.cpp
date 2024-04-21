@@ -80,7 +80,8 @@ static Ref<Image> load_dds_image(String const& path) {
 	);
 
 	PackedByteArray pixels;
-	pixels.resize(size);
+	ERR_FAIL_COND_V(pixels.resize(size) != OK, nullptr);
+
 	/* Index offset used to control whether we are reading */
 	const size_t rb_idx = 2 * needs_bgr_to_rgb;
 	uint8_t const* ptr = static_cast<uint8_t const*>(texture.data());

@@ -1,5 +1,7 @@
 #include "MenuSingleton.hpp"
 
+#include <godot_cpp/variant/utility_functions.hpp>
+
 #include <openvic-simulation/GameManager.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -208,11 +210,17 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	std::vector<Country const*> const& cores = province->get_cores();
 	if (!cores.empty()) {
 		PackedStringArray cores_array;
-		cores_array.resize(cores.size());
-		for (size_t idx = 0; idx < cores.size(); ++idx) {
-			cores_array[idx] = std_view_to_godot_string(cores[idx]->get_identifier());
+		if (cores_array.resize(cores.size()) == OK) {
+			for (size_t idx = 0; idx < cores.size(); ++idx) {
+				cores_array[idx] = std_view_to_godot_string(cores[idx]->get_identifier());
+			}
+			ret[province_info_cores_key] = std::move(cores_array);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to resize cores array to the correct size (", static_cast<int64_t>(cores.size()), ") for province ",
+				std_view_to_godot_string(province->get_identifier())
+			);
 		}
-		ret[province_info_cores_key] = cores_array;
 	}
 
 	static const StringName building_info_level_key = "level";
@@ -226,20 +234,26 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		/* This system relies on the province buildings all being present in the right order. It will have to
 		 * be changed if we want to support variable combinations and permutations of province buildings. */
 		TypedArray<Dictionary> buildings_array;
-		buildings_array.resize(buildings.size());
-		for (size_t idx = 0; idx < buildings.size(); ++idx) {
-			BuildingInstance const& building = buildings[idx];
+		if (buildings_array.resize(buildings.size()) == OK) {
+			for (size_t idx = 0; idx < buildings.size(); ++idx) {
+				BuildingInstance const& building = buildings[idx];
 
-			Dictionary building_dict;
-			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
-			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
-			building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
-			building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
-			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
+				Dictionary building_dict;
+				building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
+				building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
+				building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
+				building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
+				building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
 
-			buildings_array[idx] = building_dict;
+				buildings_array[idx] = std::move(building_dict);
+			}
+			ret[province_info_buildings_key] = std::move(buildings_array);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()),
+				") for province ", std_view_to_godot_string(province->get_identifier())
+			);
 		}
-		ret[province_info_buildings_key] = buildings_array;
 	}
 	return ret;
 }

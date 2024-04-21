@@ -196,11 +196,11 @@ Error GameSingleton::_update_colour_image() {
 	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_argb_t);
 	/* Province count + null province, rounded up to next multiple of PROVINCE_INDEX_SQRT.
 	 * Rearranged from: (map.get_province_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
-	static const int32_t colour_image_height = (map.get_province_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
+	const int32_t colour_image_height = (map.get_province_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
 
 	static PackedByteArray colour_data_array;
-	static const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
-	colour_data_array.resize(colour_data_array_size);
+	const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
+	ERR_FAIL_COND_V(colour_data_array.resize(colour_data_array_size) != OK, FAILED);
 
 	Error err = OK;
 	if (!map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw())) {
@@ -286,19 +286,25 @@ Error GameSingleton::_load_map_images() {
 	}
 
 	Map::shape_pixel_t const* province_shape_data = game_manager.get_map().get_province_shape_image().data();
+
 	const Vector2i divided_dims = province_dims / image_subdivisions;
+	const int64_t subdivision_width = divided_dims.x * sizeof(Map::shape_pixel_t);
+	const int64_t subdivision_size = subdivision_width * divided_dims.y;
+
 	TypedArray<Image> province_shape_images;
-	province_shape_images.resize(image_subdivisions.x * image_subdivisions.y);
+	ERR_FAIL_COND_V(province_shape_images.resize(image_subdivisions.x * image_subdivisions.y) != OK, FAILED);
+
+	PackedByteArray index_data_array;
+	ERR_FAIL_COND_V(index_data_array.resize(subdivision_size) != OK, FAILED);
+
 	for (int32_t v = 0; v < image_subdivisions.y; ++v) {
 		for (int32_t u = 0; u < image_subdivisions.x; ++u) {
-			PackedByteArray index_data_array;
-			index_data_array.resize(divided_dims.x * divided_dims.y * sizeof(Map::shape_pixel_t));
 
 			for (int32_t y = 0; y < divided_dims.y; ++y) {
 				memcpy(
-					index_data_array.ptrw() + y * divided_dims.x * sizeof(Map::shape_pixel_t),
+					index_data_array.ptrw() + y * subdivision_width,
 					province_shape_data + (v * divided_dims.y + y) * province_dims.x + u * divided_dims.x,
-					divided_dims.x * sizeof(Map::shape_pixel_t)
+					subdivision_width
 				);
 			}
 
@@ -348,6 +354,7 @@ Error GameSingleton::_load_terrain_variants() {
 	const int32_t slice_size = sheet_width / SHEET_DIMS;
 
 	TypedArray<Image> terrain_images;
+	ERR_FAIL_COND_V(terrain_images.resize(SHEET_SIZE + 1) != OK, FAILED);
 	{
 		/* This is a placeholder image so that we don't have to branch to avoid looking up terrain index 0 (water).
 		 * It should never appear in game, and so is bright red to to make it obvious if it slips through. */
@@ -355,26 +362,25 @@ Error GameSingleton::_load_terrain_variants() {
 			{ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format()
 		);
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
-		terrain_images.append(water_image);
+		terrain_images[0] = water_image;
 	}
-	Error err = OK;
+
 	for (int32_t idx = 0; idx < SHEET_SIZE; ++idx) {
 		const Rect2i slice { idx % SHEET_DIMS * slice_size, idx / SHEET_DIMS * slice_size, slice_size, slice_size };
 		const Ref<Image> terrain_image = terrain_sheet->get_region(slice);
-		if (terrain_image.is_null() || terrain_image->is_empty()) {
-			UtilityFunctions::push_error(
-				"Failed to extract terrain texture slice ", slice, " from ", terrain_texturesheet_path
-			);
-			err = FAILED;
-		}
-		terrain_images.append(terrain_image);
+
+		ERR_FAIL_COND_V_MSG(terrain_image.is_null() || terrain_image->is_empty(), FAILED, vformat(
+			"Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path
+		));
+
+		terrain_images[idx + 1] = terrain_image;
 	}
 
 	terrain_texture.instantiate();
 	ERR_FAIL_COND_V_MSG(
 		terrain_texture->create_from_images(terrain_images) != OK, FAILED, "Failed to create terrain texture array!"
 	);
-	return err;
+	return OK;
 }
 
 Error GameSingleton::_load_flag_images() {
