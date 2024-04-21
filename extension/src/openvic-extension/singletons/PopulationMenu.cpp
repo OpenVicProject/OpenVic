@@ -55,6 +55,9 @@ int32_t MenuSingleton::get_population_menu_province_list_row_count() const {
 }
 
 TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int32_t start, int32_t count) const {
+	// TODO - remove when country population is used instead of total map population
+	ERR_FAIL_NULL_V(game_manager, {});
+
 	if (population_menu.province_list_entries.empty()) {
 		return {};
 	}
@@ -81,6 +84,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 		int32_t& start_counter;
 		int32_t& count_counter;
 
+		// TODO - remove when country population is used instead of total map population
+		const Pop::pop_size_t total_map_population;
+
 		/* This is the index among all entries, not just visible ones unlike start and count. */
 		int32_t index = 0;
 
@@ -98,7 +104,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				country_dict[type_key] = population_menu_t::LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
 				country_dict[name_key] = std_view_to_godot_string(country_entry.country.get_identifier());
-				country_dict[size_key] = 0;
+				country_dict[size_key] = total_map_population;
 				country_dict[change_key] = 0;
 				country_dict[selected_key] = country_entry.selected;
 
@@ -119,7 +125,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				state_dict[type_key] = population_menu_t::LIST_ENTRY_STATE;
 				state_dict[index_key] = index;
 				state_dict[name_key] = std_view_to_godot_string(state_entry.state.get_identifier());
-				state_dict[size_key] = 0;
+				state_dict[size_key] = state_entry.state.calculate_total_population();
 				state_dict[change_key] = 0;
 				state_dict[selected_key] = state_entry.selected;
 				state_dict[expanded_key] = state_entry.expanded;
@@ -151,7 +157,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 			return  true;
 		}
-	} entry_visitor { start, count };
+	} entry_visitor { start, count, game_manager->get_map().get_total_map_population() };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
