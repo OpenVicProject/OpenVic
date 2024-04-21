@@ -22,7 +22,13 @@ namespace OpenVic {
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode::index_t mapmode_index = 0;
 		godot::Ref<godot::Texture2DArray> terrain_texture;
-		ordered_map<Country const*, ordered_map<godot::StringName, godot::Ref<godot::Image>>> flag_image_map;
+
+		static const godot::Vector2i PROPERTY(flag_dims); /* The size in pixels of an individual flag. */
+		int32_t flag_sheet_count = 0; /* The number of flags in the flag sheet. */
+		godot::Vector2i flag_sheet_dims; /* The size of the flag sheet in flags, rather than pixels. */
+		godot::Ref<godot::Image> flag_sheet_image;
+		godot::Ref<godot::ImageTexture> flag_sheet_texture;
+		ordered_map<godot::StringName, int32_t> flag_type_index_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
 		static godot::StringName const& _signal_province_selected();
@@ -30,7 +36,7 @@ namespace OpenVic {
 
 		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
-		godot::Error _load_flag_images();
+		godot::Error _load_flag_sheet();
 
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
@@ -67,9 +73,14 @@ namespace OpenVic {
 		/* The cosmetic terrain textures stored in a Texture2DArray. */
 		godot::Ref<godot::Texture2DArray> get_terrain_texture() const;
 
-		/* The flag image corresponding to the requested country / flag_type
-		 * combination, or nullptr if no such flag can be found. */
-		godot::Ref<godot::Image> get_flag_image(Country const* country, godot::StringName const& flag_type) const;
+		godot::Ref<godot::Image> get_flag_sheet_image() const;
+		godot::Ref<godot::ImageTexture> get_flag_sheet_texture() const;
+
+		/* The index of the flag in the flag sheet corresponding to the requested country / flag_type
+		 * combination, or -1 if no such flag can be found. */
+		int32_t get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const;
+		godot::Rect2i get_flag_sheet_rect(int32_t flag_index) const;
+		godot::Rect2i get_flag_sheet_rect(int32_t country_index, godot::StringName const& flag_type) const;
 
 		/* Number of (vertical, horizontal) subdivisions the province shape image
 		 * was split into when making the province_shape_texture to ensure no
