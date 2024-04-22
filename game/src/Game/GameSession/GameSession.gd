@@ -10,6 +10,8 @@ func _ready() -> void:
 
 	_model_manager.generate_units()
 	_model_manager.generate_buildings()
+	MusicConductor.generate_playlist()
+	MusicConductor.select_next_song()
 
 func _process(_delta : float) -> void:
 	GameSingleton.try_tick()

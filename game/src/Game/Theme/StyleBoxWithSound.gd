@@ -29,6 +29,6 @@ func _draw(to_canvas_item : RID, rect : Rect2) -> void:
 	# Is there any other reason aside from release sounds (might be useful for toggles?)
 	# This should be fast enough to not cause draw issues
 	if sound != null:
-		SoundManager.play_effect_stream(sound)
+		SoundManager.play_effect_compat("click",sound)
 	if style_box != null:
 		style_box.draw(to_canvas_item, rect)

@@ -37,7 +37,9 @@ StringName const& GameSingleton::_signal_clock_state_changed() {
 void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
-	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
+	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode);
+	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "file_paths" });
+
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
 
@@ -582,16 +584,21 @@ Error GameSingleton::_load_flag_sheet() {
 	return ret;
 }
 
-Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
+Error GameSingleton::set_compatibility_mode_roots(PackedStringArray const& file_paths) {
 	Dataloader::path_vector_t roots;
 	for (String const& path : file_paths) {
 		roots.push_back(Utilities::godot_to_std_string(path));
 	}
 
-	Error err = OK;
+	ERR_FAIL_COND_V_MSG(!game_manager.set_roots(roots), FAILED, "Failed to set dataloader roots!");
+	return OK;
+}
 
+Error GameSingleton::load_defines_compatibility_mode() {
+	Error err = OK;
 	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
-	if (!game_manager.load_definitions(roots, add_message)) {
+	
+	if (!game_manager.load_definitions(add_message)) {
 		UtilityFunctions::push_error("Failed to load defines!");
 		err = FAILED;
 	}
