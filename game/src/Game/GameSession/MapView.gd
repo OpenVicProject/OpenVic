@@ -1,3 +1,4 @@
+class_name MapView
 extends Node3D
 
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
@@ -22,7 +23,7 @@ var _drag_active : bool = false
 var _mouse_over_viewport : bool = true
 var _window_in_focus : bool = true
 
-@export var _zoom_target_min : float = 0.15
+@export var _zoom_target_min : float = 0.10
 @export var _zoom_target_max : float = 5.0
 @export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 64.0
 @export var _zoom_epsilon : float = _zoom_target_step * 0.005
@@ -119,6 +120,10 @@ func _notification(what : int) -> void:
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
 
+func _map_to_world_coords(pos : Vector2) -> Vector3:
+	pos = pos * _map_mesh_dims + _map_mesh_corner
+	return Vector3(pos.x, 0, pos.y)
+
 func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 	var ray_origin := _camera.project_ray_origin(pos_viewport)
 	var ray_normal := _camera.project_ray_normal(pos_viewport)
@@ -149,12 +154,13 @@ func _on_province_selected(index : int) -> void:
 # REQUIREMENTS
 # * SS-31
 func _unhandled_input(event : InputEvent) -> void:
-	if _mouse_over_viewport and event.is_action_pressed(_action_click):
-		# Check if the mouse is outside of bounds
-		if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-			GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
-		else:
-			print("Clicked outside the map!")
+	if event.is_action_pressed(_action_click):
+		if _mouse_over_viewport:
+			# Check if the mouse is outside of bounds
+			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
+				GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+			else:
+				print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):
 		if _drag_active:
 			push_warning("Drag being activated while already active!")
@@ -242,7 +248,7 @@ func _zoom_process(delta : float) -> void:
 
 func _update_orientation() -> void:
 	const up := Vector3(0, 0, -1)
-	var dir := Vector3(0, -1, -1.25 * exp(-10 * _camera.position.y - _zoom_target_min))
+	var dir := Vector3(0, -1, -1.25 * exp(-1.5 * _camera.position.y - _zoom_target_min))
 	_camera.look_at(_camera.position + dir, up)
 
 func _update_minimap_viewport() -> void:
@@ -253,9 +259,9 @@ func _update_minimap_viewport() -> void:
 	map_view_camera_changed.emit(near_left, far_left, far_right, near_right)
 
 func _update_mouse_map_position() -> void:
-	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
-	var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 	if _mouse_over_viewport:
+		_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
+		var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
 
 func _on_mouse_entered_viewport() -> void:

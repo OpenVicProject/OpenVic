@@ -58,6 +58,10 @@ window/per_pixel_transparency/allowed=true
 
 enabled=PackedStringArray("res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+
 [gui]
 
 theme/custom="res://assets/graphics/theme/default_theme.tres"
