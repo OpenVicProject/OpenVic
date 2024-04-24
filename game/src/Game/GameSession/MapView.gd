@@ -2,6 +2,8 @@ class_name MapView
 extends Node3D
 
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
+signal parchment_view_changed(is_parchment_view : bool)
+signal detailed_view_changed(is_detailed_view : bool)
 
 const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
@@ -25,7 +27,7 @@ var _window_in_focus : bool = true
 
 @export var _zoom_target_min : float = 0.10
 @export var _zoom_target_max : float = 5.0
-@export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 64.0
+@export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 40.0
 @export var _zoom_epsilon : float = _zoom_target_step * 0.005
 @export var _zoom_speed : float = 5.0
 # _zoom_target's starting value is ignored as it is updated to the camera's height by _ready,
@@ -36,8 +38,13 @@ var _zoom_target : float = _zoom_target_max:
 const _zoom_position_multiplier = 3.14159 # Horizontal movement coefficient during zoom
 var _zoom_position : Vector2
 
-# Display the detailed terrain map below this height, and the parchment map above it
+# Display the parchment map above this height
 @export var _zoom_parchment_threshold : float = _zoom_target_min + (_zoom_target_max - _zoom_target_min) / 4
+# Display details like models and province names below this height
+@export var _zoom_detailed_threshold : float = _zoom_parchment_threshold / 2
+
+var _is_parchment_view : bool = false
+var _is_detailed_view : bool = false
 
 @export var _map_mesh_instance : MeshInstance3D
 var _map_mesh : MapMesh
@@ -51,6 +58,8 @@ var _mouse_pos_viewport : Vector2 = Vector2(0.5, 0.5)
 var _mouse_pos_map : Vector2 = Vector2(0.5, 0.5)
 var _viewport_dims : Vector2 = Vector2(1, 1)
 
+@export var _map_text : MapText
+
 # ??? Strange Godot/GDExtension Bug ???
 # Upon first opening a clone of this repo with the Godot Editor,
 # if GameSingleton.get_province_index_image is called before MapMesh
@@ -62,7 +71,12 @@ func _ready() -> void:
 	if not _camera:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
+
+	# Start just under the parchment threshold
+	_camera.position.y = _zoom_parchment_threshold - _zoom_target_step
 	_zoom_target = _camera.position.y
+	_update_view_states(true)
+
 	if not _map_mesh_instance:
 		push_error("MapView's _map_mesh_instance variable hasn't been set!")
 		return
@@ -105,6 +119,8 @@ func _ready() -> void:
 	scaled_dims.x *= 1.0 + 2.0 * _map_mesh.get_repeat_proportion()
 	scaled_dims.z *= 2.0
 	(_map_background_instance.mesh as PlaneMesh).set_size(Vector2(scaled_dims.x, scaled_dims.z))
+
+	_map_text.generate_map_names()
 
 func _notification(what : int) -> void:
 	match what:
@@ -227,6 +243,17 @@ func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
 	_camera.position.z = clamp(_camera.position.z, _map_mesh_corner.y, _map_mesh_corner.y + _map_mesh_dims.y)
 
+func _update_view_states(force_signal : bool) -> void:
+	var new_is_parchment_view : bool = _camera.position.y >= _zoom_parchment_threshold - _zoom_epsilon
+	if force_signal or new_is_parchment_view != _is_parchment_view:
+		_is_parchment_view = new_is_parchment_view
+		parchment_view_changed.emit(_is_parchment_view)
+
+	var new_is_detailed_view : bool = _camera.position.y <= _zoom_detailed_threshold + _zoom_epsilon
+	if force_signal or new_is_detailed_view != _is_detailed_view:
+		_is_detailed_view = new_is_detailed_view
+		detailed_view_changed.emit(_is_detailed_view)
+
 # REQUIREMENTS
 # * SS-74
 # * UIFUN-123
@@ -243,12 +270,17 @@ func _zoom_process(delta : float) -> void:
 		_zoom_position.y * zoom_delta * int(_mouse_over_viewport)
 	)
 	# TODO - smooth transition similar to smooth zoom
-	var parchment_mapmode : bool = GameSingleton.is_parchment_mapmode_allowed() and _camera.position.y > _zoom_parchment_threshold
+	_update_view_states(false)
+	var parchment_mapmode : bool = GameSingleton.is_parchment_mapmode_allowed() and _is_parchment_view
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_parchment_mix, float(parchment_mapmode))
 
 func _update_orientation() -> void:
 	const up := Vector3(0, 0, -1)
-	var dir := Vector3(0, -1, -1.25 * exp(-1.5 * _camera.position.y - _zoom_target_min))
+	var dir := Vector3(0, -1, 0)
+	if _is_detailed_view:
+		# Zero at the transition point, increases as you zoom further in
+		var delta : float = (_zoom_detailed_threshold - _camera.position.y) / _zoom_detailed_threshold
+		dir.z = -(delta ** 4)
 	_camera.look_at(_camera.position + dir, up)
 
 func _update_minimap_viewport() -> void:

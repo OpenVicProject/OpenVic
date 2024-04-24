@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene load_steps=8 format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MapText.gd" id="2_13bgq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
@@ -23,16 +24,21 @@ albedo_color = Color(0, 0, 0, 1)
 material = SubResource("StandardMaterial3D_irk50")
 size = Vector2(6, 2)
 
-[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance")]
+[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance", "_map_text")]
 editor_description = "SS-73"
 script = ExtResource("1_exccw")
 _camera = NodePath("MapCamera")
 _map_mesh_instance = NodePath("MapMeshInstance")
 _map_background_instance = NodePath("MapBackgroundInstance")
+_map_text = NodePath("MapText")
 
 [node name="MapCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.25, 1.5, -2.75)
 near = 0.01
+
+[node name="MapText" type="Node3D" parent="." node_paths=PackedStringArray("_map_view")]
+script = ExtResource("2_13bgq")
+_map_view = NodePath("..")
 
 [node name="MapMeshInstance" type="MeshInstance3D" parent="."]
 editor_description = "FS-343"
@@ -43,3 +49,5 @@ mesh = SubResource("MapMesh_3gtsd")
 [node name="MapBackgroundInstance" type="MeshInstance3D" parent="."]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -1, 0)
 mesh = SubResource("PlaneMesh_fnhgl")
+
+[connection signal="detailed_view_changed" from="." to="MapText" method="set_visible"]
