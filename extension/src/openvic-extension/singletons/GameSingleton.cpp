@@ -60,6 +60,8 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_province_shape_texture);
 	OV_BIND_METHOD(GameSingleton::get_province_colour_texture);
 
+	OV_BIND_METHOD(GameSingleton::get_province_names);
+
 	OV_BIND_METHOD(GameSingleton::get_mapmode_count);
 	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier);
 	OV_BIND_METHOD(GameSingleton::set_mapmode, { "identifier" });
@@ -241,6 +243,39 @@ Error GameSingleton::_update_colour_image() {
 		province_colour_texture->update(province_colour_image);
 	}
 	return err;
+}
+
+TypedArray<Dictionary> GameSingleton::get_province_names() const {
+	static const StringName identifier_key = "identifier";
+	static const StringName position_key = "position";
+	static const StringName rotation_key = "rotation";
+	static const StringName scale_key = "scale";
+
+	TypedArray<Dictionary> ret;
+	ERR_FAIL_COND_V(ret.resize(game_manager.get_map().get_province_count()) != OK, {});
+
+	for (int32_t index = 0; index < game_manager.get_map().get_province_count(); ++index) {
+		Province const& province = game_manager.get_map().get_provinces()[index];
+
+		Dictionary province_dict;
+
+		province_dict[identifier_key] = std_view_to_godot_string(province.get_identifier());
+		province_dict[position_key] = Utilities::to_godot_fvec2(province.get_text_position()) / get_map_dims();
+
+		const float rotation = province.get_text_rotation().to_float();
+		if (rotation != 0.0f) {
+			province_dict[rotation_key] = rotation;
+		}
+
+		const float scale = province.get_text_scale().to_float();
+		if (scale != 1.0f) {
+			province_dict[scale_key] = scale;
+		}
+
+		ret[index] = std::move(province_dict);
+	}
+
+	return ret;
 }
 
 int32_t GameSingleton::get_mapmode_count() const {

@@ -95,6 +95,8 @@ namespace OpenVic {
 		/* The base and stripe colours for each province. */
 		godot::Ref<godot::ImageTexture> get_province_colour_texture() const;
 
+		godot::TypedArray<godot::Dictionary> get_province_names() const;
+
 		int32_t get_mapmode_count() const;
 		godot::String get_mapmode_identifier(int32_t index) const;
 		godot::Error set_mapmode(godot::String const& identifier);
