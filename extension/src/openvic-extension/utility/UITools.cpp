@@ -128,6 +128,8 @@ static bool add_theme_stylebox(Control* control, StringName const& theme_name, R
 };
 
 static bool generate_icon(generate_gui_args_t&& args) {
+	using namespace OpenVic::Utilities::literals;
+
 	GUI::Icon const& icon = static_cast<GUI::Icon const&>(args.element);
 
 	const String icon_name = std_view_to_godot_string(icon.get_name());
@@ -274,7 +276,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				godot_texture_rect->set_texture(texture);
 				// TODO - work out why this is needed
 				Vector2 pos = godot_texture_rect->get_position();
-				pos.x -= texture->get_width() / 2.0f;
+				pos.x -= texture->get_width() / 2.0_real;
 				godot_texture_rect->set_position(pos);
 			} else {
 				UtilityFunctions::push_error("Failed to make GFXPieChartTexture for GUI icon ", icon_name);
@@ -291,11 +293,11 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		}
 
 		if (args.result != nullptr) {
-			const float rotation = icon.get_rotation();
-			if (rotation != 0.0f) {
+			const real_t rotation = icon.get_rotation();
+			if (rotation != 0.0_real) {
 				args.result->set_position(
 					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 {
-						sin(rotation), cos(rotation) - 1.0f
+						Math::sin(rotation), Math::cos(rotation) - 1.0_real
 					}
 				);
 				args.result->set_rotation(-rotation);
@@ -441,6 +443,8 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 }
 
 static bool generate_text(generate_gui_args_t&& args) {
+	using namespace OpenVic::Utilities::literals;
+
 	GUI::Text const& text = static_cast<GUI::Text const&>(args.element);
 
 	const String text_name = std_view_to_godot_string(text.get_name());
@@ -451,7 +455,7 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	godot_label->set_text(std_view_to_godot_string(text.get_text()));
 
-	static const Vector2 default_padding { 1.0f, 0.0f };
+	static const Vector2 default_padding { 1.0_real, 0.0_real };
 	const Vector2 border_size = Utilities::to_godot_fvec2(text.get_border_size()) + default_padding;
 	const Vector2 max_size = Utilities::to_godot_fvec2(text.get_max_size());
 	godot_label->set_position(godot_label->get_position() + border_size);
@@ -553,7 +557,8 @@ static bool generate_placeholder(generate_gui_args_t&& args, Color colour) {
 }
 
 static bool generate_texteditbox(generate_gui_args_t&& args) {
-	return generate_placeholder<GUI::TextEditBox>(std::move(args), { 0.0f, 1.0f, 0.0f, 0.3f });
+	using namespace OpenVic::Utilities::literals;
+	return generate_placeholder<GUI::TextEditBox>(std::move(args), { 0.0_real, 1.0_real, 0.0_real, 0.3_real });
 }
 
 static bool generate_scrollbar(generate_gui_args_t&& args) {
@@ -578,6 +583,8 @@ static bool generate_scrollbar(generate_gui_args_t&& args) {
 static bool generate_element(GUI::Element const* element, String const& name, AssetManager& asset_manager, Control*& result);
 
 static bool generate_window(generate_gui_args_t&& args) {
+	using namespace OpenVic::Utilities::literals;
+
 	GUI::Window const& window = static_cast<GUI::Window const&>(args.element);
 
 	// TODO - moveable, fullscreen, dontRender (disable visibility?)
@@ -588,7 +595,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(godot_panel, false, vformat("Failed to create Panel for GUI window %s", window_name));
 
 	godot_panel->set_custom_minimum_size(Utilities::to_godot_fvec2(window.get_size()));
-	godot_panel->set_self_modulate({ 1.0f, 1.0f, 1.0f, 0.0f });
+	godot_panel->set_self_modulate({ 1.0_real, 1.0_real, 1.0_real, 0.0_real });
 
 	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;
