@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 
@@ -34,6 +36,10 @@ namespace OpenVic::Utilities {
 	godot::String int_to_formatted_string(int64_t val);
 
 	godot::String float_to_formatted_string(float val, int32_t decimal_places);
+
+	constexpr real_t to_real_t(std::floating_point auto val) {
+		return static_cast<real_t>(val);
+	}
 
 	godot::String date_to_formatted_string(Date date);
 
@@ -73,4 +79,8 @@ namespace OpenVic::Utilities {
 		godot::Color const& colour, int32_t width, int32_t height,
 		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
+
+	namespace literals {
+		constexpr real_t operator""_real(long double val) { return to_real_t(val); }
+	}
 }
