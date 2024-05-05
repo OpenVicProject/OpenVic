@@ -44,6 +44,7 @@ void GameSingleton::_bind_methods() {
 
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
+	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
 
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 
@@ -592,4 +593,8 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
 	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
+}
+
+String GameSingleton::lookup_file_path(String const& path) const {
+	return std_to_godot_string(dataloader.lookup_file(godot_to_std_string(path)).string());
 }

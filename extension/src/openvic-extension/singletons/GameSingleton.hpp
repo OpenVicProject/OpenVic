@@ -59,6 +59,7 @@ namespace OpenVic {
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});
+		godot::String lookup_file_path(godot::String const& path) const;
 
 		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
 		godot::Error setup_game(int32_t bookmark_index);

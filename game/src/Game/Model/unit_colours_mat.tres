@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bkham060cwpr3"]
+
+[ext_resource type="Shader" path="res://src/Game/Model/unit_colours.gdshader" id="1_axmiw"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_axmiw")
+shader_parameter/texture_albedo = []
+shader_parameter/texture_nation_colors_mask = []
