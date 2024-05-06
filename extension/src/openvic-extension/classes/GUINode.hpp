@@ -1,17 +1,27 @@
 #pragma once
 
+#include <godot_cpp/classes/bit_map.hpp>
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/check_box.hpp>
+#include <godot_cpp/classes/control.hpp>
+#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/panel.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/texture_progress_bar.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
+#include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/node_path.hpp>
+#include <godot_cpp/variant/rect2.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/vector2.hpp>
 
-#include <openvic-simulation/interface/GUI.hpp>
-
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
@@ -19,6 +29,11 @@
 namespace OpenVic {
 	class GUINode : public godot::Control {
 		GDCLASS(GUINode, godot::Control)
+
+		godot::Ref<godot::BitMap> _click_mask;
+		godot::Vector<Control*> _mask_controls;
+		godot::Rect2 _texture_region;
+		godot::Rect2 _position_rect;
 
 	protected:
 		static void _bind_methods();
@@ -73,5 +88,14 @@ namespace OpenVic {
 		static godot::String int_to_formatted_string(int64_t val);
 		static godot::String float_to_formatted_string(float val, int32_t decimal_places);
 		static godot::String format_province_name(godot::String const& province_identifier);
+
+		godot::Ref<godot::BitMap> get_click_mask() const;
+		void set_click_mask(godot::Ref<godot::BitMap> const& mask);
+
+		void set_click_mask_from_nodepaths(godot::TypedArray<godot::NodePath> const& paths);
+		bool _update_click_mask_for(godot::Ref<godot::Image> const& img, int index);
+		void update_click_mask();
+
+		bool _has_point(godot::Vector2 const& point) const override;
 	};
 }

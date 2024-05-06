@@ -21,6 +21,7 @@ editor_description = "UI-105, UI-107, UI-110, UIFUN-92"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 focus_mode = 0
+mouse_force_pass_scroll_events = false
 alignment = 1
 text_overrun_behavior = 3
 fit_to_longest_item = false

@@ -33,6 +33,7 @@ _overwrite_dialog = NodePath("OverwriteDialog")
 
 [node name="SaveLoadPanel" type="PanelContainer" parent="."]
 layout_mode = 2
+mouse_force_pass_scroll_events = false
 
 [node name="SaveLoadList" type="VBoxContainer" parent="SaveLoadPanel"]
 layout_mode = 2

@@ -125,6 +125,12 @@ func _ready() -> void:
 		push_error("Failed to generate province overview panel!")
 		return
 
+	# Disables all consuming invisible panel
+	var prov_view := get_panel_from_nodepath(^"./province_view")
+	if prov_view:
+		prov_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_click_mask_from_nodepaths([^"./province_view/background"])
+
 	var close_button : Button = get_button_from_nodepath(^"./province_view/close_button")
 	if close_button:
 		close_button.pressed.connect(_on_close_button_pressed)

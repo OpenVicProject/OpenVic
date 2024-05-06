@@ -16,14 +16,13 @@ const _action_click : StringName = &"map_click"
 
 @export var _camera : Camera3D
 
-@export var _cardinal_move_speed : float = 1.0
+@export var _cardinal_move_speed : float = 2.5
 @export var _edge_move_threshold: float = 0.01
 @export var _edge_move_speed: float = 2.5
 var _drag_anchor : Vector2
 var _drag_active : bool = false
 
 var _mouse_over_viewport : bool = true
-var _window_in_focus : bool = true
 
 @export var _zoom_target_min : float = 0.10
 @export var _zoom_target_max : float = 5.0
@@ -122,17 +121,6 @@ func _ready() -> void:
 
 	_map_text.generate_map_names()
 
-func _notification(what : int) -> void:
-	match what:
-		NOTIFICATION_WM_MOUSE_ENTER: # Mouse inside window
-			_on_mouse_entered_viewport()
-		NOTIFICATION_WM_MOUSE_EXIT: # Mouse out of window
-			_on_mouse_exited_viewport()
-		NOTIFICATION_WM_WINDOW_FOCUS_IN: # Window comes into focus
-			_on_window_entered_focus()
-		NOTIFICATION_WM_WINDOW_FOCUS_OUT: # Window goes out of focus
-			_on_window_exited_focus()
-
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
 
@@ -163,14 +151,34 @@ func zoom_out() -> void:
 	# cursor location. I'm not sure if we want to preserve this behavior.
 	_zoom_position = Vector2()
 
+func set_hovered_province_index(hover_index : int) -> void:
+	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
+
+func set_hovered_province_at(pos : Vector2) -> void:
+	var hover_index := GameSingleton.get_province_index_from_uv_coords(pos)
+	set_hovered_province_index(hover_index)
+
+func unset_hovered_province() -> void:
+	set_hovered_province_index(0)
+
 func _on_province_selected(index : int) -> void:
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
 	print("Province selected with index: ", index)
 
+func _input(event : InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_mouse_pos_viewport = get_window().get_mouse_position()
+	elif _drag_active and event.is_action_released(_action_drag):
+		_drag_active = false
+
 # REQUIREMENTS
 # * SS-31
 func _unhandled_input(event : InputEvent) -> void:
-	if event.is_action_pressed(_action_click):
+	if event is InputEventMouseMotion:
+		_mouse_over_viewport = true
+		set_hovered_province_at(_viewport_to_map_coords(_mouse_pos_viewport))
+
+	elif event.is_action_pressed(_action_click):
 		if _mouse_over_viewport:
 			# Check if the mouse is outside of bounds
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
@@ -182,17 +190,16 @@ func _unhandled_input(event : InputEvent) -> void:
 			push_warning("Drag being activated while already active!")
 		_drag_active = true
 		_drag_anchor = _mouse_pos_map
-	elif event.is_action_released(_action_drag):
-		if not _drag_active:
-			push_warning("Drag being deactivated while already not active!")
-		_drag_active = false
 	elif event.is_action_pressed(_action_zoom_in, true):
 		zoom_in()
 	elif event.is_action_pressed(_action_zoom_out, true):
 		zoom_out()
 
-func _physics_process(delta : float) -> void:
-	_mouse_pos_viewport = get_viewport().get_mouse_position()
+func _process(delta : float) -> void:
+	if _is_viewport_inactive():
+		_mouse_over_viewport = false
+		unset_hovered_province()
+
 	_viewport_dims = Vector2(Resolution.get_current_resolution())
 	# Process movement
 	_movement_process(delta)
@@ -222,7 +229,7 @@ func _movement_process(delta : float) -> void:
 # REQUIREMENTS
 # * UIFUN-125
 func _edge_scrolling_vector() -> Vector2:
-	if not _window_in_focus:
+	if _is_viewport_inactive():
 		return Vector2()
 	var mouse_vector := _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims - Vector2(0.5, 0.5)
 	# Only scroll if outside the move threshold.
@@ -233,11 +240,12 @@ func _edge_scrolling_vector() -> Vector2:
 # REQUIREMENTS
 # * SS-75
 func _cardinal_movement_vector() -> Vector2:
-	var move := Vector2(
-		float(Input.is_action_pressed(_action_east)) - float(Input.is_action_pressed(_action_west)),
-		float(Input.is_action_pressed(_action_south)) - float(Input.is_action_pressed(_action_north))
-	)
-	return move * _cardinal_move_speed
+	return Input.get_vector(
+			_action_west,
+			_action_east,
+			_action_north,
+			_action_south
+		) * _cardinal_move_speed
 
 func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
@@ -291,23 +299,7 @@ func _update_minimap_viewport() -> void:
 	map_view_camera_changed.emit(near_left, far_left, far_right, near_right)
 
 func _update_mouse_map_position() -> void:
-	if _mouse_over_viewport:
-		_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
-		var hover_index := GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
-		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
-
-func _on_mouse_entered_viewport() -> void:
-	_mouse_over_viewport = true
-
-func _on_mouse_exited_viewport() -> void:
-	_mouse_over_viewport = false
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, 0)
-
-func _on_window_entered_focus() -> void:
-	_window_in_focus = true
-
-func _on_window_exited_focus() -> void:
-	_window_in_focus = false
+	_mouse_pos_map = _viewport_to_map_coords(_mouse_pos_viewport)
 
 func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	pos_clicked *= _map_mesh_dims
@@ -315,10 +307,13 @@ func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	_camera.position.z = pos_clicked.y
 	_clamp_over_map()
 
+func _is_viewport_inactive() -> bool:
+	return not get_window().has_focus() or get_window().is_input_handled()
+
 func enable_processing() -> void:
 	set_process_unhandled_input(true)
-	set_physics_process(true)
+	set_process(true)
 
 func disable_processing() -> void:
 	set_process_unhandled_input(false)
-	set_physics_process(false)
+	set_process(false)

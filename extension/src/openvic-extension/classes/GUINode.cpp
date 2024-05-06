@@ -1,7 +1,35 @@
 #include "GUINode.hpp"
 
+#include <limits>
+
+#include <godot_cpp/classes/bit_map.hpp>
+#include <godot_cpp/classes/button.hpp>
+#include <godot_cpp/classes/canvas_item.hpp>
+#include <godot_cpp/classes/check_box.hpp>
+#include <godot_cpp/classes/control.hpp>
+#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/panel.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/classes/style_box.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
+#include <godot_cpp/classes/texture2d.hpp>
+#include <godot_cpp/classes/texture_progress_bar.hpp>
+#include <godot_cpp/classes/texture_rect.hpp>
+#include <godot_cpp/core/defs.hpp>
+#include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/core/object.hpp>
+#include <godot_cpp/core/property_info.hpp>
+#include <godot_cpp/variant/node_path.hpp>
+#include <godot_cpp/variant/rect2.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/variant/variant.hpp>
+#include <godot_cpp/variant/vector2.hpp>
+#include <godot_cpp/variant/vector2i.hpp>
 
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/UITools.hpp"
@@ -31,6 +59,15 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::add_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
 	OV_BIND_SMETHOD(get_gui_position, { "gui_scene", "gui_position" });
 
+	OV_BIND_METHOD(GUINode::get_click_mask);
+	OV_BIND_METHOD(GUINode::set_click_mask, { "mask" });
+	ADD_PROPERTY(
+		PropertyInfo(Variant::OBJECT, "click_mask", PROPERTY_HINT_RESOURCE_TYPE, "BitMap"), "set_click_mask", "get_click_mask"
+	);
+
+	OV_BIND_METHOD(GUINode::set_click_mask_from_nodepaths, { "paths" });
+	OV_BIND_METHOD(GUINode::update_click_mask);
+
 #define GET_BINDINGS(type, name) \
 	OV_BIND_SMETHOD(get_##name##_from_node, { "node" }); \
 	OV_BIND_METHOD(GUINode::get_##name##_from_nodepath, { "path" });
@@ -56,7 +93,7 @@ GUINode::GUINode() {
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT);
 	set_h_grow_direction(GROW_DIRECTION_BOTH);
 	set_v_grow_direction(GROW_DIRECTION_BOTH);
-	set_mouse_filter(MOUSE_FILTER_IGNORE);
+	set_mouse_filter(MOUSE_FILTER_STOP);
 }
 
 Control* GUINode::generate_gui_element(String const& gui_scene, String const& gui_element, String const& name) {
@@ -195,4 +232,124 @@ String GUINode::float_to_formatted_string(float val, int32_t decimal_places) {
 String GUINode::format_province_name(String const& province_identifier) {
 	static const String province_prefix = "PROV";
 	return province_prefix + province_identifier;
+}
+
+Ref<BitMap> GUINode::get_click_mask() const {
+	return _click_mask;
+}
+
+void GUINode::set_click_mask(Ref<BitMap> const& mask) {
+	if (_click_mask == mask) {
+		return;
+	}
+	_click_mask = mask;
+	queue_redraw();
+	update_minimum_size();
+}
+
+bool GUINode::_update_click_mask_for(Ref<Image> const& img, int index) {
+	ERR_FAIL_INDEX_V(index, _mask_controls.size(), false);
+	Control* control = _mask_controls[index];
+	if (!UtilityFunctions::is_instance_valid(control) && !control->is_inside_tree()) {
+		_mask_controls.remove_at(index);
+		return false;
+	}
+	ERR_FAIL_COND_V(img.is_null(), false);
+	Ref<Texture2D> texture = get_texture_from_node(control);
+	ERR_FAIL_COND_V(texture.is_null(), false);
+	Ref<Image> texture_img = texture->get_image();
+	if (img->is_empty()) {
+		img->copy_from(texture_img);
+	} else {
+		if (img->get_format() != texture_img->get_format()) {
+			img->convert(texture_img->get_format());
+		}
+		Vector2i img_size = img->get_size();
+		Vector2i total_size = control->get_screen_position() + texture_img->get_size();
+		Vector2i new_img_size = img_size.max(total_size);
+		if (new_img_size != img_size) {
+			img->crop(new_img_size.x, new_img_size.y);
+		}
+		img->blend_rect(texture_img, texture_img->get_used_rect(), control->get_position());
+	}
+	ERR_FAIL_COND_V(img->is_empty(), false);
+	return true;
+}
+
+void GUINode::update_click_mask() {
+	static constexpr real_t max_real = std::numeric_limits<real_t>::max();
+	static const Point2 max_point { max_real, max_real };
+	if (_mask_controls.size() == 0) {
+		return;
+	}
+
+	if (_click_mask.is_null()) {
+		_click_mask.instantiate();
+	}
+	Ref<Image> img;
+	img.instantiate();
+	Vector2 size = get_size();
+	img->create(size.x, size.y, false, Image::Format::FORMAT_RGBA8);
+	Point2 highest_position = { max_real, max_real };
+	for (int index = 0; index < _mask_controls.size(); index++) {
+		if (!_update_click_mask_for(img, index)) {
+			continue;
+		}
+		Vector2 screen_pos = _mask_controls[index]->get_screen_position();
+		highest_position = highest_position.min(screen_pos);
+	}
+	ERR_FAIL_COND(img.is_null());
+	ERR_FAIL_COND(highest_position == max_point);
+	_texture_region = Rect2(Point2(), img->get_size());
+	_position_rect = Rect2(highest_position, _texture_region.get_size());
+	_click_mask->create_from_image_alpha(img);
+	queue_redraw();
+	update_minimum_size();
+}
+
+void GUINode::set_click_mask_from_nodepaths(TypedArray<NodePath> const& paths) {
+	// TODO: Update to use https://github.com/godotengine/godot/pull/90916
+	// for(godot::Control* control : _mask_controls) {
+	// 	control->set_mouse_filter(Control::MouseFilter::MOUSE_FILTER_STOP);
+	// }
+	_mask_controls.clear();
+	for (int index = 0; index < paths.size(); index++) {
+		Control* control = _cast_node<Control>(get_node_internal(paths[index]));
+		ERR_CONTINUE(control == nullptr);
+		control->set_mouse_filter(Control::MouseFilter::MOUSE_FILTER_IGNORE);
+		_mask_controls.push_back(control);
+	}
+	update_click_mask();
+}
+
+bool GUINode::_has_point(godot::Vector2 const& p_point) const {
+	if (!_click_mask.is_valid()) {
+		return Control::_has_point(p_point);
+	}
+
+	Point2 point = p_point;
+	Rect2 rect;
+	Size2 mask_size = _click_mask->get_size();
+
+	if (!_position_rect.has_area()) {
+		rect.size = mask_size;
+	} else {
+		// we need to transform the point from our scaled / translated image back to our mask image
+		Point2 ofs = _position_rect.position;
+		Size2 scale = mask_size / _position_rect.size;
+
+		// offset and scale the new point position to adjust it to the bitmask size
+		point -= ofs;
+		point *= scale;
+
+		// finally, we need to check if the point is inside a rectangle with a position >= 0,0 and a size <= mask_size
+		rect.position = _texture_region.position.min(Point2 {});
+		rect.size = mask_size.min(_texture_region.size);
+	}
+
+	if (!rect.has_point(point)) {
+		return false;
+	}
+
+	return _click_mask->get_bitv(point);
 }

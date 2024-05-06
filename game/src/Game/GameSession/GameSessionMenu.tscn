@@ -7,6 +7,7 @@
 [node name="GameSessionMenu" type="PanelContainer" node_paths=PackedStringArray("_main_menu_dialog", "_quit_dialog")]
 process_mode = 3
 editor_description = "UI-68"
+mouse_force_pass_scroll_events = false
 theme = ExtResource("1_2onog")
 theme_type_variation = &"SessionPanel"
 script = ExtResource("1_usq6o")
