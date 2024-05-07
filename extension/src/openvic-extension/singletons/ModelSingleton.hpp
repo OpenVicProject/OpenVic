@@ -32,11 +32,17 @@ namespace OpenVic {
 		template<utility::is_derived_from_specialization_of<UnitInstanceGroup> T>
 		bool add_unit_dict(ordered_set<T*> const& units, godot::TypedArray<godot::Dictionary>& unit_array) const;
 
+		bool add_building_dict(
+			BuildingInstance const& building, Province const& province, godot::TypedArray<godot::Dictionary>& building_array
+		) const;
+
 	public:
 		godot::TypedArray<godot::Dictionary> get_units() const;
 		godot::Dictionary get_cultural_gun_model(godot::String const& culture) const;
 		godot::Dictionary get_cultural_helmet_model(godot::String const& culture) const;
 
 		godot::Dictionary get_flag_model(bool floating) const;
+
+		godot::TypedArray<godot::Dictionary> get_buildings() const;
 	};
 }

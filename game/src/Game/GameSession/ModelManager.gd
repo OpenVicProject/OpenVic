@@ -61,6 +61,25 @@ func _generate_unit(unit_dict : Dictionary) -> void:
 
 	add_child(model)
 
+func generate_buildings() -> void:
+	for building : Dictionary in ModelSingleton.get_buildings():
+		_generate_building(building)
+
+func _generate_building(building_dict : Dictionary) -> void:
+	const model_key : StringName = &"model"
+	const position_key : StringName = &"position"
+	const rotation_key : StringName = &"rotation"
+
+	var model : Node3D = _generate_model(building_dict[model_key])
+	if not model:
+		return
+
+	model.scale *= MODEL_SCALE
+	model.rotate_y(PI + building_dict.get(rotation_key, 0.0))
+	model.set_position(_map_view._map_to_world_coords(building_dict[position_key]) + Vector3(0, 0.1 * MODEL_SCALE, 0))
+
+	add_child(model)
+
 func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : bool = false) -> Node3D:
 	const file_key : StringName = &"file"
 	const scale_key : StringName = &"scale"

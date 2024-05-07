@@ -9,6 +9,7 @@ func _ready() -> void:
 		push_error("Failed to setup game")
 
 	_model_manager.generate_units()
+	_model_manager.generate_buildings()
 
 func _process(_delta : float) -> void:
 	GameSingleton.try_tick()

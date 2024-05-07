@@ -20,6 +20,7 @@ void ModelSingleton::_bind_methods() {
 	OV_BIND_METHOD(ModelSingleton::get_cultural_gun_model, { "culture" });
 	OV_BIND_METHOD(ModelSingleton::get_cultural_helmet_model, { "culture" });
 	OV_BIND_METHOD(ModelSingleton::get_flag_model, { "floating" });
+	OV_BIND_METHOD(ModelSingleton::get_buildings);
 }
 
 ModelSingleton* ModelSingleton::get_singleton() {
@@ -359,4 +360,99 @@ Dictionary ModelSingleton::get_flag_model(bool floating) const {
 	ERR_FAIL_NULL_V(actor, {});
 
 	return make_model_dict(*actor);
+}
+
+bool ModelSingleton::add_building_dict(
+	BuildingInstance const& building, Province const& province, TypedArray<Dictionary>& building_array
+) const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, false);
+
+	static const StringName model_key = "model";
+	static const StringName position_key = "position";
+	static const StringName rotation_key = "rotation";
+
+	std::string suffix;
+
+	if (
+		&building.get_building_type() ==
+			game_singleton->get_game_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
+	) {
+		/* Port */
+		if (!province.has_port()) {
+			return true;
+		}
+
+		if (building.get_level() > 0) {
+			suffix = std::to_string(building.get_level());
+		}
+
+		if (!province.get_navies().empty()) {
+			suffix += "_ships";
+		}
+	} else if (building.get_identifier() == "fort") {
+		/* Fort */
+		if (building.get_level() < 1) {
+			return true;
+		}
+
+		if (building.get_level() > 1) {
+			suffix = std::to_string(building.get_level());
+		}
+	} else {
+		// TODO - railroad (trainstations)
+		return true;
+	}
+
+	fvec2_t const* position_ptr = province.get_building_position(&building.get_building_type());
+	const float rotation = province.get_building_rotation(&building.get_building_type());
+
+	const std::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
+
+	GFX::Actor const* actor = get_actor(actor_name);
+	ERR_FAIL_NULL_V_MSG(
+		actor, false, vformat(
+			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"",
+			std_to_godot_string(actor_name), std_view_to_godot_string(building.get_identifier()),
+			std_view_to_godot_string(province.get_identifier())
+		)
+	);
+
+	Dictionary dict;
+
+	dict[model_key] = make_model_dict(*actor);
+
+	dict[position_key] =
+		game_singleton->map_position_to_world_coords(position_ptr != nullptr ? *position_ptr : province.get_centre());
+
+	if (rotation != 0.0f) {
+		dict[rotation_key] = rotation;
+	}
+
+	// TODO - move dict into unit_array ?
+	building_array.push_back(dict);
+
+	return true;
+}
+
+TypedArray<Dictionary> ModelSingleton::get_buildings() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	TypedArray<Dictionary> ret;
+
+	for (Province const& province : game_singleton->get_game_manager().get_map().get_provinces()) {
+		if (!province.is_water()) {
+			for (BuildingInstance const& building : province.get_buildings()) {
+				if (!add_building_dict(building, province, ret)) {
+					UtilityFunctions::push_error(
+						"Error adding building \"", std_view_to_godot_string(building.get_identifier()), "\" to province \"",
+						std_view_to_godot_string(province.get_identifier()), "\""
+					);
+				}
+			}
+		}
+	}
+
+	return ret;
 }
