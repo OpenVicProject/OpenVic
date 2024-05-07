@@ -70,6 +70,7 @@ namespace OpenVic {
 		int32_t get_map_height() const;
 		godot::Vector2i get_map_dims() const;
 		float get_map_aspect_ratio() const;
+		godot::Vector2 map_position_to_world_coords(fvec2_t const& position) const;
 
 		/* The cosmetic terrain textures stored in a Texture2DArray. */
 		godot::Ref<godot::Texture2DArray> get_terrain_texture() const;

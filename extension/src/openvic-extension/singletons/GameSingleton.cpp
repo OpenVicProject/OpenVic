@@ -159,6 +159,10 @@ float GameSingleton::get_map_aspect_ratio() const {
 	return static_cast<float>(get_map_width()) / static_cast<float>(get_map_height());
 }
 
+Vector2 GameSingleton::map_position_to_world_coords(fvec2_t const& position) const {
+	return Utilities::to_godot_fvec2(position) / get_map_dims();
+}
+
 Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
 	return terrain_texture;
 }
