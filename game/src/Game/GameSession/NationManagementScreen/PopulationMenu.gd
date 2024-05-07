@@ -436,7 +436,7 @@ func _update_province_list(scroll_index : int = -1) -> void:
 			)
 
 		if _province_list_size_labels[index]:
-			_province_list_size_labels[index].set_text(GUINode.int_to_formatted_string(province_list_info[size_key]))
+			_province_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(province_list_info[size_key]))
 
 		if _province_list_growth_icons[index]:
 			_province_list_growth_icons[index].set_icon_index(get_growth_icon_index(province_list_info[change_key]))
@@ -529,7 +529,7 @@ func _update_distributions():
 
 				var weight_label : Label = GUINode.get_label_from_node(child.get_node(^"./legend_value"))
 				if weight_label:
-					weight_label.set_text("%s%%" % GUINode.float_to_formatted_string(distribution_row[slice_weight_key] * 100.0, 1))
+					weight_label.set_text("%s%%" % GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 1))
 
 func _update_pop_list() -> void:
 	if _pop_list_scrollbar:
@@ -567,7 +567,7 @@ func _update_pop_list() -> void:
 			var pop_row : Dictionary = pop_rows[index]
 
 			if _pop_list_size_labels[index]:
-				_pop_list_size_labels[index].set_text(GUINode.int_to_formatted_string(pop_row[pop_size_key]))
+				_pop_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(pop_row[pop_size_key]))
 			if _pop_list_type_icons[index]:
 				_pop_list_type_icons[index].set_icon_index(pop_row[pop_type_icon_key])
 			if _pop_list_culture_labels[index]:
@@ -575,11 +575,11 @@ func _update_pop_list() -> void:
 			if _pop_list_religion_icons[index]:
 				_pop_list_religion_icons[index].set_icon_index(pop_row[pop_religion_icon_key])
 			if _pop_list_location_labels[index]:
-				_pop_list_location_labels[index].set_text(GUINode.format_province_name(pop_row[pop_location_key]))
+				_pop_list_location_labels[index].set_text(GUINode.format_province_name(pop_row.get(pop_location_key, "")))
 			if _pop_list_militancy_labels[index]:
-				_pop_list_militancy_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_militancy_key], 2))
+				_pop_list_militancy_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_militancy_key], 2))
 			if _pop_list_consciousness_labels[index]:
-				_pop_list_consciousness_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_consciousness_key], 2))
+				_pop_list_consciousness_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_consciousness_key], 2))
 			if _pop_list_ideology_charts[index]:
 				_pop_list_ideology_charts[index].set_slices_array(pop_row[pop_ideology_key])
 			if _pop_list_issues_charts[index]:
@@ -587,7 +587,7 @@ func _update_pop_list() -> void:
 			if _pop_list_unemployment_progressbars[index]:
 				_pop_list_unemployment_progressbars[index].set_value_no_signal(pop_row[pop_unemployment_key])
 			if _pop_list_cash_labels[index]:
-				_pop_list_cash_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_cash_key], 2))
+				_pop_list_cash_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
 			if _pop_list_life_needs_progressbars[index]:
 				_pop_list_life_needs_progressbars[index].set_value_no_signal(pop_row[pop_life_needs_key])
 			if _pop_list_everyday_needs_progressbars[index]:
@@ -597,7 +597,7 @@ func _update_pop_list() -> void:
 			if _pop_list_size_change_icons[index]:
 				_pop_list_size_change_icons[index].set_icon_index(get_growth_icon_index(pop_row[pop_size_change_key]))
 			if _pop_list_literacy_labels[index]:
-				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_formatted_string(pop_row[pop_literacy_key], 2))
+				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key], 2))
 
 			_pop_list_rows[index].show()
 		else:

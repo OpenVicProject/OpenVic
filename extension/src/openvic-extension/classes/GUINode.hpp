@@ -85,8 +85,9 @@ namespace OpenVic {
 		godot::Error hide_node(godot::NodePath const& path) const;
 		godot::Error hide_nodes(godot::TypedArray<godot::NodePath> const& paths) const;
 
-		static godot::String int_to_formatted_string(int64_t val);
-		static godot::String float_to_formatted_string(float val, int32_t decimal_places);
+		static godot::String int_to_string_suffixed(int64_t val);
+		static godot::String float_to_string_suffixed(float val);
+		static godot::String float_to_string_dp(float val, int32_t decimal_places);
 		static godot::String format_province_name(godot::String const& province_identifier);
 
 		godot::Ref<godot::BitMap> get_click_mask() const;
