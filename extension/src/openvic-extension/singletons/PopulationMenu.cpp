@@ -400,6 +400,18 @@ void MenuSingleton::_population_menu_update_filtered_pops() {
 	_population_menu_sort_pops();
 }
 
+template<std::derived_from<HasIdentifier> T>
+static bool compare_translated_identifiers(Object const& object, T const& lhs, T const& rhs) {
+	return object.tr(std_view_to_godot_string(lhs.get_identifier()))
+		< object.tr(std_view_to_godot_string(rhs.get_identifier()));
+}
+
+template<std::derived_from<HasIdentifier> T>
+static bool compare_translated_identifiers(Object const& object, T const* lhs, T const* rhs) {
+	return (lhs != nullptr ? object.tr(std_view_to_godot_string(lhs->get_identifier())) : godot::String {})
+		< (rhs != nullptr ? object.tr(std_view_to_godot_string(rhs->get_identifier())) : godot::String {});
+}
+
 MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(population_menu_t::PopSortKey sort_key) const {
 	using enum population_menu_t::PopSortKey;
 	switch (sort_key) {
@@ -409,23 +421,19 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(populat
 		};
 	case SORT_TYPE:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return tr(std_view_to_godot_string(a->get_type().get_identifier()))
-				< tr(std_view_to_godot_string(b->get_type().get_identifier()));
+			return compare_translated_identifiers(*this, a->get_type(), b->get_type());
 		};
 	case SORT_CULTURE:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return tr(std_view_to_godot_string(a->get_culture().get_identifier()))
-				< tr(std_view_to_godot_string(b->get_culture().get_identifier()));
+			return compare_translated_identifiers(*this, a->get_culture(), b->get_culture());
 		};
 	case SORT_RELIGION:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return tr(std_view_to_godot_string(a->get_religion().get_identifier()))
-				< tr(std_view_to_godot_string(b->get_religion().get_identifier()));
+			return compare_translated_identifiers(*this, a->get_religion(), b->get_religion());
 		};
 	case SORT_LOCATION:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return tr(a->get_location() != nullptr ? std_view_to_godot_string(a->get_location()->get_identifier()) : String {})
-				< tr(b->get_location() != nullptr ? std_view_to_godot_string(b->get_location()->get_identifier()) : String {});
+			return compare_translated_identifiers(*this, a->get_location(), b->get_location());
 		};
 	case SORT_MILITANCY:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -464,7 +472,11 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(populat
 			return a->get_luxury_needs_fulfilled() < b->get_luxury_needs_fulfilled();
 		};
 	case SORT_REBEL_FACTION:
-		return [](Pop const* a, Pop const* b) -> bool { return false; }; // TODO - implement
+		return [this](Pop const* a, Pop const* b) -> bool {
+			// TODO - include country adjective for [pan-]nationalist rebels
+			// TODO - handle social/political reform movements
+			return compare_translated_identifiers(*this, a->get_rebel_type(), b->get_rebel_type());
+		};
 	case SORT_SIZE_CHANGE:
 		return [](Pop const* a, Pop const* b) -> bool {
 			return a->get_total_change() < b->get_total_change();
@@ -566,7 +578,10 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	static const StringName pop_luxury_needs_key = "luxury_needs";
 	// TODO - goods not available on market or goods not affordale + price (for all 3 needs types)
 
-	// TODO - rebel faction icon and name/description
+	static const StringName pop_rebel_icon_key = "rebel_icon";
+	// TODO - rebel faction name/description
+	// TODO - icons for social/political reform movements
+	// TODO - flags for country-related rebels
 
 	static const StringName pop_size_change_key = "size_change";
 	// TODO - size change breakdown
@@ -585,8 +600,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_type_icon_key] = pop->get_type().get_sprite();
 		pop_dict[pop_culture_key] = std_view_to_godot_string(pop->get_culture().get_identifier());
 		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
-		pop_dict[pop_location_key] =
-			pop->get_location() != nullptr ? std_view_to_godot_string(pop->get_location()->get_identifier()) : String {};
+		if (pop->get_location() != nullptr) {
+			pop_dict[pop_location_key] = std_view_to_godot_string(pop->get_location()->get_identifier());
+		}
 		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
 		pop_dict[pop_ideology_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_ideologies());
@@ -596,6 +612,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
 		pop_dict[pop_everyday_needs_key] = pop->get_everyday_needs_fulfilled().to_float();
 		pop_dict[pop_luxury_needs_key] = pop->get_luxury_needs_fulfilled().to_float();
+		if (pop->get_rebel_type() != nullptr) {
+			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->get_icon();
+		}
 		pop_dict[pop_size_change_key] = pop->get_total_change();
 		pop_dict[pop_literacy_key] = pop->get_literacy().to_float();
 
