@@ -13,6 +13,7 @@ const _action_zoom_in : StringName = &"map_zoom_in"
 const _action_zoom_out : StringName = &"map_zoom_out"
 const _action_drag : StringName = &"map_drag"
 const _action_click : StringName = &"map_click"
+const _action_right_click : StringName = &"map_right_click"
 
 @export var _camera : Camera3D
 
@@ -185,6 +186,10 @@ func _unhandled_input(event : InputEvent) -> void:
 				GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 			else:
 				print("Clicked outside the map!")
+	elif event.is_action_pressed(_action_right_click):
+		if _mouse_over_viewport:
+			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
+				Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
 	elif event.is_action_pressed(_action_drag):
 		if _drag_active:
 			push_warning("Drag being activated while already active!")
