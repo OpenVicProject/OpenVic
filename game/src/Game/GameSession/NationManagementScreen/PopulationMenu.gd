@@ -49,9 +49,13 @@ var _pop_list_cash_labels : Array[Label]
 var _pop_list_life_needs_progressbars : Array[TextureProgressBar]
 var _pop_list_everyday_needs_progressbars : Array[TextureProgressBar]
 var _pop_list_luxury_needs_progressbars : Array[TextureProgressBar]
+var _pop_list_rebel_texture_rects : Array[TextureRect]
 var _pop_list_rebel_icons : Array[GFXSpriteTexture]
+var _pop_list_social_movement_texture_rects : Array[TextureRect]
 var _pop_list_social_movement_icons : Array[GFXSpriteTexture]
+var _pop_list_political_movement_texture_rects : Array[TextureRect]
 var _pop_list_political_movement_icons : Array[GFXSpriteTexture]
+var _pop_list_national_movement_texture_rects : Array[TextureRect]
 var _pop_list_national_movement_flags : Array[GFXMaskedFlagTexture]
 var _pop_list_size_change_icons : Array[GFXSpriteTexture]
 var _pop_list_literacy_labels : Array[Label]
@@ -357,13 +361,33 @@ func _setup_pop_list() -> void:
 
 		_pop_list_luxury_needs_progressbars.push_back(GUINode.get_progress_bar_from_node(pop_row_panel.get_node(^"./luxneed_progress")))
 
-		_pop_list_rebel_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./pop_revolt")))
+		var pop_list_rebel_texture_rect : TextureRect = GUINode.get_texture_rect_from_node(pop_row_panel.get_node(^"./pop_revolt"))
+		_pop_list_rebel_texture_rects.push_back(pop_list_rebel_texture_rect)
+		if pop_list_rebel_texture_rect:
+			_pop_list_rebel_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_list_rebel_texture_rect))
+		else:
+			_pop_list_rebel_icons.push_back(null)
 
-		_pop_list_social_movement_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./pop_movement_social")))
+		var pop_list_social_movement_texture_rect : TextureRect = GUINode.get_texture_rect_from_node(pop_row_panel.get_node(^"./pop_movement_social"))
+		_pop_list_social_movement_texture_rects.push_back(pop_list_social_movement_texture_rect)
+		if pop_list_social_movement_texture_rect:
+			_pop_list_social_movement_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_list_social_movement_texture_rect))
+		else:
+			_pop_list_social_movement_icons.push_back(null)
 
-		_pop_list_political_movement_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./pop_movement_political")))
+		var pop_list_political_movement_texture_rect : TextureRect = GUINode.get_texture_rect_from_node(pop_row_panel.get_node(^"./pop_movement_political"))
+		_pop_list_political_movement_texture_rects.push_back(pop_list_political_movement_texture_rect)
+		if pop_list_political_movement_texture_rect:
+			_pop_list_political_movement_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_list_political_movement_texture_rect))
+		else:
+			_pop_list_political_movement_icons.push_back(null)
 
-		_pop_list_national_movement_flags.push_back(GUINode.get_gfx_masked_flag_texture_from_node(pop_row_panel.get_node(^"./pop_movement_flag")))
+		var pop_list_national_movement_texture_rect : TextureRect = GUINode.get_texture_rect_from_node(pop_row_panel.get_node(^"./pop_movement_flag"))
+		_pop_list_national_movement_texture_rects.push_back(pop_list_national_movement_texture_rect)
+		if pop_list_national_movement_texture_rect:
+			_pop_list_national_movement_flags.push_back(GUINode.get_gfx_masked_flag_texture_from_node(pop_list_national_movement_texture_rect))
+		else:
+			_pop_list_national_movement_flags.push_back(null)
 
 		_pop_list_size_change_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./growth_indicator")))
 
@@ -436,7 +460,7 @@ func _update_province_list(scroll_index : int = -1) -> void:
 			)
 
 		if _province_list_size_labels[index]:
-			_province_list_size_labels[index].set_text(GUINode.int_to_formatted_string(province_list_info[size_key]))
+			_province_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(province_list_info[size_key]))
 
 		if _province_list_growth_icons[index]:
 			_province_list_growth_icons[index].set_icon_index(get_growth_icon_index(province_list_info[change_key]))
@@ -529,7 +553,7 @@ func _update_distributions():
 
 				var weight_label : Label = GUINode.get_label_from_node(child.get_node(^"./legend_value"))
 				if weight_label:
-					weight_label.set_text("%s%%" % GUINode.float_to_formatted_string(distribution_row[slice_weight_key] * 100.0, 1))
+					weight_label.set_text("%s%%" % GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 1))
 
 func _update_pop_list() -> void:
 	if _pop_list_scrollbar:
@@ -561,13 +585,14 @@ func _update_pop_list() -> void:
 			const pop_life_needs_key : StringName = &"life_needs"
 			const pop_everyday_needs_key : StringName = &"everyday_needs"
 			const pop_luxury_needs_key : StringName = &"luxury_needs"
+			const pop_rebel_icon_key : StringName = &"rebel_icon"
 			const pop_size_change_key : StringName = &"size_change"
 			const pop_literacy_key : StringName = &"literacy"
 
 			var pop_row : Dictionary = pop_rows[index]
 
 			if _pop_list_size_labels[index]:
-				_pop_list_size_labels[index].set_text(GUINode.int_to_formatted_string(pop_row[pop_size_key]))
+				_pop_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(pop_row[pop_size_key]))
 			if _pop_list_type_icons[index]:
 				_pop_list_type_icons[index].set_icon_index(pop_row[pop_type_icon_key])
 			if _pop_list_culture_labels[index]:
@@ -575,11 +600,11 @@ func _update_pop_list() -> void:
 			if _pop_list_religion_icons[index]:
 				_pop_list_religion_icons[index].set_icon_index(pop_row[pop_religion_icon_key])
 			if _pop_list_location_labels[index]:
-				_pop_list_location_labels[index].set_text(GUINode.format_province_name(pop_row[pop_location_key]))
+				_pop_list_location_labels[index].set_text(GUINode.format_province_name(pop_row.get(pop_location_key, "")))
 			if _pop_list_militancy_labels[index]:
-				_pop_list_militancy_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_militancy_key], 2))
+				_pop_list_militancy_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_militancy_key], 2))
 			if _pop_list_consciousness_labels[index]:
-				_pop_list_consciousness_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_consciousness_key], 2))
+				_pop_list_consciousness_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_consciousness_key], 2))
 			if _pop_list_ideology_charts[index]:
 				_pop_list_ideology_charts[index].set_slices_array(pop_row[pop_ideology_key])
 			if _pop_list_issues_charts[index]:
@@ -587,17 +612,34 @@ func _update_pop_list() -> void:
 			if _pop_list_unemployment_progressbars[index]:
 				_pop_list_unemployment_progressbars[index].set_value_no_signal(pop_row[pop_unemployment_key])
 			if _pop_list_cash_labels[index]:
-				_pop_list_cash_labels[index].set_text(GUINode.float_to_formatted_string(pop_row[pop_cash_key], 2))
+				_pop_list_cash_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
 			if _pop_list_life_needs_progressbars[index]:
 				_pop_list_life_needs_progressbars[index].set_value_no_signal(pop_row[pop_life_needs_key])
 			if _pop_list_everyday_needs_progressbars[index]:
 				_pop_list_everyday_needs_progressbars[index].set_value_no_signal(pop_row[pop_everyday_needs_key])
 			if _pop_list_luxury_needs_progressbars[index]:
 				_pop_list_luxury_needs_progressbars[index].set_value_no_signal(pop_row[pop_luxury_needs_key])
+			if _pop_list_rebel_texture_rects[index]:
+				var rebel_icon : int = pop_row.get(pop_rebel_icon_key, 0)
+				if rebel_icon > 0:
+					if _pop_list_rebel_icons[index]:
+						_pop_list_rebel_icons[index].set_icon_index(rebel_icon)
+					_pop_list_rebel_texture_rects[index].show()
+				else:
+					_pop_list_rebel_texture_rects[index].hide()
+
+			# TODO - handle social/political reform and country rebels
+			if _pop_list_social_movement_texture_rects[index]:
+				_pop_list_social_movement_texture_rects[index].hide()
+			if _pop_list_political_movement_texture_rects[index]:
+				_pop_list_political_movement_texture_rects[index].hide()
+			if _pop_list_national_movement_texture_rects[index]:
+				_pop_list_national_movement_texture_rects[index].hide()
+
 			if _pop_list_size_change_icons[index]:
 				_pop_list_size_change_icons[index].set_icon_index(get_growth_icon_index(pop_row[pop_size_change_key]))
 			if _pop_list_literacy_labels[index]:
-				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_formatted_string(pop_row[pop_literacy_key], 2))
+				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key], 2))
 
 			_pop_list_rows[index].show()
 		else:

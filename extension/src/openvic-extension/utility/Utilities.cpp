@@ -13,7 +13,7 @@ using namespace OpenVic;
 
 /* Int to 2 decimal place string in terms of the largest suffix less than or equal to it,
  * or normal integer string if less than the smallest suffix. */
-String Utilities::int_to_formatted_string(int64_t val) {
+String Utilities::int_to_string_suffixed(int64_t val) {
 	static const std::vector<std::pair<int64_t, String>> suffixes {
 		{ 1'000'000'000'000, "T" },
 		{ 1'000'000'000, "B" },
@@ -36,8 +36,30 @@ String Utilities::int_to_formatted_string(int64_t val) {
 	return (negative ? "-" : "") + String::num_int64(val);
 }
 
+String Utilities::float_to_string_suffixed(float val) {
+	const float abs_val = std::abs(val);
+
+	if (abs_val < 10'000.0f) {
+		return float_to_string_dp(val, 1);
+	}
+
+	if (abs_val < 1'000'000.0f) {
+		return float_to_string_dp(val / 1'000.0f, 2) + "k";
+	}
+
+	if (abs_val < 1'000'000'000.0f) {
+		return float_to_string_dp(val / 1'000'000.0f, 2) + "M";
+	}
+
+	if (abs_val < 1'000'000'000'000.0f) {
+		return float_to_string_dp(val / 1'000'000'000.0f, 2) + "B";
+	}
+
+	return float_to_string_dp(val / 1'000'000'000'000.0f, 2) + "T";
+}
+
 /* Float to string formatted with the specified number of decimal places. */
-String Utilities::float_to_formatted_string(float val, int32_t decimal_places) {
+String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
 	return String::num(val, decimal_places).pad_decimals(decimal_places);
 }
 

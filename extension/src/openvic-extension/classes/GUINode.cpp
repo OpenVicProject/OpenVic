@@ -84,8 +84,9 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::hide_node, { "path" });
 	OV_BIND_METHOD(GUINode::hide_nodes, { "paths" });
 
-	OV_BIND_SMETHOD(int_to_formatted_string, { "val" });
-	OV_BIND_SMETHOD(float_to_formatted_string, { "val", "decimal_places" });
+	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
 	OV_BIND_SMETHOD(format_province_name, { "province_identifier" });
 }
 
@@ -221,17 +222,26 @@ Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
 	return ret;
 }
 
-String GUINode::int_to_formatted_string(int64_t val) {
-	return Utilities::int_to_formatted_string(val);
+String GUINode::int_to_string_suffixed(int64_t val) {
+	return Utilities::int_to_string_suffixed(val);
 }
 
-String GUINode::float_to_formatted_string(float val, int32_t decimal_places) {
-	return Utilities::float_to_formatted_string(val, decimal_places);
+String GUINode::float_to_string_suffixed(float val) {
+	return Utilities::float_to_string_suffixed(val);
+}
+
+String GUINode::float_to_string_dp(float val, int32_t decimal_places) {
+	return Utilities::float_to_string_dp(val, decimal_places);
 }
 
 String GUINode::format_province_name(String const& province_identifier) {
-	static const String province_prefix = "PROV";
-	return province_prefix + province_identifier;
+	if (!province_identifier.is_empty()) {
+		static const String province_prefix = "PROV";
+		return province_prefix + province_identifier;
+	} else {
+		static const String no_province = "NO PROVINCE";
+		return no_province;
+	}
 }
 
 Ref<BitMap> GUINode::get_click_mask() const {

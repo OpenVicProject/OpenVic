@@ -33,9 +33,11 @@ namespace OpenVic::Utilities {
 		return std_to_godot_string_name(static_cast<std::string>(str));
 	}
 
-	godot::String int_to_formatted_string(int64_t val);
+	godot::String int_to_string_suffixed(int64_t val);
 
-	godot::String float_to_formatted_string(float val, int32_t decimal_places);
+	godot::String float_to_string_suffixed(float val);
+
+	godot::String float_to_string_dp(float val, int32_t decimal_places);
 
 	constexpr real_t to_real_t(std::floating_point auto val) {
 		return static_cast<real_t>(val);
