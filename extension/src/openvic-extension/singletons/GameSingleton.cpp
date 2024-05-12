@@ -44,6 +44,7 @@ void GameSingleton::_bind_methods() {
 
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "file_paths" });
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
+	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
 
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 
@@ -156,6 +157,10 @@ Vector2i GameSingleton::get_map_dims() const {
 
 float GameSingleton::get_map_aspect_ratio() const {
 	return static_cast<float>(get_map_width()) / static_cast<float>(get_map_height());
+}
+
+Vector2 GameSingleton::map_position_to_world_coords(fvec2_t const& position) const {
+	return Utilities::to_godot_fvec2(position) / get_map_dims();
 }
 
 Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
@@ -592,4 +597,8 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
 	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
+}
+
+String GameSingleton::lookup_file_path(String const& path) const {
+	return std_to_godot_string(dataloader.lookup_file(godot_to_std_string(path)).string());
 }

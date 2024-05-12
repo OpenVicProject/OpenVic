@@ -50,4 +50,10 @@ mesh = SubResource("MapMesh_3gtsd")
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -1, 0)
 mesh = SubResource("PlaneMesh_fnhgl")
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 10)
+light_energy = 1.5
+light_bake_mode = 0
+sky_mode = 1
+
 [connection signal="detailed_view_changed" from="." to="MapText" method="set_visible"]

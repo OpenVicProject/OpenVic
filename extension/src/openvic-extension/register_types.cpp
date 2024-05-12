@@ -16,6 +16,7 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
+#include "openvic-extension/singletons/ModelSingleton.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -24,6 +25,7 @@ static Checksum* _checksum_singleton = nullptr;
 static LoadLocalisation* _load_localisation = nullptr;
 static GameSingleton* _game_singleton = nullptr;
 static MenuSingleton* _menu_singleton = nullptr;
+static ModelSingleton* _model_singleton = nullptr;
 static AssetManager* _asset_manager_singleton = nullptr;
 
 void initialize_openvic_types(ModuleInitializationLevel p_level) {
@@ -46,6 +48,10 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MenuSingleton>();
 	_menu_singleton = memnew(MenuSingleton);
 	Engine::get_singleton()->register_singleton("MenuSingleton", MenuSingleton::get_singleton());
+
+	ClassDB::register_class<ModelSingleton>();
+	_model_singleton = memnew(ModelSingleton);
+	Engine::get_singleton()->register_singleton("ModelSingleton", ModelSingleton::get_singleton());
 
 	ClassDB::register_class<AssetManager>();
 	_asset_manager_singleton = memnew(AssetManager);
@@ -85,6 +91,9 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("MenuSingleton");
 	memdelete(_menu_singleton);
+
+	Engine::get_singleton()->unregister_singleton("ModelSingleton");
+	memdelete(_model_singleton);
 
 	Engine::get_singleton()->unregister_singleton("AssetManager");
 	memdelete(_asset_manager_singleton);
