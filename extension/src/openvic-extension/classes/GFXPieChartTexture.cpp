@@ -111,12 +111,11 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 		ERR_CONTINUE_MSG(
 			!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()), vformat("Invalid slice keys at index %d", i)
 		);
-		slice_t slice = std::make_pair(slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]);
-		ERR_CONTINUE_MSG(
-			slice.second <= 0.0f, vformat("Invalid slice values at index %d \"%s\"", i, slice_dict[_slice_identifier_key()])
-		);
-		total_weight += slice.second;
-		slices.emplace_back(std::move(slice));
+		const slice_t slice = std::make_pair(slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]);
+		if (slice.second > 0.0f) {
+			total_weight += slice.second;
+			slices.push_back(slice);
+		}
 	}
 	return _generate_pie_chart_image();
 }

@@ -18,15 +18,15 @@ var _interest_val_label : Label
 
 # costs
 var _nat_stock_val_label : Label
-var _nat_stock_est_label : Label
+var _nat_stock_exp_label : Label
 var _mil_cost_val_label : Label
 var _overseas_cost_val_label : Label
 var _ind_sub_val_label : Label
 var _admin_efficiency_label : Label
-var _exp_val_0_label : Label
-var _exp_val_1_label : Label
-var _exp_val_2_label : Label
-var _exp_val_3_label : Label
+var _education_exp_label : Label
+var _administration_exp_label : Label
+var _social_exp_label : Label
+var _military_exp_label : Label
 var _total_exp_label : Label
 
 # others
@@ -34,6 +34,11 @@ var _tariffs_percent_label : Label
 var _tariff_val_label : Label
 var _diplomatic_balance_label : Label
 var _balance_label : Label
+
+var _lower_class_chart : GFXPieChartTexture
+var _middle_class_chart : GFXPieChartTexture
+var _upper_class_chart : GFXPieChartTexture
+var _debt_chart : GFXPieChartTexture
 
 const _screen : NationManagement.Screen = NationManagement.Screen.BUDGET
 
@@ -53,8 +58,8 @@ func _ready() -> void:
 	_lower_class_label = get_label_from_nodepath(^"./country_budget/tax_0_inc")
 	_middle_class_label = get_label_from_nodepath(^"./country_budget/tax_1_inc")
 	_upper_class_label = get_label_from_nodepath(^"./country_budget/tax_2_inc")
-	_gold_label = get_label_from_nodepath(^"./country_budget/gold_inc") 
-	_total_inc_label = get_label_from_nodepath(^"./country_budget/total_inc") 
+	_gold_label = get_label_from_nodepath(^"./country_budget/gold_inc")
+	_total_inc_label = get_label_from_nodepath(^"./country_budget/total_inc")
 	# debt
 	_national_bank_label = get_label_from_nodepath(^"./country_budget/national_bank_val")
 	_total_funds_label = get_label_from_nodepath(^"./country_budget/total_funds_val")
@@ -62,119 +67,110 @@ func _ready() -> void:
 	_interest_val_label = get_label_from_nodepath(^"./country_budget/interest_val")
 	# costs
 	_nat_stock_val_label = get_label_from_nodepath(^"./country_budget/nat_stock_val")
-	_nat_stock_est_label = get_label_from_nodepath(^"./country_budget/nat_stock_est")
+	_nat_stock_exp_label = get_label_from_nodepath(^"./country_budget/nat_stock_est")
 	_mil_cost_val_label = get_label_from_nodepath(^"./country_budget/mil_cost_val")
 	_overseas_cost_val_label = get_label_from_nodepath(^"./country_budget/overseas_cost_val")
 	_ind_sub_val_label = get_label_from_nodepath(^"./country_budget/ind_sub_val")
 	_admin_efficiency_label = get_label_from_nodepath(^"./country_budget/admin_efficiency")
-	_exp_val_0_label = get_label_from_nodepath(^"./country_budget/exp_val_0")
-	_exp_val_1_label = get_label_from_nodepath(^"./country_budget/exp_val_1")
-	_exp_val_2_label = get_label_from_nodepath(^"./country_budget/exp_val_2")
-	_exp_val_3_label = get_label_from_nodepath(^"./country_budget/exp_val_3")
+	_education_exp_label = get_label_from_nodepath(^"./country_budget/exp_val_0")
+	_administration_exp_label = get_label_from_nodepath(^"./country_budget/exp_val_1")
+	_social_exp_label = get_label_from_nodepath(^"./country_budget/exp_val_2")
+	_military_exp_label = get_label_from_nodepath(^"./country_budget/exp_val_3")
 	_total_exp_label = get_label_from_nodepath(^"./country_budget/total_exp")
 	# others
 	_tariffs_percent_label = get_label_from_nodepath(^"./country_budget/tariffs_percent")
 	_tariff_val_label = get_label_from_nodepath(^"./country_budget/tariff_val")
 	_diplomatic_balance_label = get_label_from_nodepath(^"./country_budget/diplomatic_balance")
 	_balance_label = get_label_from_nodepath(^"./country_budget/balance")
-	
+
 	# sliders
 	# income
 	var _lower_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_0_slider")
-	var _middle_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_1_slider")
-	var _upper_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_2_slider")
-	# costs
-	var _land_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/land_stockpile_slider")
-	var _naval_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/naval_stockpile_slider")
-	var _projects_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/projects_stockpile_slider")
-	var _exp_0_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_0_slider")
-	var _exp_1_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_1_slider")
-	var _exp_2_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_2_slider")
-	var _exp_3_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_3_slider")
-	# others
-	var _tariff_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tariff_slider")
-	
-	# debt buttons
-	var _tab_takenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_takenloans")
-	var _tab_givenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_givenloans")
-	var _debt_sort_country_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_country")
-	var _debt_sort_amount_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_amount")
-	var _take_loan_button : Button = get_button_from_nodepath(^"./country_budget/take_loan")
-	var _repay_loan_button : Button = get_button_from_nodepath(^"./country_budget/repay_loan")
-	
-	# charts
-	var _lower_class_chart : GFXPieChartTexture = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_0")
-	var _middle_class_chart : GFXPieChartTexture = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_1")
-	var _upper_class_chart : GFXPieChartTexture = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_2")
-	var _debt_chart : GFXPieChartTexture = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_debt")
-	
-	if _tab_takenloans_button:
-		_tab_takenloans_button.pressed.connect(_switch_loans_tab.bind(true))
-	if _tab_givenloans_button:
-		_tab_givenloans_button.pressed.connect(_switch_loans_tab.bind(false))
-	if _debt_sort_country_button:
-		_debt_sort_country_button.pressed.connect(_sort_loans.bind(true))
-	if _debt_sort_amount_button:
-		_debt_sort_amount_button.pressed.connect(_sort_loans.bind(false))
-	if _take_loan_button:
-		_take_loan_button.pressed.connect(_take_loan)
-	if _repay_loan_button:
-		_repay_loan_button.pressed.connect(_repay_loan)
-	
-	# -------------------------------------------------------------------------
-	# --------------- substitute for real values and operations ---------------
-	# -------------------------------------------------------------------------
-	# income
 	if _lower_class_slider and _lower_class_label:
 		_lower_class_slider.value_changed.connect(func(value : int) -> void: _lower_class_label.text = "%s£" % value)
 		_lower_class_slider.emit_value_changed()
+	var _middle_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_1_slider")
 	if _middle_class_slider and _middle_class_label:
 		_middle_class_slider.value_changed.connect(func(value : int) -> void: _middle_class_label.text = "%s£" % value)
 		_middle_class_slider.emit_value_changed()
+	var _upper_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_2_slider")
 	if _upper_class_slider and _upper_class_label:
 		_upper_class_slider.value_changed.connect(func(value : int) -> void: _upper_class_label.text = "%s£" % value)
 		_upper_class_slider.emit_value_changed()
-	# expenses
+
+	# costs
+	var _land_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/land_stockpile_slider")
 	if _land_stockpile_slider and _mil_cost_val_label:
 		_land_stockpile_slider.value_changed.connect(func(value : int) -> void: _mil_cost_val_label.text = "%s£" % value)
 		_land_stockpile_slider.emit_value_changed()
+	var _naval_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/naval_stockpile_slider")
 	if _naval_stockpile_slider and _overseas_cost_val_label:
 		_naval_stockpile_slider.value_changed.connect(func(value : int) -> void: _overseas_cost_val_label.text = "%s£" % value)
 		_naval_stockpile_slider.emit_value_changed()
+	var _projects_stockpile_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/projects_stockpile_slider")
 	if _projects_stockpile_slider:
 		if _nat_stock_val_label:
 			_projects_stockpile_slider.value_changed.connect(func(value : int) -> void: _nat_stock_val_label.text = "%s£" % value)
-		if _nat_stock_est_label:
-			_projects_stockpile_slider.value_changed.connect(func(value : int) -> void: _nat_stock_est_label.text = "%s£" % value)
+		if _nat_stock_exp_label:
+			_projects_stockpile_slider.value_changed.connect(func(value : int) -> void: _nat_stock_exp_label.text = "%s£" % value)
 		_projects_stockpile_slider.emit_value_changed()
-	if _exp_0_slider and _exp_val_0_label:
-		_exp_0_slider.value_changed.connect(func(value : int) -> void: _exp_val_0_label.text = "%s£" % value)
+	var _exp_0_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_0_slider")
+	if _exp_0_slider and _education_exp_label:
+		_exp_0_slider.value_changed.connect(func(value : int) -> void: _education_exp_label.text = "%s£" % value)
 		_exp_0_slider.emit_value_changed()
-	if _exp_1_slider and _exp_val_1_label:
-		_exp_1_slider.value_changed.connect(func(value : int) -> void: _exp_val_1_label.text = "%s£" % value)
+	var _exp_1_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_1_slider")
+	if _exp_1_slider:
+		if _administration_exp_label:
+			_exp_1_slider.value_changed.connect(func(value : int) -> void: _administration_exp_label.text = "%s£" % value)
+		if _admin_efficiency_label:
+			_exp_1_slider.value_changed.connect(func(value : int) -> void: _admin_efficiency_label.text = "%s%%" % value)
 		_exp_1_slider.emit_value_changed()
-	if _exp_2_slider and _exp_val_2_label:
-		_exp_2_slider.value_changed.connect(func(value : int) -> void: _exp_val_2_label.text = "%s£" % value)
+	var _exp_2_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_2_slider")
+	if _exp_2_slider and _social_exp_label:
+		_exp_2_slider.value_changed.connect(func(value : int) -> void: _social_exp_label.text = "%s£" % value)
 		_exp_2_slider.emit_value_changed()
-	if _exp_3_slider and _exp_val_3_label:
-		_exp_3_slider.value_changed.connect(func(value : int) -> void: _exp_val_3_label.text = "%s£" % value)
+	var _exp_3_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_3_slider")
+	if _exp_3_slider and _military_exp_label:
+		_exp_3_slider.value_changed.connect(func(value : int) -> void: _military_exp_label.text = "%s£" % value)
 		_exp_3_slider.emit_value_changed()
-	if _exp_1_slider and _admin_efficiency_label:
-		_exp_1_slider.value_changed.connect(func(value : int) -> void: _admin_efficiency_label.text = "%s%%" % value)	
-		_exp_1_slider.emit_value_changed()
+
 	# others
+	var _tariff_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tariff_slider")
 	if _tariff_slider:
 		if _tariff_val_label:
 			_tariff_slider.value_changed.connect(func(value : int) -> void: _tariff_val_label.text = "%s£" % value)
 		if _tariffs_percent_label:
 			_tariff_slider.value_changed.connect(func(value : int) -> void: _tariffs_percent_label.text = "%s%%" % value)
 		_tariff_slider.emit_value_changed()
+
+	# debt buttons
+	var _tab_takenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_takenloans")
+	if _tab_takenloans_button:
+		_tab_takenloans_button.pressed.connect(_switch_loans_tab.bind(true))
+	var _tab_givenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_givenloans")
+	if _tab_givenloans_button:
+		_tab_givenloans_button.pressed.connect(_switch_loans_tab.bind(false))
+	var _debt_sort_country_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_country")
+	if _debt_sort_country_button:
+		_debt_sort_country_button.pressed.connect(_sort_loans.bind(true))
+	var _debt_sort_amount_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_amount")
+	if _debt_sort_amount_button:
+		_debt_sort_amount_button.pressed.connect(_sort_loans.bind(false))
+	var _take_loan_button : Button = get_button_from_nodepath(^"./country_budget/take_loan")
+	if _take_loan_button:
+		_take_loan_button.pressed.connect(_take_loan)
+	var _repay_loan_button : Button = get_button_from_nodepath(^"./country_budget/repay_loan")
+	if _repay_loan_button:
+		_repay_loan_button.pressed.connect(_repay_loan)
+
 	# charts
-	#if _x_chart:
-	#	_x_chart.set_slices_array(...)
-	
-	# -------------------------------------------------------------------------
-	
+	_lower_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_0")
+	_middle_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_1")
+	_upper_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_2")
+	_debt_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_debt")
+
+	# TODO - generate strata pop type icons
+
 	_update_info()
 
 func _notification(what : int) -> void:
@@ -189,44 +185,66 @@ func _on_update_active_nation_management_screen(active_screen : NationManagement
 func _update_info() -> void:
 	# TODO - remove _incVal and link the true data with the UI
 	_incVal += 1
-	
+
 	if _active:
-		_gold_label.text  = "%s£" % (_incVal - (_incVal % 7))
-		_total_inc_label.text = "%s£" % _incVal
-		_national_bank_label.text = "%s£" % (_incVal * 2)
-		_total_funds_label.text = "%s£" % (_incVal * 3)
-		_debt_val_label.text = "%s£" % (_incVal * 4)
-		_interest_val_label.text = "%s£" % (_incVal * 5)
-		_ind_sub_val_label.text = "%s£" % (_incVal * 6)
-		_diplomatic_balance_label.text = "%s£" % (_incVal * 8)
-		_total_exp_label.text = "%s£" % (_incVal + 1)
-		_balance_label.text = "%s£" % _incVal
-		if _incVal > 0:
-			_balance_label.add_theme_color_override("font_color", Color.DARK_GREEN)
-		elif _incVal < 0:
-			_balance_label.add_theme_color_override("font_color", Color.RED) 
-		else:
-			_balance_label.add_theme_color_override("font_color", Color.BLACK)
+		if _gold_label:
+			_gold_label.text  = "%s£" % (_incVal - (_incVal % 7))
+
+		if _total_inc_label:
+			_total_inc_label.text = "%s£" % _incVal
+
+		if _national_bank_label:
+			_national_bank_label.text = "%s£" % (_incVal * 2)
+
+		if _total_funds_label:
+			_total_funds_label.text = "%s£" % (_incVal * 3)
+
+		if _debt_val_label:
+			_debt_val_label.text = "%s£" % (_incVal * 4)
+
+		if _interest_val_label:
+			_interest_val_label.text = "%s£" % (_incVal * 5)
+
+		if _ind_sub_val_label:
+			_ind_sub_val_label.text = "%s£" % (_incVal * 6)
+
+		if _diplomatic_balance_label:
+			_diplomatic_balance_label.text = "%s£" % (_incVal * 8)
+
+		if _total_exp_label:
+			_total_exp_label.text = "%s£" % (_incVal + 1)
+
+		if _balance_label:
+			_balance_label.text = "%s£" % _incVal
+			_balance_label.add_theme_color_override(&"font_color",
+				Color.DARK_GREEN if _incVal > 0 else
+				(Color.RED if _incVal < 0 else Color.BLACK)
+			)
+
+		# TODO - set strata tax and debt charts
+		# TODO - update sliders to reflect changes in limits
+		# TODO - update loans taken/given list and enable/disable take/give loan buttons
+
 		show()
 	else:
 		hide()
 
 func _switch_loans_tab(taken_loans : bool) -> void:
 	# TODO - code the necessary logic
-	var _variable_so_that_the_function_compiles # remove later
 	#if taken_loans:
 	#else: # given loans
-	
+	pass
+
 func _sort_loans(sort_by_country : bool) -> void:
 	# TODO - code the necessary logic
-	var _variable_so_that_the_function_compiles # remove later
 	#if sort_by_country:
 	#else: # sort by amount
-	
+	pass
+
 func _take_loan() -> void:
 	# TODO - code the necessary logic
-	var _variable_so_that_the_function_compiles # remove later
-	
+	pass
+
 func _repay_loan() -> void:
 	# TODO - code the necessary logic
-	var _variable_so_that_the_function_compiles # remove later
+	pass

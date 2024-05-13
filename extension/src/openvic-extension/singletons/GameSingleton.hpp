@@ -105,6 +105,7 @@ namespace OpenVic {
 		bool is_parchment_mapmode_allowed() const;
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);
+		void unset_selected_province();
 
 		void try_tick();
 	};

@@ -25,9 +25,9 @@ var _drag_active : bool = false
 
 var _mouse_over_viewport : bool = true
 
-@export var _zoom_target_min : float = 0.10
+@export var _zoom_target_min : float = 0.075
 @export var _zoom_target_max : float = 5.0
-@export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 40.0
+@export var _zoom_target_step : float = (_zoom_target_max - _zoom_target_min) / 64.0
 @export var _zoom_epsilon : float = _zoom_target_step * 0.005
 @export var _zoom_speed : float = 5.0
 # _zoom_target's starting value is ignored as it is updated to the camera's height by _ready,
@@ -293,7 +293,7 @@ func _update_orientation() -> void:
 	if _is_detailed_view:
 		# Zero at the transition point, increases as you zoom further in
 		var delta : float = (_zoom_detailed_threshold - _camera.position.y) / _zoom_detailed_threshold
-		dir.z = -(delta ** 4)
+		dir.z = -(delta ** 2)
 	_camera.look_at(_camera.position + dir, up)
 
 func _update_minimap_viewport() -> void:
