@@ -32,8 +32,8 @@ func _draw() -> void:
 # REQUIREMENTS
 # * SS-81
 # * UIFUN-127
-func _unhandled_input(event : InputEvent) -> void:
-	if event is InputEventMouse and Input.is_action_pressed(_action_click):
+func _gui_input(event : InputEvent) -> void:
+	if Input.is_action_pressed(_action_click):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
 		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
 			minimap_clicked.emit(pos_clicked)
