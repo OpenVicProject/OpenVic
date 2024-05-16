@@ -389,4 +389,4 @@ func _on_province_selected(index : int) -> void:
 	_selected_index = index
 
 func _on_close_button_pressed() -> void:
-	GameSingleton.set_selected_province(0)
+	GameSingleton.unset_selected_province()

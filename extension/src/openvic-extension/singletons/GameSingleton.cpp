@@ -69,6 +69,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::is_parchment_mapmode_allowed);
 	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
+	OV_BIND_METHOD(GameSingleton::unset_selected_province);
 
 	OV_BIND_METHOD(GameSingleton::try_tick);
 
@@ -319,6 +320,10 @@ void GameSingleton::set_selected_province(int32_t index) {
 	game_manager.get_map().set_selected_province(index);
 	_update_colour_image();
 	emit_signal(_signal_province_selected(), index);
+}
+
+void GameSingleton::unset_selected_province() {
+	set_selected_province(Province::NULL_INDEX);
 }
 
 void GameSingleton::try_tick() {
