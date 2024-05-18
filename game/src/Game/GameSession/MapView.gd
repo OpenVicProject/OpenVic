@@ -18,7 +18,7 @@ const _action_right_click : StringName = &"map_right_click"
 @export var _camera : Camera3D
 
 @export var _cardinal_move_speed : float = 2.5
-@export var _edge_move_threshold: float = 0.01
+@export var _edge_move_threshold: float = 0.025
 @export var _edge_move_speed: float = 2.5
 var _drag_anchor : Vector2
 var _drag_active : bool = false
@@ -122,6 +122,11 @@ func _ready() -> void:
 
 	_map_text.generate_map_names()
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_MOUSE_EXIT:
+		_mouse_over_viewport = false
+		unset_hovered_province()
+
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
 
@@ -162,6 +167,17 @@ func set_hovered_province_at(pos : Vector2) -> void:
 func unset_hovered_province() -> void:
 	set_hovered_province_index(0)
 
+var _province_hover_dirty := false
+func queue_province_hover_update() -> void:
+	if not _mouse_over_viewport: return
+	_province_hover_dirty = true
+
+func _update_province_hover() -> void:
+	if not _province_hover_dirty: return
+	_province_hover_dirty = false
+	if _mouse_over_viewport:
+		set_hovered_province_at(_viewport_to_map_coords(_mouse_pos_viewport))
+
 func _on_province_selected(index : int) -> void:
 	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
 	print("Province selected with index: ", index)
@@ -177,7 +193,7 @@ func _input(event : InputEvent) -> void:
 func _unhandled_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_over_viewport = true
-		set_hovered_province_at(_viewport_to_map_coords(_mouse_pos_viewport))
+		queue_province_hover_update()
 
 	elif event.is_action_pressed(_action_click):
 		if _mouse_over_viewport:
@@ -218,6 +234,8 @@ func _process(delta : float) -> void:
 	_update_minimap_viewport()
 	# Calculate where the mouse lies on the map
 	_update_mouse_map_position()
+	# Update province hover if dirty
+	_update_province_hover()
 
 # REQUIREMENTS
 # * UIFUN-124
@@ -227,6 +245,8 @@ func _movement_process(delta : float) -> void:
 		direction = (_drag_anchor - _mouse_pos_map) * _map_mesh_dims
 	else:
 		direction = _edge_scrolling_vector() + _cardinal_movement_vector()
+		if direction != Vector2.ZERO:
+			queue_province_hover_update()
 		# Scale movement speed with height
 		direction *= _camera.position.y * delta
 	_camera.position += Vector3(direction.x, 0, direction.y)
@@ -234,7 +254,7 @@ func _movement_process(delta : float) -> void:
 # REQUIREMENTS
 # * UIFUN-125
 func _edge_scrolling_vector() -> Vector2:
-	if _is_viewport_inactive():
+	if not _mouse_over_viewport:
 		return Vector2()
 	var mouse_vector := _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims - Vector2(0.5, 0.5)
 	# Only scroll if outside the move threshold.
@@ -277,6 +297,8 @@ func _zoom_process(delta : float) -> void:
 	# Set to target if height is within _zoom_epsilon of it or has overshot past it
 	if abs(zoom - zoom_delta) < _zoom_epsilon or sign(zoom) != sign(zoom - zoom_delta):
 		zoom_delta = zoom
+	else:
+		queue_province_hover_update()
 	_camera.position += Vector3(
 		_zoom_position.x * zoom_delta * int(_mouse_over_viewport),
 		zoom_delta,
@@ -311,6 +333,7 @@ func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	_camera.position.x = pos_clicked.x
 	_camera.position.z = pos_clicked.y
 	_clamp_over_map()
+	queue_province_hover_update()
 
 func _is_viewport_inactive() -> bool:
 	return not get_window().has_focus() or get_window().is_input_handled()
