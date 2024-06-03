@@ -5,6 +5,7 @@
 #include <openvic-simulation/GameManager.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -26,6 +27,44 @@ StringName const& MenuSingleton::_signal_population_menu_province_list_selected_
 StringName const& MenuSingleton::_signal_population_menu_pops_changed() {
 	static const StringName signal_population_menu_pops_changed = "population_menu_pops_changed";
 	return signal_population_menu_pops_changed;
+}
+
+String MenuSingleton::get_state_name(State const& state) const {
+	StateSet const& state_set = state.get_state_set();
+
+	const String region_identifier = std_view_to_godot_string(state_set.get_region().get_identifier());
+
+	String name = tr(region_identifier);
+
+	const bool named = name != region_identifier;
+	const bool owned = state.get_owner() != nullptr;
+	const bool split = state_set.get_state_count() > 1;
+
+	if (!named) {
+		// Capital province name
+		name = tr(GUINode::format_province_name(std_view_to_godot_string(state.get_capital()->get_identifier())));
+
+		if (!owned) {
+			static const StringName region_key = "REGION_NAME";
+			static const String name_key = "$NAME$";
+
+			String region = tr(region_key);
+
+			if (region != region_key) {
+				// CAPITAL Region
+				return region.replace(name_key, name);
+			}
+		}
+	}
+
+	if (owned && split) {
+		// COUNTRY STATE/CAPITAL
+		return tr(std_view_to_godot_string(StringUtils::append_string_views(state.get_owner()->get_identifier(), "_ADJ")))
+			+ " " + name;
+	}
+
+	// STATE/CAPITAL
+	return name;
 }
 
 void MenuSingleton::_bind_methods() {
@@ -132,7 +171,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	ERR_FAIL_NULL_V(game_manager, {});
 
 	static const StringName province_info_province_key = "province";
-	static const StringName province_info_region_key = "region";
+	static const StringName province_info_state_key = "state";
 	static const StringName province_info_slave_status_key = "slave_status";
 	static const StringName province_info_colony_status_key = "colony_status";
 	static const StringName province_info_terrain_type_key = "terrain_type";
@@ -149,7 +188,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_cores_key = "cores";
 	static const StringName province_info_buildings_key = "buildings";
 
-	Province const* province = game_manager->get_map().get_province_by_index(index);
+	ProvinceInstance const* province = game_manager->get_map().get_province_instance_by_index(index);
 	if (province == nullptr) {
 		return {};
 	}
@@ -157,9 +196,9 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	ret[province_info_province_key] = std_view_to_godot_string(province->get_identifier());
 
-	Region const* region = province->get_region();
-	if (region != nullptr) {
-		ret[province_info_region_key] = std_view_to_godot_string(region->get_identifier());
+	State const* state = province->get_state();
+	if (state != nullptr) {
+		ret[province_info_state_key] = get_state_name(*state);
 	}
 
 	ret[province_info_slave_status_key] = province->get_slave();

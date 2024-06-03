@@ -20,6 +20,9 @@ void MenuSingleton::_population_menu_update_provinces() {
 	population_menu.province_list_entries.clear();
 	population_menu.visible_province_list_entries = 0;
 
+	Map const& map = game_manager->get_map();
+	ERR_FAIL_COND(!map.province_instances_are_locked());
+
 	for (Country const* country : {
 		// Example country
 		game_manager->get_country_manager().get_country_by_identifier("ENG")
@@ -29,14 +32,15 @@ void MenuSingleton::_population_menu_update_provinces() {
 		population_menu.province_list_entries.emplace_back(population_menu_t::country_entry_t { *country });
 		population_menu.visible_province_list_entries++;
 
-		// TODO - change to State
-		for (Region const& state : game_manager->get_map().get_regions()) {
+		for (StateSet const& state_set : map.get_state_manager().get_state_sets()) {
+			for (State const& state : state_set.get_states()) {
 
-			population_menu.province_list_entries.emplace_back(population_menu_t::state_entry_t { state });
-			population_menu.visible_province_list_entries++;
+				population_menu.province_list_entries.emplace_back(population_menu_t::state_entry_t { state });
+				population_menu.visible_province_list_entries++;
 
-			for (Province const* province : state.get_provinces()) {
-				population_menu.province_list_entries.emplace_back(population_menu_t::province_entry_t { *province });
+				for (ProvinceInstance const* province : state.get_provinces()) {
+					population_menu.province_list_entries.emplace_back(population_menu_t::province_entry_t { *province });
+				}
 			}
 		}
 	}
@@ -81,6 +85,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 	struct entry_visitor_t {
 
+		MenuSingleton const& menu_singleton;
+
 		int32_t& start_counter;
 		int32_t& count_counter;
 
@@ -124,8 +130,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				state_dict[type_key] = population_menu_t::LIST_ENTRY_STATE;
 				state_dict[index_key] = index;
-				state_dict[name_key] = std_view_to_godot_string(state_entry.state.get_identifier());
-				state_dict[size_key] = state_entry.state.calculate_total_population();
+				state_dict[name_key] = menu_singleton.get_state_name(state_entry.state);
+				state_dict[size_key] = state_entry.state.get_total_population();
 				state_dict[change_key] = 0;
 				state_dict[selected_key] = state_entry.selected;
 				state_dict[expanded_key] = state_entry.expanded;
@@ -157,7 +163,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 			return  true;
 		}
-	} entry_visitor { start, count, game_manager->get_map().get_total_map_population() };
+	} entry_visitor { *this, start, count, game_manager->get_map().get_total_map_population() };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
@@ -170,7 +176,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index) {
 	ERR_FAIL_INDEX_V(select_index, population_menu.province_list_entries.size(), FAILED);
 
-	struct entry_visitor {
+	struct entry_visitor_t {
 
 		const int32_t _select_index;
 
@@ -253,7 +259,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 	ERR_FAIL_NULL_V(game_manager, FAILED);
 
-	ERR_FAIL_COND_V(province_index <= 0 || province_index > game_manager->get_map().get_province_count(), FAILED);
+	ERR_FAIL_COND_V(province_index <= 0 || province_index > game_manager->get_map().get_province_instance_count(), FAILED);
 
 	struct entry_visitor_t {
 
@@ -283,7 +289,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 		}
 
 		bool operator()(population_menu_t::province_entry_t& province_entry) {
-			if (province_entry.province.get_index() == _province_index) {
+			if (province_entry.province.get_province_definition().get_index() == _province_index) {
 
 				if (state_entry_to_expand >= 0) {
 					ret &= menu_singleton.population_menu_toggle_expanded(state_entry_to_expand, false) == OK;

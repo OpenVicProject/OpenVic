@@ -242,7 +242,7 @@ func _set_core_flag(core_index : int, country : String) -> void:
 
 func _update_info() -> void:
 	const _province_info_province_key         : StringName = &"province"
-	const _province_info_region_key           : StringName = &"region"
+	const _province_info_state_key            : StringName = &"state"
 	const _province_info_slave_status_key     : StringName = &"slave_status"
 	const _province_info_colony_status_key    : StringName = &"colony_status"
 	const _province_info_terrain_type_key     : StringName = &"terrain_type"
@@ -268,8 +268,8 @@ func _update_info() -> void:
 			_province_name_label.text = GUINode.format_province_name(_province_info.get(_province_info_province_key, _missing_suffix))
 
 		if _region_name_label:
-			_region_name_label.text = _province_info.get(_province_info_region_key,
-				_province_info_region_key + _missing_suffix)
+			_region_name_label.text = _province_info.get(_province_info_state_key,
+				_province_info_state_key + _missing_suffix)
 
 		if _slave_status_icon:
 			_slave_status_icon.visible = _province_info.get(_province_info_slave_status_key, false)

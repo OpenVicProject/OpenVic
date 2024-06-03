@@ -458,6 +458,7 @@ func _update_province_list(scroll_index : int = -1) -> void:
 				GUINode.format_province_name(province_list_info[name_key]) if type == MenuSingleton.LIST_ENTRY_PROVINCE
 				else province_list_info[name_key]
 			)
+			_province_list_name_labels[index].set_text_overrun_behavior(TextServer.OVERRUN_TRIM_ELLIPSIS)
 
 		if _province_list_size_labels[index]:
 			_province_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(province_list_info[size_key]))

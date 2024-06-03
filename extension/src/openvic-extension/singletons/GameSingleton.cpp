@@ -124,10 +124,11 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.load_bookmark(bookmark);
 
-	for (Province& province : game_manager.get_map().get_provinces()) {
+	for (ProvinceInstance& province : game_manager.get_map().get_province_instances()) {
 		province.set_crime(
 			game_manager.get_crime_manager().get_crime_modifier_by_index(
-				(province.get_index() - 1) % game_manager.get_crime_manager().get_crime_modifier_count()
+				(province.get_province_definition().get_index() - 1)
+				% game_manager.get_crime_manager().get_crime_modifier_count()
 			)
 		);
 	}
@@ -215,15 +216,15 @@ Ref<ImageTexture> GameSingleton::get_province_colour_texture() const {
 Error GameSingleton::_update_colour_image() {
 	Map const& map = game_manager.get_map();
 	ERR_FAIL_COND_V_MSG(
-		!map.provinces_are_locked(), FAILED, "Cannot generate province colour image before provinces are locked!"
+		!map.province_definitions_are_locked(), FAILED, "Cannot generate province colour image before provinces are locked!"
 	);
 
 	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
-	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(Province::index_t) * CHAR_BIT / 2);
+	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(ProvinceDefinition::index_t) * CHAR_BIT / 2);
 	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_argb_t);
 	/* Province count + null province, rounded up to next multiple of PROVINCE_INDEX_SQRT.
 	 * Rearranged from: (map.get_province_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
-	const int32_t colour_image_height = (map.get_province_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
+	const int32_t colour_image_height = (map.get_province_definition_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
 
 	static PackedByteArray colour_data_array;
 	const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
@@ -258,10 +259,10 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 	static const StringName scale_key = "scale";
 
 	TypedArray<Dictionary> ret;
-	ERR_FAIL_COND_V(ret.resize(game_manager.get_map().get_province_count()) != OK, {});
+	ERR_FAIL_COND_V(ret.resize(game_manager.get_map().get_province_definition_count()) != OK, {});
 
-	for (int32_t index = 0; index < game_manager.get_map().get_province_count(); ++index) {
-		Province const& province = game_manager.get_map().get_provinces()[index];
+	for (int32_t index = 0; index < game_manager.get_map().get_province_definition_count(); ++index) {
+		ProvinceDefinition const& province = game_manager.get_map().get_province_definitions()[index];
 
 		Dictionary province_dict;
 
@@ -323,7 +324,7 @@ void GameSingleton::set_selected_province(int32_t index) {
 }
 
 void GameSingleton::unset_selected_province() {
-	set_selected_province(Province::NULL_INDEX);
+	set_selected_province(ProvinceDefinition::NULL_INDEX);
 }
 
 void GameSingleton::try_tick() {

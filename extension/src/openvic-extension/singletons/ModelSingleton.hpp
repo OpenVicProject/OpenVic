@@ -6,6 +6,8 @@
 #include <openvic-simulation/military/UnitInstance.hpp>
 
 namespace OpenVic {
+	struct BuildingInstance;
+
 	class ModelSingleton : public godot::Object {
 		GDCLASS(ModelSingleton, godot::Object)
 
@@ -33,7 +35,8 @@ namespace OpenVic {
 		bool add_unit_dict(ordered_set<T*> const& units, godot::TypedArray<godot::Dictionary>& unit_array) const;
 
 		bool add_building_dict(
-			BuildingInstance const& building, Province const& province, godot::TypedArray<godot::Dictionary>& building_array
+			BuildingInstance const& building, ProvinceInstance const& province,
+			godot::TypedArray<godot::Dictionary>& building_array
 		) const;
 
 	public:
