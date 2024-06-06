@@ -20,8 +20,8 @@ void MenuSingleton::_population_menu_update_provinces() {
 	population_menu.province_list_entries.clear();
 	population_menu.visible_province_list_entries = 0;
 
-	Map const& map = game_manager->get_map();
-	ERR_FAIL_COND(!map.province_instances_are_locked());
+	MapInstance const& map_instance = game_manager->get_map_instance();
+	ERR_FAIL_COND(!map_instance.province_instances_are_locked());
 
 	for (Country const* country : {
 		// Example country
@@ -32,7 +32,7 @@ void MenuSingleton::_population_menu_update_provinces() {
 		population_menu.province_list_entries.emplace_back(population_menu_t::country_entry_t { *country });
 		population_menu.visible_province_list_entries++;
 
-		for (StateSet const& state_set : map.get_state_manager().get_state_sets()) {
+		for (StateSet const& state_set : map_instance.get_state_manager().get_state_sets()) {
 			for (State const& state : state_set.get_states()) {
 
 				population_menu.province_list_entries.emplace_back(population_menu_t::state_entry_t { state });
@@ -163,7 +163,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 			return  true;
 		}
-	} entry_visitor { *this, start, count, game_manager->get_map().get_total_map_population() };
+	} entry_visitor { *this, start, count, game_manager->get_map_instance().get_total_map_population() };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
@@ -259,7 +259,9 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 	ERR_FAIL_NULL_V(game_manager, FAILED);
 
-	ERR_FAIL_COND_V(province_index <= 0 || province_index > game_manager->get_map().get_province_instance_count(), FAILED);
+	ERR_FAIL_COND_V(
+		province_index <= 0 || province_index > game_manager->get_map_instance().get_province_instance_count(), FAILED
+	);
 
 	struct entry_visitor_t {
 

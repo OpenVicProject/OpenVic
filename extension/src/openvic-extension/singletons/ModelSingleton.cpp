@@ -311,7 +311,7 @@ TypedArray<Dictionary> ModelSingleton::get_units() const {
 
 	TypedArray<Dictionary> ret;
 
-	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map().get_province_instances()) {
+	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map_instance().get_province_instances()) {
 		if (province.get_province_definition().is_water()) {
 			if (!add_unit_dict(province.get_navies(), ret)) {
 				UtilityFunctions::push_error(
@@ -445,7 +445,7 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() const {
 
 	TypedArray<Dictionary> ret;
 
-	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map().get_province_instances()) {
+	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map_instance().get_province_instances()) {
 		if (!province.get_province_definition().is_water()) {
 			for (BuildingInstance const& building : province.get_buildings()) {
 				if (!add_building_dict(building, province, ret)) {
