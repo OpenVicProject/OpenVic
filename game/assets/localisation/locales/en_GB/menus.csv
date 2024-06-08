@@ -133,7 +133,7 @@ VIC2_DIR_DIALOG_CANCEL;Cancel
 
 ;; Province Overview Panel
 PROV_MISSING;No Province
-region_MISSING;No Region
+state_MISSING;No State
 LIFE_RATING_TOOLTIP;Liferating: {life_rating}
 terrain_type_MISSING;No Terrain Type
 total_population_MISSING;No Population

@@ -7,7 +7,7 @@
 
 namespace OpenVic {
 	struct GameManager;
-	struct Region;
+	struct State;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -28,13 +28,12 @@ namespace OpenVic {
 			};
 
 			struct state_entry_t {
-				// TODO - change to State
-				Region const& state;
+				State const& state;
 				bool selected = true, expanded = false;
 			};
 
 			struct province_entry_t {
-				Province const& province;
+				ProvinceInstance const& province;
 				bool selected = true;
 			};
 
@@ -79,6 +78,8 @@ namespace OpenVic {
 		static godot::StringName const& _signal_population_menu_province_list_selected_changed();
 		/* Emitted when the selected/filtered collection of pops changes. */
 		static godot::StringName const& _signal_population_menu_pops_changed();
+
+		godot::String get_state_name(State const& state) const;
 
 	protected:
 		static void _bind_methods();
