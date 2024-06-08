@@ -217,7 +217,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
 	}
 
-	Good const* rgo = province->get_rgo();
+	GoodDefinition const* rgo = province->get_rgo();
 	if (rgo != nullptr) {
 		ret[province_info_rgo_name_key] = std_view_to_godot_string(rgo->get_identifier());
 		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
