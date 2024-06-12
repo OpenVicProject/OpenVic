@@ -1,0 +1,65 @@
+name: Bug Report
+description: File a bug report, not for reporting distinctions from Victoria 2
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filling out this bug report!
+
+        When reporting bugs, please follow the guidelines in this template. This helps identify the problem.
+        - If this feature or behavior was in Victoria 2, specifically for Compatibility mode, please report a [Victoria 2 discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-victoria-2-discrepency.yml) instead.
+        - Write a descriptive issue title above.
+        - **Always open *one* issue for *one* bug**. If you notice several bugs and want to report them, make sure to create one new issue for each of them.
+        - Search [open](https://github.com/OpenVicProject/OpenVic/issues) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been reported. If you don't find a relevant match or if you're unsure, don't hesitate to **open a new issue**. Contributors will handle it from there if it's a duplicate.
+        - Verify that you are using either the latest release or the latest commit. It is preferred that you check if your issue is reproducible in the latest commit – it may already have been fixed!
+        - If you play with a custom game export or custom source modifications, please test if your issue is reproducible in official builds too. Likewise to any external extensions.
+
+  - type: input
+    attributes:
+      label: Game Info
+      description: "Left empty for the second (TODO: prepare)"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Tested versions
+      description: |
+        Please specify the versions you found the issue in, including the **Git commit hash** if using a development or non-official build. The exact version (including the commit hash) can be copied by clicking TODO: prepare
+
+      placeholder: |
+        - Reproducible in: v0.02_Mappa_Mundi [c65b2a795fd35e81f7a1906d07d15c47cd94cf9c].
+        - Not reproducible in: v0.01_Primum_Mobile [1980012045ea4c6b314d6d12a796eda23ae8d7fa].
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Mods or Extensions used
+      description: |
+        If you used any mods or extensions, please list them here with the version and a link to each mod/extension.
+
+  - type: textarea
+    attributes:
+      label: Issue description
+      description: |
+        Describe your issue briefly. What doesn't work, and how do you expect it to work instead?
+        You can include images or videos with drag and drop.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        List of steps that reproduces the issue. Having reproducible issues is a prerequisite for contributors to be able to solve them.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
