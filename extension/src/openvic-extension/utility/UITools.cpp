@@ -32,7 +32,7 @@ using OpenVic::Utilities::std_view_to_godot_string_name;
 GFX::Sprite const* UITools::get_gfx_sprite(godot::String const& gfx_sprite) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
-	GFX::Sprite const* sprite = game_singleton->get_game_manager().get_ui_manager().get_sprite_by_identifier(
+	GFX::Sprite const* sprite = game_singleton->get_definition_manager().get_ui_manager().get_sprite_by_identifier(
 		godot_to_std_string(gfx_sprite)
 	);
 	ERR_FAIL_NULL_V_MSG(sprite, nullptr, vformat("GFX sprite not found: %s", gfx_sprite));
@@ -43,7 +43,7 @@ GUI::Element const* UITools::get_gui_element(godot::String const& gui_scene, god
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene =
-		game_singleton->get_game_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
+		game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, vformat("Failed to find GUI scene %s", gui_scene));
 	GUI::Element const* element = scene->get_scene_element_by_identifier(godot_to_std_string(gui_element));
 	ERR_FAIL_NULL_V_MSG(element, nullptr, vformat("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene));
@@ -54,7 +54,7 @@ GUI::Position const* UITools::get_gui_position(String const& gui_scene, String c
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene =
-		game_singleton->get_game_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
+		game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(godot_to_std_string(gui_scene));
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, vformat("Failed to find GUI scene %s", gui_scene));
 	GUI::Position const* position = scene->get_scene_position_by_identifier(godot_to_std_string(gui_position));
 	ERR_FAIL_NULL_V_MSG(position, nullptr, vformat("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene));

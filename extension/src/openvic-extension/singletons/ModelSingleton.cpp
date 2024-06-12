@@ -42,7 +42,7 @@ GFX::Actor const* ModelSingleton::get_actor(std::string_view name, bool error_on
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	GFX::Actor const* actor =
-		game_singleton->get_game_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
+		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
 
 	if (error_on_fail) {
 		ERR_FAIL_NULL_V_MSG(actor, nullptr, vformat("Failed to find actor \"%s\"", std_view_to_godot_string(name)));
@@ -72,8 +72,8 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 
 	if (actor == nullptr) {
 		/* If no Actor exists for the specified GraphicalCultureType then try the default instead. */
-		GraphicalCultureType const* default_graphical_culture_type =
-			game_singleton->get_game_manager().get_pop_manager().get_culture_manager().get_default_graphical_culture_type();
+		GraphicalCultureType const* default_graphical_culture_type = game_singleton->get_definition_manager().get_pop_manager()
+			.get_culture_manager().get_default_graphical_culture_type();
 
 		if (default_graphical_culture_type != nullptr && default_graphical_culture_type->get_identifier() != culture) {
 			actor_name = StringUtils::append_string_views(default_graphical_culture_type->get_identifier(), name);
@@ -308,10 +308,12 @@ bool ModelSingleton::add_unit_dict(ordered_set<T*> const& units, TypedArray<Dict
 TypedArray<Dictionary> ModelSingleton::get_units() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
 
 	TypedArray<Dictionary> ret;
 
-	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map_instance().get_province_instances()) {
+	for (ProvinceInstance const& province : instance_manager->get_map_instance().get_province_instances()) {
 		if (province.get_province_definition().is_water()) {
 			if (!add_unit_dict(province.get_navies(), ret)) {
 				UtilityFunctions::push_error(
@@ -379,7 +381,7 @@ bool ModelSingleton::add_building_dict(
 
 	if (
 		&building.get_building_type() ==
-			game_singleton->get_game_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
+			game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
 	) {
 		/* Port */
 		if (!province_definition.has_port()) {
@@ -442,10 +444,12 @@ bool ModelSingleton::add_building_dict(
 TypedArray<Dictionary> ModelSingleton::get_buildings() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
 
 	TypedArray<Dictionary> ret;
 
-	for (ProvinceInstance const& province : game_singleton->get_game_manager().get_map_instance().get_province_instances()) {
+	for (ProvinceInstance const& province : instance_manager->get_map_instance().get_province_instances()) {
 		if (!province.get_province_definition().is_water()) {
 			for (BuildingInstance const& building : province.get_buildings()) {
 				if (!add_building_dict(building, province, ret)) {

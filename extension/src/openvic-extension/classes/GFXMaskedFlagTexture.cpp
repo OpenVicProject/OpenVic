@@ -36,11 +36,20 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 
 	if (mask_image.is_valid() && flag_image.is_valid() && flag_image_rect.has_area()) {
 		const Vector2i centre_translation = (mask_image->get_size() - button_image->get_size()) / 2;
-		for (Vector2i combined_image_point { 0, 0 }; combined_image_point.y < button_image->get_height(); ++combined_image_point.y) {
+
+		for (
+			Vector2i combined_image_point { 0, 0 };
+			combined_image_point.y < button_image->get_height();
+			++combined_image_point.y
+		) {
+
 			for (combined_image_point.x = 0; combined_image_point.x < button_image->get_width(); ++combined_image_point.x) {
+
 				const Color overlay_image_colour = overlay_image->get_pixelv(combined_image_point);
+
 				// Translate to mask_image coordinates, keeping the centres of each image aligned.
 				const Vector2i mask_image_point = combined_image_point + centre_translation;
+
 				if (
 					0 <= mask_image_point.x && mask_image_point.x < mask_image->get_width() &&
 					0 <= mask_image_point.y && mask_image_point.y < mask_image->get_height()
@@ -176,13 +185,15 @@ Error GFXMaskedFlagTexture::set_flag_country_and_type(Country const* new_flag_co
 	return _generate_combined_image();
 }
 
-Error GFXMaskedFlagTexture::set_flag_country_name_and_type(String const& new_flag_country_name, StringName const& new_flag_type) {
+Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
+	String const& new_flag_country_name, StringName const& new_flag_type
+) {
 	if (new_flag_country_name.is_empty()) {
 		return set_flag_country_and_type(nullptr, {});
 	}
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	Country const* new_flag_country = game_singleton->get_game_manager().get_country_manager().get_country_by_identifier(
+	Country const* new_flag_country = game_singleton->get_definition_manager().get_country_manager().get_country_by_identifier(
 		godot_to_std_string(new_flag_country_name)
 	);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
@@ -200,7 +211,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country
 	}
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	Country const* new_flag_country = game_singleton->get_game_manager().get_country_manager().get_country_by_identifier(
+	Country const* new_flag_country = game_singleton->get_definition_manager().get_country_manager().get_country_by_identifier(
 		godot_to_std_string(new_flag_country_name)
 	);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
