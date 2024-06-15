@@ -29,9 +29,9 @@ bool MenuSingleton::_population_menu_update_provinces() {
 	MapInstance const& map_instance = instance_manager->get_map_instance();
 	ERR_FAIL_COND_V(!map_instance.province_instances_are_locked(), false);
 
-	for (Country const* country : {
+	for (CountryDefinition const* country : {
 		// Example country
-		game_singleton->get_definition_manager().get_country_manager().get_country_by_identifier("ENG")
+		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier("ENG")
 	}) {
 		ERR_CONTINUE(country == nullptr);
 
