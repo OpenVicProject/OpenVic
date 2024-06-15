@@ -1,16 +1,17 @@
 #pragma once
 
-#include <openvic-simulation/country/Country.hpp>
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 
 namespace OpenVic {
+	struct CountryDefinition;
+
 	class GFXMaskedFlagTexture : public GFXButtonStateHavingTexture {
 		GDCLASS(GFXMaskedFlagTexture, GFXButtonStateHavingTexture)
 
 		GFX::MaskedFlag const* PROPERTY(gfx_masked_flag);
-		Country const* PROPERTY(flag_country);
+		CountryDefinition const* PROPERTY(flag_country);
 		godot::StringName PROPERTY(flag_type);
 
 		godot::Ref<godot::Image> overlay_image, mask_image, flag_image;
@@ -42,7 +43,9 @@ namespace OpenVic {
 		godot::String get_gfx_masked_flag_name() const;
 
 		/* Set flag_country and flag_type and update the combined image to use that flag, or no flag if it doesn't exist. */
-		godot::Error set_flag_country_and_type(Country const* new_flag_country, godot::StringName const& new_flag_type);
+		godot::Error set_flag_country_and_type(
+			CountryDefinition const* new_flag_country, godot::StringName const& new_flag_type
+		);
 
 		/* Look up the country with the specified identifier, then call set_flag_country_and_type with the country and
 		 * specified flag_type as arguments. */
@@ -52,7 +55,7 @@ namespace OpenVic {
 
 		/* Look up the specified country's current flag type, then call set_flag_country_and_type
 		 * with the country and its flag type as arguments. */
-		godot::Error set_flag_country(Country const* new_flag_country);
+		godot::Error set_flag_country(CountryDefinition const* new_flag_country);
 
 		/* Look up the country with the specified identifier, then call set_flag_country with the country its argument. */
 		godot::Error set_flag_country_name(godot::String const& new_flag_country_name);

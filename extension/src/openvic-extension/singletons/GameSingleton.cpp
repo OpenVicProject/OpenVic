@@ -188,8 +188,9 @@ Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
 
 int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const {
 	ERR_FAIL_COND_V_MSG(
-		country_index < 0 || country_index >= get_definition_manager().get_country_manager().get_country_count(), -1,
-		vformat("Invalid country index: %d", country_index)
+		country_index < 0 ||
+			country_index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(),
+		-1, vformat("Invalid country index: %d", country_index)
 	);
 
 	const typename decltype(flag_type_index_map)::const_iterator it = flag_type_index_map.find(flag_type);
@@ -487,10 +488,10 @@ Error GameSingleton::_load_flag_sheet() {
 		government_type_manager.get_flag_types().empty() || !government_type_manager.government_types_are_locked(), FAILED,
 		"Cannot load flag images if flag types are empty or government types are not locked!"
 	);
-	CountryManager const& country_manager = get_definition_manager().get_country_manager();
+	CountryDefinitionManager const& country_definition_manager = get_definition_manager().get_country_definition_manager();
 	ERR_FAIL_COND_V_MSG(
-		country_manager.countries_empty() || !country_manager.countries_are_locked(), FAILED,
-		"Cannot load flag images if countries are empty or not locked!"
+		country_definition_manager.country_definitions_empty() || !country_definition_manager.country_definitions_are_locked(),
+		FAILED, "Cannot load flag images if countries are empty or not locked!"
 	);
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
@@ -502,7 +503,7 @@ Error GameSingleton::_load_flag_sheet() {
 		flag_type_index_map.emplace(std_to_godot_string_name(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
-	flag_sheet_count = country_manager.get_countries().size() * flag_type_index_map.size();
+	flag_sheet_count = country_definition_manager.get_country_definition_count() * flag_type_index_map.size();
 
 	std::vector<Ref<Image>> flag_images;
 	flag_images.reserve(flag_sheet_count);
@@ -510,7 +511,7 @@ Error GameSingleton::_load_flag_sheet() {
 	static constexpr Image::Format flag_format = Image::FORMAT_RGB8;
 
 	Error ret = OK;
-	for (Country const& country : country_manager.get_countries()) {
+	for (CountryDefinition const& country : country_definition_manager.get_country_definitions()) {
 		const String country_name = std_view_to_godot_string(country.get_identifier());
 
 		for (auto const& [flag_type, flag_type_index] : flag_type_index_map) {

@@ -207,7 +207,7 @@ bool ModelSingleton::add_unit_dict(ordered_set<T*> const& units, TypedArray<Dict
 	T const& unit = *units.back();
 	ERR_FAIL_COND_V_MSG(unit.empty(), false, vformat("Empty unit \"%s\"", std_view_to_godot_string(unit.get_name())));
 
-	Country const* country = unit.get_country()->get_base_country();
+	CountryDefinition const* country = unit.get_country()->get_country_definition();
 
 	GraphicalCultureType const& graphical_culture_type = country->get_graphical_culture();
 	UnitType const* display_unit_type = unit.get_display_unit_type();
