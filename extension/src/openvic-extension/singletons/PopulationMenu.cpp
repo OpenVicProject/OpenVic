@@ -2,9 +2,11 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include <openvic-simulation/GameManager.hpp>
+#include <openvic-simulation/DefinitionManager.hpp>
+#include <openvic-simulation/InstanceManager.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -14,18 +16,22 @@ using OpenVic::Utilities::std_view_to_godot_string;
 
 /* POPULATION MENU */
 
-void MenuSingleton::_population_menu_update_provinces() {
-	ERR_FAIL_NULL(game_manager);
+bool MenuSingleton::_population_menu_update_provinces() {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, false);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, false);
 
 	population_menu.province_list_entries.clear();
 	population_menu.visible_province_list_entries = 0;
+	ERR_FAIL_COND_V(!_population_menu_generate_pop_filters(), false);
 
-	MapInstance const& map_instance = game_manager->get_map_instance();
-	ERR_FAIL_COND(!map_instance.province_instances_are_locked());
+	MapInstance const& map_instance = instance_manager->get_map_instance();
+	ERR_FAIL_COND_V(!map_instance.province_instances_are_locked(), false);
 
 	for (Country const* country : {
 		// Example country
-		game_manager->get_country_manager().get_country_by_identifier("ENG")
+		game_singleton->get_definition_manager().get_country_manager().get_country_by_identifier("ENG")
 	}) {
 		ERR_CONTINUE(country == nullptr);
 
@@ -52,6 +58,8 @@ void MenuSingleton::_population_menu_update_provinces() {
 	// TODO - may need to emit population_menu_province_list_selected_changed if _update_info cannot be guaranteed
 
 	_population_menu_update_pops();
+
+	return true;
 }
 
 int32_t MenuSingleton::get_population_menu_province_list_row_count() const {
@@ -60,7 +68,10 @@ int32_t MenuSingleton::get_population_menu_province_list_row_count() const {
 
 TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int32_t start, int32_t count) const {
 	// TODO - remove when country population is used instead of total map population
-	ERR_FAIL_NULL_V(game_manager, {});
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
 
 	if (population_menu.province_list_entries.empty()) {
 		return {};
@@ -163,7 +174,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 			return  true;
 		}
-	} entry_visitor { *this, start, count, game_manager->get_map_instance().get_total_map_population() };
+	} entry_visitor { *this, start, count, instance_manager->get_map_instance().get_total_map_population() };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
@@ -257,10 +268,13 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 }
 
 Error MenuSingleton::population_menu_select_province(int32_t province_index) {
-	ERR_FAIL_NULL_V(game_manager, FAILED);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, FAILED);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V(
-		province_index <= 0 || province_index > game_manager->get_map_instance().get_province_instance_count(), FAILED
+		province_index <= 0 || province_index > instance_manager->get_map_instance().get_province_instance_count(), FAILED
 	);
 
 	struct entry_visitor_t {
@@ -636,15 +650,23 @@ int32_t MenuSingleton::get_population_menu_pop_row_count() const {
 	return population_menu.filtered_pops.size();
 }
 
-PackedInt32Array MenuSingleton::get_population_menu_pop_filter_setup_info() {
-	ERR_FAIL_NULL_V(game_manager, {});
-
+bool MenuSingleton::_population_menu_generate_pop_filters() {
 	if (population_menu.pop_filters.empty()) {
-		for (PopType const& pop_type : game_manager->get_pop_manager().get_pop_types()) {
+		GameSingleton const* game_singleton = GameSingleton::get_singleton();
+		ERR_FAIL_NULL_V(game_singleton, false);
+
+		for (PopType const& pop_type : game_singleton->get_definition_manager().get_pop_manager().get_pop_types()) {
 			population_menu.pop_filters.emplace(&pop_type, population_menu_t::pop_filter_t { 0, 0, true });
 		}
+
+		ERR_FAIL_COND_V_MSG(population_menu.pop_filters.empty(), false, "Failed to generate population menu pop filters!");
 	}
-	ERR_FAIL_COND_V_MSG(population_menu.pop_filters.empty(), {}, "Failed to generate population menu pop filters!");
+
+	return true;
+}
+
+PackedInt32Array MenuSingleton::get_population_menu_pop_filter_setup_info() {
+	ERR_FAIL_COND_V(!_population_menu_generate_pop_filters(), {});
 
 	PackedInt32Array array;
 	ERR_FAIL_COND_V(array.resize(population_menu.pop_filters.size()) != OK, {});

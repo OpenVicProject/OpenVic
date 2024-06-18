@@ -13,8 +13,7 @@ namespace OpenVic {
 
 		static inline GameSingleton* singleton = nullptr;
 
-		GameManager PROPERTY_REF(game_manager);
-		Dataloader PROPERTY(dataloader);
+		GameManager game_manager;
 
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
@@ -54,6 +53,22 @@ namespace OpenVic {
 
 		static void setup_logger();
 
+		inline constexpr Dataloader const& get_dataloader() const {
+			return game_manager.get_dataloader();
+		}
+
+		inline constexpr DefinitionManager const& get_definition_manager() const {
+			return game_manager.get_definition_manager();
+		}
+
+		inline constexpr InstanceManager* get_instance_manager() {
+			return game_manager.get_instance_manager();
+		}
+
+		inline constexpr InstanceManager const* get_instance_manager() const {
+			return game_manager.get_instance_manager();
+		}
+
 		/* Load the game's defines in compatiblity mode from the filepath
 		 * pointing to the defines folder. */
 		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& file_paths);
@@ -63,6 +78,7 @@ namespace OpenVic {
 
 		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
 		godot::Error setup_game(int32_t bookmark_index);
+		godot::Error start_game_session();
 
 		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
 

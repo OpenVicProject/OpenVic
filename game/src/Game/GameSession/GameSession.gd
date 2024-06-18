@@ -5,7 +5,7 @@ extends Control
 
 func _ready() -> void:
 	Events.Options.load_settings_from_file()
-	if GameSingleton.setup_game(0) != OK:
+	if GameSingleton.start_game_session() != OK:
 		push_error("Failed to setup game")
 
 	_model_manager.generate_units()

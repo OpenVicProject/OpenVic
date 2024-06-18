@@ -6,15 +6,12 @@
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
 namespace OpenVic {
-	struct GameManager;
 	struct State;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
 
 		static inline MenuSingleton* singleton = nullptr;
-
-		GameManager* game_manager;
 
 	public:
 		struct population_menu_t {
@@ -113,7 +110,7 @@ namespace OpenVic {
 		godot::String get_longform_date() const;
 
 		/* POPULATION MENU */
-		void _population_menu_update_provinces();
+		bool _population_menu_update_provinces();
 		int32_t get_population_menu_province_list_row_count() const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_province_list_rows(int32_t start, int32_t count) const;
 		godot::Error population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index = false);
@@ -129,6 +126,7 @@ namespace OpenVic {
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 
+		bool _population_menu_generate_pop_filters();
 		godot::PackedInt32Array get_population_menu_pop_filter_setup_info();
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_filter_info() const;
 		godot::Error population_menu_toggle_pop_filter(int32_t filter_index);
