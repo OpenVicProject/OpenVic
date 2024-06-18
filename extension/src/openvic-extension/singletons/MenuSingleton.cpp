@@ -188,7 +188,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_cores_key = "cores";
 	static const StringName province_info_buildings_key = "buildings";
 
-	ProvinceInstance const* province = game_manager->get_map().get_province_instance_by_index(index);
+	ProvinceInstance const* province = game_manager->get_map_instance().get_province_instance_by_index(index);
 	if (province == nullptr) {
 		return {};
 	}

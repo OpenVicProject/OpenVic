@@ -124,7 +124,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.load_bookmark(bookmark);
 
-	for (ProvinceInstance& province : game_manager.get_map().get_province_instances()) {
+	for (ProvinceInstance& province : game_manager.get_map_instance().get_province_instances()) {
 		province.set_crime(
 			game_manager.get_crime_manager().get_crime_modifier_by_index(
 				(province.get_province_definition().get_index() - 1)
@@ -142,19 +142,19 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 
 int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
 	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();
-	return game_manager.get_map().get_province_index_at(Utilities::from_godot_ivec2(pos));
+	return game_manager.get_map_definition().get_province_index_at(Utilities::from_godot_ivec2(pos));
 }
 
 int32_t GameSingleton::get_map_width() const {
-	return game_manager.get_map().get_width();
+	return game_manager.get_map_definition().get_width();
 }
 
 int32_t GameSingleton::get_map_height() const {
-	return game_manager.get_map().get_height();
+	return game_manager.get_map_definition().get_height();
 }
 
 Vector2i GameSingleton::get_map_dims() const {
-	return Utilities::to_godot_ivec2(game_manager.get_map().get_dims());
+	return Utilities::to_godot_ivec2(game_manager.get_map_definition().get_dims());
 }
 
 float GameSingleton::get_map_aspect_ratio() const {
@@ -214,24 +214,28 @@ Ref<ImageTexture> GameSingleton::get_province_colour_texture() const {
 }
 
 Error GameSingleton::_update_colour_image() {
-	Map const& map = game_manager.get_map();
+	MapDefinition const& map_definition = game_manager.get_map_definition();
 	ERR_FAIL_COND_V_MSG(
-		!map.province_definitions_are_locked(), FAILED, "Cannot generate province colour image before provinces are locked!"
+		!map_definition.province_definitions_are_locked(), FAILED,
+		"Cannot generate province colour image before provinces are locked!"
 	);
 
 	/* We reshape the list of colours into a square, as each texture dimensions cannot exceed 16384. */
 	static constexpr int32_t PROVINCE_INDEX_SQRT = 1 << (sizeof(ProvinceDefinition::index_t) * CHAR_BIT / 2);
 	static constexpr int32_t colour_image_width = PROVINCE_INDEX_SQRT * sizeof(Mapmode::base_stripe_t) / sizeof(colour_argb_t);
 	/* Province count + null province, rounded up to next multiple of PROVINCE_INDEX_SQRT.
-	 * Rearranged from: (map.get_province_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
-	const int32_t colour_image_height = (map.get_province_definition_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
+	 * Rearranged from: (map_definition.get_province_definition_count() + 1) + (PROVINCE_INDEX_SQRT - 1) */
+	const int32_t colour_image_height =
+		(map_definition.get_province_definition_count() + PROVINCE_INDEX_SQRT) / PROVINCE_INDEX_SQRT;
 
 	static PackedByteArray colour_data_array;
 	const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
 	ERR_FAIL_COND_V(colour_data_array.resize(colour_data_array_size) != OK, FAILED);
 
 	Error err = OK;
-	if (!map.generate_mapmode_colours(mapmode_index, colour_data_array.ptrw())) {
+	if (!game_manager.get_mapmode_manager().generate_mapmode_colours(
+		game_manager.get_map_instance(), mapmode_index, colour_data_array.ptrw()
+	)) {
 		err = FAILED;
 	}
 
@@ -258,11 +262,13 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 	static const StringName rotation_key = "rotation";
 	static const StringName scale_key = "scale";
 
-	TypedArray<Dictionary> ret;
-	ERR_FAIL_COND_V(ret.resize(game_manager.get_map().get_province_definition_count()) != OK, {});
+	MapDefinition const& map_definition = game_manager.get_map_definition();
 
-	for (int32_t index = 0; index < game_manager.get_map().get_province_definition_count(); ++index) {
-		ProvinceDefinition const& province = game_manager.get_map().get_province_definitions()[index];
+	TypedArray<Dictionary> ret;
+	ERR_FAIL_COND_V(ret.resize(map_definition.get_province_definition_count()) != OK, {});
+
+	for (int32_t index = 0; index < map_definition.get_province_definition_count(); ++index) {
+		ProvinceDefinition const& province = map_definition.get_province_definitions()[index];
 
 		Dictionary province_dict;
 
@@ -286,11 +292,11 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 }
 
 int32_t GameSingleton::get_mapmode_count() const {
-	return game_manager.get_map().get_mapmode_count();
+	return game_manager.get_mapmode_manager().get_mapmode_count();
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_index(index);
+	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_index(index);
 	if (mapmode != nullptr) {
 		return std_view_to_godot_string(mapmode->get_identifier());
 	}
@@ -298,7 +304,7 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 }
 
 Error GameSingleton::set_mapmode(String const& identifier) {
-	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_identifier(godot_to_std_string(identifier));
+	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_identifier(godot_to_std_string(identifier));
 	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
 	mapmode_index = mapmode->get_index();
 	return _update_colour_image();
@@ -309,16 +315,16 @@ bool GameSingleton::is_parchment_mapmode_allowed() const {
 	// TODO - move mapmode index to SIM/Map?
 	/* Disallows parchment mapmode for the cosmetic terrain mapmode */
 	static constexpr std::string_view cosmetic_terrain_mapmode = "mapmode_terrain";
-	Mapmode const* mapmode = game_manager.get_map().get_mapmode_by_index(mapmode_index);
+	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_index(mapmode_index);
 	return mapmode != nullptr && mapmode->get_identifier() != cosmetic_terrain_mapmode;
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
-	return game_manager.get_map().get_selected_province_index();
+	return game_manager.get_map_instance().get_selected_province_index();
 }
 
 void GameSingleton::set_selected_province(int32_t index) {
-	game_manager.get_map().set_selected_province(index);
+	game_manager.get_map_instance().set_selected_province(index);
 	_update_colour_image();
 	emit_signal(_signal_province_selected(), index);
 }
@@ -336,10 +342,7 @@ Error GameSingleton::_load_map_images() {
 
 	Error err = OK;
 
-	const Vector2i province_dims {
-		static_cast<int32_t>(game_manager.get_map().get_width()),
-		static_cast<int32_t>(game_manager.get_map().get_height())
-	};
+	const Vector2i province_dims = get_map_dims();
 
 	// For each dimension of the image, this finds the small number of equal subdivisions
 	// required get the individual texture dims under GPU_DIM_LIMIT
@@ -350,10 +353,11 @@ Error GameSingleton::_load_map_images() {
 		}
 	}
 
-	Map::shape_pixel_t const* province_shape_data = game_manager.get_map().get_province_shape_image().data();
+	MapDefinition::shape_pixel_t const* province_shape_data =
+		game_manager.get_map_definition().get_province_shape_image().data();
 
 	const Vector2i divided_dims = province_dims / image_subdivisions;
-	const int64_t subdivision_width = divided_dims.x * sizeof(Map::shape_pixel_t);
+	const int64_t subdivision_width = divided_dims.x * sizeof(MapDefinition::shape_pixel_t);
 	const int64_t subdivision_size = subdivision_width * divided_dims.y;
 
 	TypedArray<Image> province_shape_images;
@@ -586,10 +590,6 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 	}
 	if (_load_map_images() != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
-		err = FAILED;
-	}
-	if (!game_manager.load_hardcoded_defines()) {
-		UtilityFunctions::push_error("Failed to hardcoded defines!");
 		err = FAILED;
 	}
 	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
