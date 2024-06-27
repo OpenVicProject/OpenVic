@@ -20,7 +20,7 @@ namespace OpenVic {
 			};
 
 			struct country_entry_t {
-				Country const& country;
+				CountryDefinition const& country;
 				bool selected = true;
 			};
 
