@@ -6,7 +6,9 @@
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
 namespace OpenVic {
+	struct CountryInstance;
 	struct State;
+	struct ProvinceInstance;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -20,7 +22,7 @@ namespace OpenVic {
 			};
 
 			struct country_entry_t {
-				CountryDefinition const& country;
+				CountryInstance const& country;
 				bool selected = true;
 			};
 
