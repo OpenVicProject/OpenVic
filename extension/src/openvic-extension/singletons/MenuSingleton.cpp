@@ -207,7 +207,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	ret[province_info_life_rating_key] = province->get_life_rating();
 
-	Country const* controller = province->get_controller();
+	CountryDefinition const* controller = province->get_controller();
 	if (controller != nullptr) {
 		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
 	}
@@ -241,7 +241,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_pop_cultures_key] = GFXPieChartTexture::distribution_to_slices_array(cultures);
 	}
 
-	std::vector<Country const*> const& cores = province->get_cores();
+	std::vector<CountryDefinition const*> const& cores = province->get_cores();
 	if (!cores.empty()) {
 		PackedStringArray cores_array;
 		if (cores_array.resize(cores.size()) == OK) {
