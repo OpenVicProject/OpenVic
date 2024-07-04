@@ -47,6 +47,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
 
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
+	OV_BIND_METHOD(GameSingleton::start_game_session);
 
 	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
 
@@ -120,41 +121,49 @@ void GameSingleton::setup_logger() {
 }
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
-	Bookmark const* bookmark = game_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index);
+	Bookmark const* bookmark = game_manager.get_definition_manager().get_history_manager().get_bookmark_manager()
+		.get_bookmark_by_index(bookmark_index);
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
-	bool ret = game_manager.load_bookmark(bookmark);
+	bool ret = game_manager.setup_instance(bookmark);
 
-	for (ProvinceInstance& province : game_manager.get_map_instance().get_province_instances()) {
+	// TODO - remove this temporary crime assignment
+	InstanceManager* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
+	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
 		province.set_crime(
-			game_manager.get_crime_manager().get_crime_modifier_by_index(
+			get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
 				(province.get_province_definition().get_index() - 1)
-				% game_manager.get_crime_manager().get_crime_modifier_count()
+				% get_definition_manager().get_crime_manager().get_crime_modifier_count()
 			)
 		);
 	}
 
 	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
 	ERR_FAIL_NULL_V(menu_singleton, FAILED);
-	menu_singleton->_population_menu_update_provinces();
+	ret &= menu_singleton->_population_menu_update_provinces();
 
 	return ERR(ret);
 }
 
+Error GameSingleton::start_game_session() {
+	return ERR(game_manager.start_game_session());
+}
+
 int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
 	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();
-	return game_manager.get_map_definition().get_province_index_at(Utilities::from_godot_ivec2(pos));
+	return get_definition_manager().get_map_definition().get_province_index_at(Utilities::from_godot_ivec2(pos));
 }
 
 int32_t GameSingleton::get_map_width() const {
-	return game_manager.get_map_definition().get_width();
+	return get_definition_manager().get_map_definition().get_width();
 }
 
 int32_t GameSingleton::get_map_height() const {
-	return game_manager.get_map_definition().get_height();
+	return get_definition_manager().get_map_definition().get_height();
 }
 
 Vector2i GameSingleton::get_map_dims() const {
-	return Utilities::to_godot_ivec2(game_manager.get_map_definition().get_dims());
+	return Utilities::to_godot_ivec2(get_definition_manager().get_map_definition().get_dims());
 }
 
 float GameSingleton::get_map_aspect_ratio() const {
@@ -179,7 +188,7 @@ Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
 
 int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const {
 	ERR_FAIL_COND_V_MSG(
-		country_index < 0 || country_index >= game_manager.get_country_manager().get_country_count(), -1,
+		country_index < 0 || country_index >= get_definition_manager().get_country_manager().get_country_count(), -1,
 		vformat("Invalid country index: %d", country_index)
 	);
 
@@ -214,7 +223,7 @@ Ref<ImageTexture> GameSingleton::get_province_colour_texture() const {
 }
 
 Error GameSingleton::_update_colour_image() {
-	MapDefinition const& map_definition = game_manager.get_map_definition();
+	MapDefinition const& map_definition = get_definition_manager().get_map_definition();
 	ERR_FAIL_COND_V_MSG(
 		!map_definition.province_definitions_are_locked(), FAILED,
 		"Cannot generate province colour image before provinces are locked!"
@@ -233,8 +242,10 @@ Error GameSingleton::_update_colour_image() {
 	ERR_FAIL_COND_V(colour_data_array.resize(colour_data_array_size) != OK, FAILED);
 
 	Error err = OK;
-	if (!game_manager.get_mapmode_manager().generate_mapmode_colours(
-		game_manager.get_map_instance(), mapmode_index, colour_data_array.ptrw()
+
+	InstanceManager const* instance_manager = get_instance_manager();
+	if (instance_manager != nullptr && !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
+		instance_manager->get_map_instance(), mapmode_index, colour_data_array.ptrw()
 	)) {
 		err = FAILED;
 	}
@@ -262,7 +273,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 	static const StringName rotation_key = "rotation";
 	static const StringName scale_key = "scale";
 
-	MapDefinition const& map_definition = game_manager.get_map_definition();
+	MapDefinition const& map_definition = get_definition_manager().get_map_definition();
 
 	TypedArray<Dictionary> ret;
 	ERR_FAIL_COND_V(ret.resize(map_definition.get_province_definition_count()) != OK, {});
@@ -292,11 +303,11 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 }
 
 int32_t GameSingleton::get_mapmode_count() const {
-	return game_manager.get_mapmode_manager().get_mapmode_count();
+	return get_definition_manager().get_mapmode_manager().get_mapmode_count();
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_index(index);
+	Mapmode const* mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
 	if (mapmode != nullptr) {
 		return std_view_to_godot_string(mapmode->get_identifier());
 	}
@@ -304,7 +315,8 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 }
 
 Error GameSingleton::set_mapmode(String const& identifier) {
-	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_identifier(godot_to_std_string(identifier));
+	Mapmode const* mapmode =
+		get_definition_manager().get_mapmode_manager().get_mapmode_by_identifier(godot_to_std_string(identifier));
 	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
 	mapmode_index = mapmode->get_index();
 	return _update_colour_image();
@@ -315,16 +327,22 @@ bool GameSingleton::is_parchment_mapmode_allowed() const {
 	// TODO - move mapmode index to SIM/Map?
 	/* Disallows parchment mapmode for the cosmetic terrain mapmode */
 	static constexpr std::string_view cosmetic_terrain_mapmode = "mapmode_terrain";
-	Mapmode const* mapmode = game_manager.get_mapmode_manager().get_mapmode_by_index(mapmode_index);
+	Mapmode const* mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(mapmode_index);
 	return mapmode != nullptr && mapmode->get_identifier() != cosmetic_terrain_mapmode;
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
-	return game_manager.get_map_instance().get_selected_province_index();
+	InstanceManager const* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, 0);
+
+	return instance_manager->get_map_instance().get_selected_province_index();
 }
 
 void GameSingleton::set_selected_province(int32_t index) {
-	game_manager.get_map_instance().set_selected_province(index);
+	InstanceManager* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->get_map_instance().set_selected_province(index);
 	_update_colour_image();
 	emit_signal(_signal_province_selected(), index);
 }
@@ -334,7 +352,10 @@ void GameSingleton::unset_selected_province() {
 }
 
 void GameSingleton::try_tick() {
-	game_manager.get_simulation_clock().conditionally_advance_game();
+	InstanceManager* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->get_simulation_clock().conditionally_advance_game();
 }
 
 Error GameSingleton::_load_map_images() {
@@ -354,7 +375,7 @@ Error GameSingleton::_load_map_images() {
 	}
 
 	MapDefinition::shape_pixel_t const* province_shape_data =
-		game_manager.get_map_definition().get_province_shape_image().data();
+		get_definition_manager().get_map_definition().get_province_shape_image().data();
 
 	const Vector2i divided_dims = province_dims / image_subdivisions;
 	const int64_t subdivision_width = divided_dims.x * sizeof(MapDefinition::shape_pixel_t);
@@ -460,12 +481,13 @@ Error GameSingleton::_load_flag_sheet() {
 		"Flag sheet image and/or texture has already been generated!"
 	);
 
-	GovernmentTypeManager const& government_type_manager = game_manager.get_politics_manager().get_government_type_manager();
+	GovernmentTypeManager const& government_type_manager =
+		get_definition_manager().get_politics_manager().get_government_type_manager();
 	ERR_FAIL_COND_V_MSG(
 		government_type_manager.get_flag_types().empty() || !government_type_manager.government_types_are_locked(), FAILED,
 		"Cannot load flag images if flag types are empty or government types are not locked!"
 	);
-	CountryManager const& country_manager = game_manager.get_country_manager();
+	CountryManager const& country_manager = get_definition_manager().get_country_manager();
 	ERR_FAIL_COND_V_MSG(
 		country_manager.countries_empty() || !country_manager.countries_are_locked(), FAILED,
 		"Cannot load flag images if countries are empty or not locked!"
@@ -572,14 +594,12 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 
 	Error err = OK;
 
-	if (!dataloader.set_roots(roots)) {
-		Logger::error("Failed to set dataloader roots!");
-		err = FAILED;
-	}
-	if (!dataloader.load_defines(game_manager)) {
+	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
+	if (!game_manager.load_definitions(roots, add_message)) {
 		UtilityFunctions::push_error("Failed to load defines!");
 		err = FAILED;
 	}
+
 	if (_load_terrain_variants() != OK) {
 		UtilityFunctions::push_error("Failed to load terrain variants!");
 		err = FAILED;
@@ -592,11 +612,6 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 		UtilityFunctions::push_error("Failed to load map images!");
 		err = FAILED;
 	}
-	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
-	if (!dataloader.load_localisation_files(add_message)) {
-		UtilityFunctions::push_error("Failed to load localisation!");
-		err = FAILED;
-	}
 
 	return err;
 }
@@ -606,5 +621,5 @@ String GameSingleton::search_for_game_path(String const& hint_path) {
 }
 
 String GameSingleton::lookup_file_path(String const& path) const {
-	return std_to_godot_string(dataloader.lookup_file(godot_to_std_string(path)).string());
+	return std_to_godot_string(get_dataloader().lookup_file(godot_to_std_string(path)).string());
 }

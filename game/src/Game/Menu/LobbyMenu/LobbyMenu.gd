@@ -116,6 +116,12 @@ func _on_session_tag_edit_text_submitted(new_text : String) -> void:
 	_on_start_button_pressed()
 
 func _on_session_tag_dialog_confirmed() -> void:
+	# TODO - get bookmarks from SIM and generated corresponding buttons,
+	# then use the selected button's bookmark instead of always using 0
+
+	# Game has to be setup (bookmark loaded) before opening the GameSession scene
+	if GameSingleton.setup_game(0) != OK:
+		push_error("Failed to setup game")
 	get_tree().change_scene_to_file("res://src/Game/GameSession/GameSession.tscn")
 
 var _requested_node_to_delete : Control

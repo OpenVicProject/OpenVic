@@ -147,15 +147,7 @@ MenuSingleton* MenuSingleton::get_singleton() {
 	return singleton;
 }
 
-MenuSingleton::MenuSingleton() : game_manager {
-	[]() -> GameManager* {
-		GameSingleton* game_singleton = GameSingleton::get_singleton();
-		ERR_FAIL_NULL_V_MSG(
-			game_singleton, nullptr, "Cannot initialise MenuSingleton's GameManager pointer - GameSingleton not initialised!"
-		);
-		return &game_singleton->get_game_manager();
-	}()
-} {
+MenuSingleton::MenuSingleton() {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -168,7 +160,10 @@ MenuSingleton::~MenuSingleton() {
 /* PROVINCE OVERVIEW PANEL */
 
 Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
-	ERR_FAIL_NULL_V(game_manager, {});
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
 
 	static const StringName province_info_province_key = "province";
 	static const StringName province_info_state_key = "state";
@@ -188,7 +183,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_cores_key = "cores";
 	static const StringName province_info_buildings_key = "buildings";
 
-	ProvinceInstance const* province = game_manager->get_map_instance().get_province_instance_by_index(index);
+	ProvinceInstance const* province = instance_manager->get_map_instance().get_province_instance_by_index(index);
 	if (province == nullptr) {
 		return {};
 	}
@@ -298,16 +293,19 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 }
 
 int32_t MenuSingleton::get_province_building_count() const {
-	ERR_FAIL_NULL_V(game_manager, 0);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	return game_manager->get_economy_manager().get_building_type_manager().get_province_building_types().size();
+	return game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager()
+		.get_province_building_types().size();
 }
 
 String MenuSingleton::get_province_building_identifier(int32_t building_index) const {
-	ERR_FAIL_NULL_V(game_manager, {});
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
 
-	std::vector<BuildingType const*> const& province_building_types =
-		game_manager->get_economy_manager().get_building_type_manager().get_province_building_types();
+	std::vector<BuildingType const*> const& province_building_types = game_singleton->get_definition_manager()
+		.get_economy_manager().get_building_type_manager().get_province_building_types();
 	ERR_FAIL_COND_V_MSG(
 		building_index < 0 || building_index >= province_building_types.size(), {},
 		vformat("Invalid province building index: %d", building_index)
@@ -316,35 +314,41 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 }
 
 Error MenuSingleton::expand_selected_province_building(int32_t building_index) {
-	ERR_FAIL_NULL_V(game_manager, FAILED);
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, FAILED);
+	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V_MSG(
-		!game_manager->expand_selected_province_building(building_index), FAILED,
+		!instance_manager->expand_selected_province_building(building_index), FAILED,
 		vformat("Failed to expand the currently selected province's building index %d", building_index)
 	);
 	return OK;
 }
 
 int32_t MenuSingleton::get_slave_pop_icon_index() const {
-	ERR_FAIL_NULL_V(game_manager, 0);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_manager->get_pop_manager().get_slave_sprite();
+	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_slave_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Slave sprite unset!");
 	return sprite;
 }
 
 int32_t MenuSingleton::get_administrative_pop_icon_index() const {
-	ERR_FAIL_NULL_V(game_manager, 0);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_manager->get_pop_manager().get_administrative_sprite();
+	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_administrative_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Administrative sprite unset!");
 	return sprite;
 }
 
 int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
-	ERR_FAIL_NULL_V(game_manager, 0);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_manager->get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
+	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
 }
@@ -352,55 +356,82 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TIME/SPEED CONTROL PANEL */
 
 void MenuSingleton::set_paused(bool paused) {
-	ERR_FAIL_NULL(game_manager);
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL(game_singleton);
+	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
 
-	game_manager->get_simulation_clock().set_paused(paused);
+	instance_manager->get_simulation_clock().set_paused(paused);
 }
 
 void MenuSingleton::toggle_paused() {
-	ERR_FAIL_NULL(game_manager);
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL(game_singleton);
+	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
 
-	game_manager->get_simulation_clock().toggle_paused();
+	instance_manager->get_simulation_clock().toggle_paused();
 }
 
 bool MenuSingleton::is_paused() const {
-	ERR_FAIL_NULL_V(game_manager, true);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, true);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, true);
 
-	return game_manager->get_simulation_clock().is_paused();
+	return instance_manager->get_simulation_clock().is_paused();
 }
 
 void MenuSingleton::increase_speed() {
-	ERR_FAIL_NULL(game_manager);
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL(game_singleton);
+	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
 
-	game_manager->get_simulation_clock().increase_simulation_speed();
+	instance_manager->get_simulation_clock().increase_simulation_speed();
 }
 
 void MenuSingleton::decrease_speed() {
-	ERR_FAIL_NULL(game_manager);
+	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL(game_singleton);
+	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
 
-	game_manager->get_simulation_clock().decrease_simulation_speed();
+	instance_manager->get_simulation_clock().decrease_simulation_speed();
 }
 
 int32_t MenuSingleton::get_speed() const {
-	ERR_FAIL_NULL_V(game_manager, 0);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, 0);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, 0);
 
-	return game_manager->get_simulation_clock().get_simulation_speed();
+	return instance_manager->get_simulation_clock().get_simulation_speed();
 }
 
 bool MenuSingleton::can_increase_speed() const {
-	ERR_FAIL_NULL_V(game_manager, false);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, false);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, false);
 
-	return game_manager->get_simulation_clock().can_increase_simulation_speed();
+	return instance_manager->get_simulation_clock().can_increase_simulation_speed();
 }
 
 bool MenuSingleton::can_decrease_speed() const {
-	ERR_FAIL_NULL_V(game_manager, false);
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, false);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, false);
 
-	return game_manager->get_simulation_clock().can_decrease_simulation_speed();
+	return instance_manager->get_simulation_clock().can_decrease_simulation_speed();
 }
 
 String MenuSingleton::get_longform_date() const {
-	ERR_FAIL_NULL_V(game_manager, {});
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
 
-	return Utilities::date_to_formatted_string(game_manager->get_today());
+	return Utilities::date_to_formatted_string(instance_manager->get_today());
 }

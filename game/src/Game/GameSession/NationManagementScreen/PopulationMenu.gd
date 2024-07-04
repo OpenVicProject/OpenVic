@@ -76,7 +76,7 @@ func _ready() -> void:
 
 	_pop_screen_panel = get_panel_from_nodepath(^"./country_pop")
 
-	# province list is set up via the population_menu_provinces_changed signal
+	_setup_province_list()
 	_setup_sort_buttons()
 	_setup_pop_filter_buttons()
 	_setup_distribution_windows()
