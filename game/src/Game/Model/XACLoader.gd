@@ -1,11 +1,19 @@
 class_name XACLoader
 
-static var shader : ShaderMaterial = preload("res://src/Game/Model/unit_colours_mat.tres")
+static var unit_shader : ShaderMaterial = preload("res://src/Game/Model/unit_colours_mat.tres")
 const MAX_UNIT_TEXTURES : int = 32 # max number of textures supported by the shader
-static var added_textures_spec : PackedStringArray
-static var added_textures_diffuse : PackedStringArray
+static var added_unit_textures_spec : PackedStringArray
+static var added_unit_textures_diffuse : PackedStringArray
 
 static var flag_shader : ShaderMaterial = preload("res://src/Game/Model/flag_mat.tres")
+
+static var scrolling_shader : ShaderMaterial = preload("res://src/Game/Model/scrolling_mat.tres")
+const MAX_SCROLLING_TEXTURES : int = 32 # max number of textures supported by the shader
+static var added_scrolling_textures_diffuse : PackedStringArray
+const SCROLLING_MATERIAL_FACTORS : Dictionary = {
+	"TexAnim" : 2.5, # Tank tracks
+	"Smoke" : 0.3 # Buildings, factories, steam ships, sieges
+}
 
 static func setup_flag_shader() -> void:
 	flag_shader.set_shader_parameter(&"flag_dims", GameSingleton.get_flag_dims())
@@ -266,6 +274,9 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 				if materials[submesh.materialId].diffuse_index != -1:
 					meshInstance.set_instance_shader_parameter(&"tex_index_diffuse", materials[submesh.materialId].diffuse_index)
 
+				if materials[submesh.materialId].scroll_index != -1:
+					meshInstance.set_instance_shader_parameter(&"scroll_tex_index_diffuse", materials[submesh.materialId].scroll_index)
+
 	return node
 
 # Information needed to set up a material
@@ -273,14 +284,14 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 class MaterialDefinition:
 	var spec_index : int = -1
 	var diffuse_index : int = -1
-	var normal_index : int = -1
+	var scroll_index : int = -1
 	var mat : Material
 
-	func _init(mat : Material, diffuse_ind : int = -1, spec_ind : int = -1, normal_ind : int = -1) -> void:
+	func _init(mat : Material, diffuse_ind : int = -1, spec_ind : int = -1, scroll_ind : int = -1) -> void:
 		self.mat = mat
 		self.diffuse_index = diffuse_ind
 		self.spec_index = spec_ind
-		self.normal_index = normal_ind
+		self.scroll_index = scroll_ind
 
 static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionChunk]) -> Array[MaterialDefinition]:
 	const TEXTURES_PATH : String = "gfx/anims/%s.dds"
@@ -328,41 +339,45 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 			if normal_name:
 				push_error("Normal texture present in unit colours material: ", normal_name)
 
-			var textures_index_spec : int = added_textures_spec.find(specular_name)
+			var textures_index_spec : int = added_unit_textures_spec.find(specular_name)
 			if textures_index_spec < 0:
 				var unit_colours_mask_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % specular_name)
 				if unit_colours_mask_texture:
-					added_textures_spec.push_back(specular_name)
+					added_unit_textures_spec.push_back(specular_name)
 
 					# Should we still attempt to add the texture to the shader?
-					if len(added_textures_spec) >= MAX_UNIT_TEXTURES:
+					if len(added_unit_textures_spec) >= MAX_UNIT_TEXTURES:
 						push_error("Colour masks have exceeded max number of textures supported by unit shader!")
 
-					var colour_masks : Array = shader.get_shader_parameter(&"texture_nation_colors_mask")
+					const param_texture_nation_colors_mask : StringName = &"texture_nation_colors_mask"
+
+					var colour_masks : Array = unit_shader.get_shader_parameter(param_texture_nation_colors_mask)
 					colour_masks.push_back(unit_colours_mask_texture)
 					textures_index_spec = len(colour_masks) - 1
-					shader.set_shader_parameter(&"texture_nation_colors_mask", colour_masks)
+					unit_shader.set_shader_parameter(param_texture_nation_colors_mask, colour_masks)
 				else:
 					push_error("Failed to load specular texture: ", specular_name)
 
-			var textures_index_diffuse : int = added_textures_diffuse.find(diffuse_name)
+			var textures_index_diffuse : int = added_unit_textures_diffuse.find(diffuse_name)
 			if textures_index_diffuse < 0:
 				var diffuse_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % diffuse_name)
 				if diffuse_texture:
-					added_textures_diffuse.push_back(diffuse_name)
+					added_unit_textures_diffuse.push_back(diffuse_name)
 
 					# Should we still attempt to add the texture to the shader?
-					if len(added_textures_diffuse) >= MAX_UNIT_TEXTURES:
-						push_error("Albedos have exceeded max number of textures supported by unit shader!")
+					if len(added_unit_textures_diffuse) >= MAX_UNIT_TEXTURES:
+						push_error("Diffuse textures have exceeded max number supported by unit shader!")
 
-					var albedoes : Array = shader.get_shader_parameter(&"texture_albedo")
-					albedoes.push_back(diffuse_texture)
-					textures_index_diffuse = len(albedoes) - 1
-					shader.set_shader_parameter(&"texture_albedo", albedoes)
+					const param_texture_diffuse : StringName = &"texture_diffuse"
+
+					var diffuse_textures : Array = unit_shader.get_shader_parameter(param_texture_diffuse)
+					diffuse_textures.push_back(diffuse_texture)
+					textures_index_diffuse = len(diffuse_textures) - 1
+					unit_shader.set_shader_parameter(param_texture_diffuse, diffuse_textures)
 				else:
 					push_error("Failed to load diffuse texture: ", diffuse_name)
 
-			materials.push_back(MaterialDefinition.new(shader, textures_index_diffuse, textures_index_spec))
+			materials.push_back(MaterialDefinition.new(unit_shader, textures_index_diffuse, textures_index_spec))
 
 		# Flag (diffuse is unionjacksquare which is ignored)
 		elif normal_name and not diffuse_name:
@@ -376,6 +391,40 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 				push_error("Failed to load normal texture: ", normal_name)
 
 			materials.push_back(MaterialDefinition.new(flag_shader))
+
+		# Scrolling texture
+		elif diffuse_name and matdef.name in SCROLLING_MATERIAL_FACTORS:
+			if specular_name:
+				push_error("Specular texture present in scrolling material: ", specular_name)
+			if normal_name:
+				push_error("Normal texture present in scrolling material: ", normal_name)
+
+			var scroll_textures_index_diffuse : int = added_scrolling_textures_diffuse.find(diffuse_name)
+			if scroll_textures_index_diffuse < 0:
+				var diffuse_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % diffuse_name)
+				if diffuse_texture:
+					added_scrolling_textures_diffuse.push_back(diffuse_name)
+
+					# Should we still attempt to add the texture to the shader?
+					if len(added_scrolling_textures_diffuse) >= MAX_SCROLLING_TEXTURES:
+						push_error("Diffuse textures have exceeded max number supported by scrolling shader!")
+
+					const param_scroll_texture_diffuse : StringName = &"scroll_texture_diffuse"
+
+					var scroll_diffuse_textures : Array = scrolling_shader.get_shader_parameter(param_scroll_texture_diffuse)
+					scroll_diffuse_textures.push_back(diffuse_texture)
+					scroll_textures_index_diffuse = len(scroll_diffuse_textures) - 1
+					scrolling_shader.set_shader_parameter(param_scroll_texture_diffuse, scroll_diffuse_textures)
+
+					const param_scroll_factor : StringName = &"scroll_factor"
+
+					var scroll_factors : Array = scrolling_shader.get_shader_parameter(param_scroll_factor)
+					scroll_factors.push_back(SCROLLING_MATERIAL_FACTORS[matdef.name])
+					scrolling_shader.set_shader_parameter(param_scroll_factor, scroll_factors)
+				else:
+					push_error("Failed to load diffuse texture: ", diffuse_name)
+
+			materials.push_back(MaterialDefinition.new(scrolling_shader, -1, -1, scroll_textures_index_diffuse))
 
 		# Standard material
 		else:

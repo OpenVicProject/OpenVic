@@ -9,7 +9,7 @@ uniform sampler2D texture_normal : hint_normal;
 
 instance uniform uint flag_index;
 
-uniform vec2 scroll_speed = vec2(-0.25,0);
+const float normal_scroll_speed = 0.3;
 
 // Scroll the Normal map, but leave the albedo alone
 void fragment() {
@@ -21,6 +21,9 @@ void fragment() {
 	vec2 flag_uv = (vec2(flag_pos) + UV * vec2(flag_dims)) / vec2(flag_sheet_dims);
 
 	ALBEDO = texture(texture_flag_sheet_diffuse, flag_uv).rgb;
-	//ALBEDO = vec3(1, 0, 0);
-	NORMAL_MAP = texture(texture_normal, UV + TIME*scroll_speed).rgb;
+
+	vec2 normal_uv = UV;
+	normal_uv.x -= TIME * normal_scroll_speed;
+
+	NORMAL_MAP = texture(texture_normal, normal_uv).rgb;
 }

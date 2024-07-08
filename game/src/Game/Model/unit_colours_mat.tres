@@ -5,5 +5,5 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1_axmiw")
-shader_parameter/texture_albedo = []
+shader_parameter/texture_diffuse = []
 shader_parameter/texture_nation_colors_mask = []

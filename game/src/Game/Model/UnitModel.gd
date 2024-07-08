@@ -12,21 +12,21 @@ var meshes : Array[MeshInstance3D]
 @export var primary_colour : Color:
 	set(col_in):
 		primary_colour = col_in
-		change_colour_prop(&"colour_primary", primary_colour)
+		_set_shader_parameter(&"colour_primary", primary_colour)
 		for unit : UnitModel in sub_units:
 			unit.primary_colour = col_in
 
 @export var secondary_colour: Color:
 	set(col_in):
 		secondary_colour = col_in
-		change_colour_prop(&"colour_secondary", secondary_colour)
+		_set_shader_parameter(&"colour_secondary", secondary_colour)
 		for unit : UnitModel in sub_units:
 			unit.secondary_colour = col_in
 
 @export var tertiary_colour : Color:
 	set(col_in):
 		tertiary_colour = col_in
-		change_colour_prop(&"colour_tertiary", tertiary_colour)
+		_set_shader_parameter(&"colour_tertiary", tertiary_colour)
 		for unit : UnitModel in sub_units:
 			unit.tertiary_colour = col_in
 
@@ -64,16 +64,19 @@ const ANIMATION_ATTACK : String = ANIMATION_LIBRARY + "/attack"
 				Anim.IDLE:
 					if idle_anim:
 						anim_player.set_current_animation(ANIMATION_IDLE)
+						_set_tex_scroll(scroll_speed_idle)
 						current_anim = Anim.IDLE
 						return
 				Anim.MOVE:
 					if move_anim:
 						anim_player.set_current_animation(ANIMATION_MOVE)
+						_set_tex_scroll(scroll_speed_move)
 						current_anim = Anim.MOVE
 						return
 				Anim.ATTACK:
 					if attack_anim:
 						anim_player.set_current_animation(ANIMATION_ATTACK)
+						_set_tex_scroll(scroll_speed_attack)
 						current_anim = Anim.ATTACK
 						return
 				_: #None
@@ -81,13 +84,28 @@ const ANIMATION_ATTACK : String = ANIMATION_LIBRARY + "/attack"
 
 			anim_player.stop()
 
+		_set_tex_scroll(0.0)
 		current_anim = Anim.NONE
 
 # TEXTURE SCROLL SPEEDS (TANKS TRACKS AND SMOKE)
 @export_subgroup("Texture_Scroll")
-@export var scroll_speed_idle : float = 0.0
-@export var scroll_speed_move : float = 0.0
-@export var scroll_speed_attack : float = 0.0
+@export var scroll_speed_idle : float:
+	set(speed_in):
+		scroll_speed_idle = speed_in
+		for unit : UnitModel in sub_units:
+			unit.scroll_speed_idle = speed_in
+
+@export var scroll_speed_move : float:
+	set(speed_in):
+		scroll_speed_move = speed_in
+		for unit : UnitModel in sub_units:
+			unit.scroll_speed_move = speed_in
+
+@export var scroll_speed_attack : float:
+	set(speed_in):
+		scroll_speed_attack = speed_in
+		for unit : UnitModel in sub_units:
+			unit.scroll_speed_attack = speed_in
 
 func unit_init() -> void:
 	for child : Node in get_children():
@@ -138,19 +156,15 @@ func attach_model(bone_name : String, model : Node3D) -> Error:
 
 	return OK
 
-func _set_tex_scroll(speed : float) -> void:
+func _set_shader_parameter(param_name : StringName, param_val : Variant) -> void:
 	for mesh : MeshInstance3D in meshes:
-		if mesh.get_active_material(0) is ShaderMaterial:
-			mesh.set_instance_shader_parameter(&"scroll", Vector2(0, speed))
+		mesh.set_instance_shader_parameter(param_name, param_val)
+
+func _set_tex_scroll(speed : float) -> void:
+	_set_shader_parameter(&"scroll_speed", speed)
 
 func set_flag_index(index : int) -> void:
-	for mesh : MeshInstance3D in meshes:
-		mesh.set_instance_shader_parameter(&"flag_index", index)
-
-func change_colour_prop(prop_name : StringName, prop_val : Color) -> void:
-	for mesh : MeshInstance3D in meshes:
-		if mesh.get_active_material(0) is ShaderMaterial:
-			mesh.set_instance_shader_parameter(prop_name, prop_val)
+	_set_shader_parameter(&"flag_index", index)
 
 func load_animation(prop_name : String, animIn : Animation) -> void:
 	if not animIn:
