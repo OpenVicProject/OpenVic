@@ -407,12 +407,12 @@ void MenuSingleton::_population_menu_update_filtered_pops() {
 		population_menu.distributions[0][&pop->get_type()] += pop->get_size();
 		population_menu.distributions[1][&pop->get_religion()] += pop->get_size();
 		population_menu.distributions[2] +=
-			cast_map<HasIdentifierAndColour>(pop->get_ideologies() * static_cast<int32_t>(pop->get_size()));
+			pop->get_ideologies() * static_cast<fixed_point_t>(static_cast<int32_t>(pop->get_size()));
 		population_menu.distributions[3][&pop->get_culture()] += pop->get_size();
 		population_menu.distributions[4] +=
 			cast_map<HasIdentifierAndColour>(pop->get_issues() * static_cast<int32_t>(pop->get_size()));
 		population_menu.distributions[5] +=
-			cast_map<HasIdentifierAndColour>(pop->get_votes() * static_cast<int32_t>(pop->get_size()));
+			pop->get_votes() * static_cast<fixed_point_t>(static_cast<int32_t>(pop->get_size()));
 	}
 
 	for (fixed_point_map_t<HasIdentifierAndColour const*>& distribution : population_menu.distributions) {
@@ -467,7 +467,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(populat
 		};
 	case SORT_IDEOLOGY:
 		return [](Pop const* a, Pop const* b) -> bool {
-			return sorted_fixed_map_less_than(a->get_ideologies(), b->get_ideologies());
+			return sorted_indexed_map_less_than(a->get_ideologies(), b->get_ideologies());
 		};
 	case SORT_ISSUES:
 		return [](Pop const* a, Pop const* b) -> bool {

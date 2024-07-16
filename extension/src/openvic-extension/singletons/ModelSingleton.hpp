@@ -3,7 +3,8 @@
 #include <godot_cpp/classes/object.hpp>
 
 #include <openvic-simulation/interface/GFXObject.hpp>
-#include <openvic-simulation/military/UnitInstance.hpp>
+#include <openvic-simulation/military/UnitInstanceGroup.hpp>
+#include <openvic-simulation/types/OrderedContainers.hpp>
 
 namespace OpenVic {
 	struct BuildingInstance;
@@ -31,8 +32,10 @@ namespace OpenVic {
 		godot::Dictionary make_animation_dict(GFX::Actor::Animation const& animation) const;
 		godot::Dictionary make_model_dict(GFX::Actor const& actor) const;
 
-		template<utility::is_derived_from_specialization_of<UnitInstanceGroup> T>
-		bool add_unit_dict(ordered_set<T*> const& units, godot::TypedArray<godot::Dictionary>& unit_array) const;
+		template<UnitType::branch_t Branch>
+		bool add_unit_dict(
+			ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, godot::TypedArray<godot::Dictionary>& unit_array
+		) const;
 
 		bool add_building_dict(
 			BuildingInstance const& building, ProvinceInstance const& province,

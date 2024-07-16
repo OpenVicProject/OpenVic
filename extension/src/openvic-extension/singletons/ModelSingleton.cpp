@@ -4,6 +4,8 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/map/ProvinceInstance.hpp>
+
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -180,8 +182,12 @@ Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
 
 /* Returns false if an error occurs while trying to add a unit model for the province, true otherwise.
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
-template<utility::is_derived_from_specialization_of<UnitInstanceGroup> T>
-bool ModelSingleton::add_unit_dict(ordered_set<T*> const& units, TypedArray<Dictionary>& unit_array) const {
+template<UnitType::branch_t Branch>
+bool ModelSingleton::add_unit_dict(
+	ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
+) const {
+	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
+
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, false);
 
@@ -204,7 +210,7 @@ bool ModelSingleton::add_unit_dict(ordered_set<T*> const& units, TypedArray<Dict
 	bool ret = true;
 
 	/* Last unit to enter the province is shown on top. */
-	T const& unit = *units.back();
+	_UnitInstanceGroup const& unit = *units.back();
 	ERR_FAIL_COND_V_MSG(unit.empty(), false, vformat("Empty unit \"%s\"", std_view_to_godot_string(unit.get_name())));
 
 	CountryDefinition const* country = unit.get_country()->get_country_definition();
@@ -220,7 +226,7 @@ bool ModelSingleton::add_unit_dict(ordered_set<T*> const& units, TypedArray<Dict
 	std::string_view actor_name = display_unit_type->get_sprite();
 	std::string_view mount_actor_name, mount_attach_node_name;
 
-	if constexpr (std::same_as<T, ArmyInstance>) {
+	if constexpr (Branch == UnitType::branch_t::LAND) {
 		RegimentType const* regiment_type = reinterpret_cast<RegimentType const*>(display_unit_type);
 
 		if (!regiment_type->get_sprite_override().empty()) {
