@@ -38,23 +38,50 @@ namespace OpenVic {
 
 		/* Generate slice data from a distribution of HasIdentifierAndColour derived objects, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
-		template<std::derived_from<HasIdentifierAndColour> T>
-		static godot_pie_chart_data_t distribution_to_slices_array(fixed_point_map_t<T const*> const& dist) {
+		template<typename Container>
+		static godot_pie_chart_data_t distribution_to_slices_array(Container const& dist)
+		requires(
+			(
+				/* fixed_point_map_t<T const*>, T derived from HasIdentifierAndColour */
+				utility::is_specialization_of_v<Container, tsl::ordered_map> &&
+				std::derived_from<std::remove_pointer_t<typename Container::key_type>, HasIdentifierAndColour> &&
+				std::is_same_v<typename Container::mapped_type, fixed_point_t>
+			) || (
+				/* IndexedMap<T, fixed_point_t>, T derived from HasIdentifierAndColour */
+				utility::is_specialization_of_v<Container, IndexedMap> &&
+				std::derived_from<typename Container::key_t, HasIdentifierAndColour> &&
+				std::is_same_v<typename Container::value_t, fixed_point_t>
+			)
+		) {
 			using namespace godot;
-			using entry_t = std::pair<T const*, fixed_point_t>;
+			using entry_t = std::pair<HasIdentifierAndColour const*, fixed_point_t>;
 			std::vector<entry_t> sorted_dist;
-			sorted_dist.reserve(dist.size());
-			for (entry_t const& entry : dist) {
-				ERR_CONTINUE_MSG(
-					entry.first == nullptr, vformat("Null distribution key with value %f", entry.second.to_float())
-				);
-				sorted_dist.push_back(entry);
+
+			if constexpr (utility::is_specialization_of_v<Container, tsl::ordered_map>) {
+				sorted_dist.reserve(dist.size());
+				for (entry_t const& entry : dist) {
+					ERR_CONTINUE_MSG(
+						entry.first == nullptr, vformat("Null distribution key with value %f", entry.second.to_float())
+					);
+					sorted_dist.push_back(entry);
+				}
+			} else {
+				for (size_t index = 0; index < dist.size(); ++index) {
+					fixed_point_t const& value = dist[index];
+					if (value != 0) {
+						HasIdentifierAndColour const* key = &dist(index);
+						sorted_dist.emplace_back(key, value);
+					}
+				}
 			}
+
 			std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
 				return lhs.first < rhs.first;
 			});
+
 			godot_pie_chart_data_t array;
 			ERR_FAIL_COND_V(array.resize(sorted_dist.size()) != OK, {});
+
 			for (size_t idx = 0; idx < array.size(); ++idx) {
 				auto const& [key, val] = sorted_dist[idx];
 				Dictionary sub_dict;
