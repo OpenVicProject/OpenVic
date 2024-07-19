@@ -53,7 +53,7 @@ namespace OpenVic {
 			constexpr iterator operator+(const difference_type other) const {
 				return _ptr + other;
 			}
-			constexpr friend iterator operator+(const difference_type value, const iterator& other) {
+			constexpr friend iterator operator+(const difference_type value, iterator const& other) {
 				return other + value;
 			}
 			constexpr iterator& operator--() {
@@ -69,19 +69,19 @@ namespace OpenVic {
 				_ptr -= i;
 				return *this;
 			}
-			constexpr difference_type operator-(const iterator& other) const {
+			constexpr difference_type operator-(iterator const& other) const {
 				return _ptr - other._ptr;
 			}
 			constexpr iterator operator-(const difference_type other) const {
 				return _ptr - other;
 			}
-			friend iterator operator-(const difference_type value, const iterator& other) {
+			friend iterator operator-(const difference_type value, iterator const& other) {
 				return other - value;
 			}
 			constexpr reference operator[](difference_type idx) const {
 				return _ptr[idx];
 			}
-			constexpr auto operator<=>(const iterator&) const = default; // three-way comparison C++20
+			constexpr auto operator<=>(iterator const&) const = default; // three-way comparison C++20
 
 		private:
 			pointer _ptr;

@@ -11,15 +11,15 @@ using namespace OpenVic;
 using OpenVic::Utilities::std_view_to_godot_string;
 
 StringName const& GFXPieChartTexture::_slice_identifier_key() {
-	static StringName const slice_identifier_key = "identifier";
+	static const StringName slice_identifier_key = "identifier";
 	return slice_identifier_key;
 }
 StringName const& GFXPieChartTexture::_slice_colour_key() {
-	static StringName const slice_colour_key = "colour";
+	static const StringName slice_colour_key = "colour";
 	return slice_colour_key;
 }
 StringName const& GFXPieChartTexture::_slice_weight_key() {
-	static StringName const slice_weight_key = "weight";
+	static const StringName slice_weight_key = "weight";
 	return slice_weight_key;
 }
 

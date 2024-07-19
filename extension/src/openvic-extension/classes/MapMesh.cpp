@@ -45,7 +45,7 @@ void MapMesh::_request_update() {
 	set_add_uv2(get_add_uv2());
 }
 
-void MapMesh::set_aspect_ratio(const float ratio) {
+void MapMesh::set_aspect_ratio(float ratio) {
 	aspect_ratio = ratio;
 	_request_update();
 }
@@ -54,7 +54,7 @@ float MapMesh::get_aspect_ratio() const {
 	return aspect_ratio;
 }
 
-void MapMesh::set_repeat_proportion(const float proportion) {
+void MapMesh::set_repeat_proportion(float proportion) {
 	repeat_proportion = proportion;
 	_request_update();
 }
@@ -63,7 +63,7 @@ float MapMesh::get_repeat_proportion() const {
 	return repeat_proportion;
 }
 
-void MapMesh::set_subdivide_width(const int32_t divisions) {
+void MapMesh::set_subdivide_width(int32_t divisions) {
 	subdivide_w = divisions > 0 ? divisions : 0;
 	_request_update();
 }
@@ -72,7 +72,7 @@ int32_t MapMesh::get_subdivide_width() const {
 	return subdivide_w;
 }
 
-void MapMesh::set_subdivide_depth(const int32_t divisions) {
+void MapMesh::set_subdivide_depth(int32_t divisions) {
 	subdivide_d = divisions > 0 ? divisions : 0;
 	_request_update();
 }
