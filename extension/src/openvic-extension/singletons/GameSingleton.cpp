@@ -140,7 +140,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 
 	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
 	ERR_FAIL_NULL_V(menu_singleton, FAILED);
-	ret &= menu_singleton->_population_menu_update_provinces();
+	ret &= menu_singleton->_population_menu_update_provinces() == OK;
 
 	return ERR(ret);
 }

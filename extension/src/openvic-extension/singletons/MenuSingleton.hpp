@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/pop/Pop.hpp>
+#include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
 namespace OpenVic {
@@ -63,6 +64,11 @@ namespace OpenVic {
 				SORT_LUXURY_NEEDS, SORT_REBEL_FACTION, SORT_SIZE_CHANGE, SORT_LITERACY, MAX_SORT_KEY
 			} sort_key = NONE;
 			bool sort_descending = true;
+			IndexedMap<PopType, size_t> pop_type_sort_cache;
+			IndexedMap<Culture, size_t> culture_sort_cache;
+			IndexedMap<Religion, size_t> religion_sort_cache;
+			IndexedMap<ProvinceInstance, size_t> province_sort_cache;
+			IndexedMap<RebelType, size_t> rebel_type_sort_cache;
 
 			std::vector<Pop const*> pops, filtered_pops;
 		};
@@ -112,28 +118,29 @@ namespace OpenVic {
 		godot::String get_longform_date() const;
 
 		/* POPULATION MENU */
-		bool _population_menu_update_provinces();
+		godot::Error _population_menu_update_provinces();
 		int32_t get_population_menu_province_list_row_count() const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_province_list_rows(int32_t start, int32_t count) const;
 		godot::Error population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index = false);
 		godot::Error population_menu_select_province(int32_t province_index);
 		godot::Error population_menu_toggle_expanded(int32_t toggle_index, bool emit_selected_changed = true);
 
-		void _population_menu_update_pops();
-		void _population_menu_update_filtered_pops();
+		godot::Error _population_menu_update_pops();
+		godot::Error _population_menu_update_filtered_pops();
 		using sort_func_t = std::function<bool(Pop const*, Pop const*)>;
 		sort_func_t _get_population_menu_sort_func(population_menu_t::PopSortKey sort_key) const;
-		void _population_menu_sort_pops();
+		godot::Error _population_menu_sort_pops();
+		godot::Error population_menu_update_locale_sort_cache();
 		godot::Error population_menu_select_sort_key(population_menu_t::PopSortKey sort_key);
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 
-		bool _population_menu_generate_pop_filters();
+		godot::Error _population_menu_generate_pop_filters();
 		godot::PackedInt32Array get_population_menu_pop_filter_setup_info();
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_filter_info() const;
 		godot::Error population_menu_toggle_pop_filter(int32_t filter_index);
-		void population_menu_select_all_pop_filters();
-		void population_menu_deselect_all_pop_filters();
+		godot::Error population_menu_select_all_pop_filters();
+		godot::Error population_menu_deselect_all_pop_filters();
 
 		godot::PackedStringArray get_population_menu_distribution_setup_info() const;
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
