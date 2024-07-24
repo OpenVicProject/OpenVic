@@ -53,5 +53,7 @@ namespace OpenVic {
 		 * If zero is used but icon_count is non-zero, icon_index defaults to icon_count (the last frame,
 		 * not the first frame because it is often empty). */
 		godot::Error set_icon_index(GFX::frame_t new_icon_index);
+
+		godot::Error set_toggled_icon(bool toggled);
 	};
 }

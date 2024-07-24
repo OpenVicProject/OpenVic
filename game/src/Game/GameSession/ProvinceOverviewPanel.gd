@@ -200,16 +200,6 @@ func _ready() -> void:
 				push_error("Failed to generate building slot ", current_slot_count, " / ", target_slot_count)
 				break
 
-	# TODO - fix checkbox positions
-	for path : NodePath in [
-		^"./province_view/province_buildings/rallypoint_checkbox",
-		^"./province_view/province_buildings/rallypoint_merge_checkbox",
-		^"./province_view/province_buildings/rallypoint_checkbox_naval",
-		^"./province_view/province_buildings/rallypoint_merge_checkbox_naval"
-	]:
-		var rally_checkbox : CheckBox = get_check_box_from_nodepath(path)
-		rally_checkbox.set_position(rally_checkbox.get_position() - Vector2(3, 3))
-
 	hide_nodes([
 		^"./province_view/province_view_header/state_modifiers",
 		^"./province_view/province_view_header/occupation_progress",
