@@ -96,7 +96,9 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 		return OK;
 	} else if (child_count > new_count) {
 		do {
-			remove_child(get_child(--child_count));
+			Node* child = get_child(--child_count);
+			remove_child(child);
+			child->queue_free();
 		} while (child_count > new_count);
 		return OK;
 	} else {

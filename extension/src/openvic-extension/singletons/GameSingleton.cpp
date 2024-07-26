@@ -186,7 +186,7 @@ Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
 	return flag_sheet_texture;
 }
 
-int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const {
+int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, StringName const& flag_type) const {
 	ERR_FAIL_COND_V_MSG(
 		country_index < 0 ||
 			country_index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(),
@@ -207,7 +207,7 @@ Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
 	return { Vector2i { flag_index % flag_sheet_dims.x, flag_index / flag_sheet_dims.x } * flag_dims, flag_dims };
 }
 
-Rect2i GameSingleton::get_flag_sheet_rect(int32_t country_index, godot::StringName const& flag_type) const {
+Rect2i GameSingleton::get_flag_sheet_rect(int32_t country_index, StringName const& flag_type) const {
 	return get_flag_sheet_rect(get_flag_sheet_index(country_index, flag_type));
 }
 

@@ -28,7 +28,7 @@ using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_view_to_godot_string;
 using OpenVic::Utilities::std_view_to_godot_string_name;
 
-GFX::Sprite const* UITools::get_gfx_sprite(godot::String const& gfx_sprite) {
+GFX::Sprite const* UITools::get_gfx_sprite(String const& gfx_sprite) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GFX::Sprite const* sprite = game_singleton->get_definition_manager().get_ui_manager().get_sprite_by_identifier(
@@ -38,7 +38,7 @@ GFX::Sprite const* UITools::get_gfx_sprite(godot::String const& gfx_sprite) {
 	return sprite;
 }
 
-GUI::Element const* UITools::get_gui_element(godot::String const& gui_scene, godot::String const& gui_element) {
+GUI::Element const* UITools::get_gui_element(String const& gui_scene, String const& gui_element) {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene =
@@ -65,13 +65,12 @@ GUI::Position const* UITools::get_gui_position(String const& gui_scene, String c
 namespace OpenVic {
 	struct generate_gui_args_t {
 		GUI::Element const& element;
-		godot::String const& name;
+		String const& name;
 		AssetManager& asset_manager;
-		godot::Control*& result;
+		Control*& result;
 
 		constexpr generate_gui_args_t(
-			GUI::Element const& new_element, godot::String const& new_name, AssetManager& new_asset_manager,
-			godot::Control*& new_result
+			GUI::Element const& new_element, String const& new_name, AssetManager& new_asset_manager, Control*& new_result
 		) : element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
 	};
 }
@@ -690,7 +689,7 @@ bool UITools::generate_gui_element(
 }
 
 bool UITools::generate_gui_element(
-	godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name, godot::Control*& result
+	String const& gui_scene, String const& gui_element, String const& name, Control*& result
 ) {
 	return generate_gui_element(get_gui_element(gui_scene, gui_element), name, result);
 }

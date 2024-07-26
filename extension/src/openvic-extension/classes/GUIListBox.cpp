@@ -182,6 +182,7 @@ void GUIListBox::clear() {
 	clear_children();
 	if (scrollbar != nullptr) {
 		remove_child(scrollbar);
+		scrollbar->queue_free();
 		scrollbar = nullptr;
 	}
 }
@@ -192,7 +193,9 @@ void GUIListBox::clear_children(int32_t remaining_child_count) {
 	int32_t child_index = get_child_count();
 
 	while (child_index > remaining_child_count) {
-		remove_child(get_child(--child_index));
+		Node* child = get_child(--child_index);
+		remove_child(child);
+		child->queue_free();
 	}
 
 	if (scrollbar != nullptr) {

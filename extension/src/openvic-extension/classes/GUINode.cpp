@@ -83,6 +83,9 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::hide_node, { "path" });
 	OV_BIND_METHOD(GUINode::hide_nodes, { "paths" });
 
+	OV_BIND_METHOD(GUINode::remove_node, { "path" });
+	OV_BIND_METHOD(GUINode::remove_nodes, { "paths" });
+
 	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
@@ -207,17 +210,46 @@ APPLY_TO_TEXTURE_TYPES(TEXTURE_GET_FUNCTIONS)
 Error GUINode::hide_node(NodePath const& path) const {
 	CanvasItem* node = _cast_node<CanvasItem>(get_node_internal(path));
 	ERR_FAIL_NULL_V(node, FAILED);
+
 	node->hide();
+
 	return OK;
 }
 
 Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
 	Error ret = OK;
+
 	for (int32_t i = 0; i < paths.size(); ++i) {
 		if (hide_node(paths[i]) != OK) {
 			ret = FAILED;
 		}
 	}
+
+	return ret;
+}
+
+Error GUINode::remove_node(NodePath const& path) const {
+	Node* node = get_node_internal(path);
+	ERR_FAIL_NULL_V(node, FAILED);
+
+	Node* parent = node->get_parent();
+	ERR_FAIL_NULL_V(parent, FAILED);
+
+	parent->remove_child(node);
+	node->queue_free();
+
+	return OK;
+}
+
+Error GUINode::remove_nodes(TypedArray<NodePath> const& paths) const {
+	Error ret = OK;
+
+	for (int32_t i = 0; i < paths.size(); ++i) {
+		if (remove_node(paths[i]) != OK) {
+			ret = FAILED;
+		}
+	}
+
 	return ret;
 }
 
@@ -331,7 +363,7 @@ void GUINode::set_click_mask_from_nodepaths(TypedArray<NodePath> const& paths) {
 	update_click_mask();
 }
 
-bool GUINode::_has_point(godot::Vector2 const& p_point) const {
+bool GUINode::_has_point(Vector2 const& p_point) const {
 	if (!_click_mask.is_valid()) {
 		return Control::_has_point(p_point);
 	}
