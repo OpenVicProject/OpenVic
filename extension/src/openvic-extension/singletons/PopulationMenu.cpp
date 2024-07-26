@@ -29,9 +29,9 @@ bool MenuSingleton::_population_menu_update_provinces() {
 	MapInstance const& map_instance = instance_manager->get_map_instance();
 	ERR_FAIL_COND_V(!map_instance.province_instances_are_locked(), false);
 
-	for (CountryDefinition const* country : {
+	for (CountryInstance const* country : {
 		// Example country
-		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier("ENG")
+		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG")
 	}) {
 		ERR_CONTINUE(country == nullptr);
 
@@ -67,12 +67,6 @@ int32_t MenuSingleton::get_population_menu_province_list_row_count() const {
 }
 
 TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int32_t start, int32_t count) const {
-	// TODO - remove when country population is used instead of total map population
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, {});
-	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL_V(instance_manager, {});
-
 	if (population_menu.province_list_entries.empty()) {
 		return {};
 	}
@@ -101,9 +95,6 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 		int32_t& start_counter;
 		int32_t& count_counter;
 
-		// TODO - remove when country population is used instead of total map population
-		const Pop::pop_size_t total_map_population;
-
 		/* This is the index among all entries, not just visible ones unlike start and count. */
 		int32_t index = 0;
 
@@ -121,7 +112,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				country_dict[type_key] = population_menu_t::LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
 				country_dict[name_key] = std_view_to_godot_string(country_entry.country.get_identifier());
-				country_dict[size_key] = total_map_population;
+				country_dict[size_key] = country_entry.country.get_total_population();
 				country_dict[change_key] = 0;
 				country_dict[selected_key] = country_entry.selected;
 
@@ -174,7 +165,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 			return  true;
 		}
-	} entry_visitor { *this, start, count, instance_manager->get_map_instance().get_total_map_population() };
+	} entry_visitor { *this, start, count };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
@@ -422,13 +413,13 @@ void MenuSingleton::_population_menu_update_filtered_pops() {
 	_population_menu_sort_pops();
 }
 
-template<std::derived_from<HasIdentifier> T>
+template<HasGetIdentifier T>
 static bool compare_translated_identifiers(Object const& object, T const& lhs, T const& rhs) {
 	return object.tr(std_view_to_godot_string(lhs.get_identifier()))
 		< object.tr(std_view_to_godot_string(rhs.get_identifier()));
 }
 
-template<std::derived_from<HasIdentifier> T>
+template<HasGetIdentifier T>
 static bool compare_translated_identifiers(Object const& object, T const* lhs, T const* rhs) {
 	return (lhs != nullptr ? object.tr(std_view_to_godot_string(lhs->get_identifier())) : godot::String {})
 		< (rhs != nullptr ? object.tr(std_view_to_godot_string(rhs->get_identifier())) : godot::String {});
