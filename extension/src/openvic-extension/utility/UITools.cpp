@@ -1,7 +1,6 @@
 #include "UITools.hpp"
 
 #include <godot_cpp/classes/button.hpp>
-#include <godot_cpp/classes/check_box.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
 #include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/panel.hpp>
@@ -287,8 +286,10 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		} else if (icon.get_sprite()->is_type<GFX::LineChart>()) {
 			// TODO - generate line chart
 		} else {
-			UtilityFunctions::push_error("Invalid sprite type ", std_view_to_godot_string(icon.get_sprite()->get_type()),
-				" for GUI icon ", icon_name);
+			UtilityFunctions::push_error(
+				"Invalid sprite type ", std_view_to_godot_string(icon.get_sprite()->get_type()),
+				" for GUI icon ", icon_name
+			);
 			ret = false;
 		}
 
@@ -313,7 +314,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 static bool generate_button(generate_gui_args_t&& args) {
 	GUI::Button const& button = static_cast<GUI::Button const&>(args.element);
 
-	// TODO - shortcut, sprite, text
+	// TODO - shortcut, clicksound, rotation (?)
 	const String button_name = std_view_to_godot_string(button.get_name());
 
 	Button* godot_button = nullptr;
@@ -322,9 +323,7 @@ static bool generate_button(generate_gui_args_t&& args) {
 
 	godot_button->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 
-	if (!button.get_text().empty()) {
-		godot_button->set_text(std_view_to_godot_string(button.get_text()));
-	}
+	godot_button->set_text(std_view_to_godot_string(button.get_text()));
 
 	if (button.get_sprite() != nullptr) {
 		Ref<GFXButtonStateHavingTexture> texture;
@@ -351,8 +350,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 		if (texture.is_valid()) {
 			godot_button->set_custom_minimum_size(texture->get_size());
 
-			static const StringName theme_name_normal = "normal";
-			ret &= add_theme_stylebox(godot_button, theme_name_normal, texture);
+			static const StringName normal_theme = "normal";
+			ret &= add_theme_stylebox(godot_button, normal_theme, texture);
 
 			using enum GFXButtonStateTexture::ButtonState;
 			for (GFXButtonStateTexture::ButtonState button_state : { HOVER, PRESSED, DISABLED }) {
@@ -379,9 +378,10 @@ static bool generate_button(generate_gui_args_t&& args) {
 		const StringName font_file = std_view_to_godot_string_name(button.get_font()->get_fontname());
 		const Ref<Font> font = args.asset_manager.get_font(font_file);
 		if (font.is_valid()) {
-			godot_button->add_theme_font_override("font", font);
+			static const StringName font_theme = "font";
+			godot_button->add_theme_font_override(font_theme, font);
 		} else {
-			UtilityFunctions::push_error("Failed to load font for GUI button ", button_name);
+			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI button ", button_name);
 			ret = false;
 		}
 
@@ -401,35 +401,60 @@ static bool generate_button(generate_gui_args_t&& args) {
 static bool generate_checkbox(generate_gui_args_t&& args) {
 	GUI::Checkbox const& checkbox = static_cast<GUI::Checkbox const&>(args.element);
 
-	// TODO - shortcut, sprite, text
+	// TODO - shortcut
 	const String checkbox_name = std_view_to_godot_string(checkbox.get_name());
 
-	CheckBox* godot_checkbox = nullptr;
-	bool ret = new_control(godot_checkbox, checkbox, args.name);
-	ERR_FAIL_NULL_V_MSG(godot_checkbox, false, vformat("Failed to create CheckBox for GUI checkbox %s", checkbox_name));
+	Button* godot_button = nullptr;
+	bool ret = new_control(godot_button, checkbox, args.name);
+	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI checkbutton %s", checkbox_name));
+
+	godot_button->set_text(std_view_to_godot_string(checkbox.get_text()));
+
+	godot_button->set_toggle_mode(true);
 
 	if (checkbox.get_sprite() != nullptr) {
 		GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
+
 		if (texture_sprite != nullptr) {
-			Ref<GFXSpriteTexture> icon_texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, 1);
-			if (icon_texture.is_valid()) {
-				godot_checkbox->set_custom_minimum_size(icon_texture->get_size());
-				godot_checkbox->add_theme_icon_override("unchecked", icon_texture);
+			Ref<GFXSpriteTexture> texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
+
+			if (texture.is_valid()) {
+				godot_button->set_custom_minimum_size(texture->get_size());
+
+				if (texture->get_icon_count() > 1) {
+					static const StringName toggled_signal = "toggled";
+					static const StringName set_toggled_icon_func = "set_toggled_icon";
+					godot_button->connect(
+						toggled_signal, Callable { *texture, set_toggled_icon_func }, Object::CONNECT_PERSIST
+					);
+				}
+
+				static const StringName normal_theme = "normal";
+				ret &= add_theme_stylebox(godot_button, normal_theme, texture);
+
+				using enum GFXButtonStateTexture::ButtonState;
+				for (GFXButtonStateTexture::ButtonState button_state : { HOVER, PRESSED, DISABLED }) {
+					Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
+					if (button_state_texture.is_valid()) {
+						ret &= add_theme_stylebox(
+							godot_button, button_state_texture->get_button_state_name(), button_state_texture
+						);
+					} else {
+						UtilityFunctions::push_error(
+							"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
+							" GFXButtonStateTexture for GUI checkbox ", checkbox_name
+						);
+						ret = false;
+					}
+				}
 			} else {
-				UtilityFunctions::push_error("Failed to make unchecked GFXSpriteTexture for GUI checkbox ", checkbox_name);
-				ret = false;
-			}
-			icon_texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, 2);
-			if (icon_texture.is_valid()) {
-				godot_checkbox->add_theme_icon_override("checked", icon_texture);
-			} else {
-				UtilityFunctions::push_error("Failed to make checked GFXSpriteTexture for GUI checkbox ", checkbox_name);
+				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI checkbox ", checkbox_name);
 				ret = false;
 			}
 		} else {
 			UtilityFunctions::push_error(
-				"Invalid sprite type ", std_view_to_godot_string(checkbox.get_sprite()->get_type()), " for GUI checkbox ",
-				checkbox_name
+				"Invalid sprite type ", std_view_to_godot_string(checkbox.get_sprite()->get_type()),
+				" for GUI checkbox ", checkbox_name
 			);
 			ret = false;
 		}
@@ -438,7 +463,27 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 		ret = false;
 	}
 
-	args.result = godot_checkbox;
+	if (checkbox.get_font() != nullptr) {
+		const StringName font_file = std_view_to_godot_string_name(checkbox.get_font()->get_fontname());
+		const Ref<Font> font = args.asset_manager.get_font(font_file);
+		if (font.is_valid()) {
+			static const StringName font_theme = "font";
+			godot_button->add_theme_font_override(font_theme, font);
+		} else {
+			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI checkbox ", checkbox_name);
+			ret = false;
+		}
+
+		static const std::vector<StringName> checkbox_font_themes {
+			"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
+		};
+		const Color colour = Utilities::to_godot_color(checkbox.get_font()->get_colour());
+		for (StringName const& theme_name : checkbox_font_themes) {
+			godot_button->add_theme_color_override(theme_name, colour);
+		}
+	}
+
+	args.result = godot_button;
 	return ret;
 }
 
@@ -480,13 +525,15 @@ static bool generate_text(generate_gui_args_t&& args) {
 		const StringName font_file = std_view_to_godot_string_name(text.get_font()->get_fontname());
 		const Ref<Font> font = args.asset_manager.get_font(font_file);
 		if (font.is_valid()) {
-			godot_label->add_theme_font_override("font", font);
+			static const StringName font_theme = "font";
+			godot_label->add_theme_font_override(font_theme, font);
 		} else {
-			UtilityFunctions::push_error("Failed to load font for GUI text ", text_name);
+			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI text ", text_name);
 			ret = false;
 		}
 		const Color colour = Utilities::to_godot_color(text.get_font()->get_colour());
-		godot_label->add_theme_color_override("font_color", colour);
+		static const StringName font_color_theme = "font_color";
+		godot_label->add_theme_color_override(font_color_theme, colour);
 	}
 
 	args.result = godot_label;

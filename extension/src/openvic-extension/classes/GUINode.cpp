@@ -40,7 +40,6 @@ using namespace OpenVic;
 
 #define APPLY_TO_CHILD_TYPES(F) \
 	F(Button, button) \
-	F(CheckBox, check_box) \
 	F(Label, label) \
 	F(Panel, panel) \
 	F(TextureProgressBar, progress_bar) \

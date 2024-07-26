@@ -21,6 +21,7 @@ void GFXSpriteTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXSpriteTexture::get_gfx_texture_sprite_name);
 
 	OV_BIND_METHOD(GFXSpriteTexture::set_icon_index, { "new_icon_index" });
+	OV_BIND_METHOD(GFXSpriteTexture::set_toggled_icon, { "toggle" });
 	OV_BIND_METHOD(GFXSpriteTexture::get_icon_index);
 	OV_BIND_METHOD(GFXSpriteTexture::get_icon_count);
 
@@ -132,4 +133,8 @@ Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
 	}
 	_update_button_states();
 	return OK;
+}
+
+Error GFXSpriteTexture::set_toggled_icon(bool toggled) {
+	return set_icon_index(toggled ? 2 : 1);
 }

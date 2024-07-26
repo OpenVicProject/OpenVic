@@ -2,7 +2,6 @@
 
 #include <godot_cpp/classes/bit_map.hpp>
 #include <godot_cpp/classes/button.hpp>
-#include <godot_cpp/classes/check_box.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/input_event.hpp>
@@ -52,7 +51,6 @@ namespace OpenVic {
 		static godot::Vector2 get_gui_position(godot::String const& gui_scene, godot::String const& gui_position);
 
 		static godot::Button* get_button_from_node(godot::Node* node);
-		static godot::CheckBox* get_check_box_from_node(godot::Node* node);
 		static godot::Label* get_label_from_node(godot::Node* node);
 		static godot::Panel* get_panel_from_node(godot::Node* node);
 		static godot::TextureProgressBar* get_progress_bar_from_node(godot::Node* node);
@@ -62,7 +60,6 @@ namespace OpenVic {
 		static GUIListBox* get_gui_listbox_from_node(godot::Node* node);
 
 		godot::Button* get_button_from_nodepath(godot::NodePath const& path) const;
-		godot::CheckBox* get_check_box_from_nodepath(godot::NodePath const& path) const;
 		godot::Label* get_label_from_nodepath(godot::NodePath const& path) const;
 		godot::Panel* get_panel_from_nodepath(godot::NodePath const& path) const;
 		godot::TextureProgressBar* get_progress_bar_from_nodepath(godot::NodePath const& path) const;
