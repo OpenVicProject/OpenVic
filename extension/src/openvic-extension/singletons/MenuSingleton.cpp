@@ -97,6 +97,7 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::population_menu_select_province, { "province_index" });
 	OV_BIND_METHOD(MenuSingleton::population_menu_toggle_expanded, { "toggle_index", "emit_selected_changed" }, DEFVAL(true));
 
+	OV_BIND_METHOD(MenuSingleton::population_menu_update_locale_sort_cache);
 	OV_BIND_METHOD(MenuSingleton::population_menu_select_sort_key, { "sort_key" });
 	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_rows, { "start", "count" });
 	OV_BIND_METHOD(MenuSingleton::get_population_menu_pop_row_count);
@@ -147,7 +148,10 @@ MenuSingleton* MenuSingleton::get_singleton() {
 	return singleton;
 }
 
-MenuSingleton::MenuSingleton() {
+MenuSingleton::MenuSingleton() : population_menu {
+	.pop_type_sort_cache { nullptr }, .culture_sort_cache { nullptr }, .religion_sort_cache { nullptr },
+	.province_sort_cache { nullptr }, .rebel_type_sort_cache { nullptr }
+} {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }

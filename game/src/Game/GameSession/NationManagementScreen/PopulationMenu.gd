@@ -66,6 +66,8 @@ func _ready() -> void:
 	MenuSingleton.population_menu_province_list_selected_changed.connect(_update_province_list)
 	MenuSingleton.population_menu_pops_changed.connect(_update_pops)
 
+	MenuSingleton.population_menu_update_locale_sort_cache()
+
 	Events.NationManagementScreens.update_active_nation_management_screen.connect(_on_update_active_nation_management_screen)
 
 	add_gui_element(_scene_name, "country_pop")
@@ -396,6 +398,7 @@ func _setup_pop_list() -> void:
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
+			MenuSingleton.population_menu_update_locale_sort_cache()
 			_update_info()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
