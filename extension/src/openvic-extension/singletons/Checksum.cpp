@@ -29,6 +29,6 @@ Checksum::~Checksum() {
 /* REQUIREMENTS:
  * DAT-8
  */
-godot::String Checksum::get_checksum_text() {
-	return godot::String("1234abcd");
+String Checksum::get_checksum_text() {
+	return String("1234abcd");
 }

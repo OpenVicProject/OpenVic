@@ -86,7 +86,7 @@ AABB MapMesh::get_core_aabb() const {
 	return AABB { size * -0.5f, size };
 }
 
-bool MapMesh::is_valid_uv_coord(godot::Vector2 const& uv) const {
+bool MapMesh::is_valid_uv_coord(Vector2 const& uv) const {
 	return 0.0f <= uv.y && uv.y <= 1.0f;
 }
 

@@ -104,6 +104,7 @@ func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListE
 
 	if _province_list_panels[index]:
 		_province_listbox.remove_child(_province_list_panels[index])
+		_province_list_panels[index].queue_free()
 
 	_province_list_types[index] = MenuSingleton.LIST_ENTRY_NONE
 	_province_list_indices[index] = -1
@@ -540,7 +541,7 @@ func _update_distributions():
 				child.set_mouse_filter(Control.MOUSE_FILTER_IGNORE)
 				list.add_child(child)
 
-			for list_index in min(list.get_child_count(), distribution_info.size()):
+			for list_index : int in min(list.get_child_count(), distribution_info.size()):
 
 				var child : Panel = list.get_child(list_index)
 

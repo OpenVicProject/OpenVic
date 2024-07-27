@@ -14,7 +14,9 @@ func _clear_children() -> void:
 	var child_count : int = get_child_count()
 	while child_count > 0:
 		child_count -= 1
-		remove_child(get_child(child_count))
+		var child : Node = get_child(child_count)
+		remove_child(child)
+		child.queue_free()
 
 func generate_map_names() -> void:
 	_clear_children()
