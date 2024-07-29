@@ -80,7 +80,7 @@ focus_mode = 0
 mouse_filter = 1
 text = "L"
 
-[node name="FindButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
+[node name="SearchButton" type="Button" parent="MapPanelMargin/MapPanelList/AuxiliaryPanel"]
 editor_description = "UI-861"
 layout_mode = 2
 focus_mode = 0
@@ -108,5 +108,6 @@ text = "-"
 [connection signal="map_view_camera_changed" from="." to="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" method="_on_map_view_camera_changed"]
 [connection signal="minimap_clicked" from="MapPanelMargin/MapPanelList/MapDisplayList/Minimap/ViewportQuad" to="." method="_on_minimap_clicked"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/GameSessionMenuButton" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/SearchButton" to="." method="_on_search_button_pressed"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomInButton" to="." method="_on_zoom_in_button_pressed"]
 [connection signal="pressed" from="MapPanelMargin/MapPanelList/AuxiliaryPanel/ZoomButtonsContainer/ZoomOutButton" to="." method="_on_zoom_out_button_pressed"]

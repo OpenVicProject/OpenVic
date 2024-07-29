@@ -9,6 +9,7 @@
 
 using namespace OpenVic;
 using namespace godot;
+using namespace OpenVic::Utilities::literals;
 
 using OpenVic::Utilities::std_view_to_godot_string;
 
@@ -24,14 +25,14 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 		if (fixed_item_count <= 0) {
 			max_scroll_index = 0;
 			fixed_visible_items = 0;
-		} else if (fixed_item_height <= 0.0f) {
+		} else if (fixed_item_height <= 0.0_real) {
 			max_scroll_index = fixed_item_count - 1;
 			fixed_visible_items = max_scroll_index;
 		} else {
 			const real_t max_height = get_size().height;
 
 			fixed_visible_items = max_height / fixed_item_height;
-			max_scroll_index = fixed_item_count - std::max(fixed_visible_items, 1);
+			max_scroll_index = std::max(fixed_item_count - std::max(fixed_visible_items, 1), 0);
 		}
 	} else {
 		const int32_t child_count = get_child_count();
@@ -41,7 +42,7 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 		} else {
 			const real_t max_height = get_size().height;
 
-			real_t height_under_max_scroll_index = 0.0f;
+			real_t height_under_max_scroll_index = 0.0_real;
 
 			max_scroll_index = child_count;
 
@@ -75,8 +76,9 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 Error GUIListBox::_update_child_positions() {
 	const int32_t child_count = get_child_count();
 	const real_t max_height = get_size().height;
+	const Vector2 offset = gui_listbox != nullptr ? Utilities::to_godot_fvec2(gui_listbox->get_items_offset()) : Vector2 {};
 
-	real_t height = 0.0f;
+	real_t height = 0.0_real;
 
 	const int32_t child_scroll_index = fixed ? 0 : scroll_index;
 
@@ -87,7 +89,7 @@ Error GUIListBox::_update_child_positions() {
 			if (index < child_scroll_index) {
 				child->hide();
 			} else {
-				child->set_position({ 0.0f, height });
+				child->set_position(offset + Vector2 { 0.0_real, height });
 
 				height += child->get_size().height; /* Spacing is ignored */
 
@@ -130,7 +132,7 @@ void GUIListBox::_notification(int what) {
 
 GUIListBox::GUIListBox()
   : gui_listbox { nullptr }, scrollbar { nullptr }, scroll_index { 0 }, max_scroll_index { 0 },
-	fixed { false }, fixed_item_count { 0 }, fixed_visible_items { 0 }, fixed_item_height { 0.0f } {}
+	fixed { false }, fixed_item_count { 0 }, fixed_visible_items { 0 }, fixed_item_height { 0.0_real } {}
 
 Vector2 GUIListBox::_get_minimum_size() const {
 	if (gui_listbox != nullptr) {
@@ -177,7 +179,7 @@ void GUIListBox::clear() {
 	fixed = false;
 	fixed_item_count = 0;
 	fixed_visible_items = 0;
-	fixed_item_height = 0.0f;
+	fixed_item_height = 0.0_real;
 
 	clear_children();
 	if (scrollbar != nullptr) {
@@ -233,7 +235,7 @@ Error GUIListBox::unset_fixed(bool signal) {
 
 	fixed = false;
 	fixed_item_count = 0;
-	fixed_item_height = 0.0f;
+	fixed_item_height = 0.0_real;
 
 	return _calculate_max_scroll_index(signal);
 }
@@ -273,7 +275,9 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 				add_child(scrollbar, false, INTERNAL_MODE_FRONT);
 
 				const Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
-				scrollbar->set_position({ size.width, 0.0f });
+				Vector2 position = Utilities::to_godot_fvec2(gui_listbox->get_scrollbar_offset());
+				position.x += size.width;
+				scrollbar->set_position(position);
 				scrollbar->set_length_override(size.height);
 
 				static const StringName set_scroll_index_func_name = "set_scroll_index";

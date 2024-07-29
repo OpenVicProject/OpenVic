@@ -46,7 +46,8 @@ using namespace OpenVic;
 	F(TextureRect, texture_rect) \
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
 	F(GUIScrollbar, gui_scrollbar) \
-	F(GUIListBox, gui_listbox)
+	F(GUIListBox, gui_listbox) \
+	F(LineEdit, line_edit)
 
 #define APPLY_TO_TEXTURE_TYPES(F) \
 	F(GFXSpriteTexture, gfx_sprite_texture) \

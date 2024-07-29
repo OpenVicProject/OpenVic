@@ -1,6 +1,7 @@
 extends PanelContainer
 
 signal game_session_menu_button_pressed
+signal search_button_pressed
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal minimap_clicked(pos_clicked : Vector2)
 signal zoom_in_button_pressed
@@ -34,6 +35,9 @@ func _ready() -> void:
 # * UIFUN-10
 func _on_game_session_menu_button_pressed() -> void:
 	game_session_menu_button_pressed.emit()
+
+func _on_search_button_pressed() -> void:
+	search_button_pressed.emit()
 
 # REQUIREMENTS:
 # * SS-76

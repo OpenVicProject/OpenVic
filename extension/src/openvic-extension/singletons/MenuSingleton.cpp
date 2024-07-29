@@ -28,6 +28,10 @@ StringName const& MenuSingleton::_signal_population_menu_pops_changed() {
 	static const StringName signal_population_menu_pops_changed = "population_menu_pops_changed";
 	return signal_population_menu_pops_changed;
 }
+StringName const& MenuSingleton::_signal_search_cache_changed() {
+	static const StringName signal_search_cache_changed = "search_cache_changed";
+	return signal_search_cache_changed;
+}
 
 String MenuSingleton::get_state_name(State const& state) const {
 	StateSet const& state_set = state.get_state_set();
@@ -59,12 +63,45 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 	if (owned && split) {
 		// COUNTRY STATE/CAPITAL
-		return tr(std_view_to_godot_string(StringUtils::append_string_views(state.get_owner()->get_identifier(), "_ADJ")))
-			+ " " + name;
+		return get_country_adjective(*state.get_owner()) + " " + name;
 	}
 
 	// STATE/CAPITAL
 	return name;
+}
+
+String MenuSingleton::get_country_name(CountryInstance const& country) const {
+	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
+		const String government_name_key = std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", country.get_government_type()->get_identifier()
+		));
+
+		String government_name = tr(government_name_key);
+
+		if (government_name != government_name_key) {
+			return government_name;
+		}
+	}
+
+	return tr(std_view_to_godot_string(country.get_identifier()));
+}
+
+String MenuSingleton::get_country_adjective(CountryInstance const& country) const {
+	static constexpr std::string_view adjective = "_ADJ";
+
+	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
+		const String government_adjective_key = std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", country.get_government_type()->get_identifier(), adjective
+		));
+
+		String government_adjective = tr(government_adjective_key);
+
+		if (government_adjective != government_adjective_key) {
+			return government_adjective;
+		}
+	}
+
+	return tr(std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
 void MenuSingleton::_bind_methods() {
@@ -142,6 +179,15 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(SORT_REBEL_FACTION);
 	BIND_ENUM_CONSTANT(SORT_SIZE_CHANGE);
 	BIND_ENUM_CONSTANT(SORT_LITERACY);
+
+	/* Find/Search Panel */
+	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
+	OV_BIND_METHOD(MenuSingleton::update_search_results, { "text" });
+	OV_BIND_METHOD(MenuSingleton::get_search_result_rows, { "start", "count" });
+	OV_BIND_METHOD(MenuSingleton::get_search_result_row_count);
+	OV_BIND_METHOD(MenuSingleton::get_search_result_position, { "result_index" });
+
+	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {
@@ -441,4 +487,140 @@ String MenuSingleton::get_longform_date() const {
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	return Utilities::date_to_formatted_string(instance_manager->get_today());
+}
+
+Error MenuSingleton::generate_search_cache() {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, FAILED);
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, FAILED);
+
+	search_panel.entry_cache.clear();
+
+	std::vector<ProvinceInstance> const& provinces = instance_manager->get_map_instance().get_province_instances();
+	std::vector<StateSet> const& state_sets = instance_manager->get_map_instance().get_state_manager().get_state_sets();
+	std::vector<CountryInstance> const& countries = instance_manager->get_country_instance_manager().get_country_instances();
+
+	// TODO - reserve actual state count rather than state set count (maybe use a vector of pointers to all states?)
+	search_panel.entry_cache.reserve(provinces.size() + state_sets.size() + countries.size());
+
+	for (ProvinceInstance const& province : provinces) {
+		String identifier = std_view_to_godot_string(province.get_identifier());
+		String display_name = tr(GUINode::format_province_name(identifier));
+		String search_name = display_name.to_lower();
+
+		search_panel.entry_cache.push_back({
+			&province, std::move(display_name), std::move(search_name), identifier.to_lower()
+		});
+	}
+
+	for (StateSet const& state_set : state_sets) {
+		for (State const& state : state_set.get_states()) {
+			String display_name = get_state_name(state);
+			String search_name = display_name.to_lower();
+
+			search_panel.entry_cache.push_back({
+				// TODO - include state identifier? (region and/or split?)
+				&state, std::move(display_name), std::move(search_name), {}
+			});
+		}
+	}
+
+	for (CountryInstance const& country : countries) {
+		// TODO - replace with a proper "exists" check
+		if (country.get_capital() != nullptr) {
+			String display_name = get_country_name(country);
+			String search_name = display_name.to_lower();
+
+			search_panel.entry_cache.push_back({
+				&country, std::move(display_name), std::move(search_name),
+				std_view_to_godot_string(country.get_identifier()).to_lower()
+			});
+		}
+	}
+
+	std::sort(search_panel.entry_cache.begin(), search_panel.entry_cache.end(), [](auto const& a, auto const& b) -> bool {
+		return a.search_name < b.search_name;
+	});
+
+	emit_signal(_signal_search_cache_changed());
+
+	return OK;
+}
+
+void MenuSingleton::update_search_results(godot::String const& text) {
+	// Sanatise input
+	const String search_text = text.strip_edges().to_lower();
+
+	search_panel.result_indices.clear();
+
+	if (!search_text.is_empty()) {
+		// Search through cache
+		for (size_t idx = 0; idx < search_panel.entry_cache.size(); ++idx) {
+			search_panel_t::entry_t const& entry = search_panel.entry_cache[idx];
+
+			if (entry.search_name.begins_with(search_text) || entry.identifier == search_text) {
+				search_panel.result_indices.push_back(idx);
+			}
+		}
+	}
+}
+
+PackedStringArray MenuSingleton::get_search_result_rows(int32_t start, int32_t count) const {
+	if (search_panel.result_indices.empty()) {
+		return {};
+	}
+
+	ERR_FAIL_INDEX_V_MSG(
+		start, search_panel.result_indices.size(), {},
+		vformat("Invalid start for search panel result rows: %d", start)
+	);
+	ERR_FAIL_COND_V_MSG(count <= 0, {}, vformat("Invalid count for search panel result rows: %d", count));
+
+	if (start + count > search_panel.result_indices.size()) {
+		UtilityFunctions::push_warning(
+			"Requested search result rows beyond the end of the result indices (", start, " + ", count, " > ",
+			static_cast<int64_t>(search_panel.result_indices.size()), "), limiting to ",
+			static_cast<int64_t>(search_panel.result_indices.size() - start), " rows."
+		);
+		count = search_panel.result_indices.size() - start;
+	}
+
+	PackedStringArray results;
+	results.resize(count);
+
+	for (size_t idx = 0; idx < count; ++idx) {
+		results[idx] = search_panel.entry_cache[search_panel.result_indices[start + idx]].display_name;
+	}
+
+	return results;
+}
+
+int32_t MenuSingleton::get_search_result_row_count() const {
+	return search_panel.result_indices.size();
+}
+
+Vector2 MenuSingleton::get_search_result_position(int32_t result_index) const {
+	ERR_FAIL_INDEX_V(result_index, search_panel.result_indices.size(), {});
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	struct entry_visitor_t {
+		fvec2_t operator()(ProvinceInstance const* province) {
+			return province->get_province_definition().get_centre();
+		}
+
+		fvec2_t operator()(State const* state) {
+			return (*this)(state->get_capital());
+		}
+
+		fvec2_t operator()(CountryInstance const* country) {
+			return (*this)(country->get_capital());
+		}
+	} entry_visitor;
+
+	return game_singleton->normalise_map_position(
+		std::visit(entry_visitor, search_panel.entry_cache[search_panel.result_indices[result_index]].target)
+	);
 }
