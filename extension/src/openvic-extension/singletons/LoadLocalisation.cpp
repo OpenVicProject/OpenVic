@@ -136,8 +136,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 			translation, false, vformat("Failed to get translation object: %s", Dataloader::locale_names[locale])
 		);
 	}
-	const StringName godot_key = Utilities::std_view_to_godot_string_name(key);
-	const StringName godot_localisation = Utilities::std_view_to_godot_string_name(localisation);
+	const StringName godot_key = Utilities::std_to_godot_string(key);
+	const StringName godot_localisation = Utilities::std_to_godot_string(localisation);
 	if (0) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {

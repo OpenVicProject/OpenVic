@@ -65,7 +65,7 @@ String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
 
 /* Date formatted like this: "January 1, 1836" (with the month localised, if possible). */
 String Utilities::date_to_formatted_string(Date date) {
-	const String month_name = std_view_to_godot_string_name(date.get_month_name());
+	const String month_name = Utilities::std_to_godot_string(date.get_month_name());
 	const String day_and_year = " " + String::num_int64(date.get_day()) + ", " + String::num_int64(date.get_year());
 	TranslationServer const* server = TranslationServer::get_singleton();
 	if (server != nullptr) {

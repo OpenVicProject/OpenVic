@@ -9,10 +9,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
-using OpenVic::Utilities::std_view_to_godot_string;
-using OpenVic::Utilities::std_view_to_godot_string_name;
-
 Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
@@ -127,11 +123,11 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_m
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-	const StringName overlay_file = std_view_to_godot_string_name(new_gfx_masked_flag->get_overlay_file());
+	const StringName overlay_file = Utilities::std_to_godot_string(new_gfx_masked_flag->get_overlay_file());
 	const Ref<Image> new_overlay_image = asset_manager->get_image(overlay_file);
 	ERR_FAIL_NULL_V_MSG(new_overlay_image, FAILED, vformat("Failed to load flag overlay image: %s", overlay_file));
 
-	const StringName mask_file = std_view_to_godot_string_name(new_gfx_masked_flag->get_mask_file());
+	const StringName mask_file = Utilities::std_to_godot_string(new_gfx_masked_flag->get_mask_file());
 	const Ref<Image> new_mask_image = asset_manager->get_image(mask_file);
 	ERR_FAIL_NULL_V_MSG(new_mask_image, FAILED, vformat("Failed to load flag mask image: %s", mask_file));
 
@@ -152,14 +148,15 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_fl
 	ERR_FAIL_NULL_V_MSG(
 		new_masked_flag, FAILED, vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_masked_flag_name,
-			std_view_to_godot_string(sprite->get_type()), std_view_to_godot_string(GFX::MaskedFlag::get_type_static())
+			Utilities::std_to_godot_string(sprite->get_type()),
+			Utilities::std_to_godot_string(GFX::MaskedFlag::get_type_static())
 		)
 	);
 	return set_gfx_masked_flag(new_masked_flag);
 }
 
 String GFXMaskedFlagTexture::get_gfx_masked_flag_name() const {
-	return gfx_masked_flag != nullptr ? std_view_to_godot_string(gfx_masked_flag->get_name()) : String {};
+	return gfx_masked_flag != nullptr ? Utilities::std_to_godot_string(gfx_masked_flag->get_name()) : String {};
 }
 
 Error GFXMaskedFlagTexture::set_flag_country_and_type(
@@ -197,7 +194,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	CountryDefinition const* new_flag_country =
 		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
-			godot_to_std_string(new_flag_country_name)
+			Utilities::godot_to_std_string(new_flag_country_name)
 		);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
 	return set_flag_country_and_type(new_flag_country, new_flag_type);
@@ -216,12 +213,12 @@ Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	CountryDefinition const* new_flag_country =
 		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
-			godot_to_std_string(new_flag_country_name)
+			Utilities::godot_to_std_string(new_flag_country_name)
 		);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
 	return set_flag_country(new_flag_country);
 }
 
 String GFXMaskedFlagTexture::get_flag_country_name() const {
-	return flag_country != nullptr ? std_view_to_godot_string(flag_country->get_identifier()) : String {};
+	return flag_country != nullptr ? Utilities::std_to_godot_string(flag_country->get_identifier()) : String {};
 }

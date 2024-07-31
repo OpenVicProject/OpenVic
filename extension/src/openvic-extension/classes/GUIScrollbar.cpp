@@ -11,9 +11,6 @@
 using namespace OpenVic;
 using namespace godot;
 
-using OpenVic::Utilities::std_to_godot_string;
-using OpenVic::Utilities::std_view_to_godot_string;
-
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
  * so we must use wrapper functions to delay their initialisation. */
 StringName const& GUIScrollbar::signal_value_changed() {
@@ -360,7 +357,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	gui_scrollbar = new_gui_scrollbar;
 
-	const String gui_scrollbar_name = std_view_to_godot_string(gui_scrollbar->get_name());
+	const String gui_scrollbar_name = Utilities::std_to_godot_string(gui_scrollbar->get_name());
 
 	orientation = gui_scrollbar->is_horizontal() ? HORIZONTAL : VERTICAL;
 	length_override = 0.0f;
@@ -374,7 +371,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 		ERR_FAIL_NULL_V_MSG(element, false, vformat(
 			"Invalid %s element for GUIScrollbar %s - null!", target, gui_scrollbar_name
 		));
-		const String element_name = std_view_to_godot_string(element->get_name());
+		const String element_name = Utilities::std_to_godot_string(element->get_name());
 
 		/* Get Sprite, convert to TextureSprite, use to make a GFXSpriteTexture. */
 		GFX::Sprite const* sprite = element->get_sprite();
@@ -384,8 +381,9 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 		GFX::TextureSprite const* texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 		ERR_FAIL_NULL_V_MSG(texture_sprite, false, vformat(
 			"Invalid %s element %s for GUIScrollbar %s - sprite type is %s with base type %s, expected base %s!", target,
-			element_name, gui_scrollbar_name, std_view_to_godot_string(sprite->get_type()),
-			std_view_to_godot_string(sprite->get_base_type()), std_view_to_godot_string(GFX::TextureSprite::get_type_static())
+			element_name, gui_scrollbar_name, Utilities::std_to_godot_string(sprite->get_type()),
+			Utilities::std_to_godot_string(sprite->get_base_type()),
+			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())
 		));
 		texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
 		ERR_FAIL_NULL_V_MSG(texture, false, vformat(
@@ -427,8 +425,8 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	fixed_point_t step_size = gui_scrollbar->get_step_size();
 	if (step_size <= 0) {
 		UtilityFunctions::push_error(
-			"Invalid step size ", std_to_godot_string(step_size.to_string()), " for GUIScrollbar ", gui_scrollbar_name,
-			" - not positive! Defaulting to 1."
+			"Invalid step size ", Utilities::std_to_godot_string(step_size.to_string()), " for GUIScrollbar ",
+			gui_scrollbar_name, " - not positive! Defaulting to 1."
 		);
 		step_size = 1;
 		ret = false;
@@ -446,7 +444,9 @@ Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const
 	if (gui_scene.is_empty() && gui_scrollbar_name.is_empty()) {
 		return set_gui_scrollbar(nullptr);
 	}
-	ERR_FAIL_COND_V_MSG(gui_scene.is_empty() || gui_scrollbar_name.is_empty(), FAILED, "GUI scene or scrollbar name is empty!");
+	ERR_FAIL_COND_V_MSG(
+		gui_scene.is_empty() || gui_scrollbar_name.is_empty(), FAILED, "GUI scene or scrollbar name is empty!"
+	);
 
 	GUI::Element const* gui_element = UITools::get_gui_element(gui_scene, gui_scrollbar_name);
 	ERR_FAIL_NULL_V(gui_element, FAILED);
@@ -456,7 +456,7 @@ Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const
 }
 
 String GUIScrollbar::get_gui_scrollbar_name() const {
-	return gui_scrollbar != nullptr ? std_view_to_godot_string(gui_scrollbar->get_name()) : String {};
+	return gui_scrollbar != nullptr ? Utilities::std_to_godot_string(gui_scrollbar->get_name()) : String {};
 }
 
 void GUIScrollbar::set_value(int32_t new_value, bool signal) {

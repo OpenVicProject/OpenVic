@@ -13,8 +13,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::std_view_to_godot_string;
-
 /* POPULATION MENU */
 
 Error MenuSingleton::_population_menu_update_provinces() {
@@ -152,7 +150,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				province_dict[type_key] = population_menu_t::LIST_ENTRY_PROVINCE;
 				province_dict[index_key] = index;
-				province_dict[name_key] = std_view_to_godot_string(province_entry.province.get_identifier());
+				province_dict[name_key] = Utilities::std_to_godot_string(province_entry.province.get_identifier());
 				province_dict[size_key] = province_entry.province.get_total_population();
 				province_dict[change_key] = 0;
 				province_dict[selected_key] = province_entry.selected;
@@ -541,7 +539,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 		sorted_items.resize(items.size());
 
 		for (size_t idx = 0; idx < items.size(); ++idx) {
-			String identifier = std_view_to_godot_string(items[idx].get_identifier());
+			String identifier = Utilities::std_to_godot_string(items[idx].get_identifier());
 			if constexpr (std::is_same_v<T, ProvinceInstance>) {
 				identifier = GUINode::format_province_name(identifier);
 			}
@@ -676,10 +674,10 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 
 		pop_dict[pop_size_key] = pop->get_size();
 		pop_dict[pop_type_icon_key] = pop->get_type().get_sprite();
-		pop_dict[pop_culture_key] = std_view_to_godot_string(pop->get_culture().get_identifier());
+		pop_dict[pop_culture_key] = Utilities::std_to_godot_string(pop->get_culture().get_identifier());
 		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
 		if (pop->get_location() != nullptr) {
-			pop_dict[pop_location_key] = std_view_to_godot_string(pop->get_location()->get_identifier());
+			pop_dict[pop_location_key] = Utilities::std_to_godot_string(pop->get_location()->get_identifier());
 		}
 		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();

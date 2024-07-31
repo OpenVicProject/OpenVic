@@ -16,11 +16,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
-using OpenVic::Utilities::std_to_godot_string;
-using OpenVic::Utilities::std_to_godot_string_name;
-using OpenVic::Utilities::std_view_to_godot_string;
-
 /* Maximum width or height a GPU texture can have. */
 static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 
@@ -110,13 +105,13 @@ GameSingleton::~GameSingleton() {
 
 void GameSingleton::setup_logger() {
 	Logger::set_info_func([](std::string&& str) {
-		UtilityFunctions::print(std_to_godot_string(str));
+		UtilityFunctions::print(Utilities::std_to_godot_string(str));
 	});
 	Logger::set_warning_func([](std::string&& str) {
-		UtilityFunctions::push_warning(std_to_godot_string(str));
+		UtilityFunctions::push_warning(Utilities::std_to_godot_string(str));
 	});
 	Logger::set_error_func([](std::string&& str) {
-		UtilityFunctions::push_error(std_to_godot_string(str));
+		UtilityFunctions::push_error(Utilities::std_to_godot_string(str));
 	});
 }
 
@@ -284,7 +279,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 
 		Dictionary province_dict;
 
-		province_dict[identifier_key] = std_view_to_godot_string(province.get_identifier());
+		province_dict[identifier_key] = Utilities::std_to_godot_string(province.get_identifier());
 		province_dict[position_key] = Utilities::to_godot_fvec2(province.get_text_position()) / get_map_dims();
 
 		const float rotation = province.get_text_rotation().to_float();
@@ -310,14 +305,14 @@ int32_t GameSingleton::get_mapmode_count() const {
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
 	Mapmode const* mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
 	if (mapmode != nullptr) {
-		return std_view_to_godot_string(mapmode->get_identifier());
+		return Utilities::std_to_godot_string(mapmode->get_identifier());
 	}
 	return String {};
 }
 
 Error GameSingleton::set_mapmode(String const& identifier) {
 	Mapmode const* mapmode =
-		get_definition_manager().get_mapmode_manager().get_mapmode_by_identifier(godot_to_std_string(identifier));
+		get_definition_manager().get_mapmode_manager().get_mapmode_by_identifier(Utilities::godot_to_std_string(identifier));
 	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
 	mapmode_index = mapmode->get_index();
 	return _update_colour_image();
@@ -500,7 +495,7 @@ Error GameSingleton::_load_flag_sheet() {
 	/* Generate flag type - index lookup map */
 	flag_type_index_map.clear();
 	for (std::string const& type : government_type_manager.get_flag_types()) {
-		flag_type_index_map.emplace(std_to_godot_string_name(type), static_cast<int32_t>(flag_type_index_map.size()));
+		flag_type_index_map.emplace(Utilities::std_to_godot_string(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
 	flag_sheet_count = country_definition_manager.get_country_definition_count() * flag_type_index_map.size();
@@ -512,7 +507,7 @@ Error GameSingleton::_load_flag_sheet() {
 
 	Error ret = OK;
 	for (CountryDefinition const& country : country_definition_manager.get_country_definitions()) {
-		const String country_name = std_view_to_godot_string(country.get_identifier());
+		const String country_name = Utilities::std_to_godot_string(country.get_identifier());
 
 		for (auto const& [flag_type, flag_type_index] : flag_type_index_map) {
 			static const String flag_directory = "gfx/flags/";
@@ -590,7 +585,7 @@ Error GameSingleton::_load_flag_sheet() {
 Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& file_paths) {
 	Dataloader::path_vector_t roots;
 	for (String const& path : file_paths) {
-		roots.push_back(godot_to_std_string(path));
+		roots.push_back(Utilities::godot_to_std_string(path));
 	}
 
 	Error err = OK;
@@ -618,9 +613,11 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& fi
 }
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
-	return std_to_godot_string(Dataloader::search_for_game_path(godot_to_std_string(hint_path)).string());
+	return Utilities::std_to_godot_string(
+		Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string()
+	);
 }
 
 String GameSingleton::lookup_file_path(String const& path) const {
-	return std_to_godot_string(get_dataloader().lookup_file(godot_to_std_string(path)).string());
+	return Utilities::std_to_godot_string(get_dataloader().lookup_file(Utilities::godot_to_std_string(path)).string());
 }
