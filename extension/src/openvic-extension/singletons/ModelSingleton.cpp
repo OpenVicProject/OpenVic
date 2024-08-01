@@ -98,7 +98,12 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	return actor;
 }
 
-Dictionary ModelSingleton::make_animation_dict(GFX::Actor::Animation const& animation) const {
+Dictionary ModelSingleton::get_animation_dict(GFX::Actor::Animation const& animation) {
+	const animation_map_t::const_iterator it = animation_cache.find(&animation);
+	if (it != animation_cache.end()) {
+		return it->second;
+	}
+
 	static const StringName file_key = "file";
 	static const StringName time_key = "time";
 
@@ -107,10 +112,17 @@ Dictionary ModelSingleton::make_animation_dict(GFX::Actor::Animation const& anim
 	dict[file_key] = std_view_to_godot_string(animation.get_file());
 	dict[time_key] = animation.get_scroll_time().to_float();
 
+	animation_cache.emplace(&animation, dict);
+
 	return dict;
 }
 
-Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
+Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
+	const model_map_t::const_iterator it = model_cache.find(&actor);
+	if (it != model_cache.end()) {
+		return it->second;
+	}
+
 	static const StringName file_key = "file";
 	static const StringName scale_key = "scale";
 	static const StringName idle_key = "idle";
@@ -125,7 +137,7 @@ Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
 
 	const auto set_animation = [this, &dict](StringName const& key, std::optional<GFX::Actor::Animation> const& animation) {
 		if (animation.has_value()) {
-			dict[key] = make_animation_dict(*animation);
+			dict[key] = get_animation_dict(*animation);
 		}
 	};
 
@@ -159,7 +171,7 @@ Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
 				Dictionary attachment_dict;
 
 				attachment_dict[attachment_node_key] = std_view_to_godot_string(attachment.get_attach_node());
-				attachment_dict[attachment_model_key] = make_model_dict(*attachment_actor);
+				attachment_dict[attachment_model_key] = get_model_dict(*attachment_actor);
 
 				attachments_array[idx] = std::move(attachment_dict);
 
@@ -177,6 +189,8 @@ Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
 		}
 	}
 
+	model_cache.emplace(&actor, dict);
+
 	return dict;
 }
 
@@ -185,7 +199,7 @@ Dictionary ModelSingleton::make_model_dict(GFX::Actor const& actor) const {
 template<UnitType::branch_t Branch>
 bool ModelSingleton::add_unit_dict(
 	ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
-) const {
+) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
@@ -268,13 +282,13 @@ bool ModelSingleton::add_unit_dict(
 
 	dict[culture_key] = std_view_to_godot_string(graphical_culture_type.get_identifier());
 
-	dict[model_key] = make_model_dict(*actor);
+	dict[model_key] = get_model_dict(*actor);
 
 	if (!mount_actor_name.empty() && !mount_attach_node_name.empty()) {
 		GFX::Actor const* mount_actor = get_actor(mount_actor_name);
 
 		if (mount_actor != nullptr) {
-			dict[mount_model_key] = make_model_dict(*mount_actor);
+			dict[mount_model_key] = get_model_dict(*mount_actor);
 			dict[mount_attach_node_key] = std_view_to_godot_string(mount_attach_node_name);
 		} else {
 			UtilityFunctions::push_error(vformat(
@@ -311,7 +325,7 @@ bool ModelSingleton::add_unit_dict(
 	return ret;
 }
 
-TypedArray<Dictionary> ModelSingleton::get_units() const {
+TypedArray<Dictionary> ModelSingleton::get_units() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -340,27 +354,27 @@ TypedArray<Dictionary> ModelSingleton::get_units() const {
 	return ret;
 }
 
-Dictionary ModelSingleton::get_cultural_gun_model(String const& culture) const {
+Dictionary ModelSingleton::get_cultural_gun_model(String const& culture) {
 	static constexpr std::string_view gun_actor_name = "Gun1";
 
 	GFX::Actor const* actor = get_cultural_actor(godot_to_std_string(culture), gun_actor_name, {});
 
 	ERR_FAIL_NULL_V(actor, {});
 
-	return make_model_dict(*actor);
+	return get_model_dict(*actor);
 }
 
-Dictionary ModelSingleton::get_cultural_helmet_model(String const& culture) const {
+Dictionary ModelSingleton::get_cultural_helmet_model(String const& culture) {
 	static constexpr std::string_view helmet_actor_name = "Helmet1";
 
 	GFX::Actor const* actor = get_cultural_actor(godot_to_std_string(culture), helmet_actor_name, {});
 
 	ERR_FAIL_NULL_V(actor, {});
 
-	return make_model_dict(*actor);
+	return get_model_dict(*actor);
 }
 
-Dictionary ModelSingleton::get_flag_model(bool floating) const {
+Dictionary ModelSingleton::get_flag_model(bool floating) {
 	static constexpr std::string_view flag_name = "Flag";
 	static constexpr std::string_view flag_floating_name = "FlagFloating";
 
@@ -368,12 +382,12 @@ Dictionary ModelSingleton::get_flag_model(bool floating) const {
 
 	ERR_FAIL_NULL_V(actor, {});
 
-	return make_model_dict(*actor);
+	return get_model_dict(*actor);
 }
 
 bool ModelSingleton::add_building_dict(
 	BuildingInstance const& building, ProvinceInstance const& province, TypedArray<Dictionary>& building_array
-) const {
+) {
 	ProvinceDefinition const& province_definition = province.get_province_definition();
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
@@ -431,7 +445,7 @@ bool ModelSingleton::add_building_dict(
 
 	Dictionary dict;
 
-	dict[model_key] = make_model_dict(*actor);
+	dict[model_key] = get_model_dict(*actor);
 
 	dict[position_key] = game_singleton->map_position_to_world_coords(
 		position_ptr != nullptr ? *position_ptr : province_definition.get_centre()
@@ -447,7 +461,7 @@ bool ModelSingleton::add_building_dict(
 	return true;
 }
 
-TypedArray<Dictionary> ModelSingleton::get_buildings() const {
+TypedArray<Dictionary> ModelSingleton::get_buildings() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();

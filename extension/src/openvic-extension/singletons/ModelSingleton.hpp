@@ -29,26 +29,32 @@ namespace OpenVic {
 			std::string_view culture, std::string_view name, std::string_view fallback_name
 		) const;
 
-		godot::Dictionary make_animation_dict(GFX::Actor::Animation const& animation) const;
-		godot::Dictionary make_model_dict(GFX::Actor const& actor) const;
+		using animation_map_t = deque_ordered_map<GFX::Actor::Animation const*, godot::Dictionary>;
+		using model_map_t = deque_ordered_map<GFX::Actor const*, godot::Dictionary>;
+
+		animation_map_t animation_cache;
+		model_map_t model_cache;
+
+		godot::Dictionary get_animation_dict(GFX::Actor::Animation const& animation);
+		godot::Dictionary get_model_dict(GFX::Actor const& actor);
 
 		template<UnitType::branch_t Branch>
 		bool add_unit_dict(
 			ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, godot::TypedArray<godot::Dictionary>& unit_array
-		) const;
+		);
 
 		bool add_building_dict(
 			BuildingInstance const& building, ProvinceInstance const& province,
 			godot::TypedArray<godot::Dictionary>& building_array
-		) const;
+		);
 
 	public:
-		godot::TypedArray<godot::Dictionary> get_units() const;
-		godot::Dictionary get_cultural_gun_model(godot::String const& culture) const;
-		godot::Dictionary get_cultural_helmet_model(godot::String const& culture) const;
+		godot::TypedArray<godot::Dictionary> get_units();
+		godot::Dictionary get_cultural_gun_model(godot::String const& culture);
+		godot::Dictionary get_cultural_helmet_model(godot::String const& culture);
 
-		godot::Dictionary get_flag_model(bool floating) const;
+		godot::Dictionary get_flag_model(bool floating);
 
-		godot::TypedArray<godot::Dictionary> get_buildings() const;
+		godot::TypedArray<godot::Dictionary> get_buildings();
 	};
 }
