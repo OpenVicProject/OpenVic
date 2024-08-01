@@ -190,10 +190,21 @@ func _input(event : InputEvent) -> void:
 
 # REQUIREMENTS
 # * SS-31
+# * SS-75
+var _cardinal_movement_vector := Vector2.ZERO
 func _unhandled_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_over_viewport = true
 		queue_province_hover_update()
+
+	elif event.is_action(_action_north) or event.is_action(_action_south)\
+		or event.is_action(_action_east) or event.is_action(_action_west):
+			_cardinal_movement_vector = Input.get_vector(
+				_action_west,
+				_action_east,
+				_action_north,
+				_action_south
+			) * _cardinal_move_speed
 
 	elif event.is_action_pressed(_action_click):
 		if _mouse_over_viewport:
@@ -217,6 +228,9 @@ func _unhandled_input(event : InputEvent) -> void:
 		zoom_out()
 
 func _process(delta : float) -> void:
+	if _cardinal_movement_vector != Vector2.ZERO and get_window().gui_get_focus_owner() != null:
+		_cardinal_movement_vector = Vector2.ZERO
+
 	if _is_viewport_inactive():
 		_mouse_over_viewport = false
 		unset_hovered_province()
@@ -244,7 +258,7 @@ func _movement_process(delta : float) -> void:
 	if _drag_active:
 		direction = (_drag_anchor - _mouse_pos_map) * _map_mesh_dims
 	else:
-		direction = _edge_scrolling_vector() + _cardinal_movement_vector()
+		direction = _edge_scrolling_vector() + _cardinal_movement_vector
 		if direction != Vector2.ZERO:
 			queue_province_hover_update()
 		# Scale movement speed with height
@@ -261,16 +275,6 @@ func _edge_scrolling_vector() -> Vector2:
 	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
 		return Vector2()
 	return mouse_vector * _edge_move_speed
-
-# REQUIREMENTS
-# * SS-75
-func _cardinal_movement_vector() -> Vector2:
-	return Input.get_vector(
-			_action_west,
-			_action_east,
-			_action_north,
-			_action_south
-		) * _cardinal_move_speed
 
 func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
