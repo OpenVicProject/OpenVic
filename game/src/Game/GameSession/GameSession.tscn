@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=20 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_xkg5j"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/ProductionMenu.gd" id="5_16755"]
 [ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel.gd" id="5_lfv8l"]
+[ext_resource type="Script" path="res://src/Game/GameSession/SearchPanel.gd" id="5_t260f"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/Game/Menu/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/BudgetMenu.gd" id="6_vninv"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/TechnologyMenu.gd" id="7_r712c"]
@@ -111,6 +112,12 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
+[node name="SearchPanel" type="GUINode" parent="UICanvasLayer/UI" node_paths=PackedStringArray("_map_view")]
+layout_mode = 1
+anchors_preset = 15
+script = ExtResource("5_t260f")
+_map_view = NodePath("../../../MapView")
+
 [node name="GameSessionMenu" parent="UICanvasLayer/UI" instance=ExtResource("3_bvmqh")]
 visible = false
 layout_mode = 1
@@ -153,6 +160,7 @@ grow_horizontal = 0
 [connection signal="map_view_camera_changed" from="MapView" to="UICanvasLayer/UI/MapControlPanel" method="_on_map_view_camera_changed"]
 [connection signal="game_session_menu_button_pressed" from="UICanvasLayer/UI/MapControlPanel" to="." method="_on_game_session_menu_button_pressed"]
 [connection signal="minimap_clicked" from="UICanvasLayer/UI/MapControlPanel" to="MapView" method="_on_minimap_clicked"]
+[connection signal="search_button_pressed" from="UICanvasLayer/UI/MapControlPanel" to="UICanvasLayer/UI/SearchPanel" method="toggle_visibility"]
 [connection signal="zoom_in_button_pressed" from="UICanvasLayer/UI/MapControlPanel" to="MapView" method="zoom_in"]
 [connection signal="zoom_out_button_pressed" from="UICanvasLayer/UI/MapControlPanel" to="MapView" method="zoom_out"]
 [connection signal="load_button_pressed" from="UICanvasLayer/UI/GameSessionMenu" to="UICanvasLayer/UI/SaveLoadMenu" method="show_for_load"]

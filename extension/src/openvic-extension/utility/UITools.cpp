@@ -3,7 +3,9 @@
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
 #include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/panel.hpp>
+#include <godot_cpp/classes/style_box_empty.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/classes/texture_progress_bar.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
@@ -111,7 +113,9 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	return ret;
 }
 
-static bool add_theme_stylebox(Control* control, StringName const& theme_name, Ref<Texture2D> const& texture) {
+static bool add_theme_stylebox(
+	Control* control, StringName const& theme_name, Ref<Texture2D> const& texture, Vector2 border = {}
+) {
 	Ref<StyleBoxTexture> stylebox;
 	stylebox.instantiate();
 	ERR_FAIL_NULL_V(stylebox, false);
@@ -120,6 +124,13 @@ static bool add_theme_stylebox(Control* control, StringName const& theme_name, R
 	static const StringName changed_signal = "changed";
 	static const StringName emit_changed_func = "emit_changed";
 	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
+
+	if (border != Vector2 {}) {
+		stylebox->set_texture_margin(SIDE_LEFT, border.x);
+		stylebox->set_texture_margin(SIDE_RIGHT, border.x);
+		stylebox->set_texture_margin(SIDE_TOP, border.y);
+		stylebox->set_texture_margin(SIDE_BOTTOM, border.y);
+	}
 
 	control->add_theme_stylebox_override(theme_name, stylebox);
 	return true;
@@ -574,37 +585,78 @@ static bool generate_listbox(generate_gui_args_t&& args) {
 	return ret;
 }
 
-template<std::derived_from<GUI::Element> T>
-requires requires(T const& element) {
-	{ element.get_size() } -> std::same_as<fvec2_t>;
-}
-static bool generate_placeholder(generate_gui_args_t&& args, Color colour) {
-	T const& cast_element = static_cast<T const&>(args.element);
-
-	static const String type_name = std_view_to_godot_string(T::get_type_static());
-	const String placeholder_name = std_view_to_godot_string(cast_element.get_name());
-	const Vector2 godot_size = Utilities::to_godot_fvec2(cast_element.get_size());
-
-	UtilityFunctions::push_warning(
-		"Generating placeholder ColorRect for GUI ", type_name, " ", placeholder_name, " (size ", godot_size, ")"
-	);
-
-	ColorRect* godot_rect = nullptr;
-	bool ret = new_control(godot_rect, cast_element, args.name);
-	ERR_FAIL_NULL_V_MSG(
-		godot_rect, false, vformat("Failed to create placeholder ColorRect for GUI %s %s", type_name, placeholder_name)
-	);
-
-	godot_rect->set_custom_minimum_size(godot_size);
-	godot_rect->set_color(colour);
-
-	args.result = godot_rect;
-	return ret;
-}
-
 static bool generate_texteditbox(generate_gui_args_t&& args) {
 	using namespace OpenVic::Utilities::literals;
-	return generate_placeholder<GUI::TextEditBox>(std::move(args), { 0.0_real, 1.0_real, 0.0_real, 0.3_real });
+
+	GUI::TextEditBox const& text_edit_box = static_cast<GUI::TextEditBox const&>(args.element);
+
+	const String text_edit_box_name = std_view_to_godot_string(text_edit_box.get_name());
+
+	LineEdit* godot_line_edit = nullptr;
+	bool ret = new_control(godot_line_edit, text_edit_box, args.name);
+	ERR_FAIL_NULL_V_MSG(
+		godot_line_edit, false, vformat("Failed to create LineEdit for GUI text edit box %s", text_edit_box_name)
+	);
+
+	godot_line_edit->set_context_menu_enabled(false);
+	godot_line_edit->set_caret_blink_enabled(true);
+	godot_line_edit->set_focus_mode(Control::FOCUS_CLICK);
+
+	godot_line_edit->set_text(std_view_to_godot_string(text_edit_box.get_text()));
+
+	static const Vector2 default_position_padding { -4.0_real, 1.0_real };
+	static const Vector2 default_size_padding { 2.0_real, 2.0_real };
+	const Vector2 border_size = Utilities::to_godot_fvec2(text_edit_box.get_border_size());
+	const Vector2 max_size = Utilities::to_godot_fvec2(text_edit_box.get_size());
+	godot_line_edit->set_position(godot_line_edit->get_position() + border_size + default_position_padding);
+	godot_line_edit->set_custom_minimum_size(max_size - border_size - default_size_padding);
+
+	static const StringName caret_color_theme = "caret_color";
+	static const Color caret_colour { 1.0_real, 0.0_real, 0.0_real };
+	godot_line_edit->add_theme_color_override(caret_color_theme, caret_colour);
+
+	if (text_edit_box.get_font() != nullptr) {
+		const StringName font_file = std_view_to_godot_string_name(text_edit_box.get_font()->get_fontname());
+		const Ref<Font> font = args.asset_manager.get_font(font_file);
+		if (font.is_valid()) {
+			static const StringName font_theme = "font";
+			godot_line_edit->add_theme_font_override(font_theme, font);
+		} else {
+			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI text edit box", text_edit_box_name);
+			ret = false;
+		}
+		const Color colour = Utilities::to_godot_color(text_edit_box.get_font()->get_colour());
+		static const StringName font_color_theme = "font_color";
+		godot_line_edit->add_theme_color_override(font_color_theme, colour);
+	}
+
+	const StringName texture_file = std_view_to_godot_string_name(text_edit_box.get_texture_file());
+	if (!texture_file.is_empty()) {
+		Ref<ImageTexture> texture = args.asset_manager.get_texture(texture_file);
+
+		if (texture.is_valid()) {
+			static const StringName normal_theme = "normal";
+			ret &= add_theme_stylebox(godot_line_edit, normal_theme, texture, border_size);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to load texture \"", texture_file, "\" for text edit box \"", text_edit_box_name, "\""
+			);
+			ret = false;
+		}
+	}
+
+	Ref<StyleBoxEmpty> stylebox_empty;
+	stylebox_empty.instantiate();
+	if (stylebox_empty.is_valid()) {
+		static const StringName focus_theme = "focus";
+		godot_line_edit->add_theme_stylebox_override(focus_theme, stylebox_empty);
+	} else {
+		UtilityFunctions::push_error("Failed to create empty style box for focus of GUI text edit box ", text_edit_box_name);
+		ret = false;
+	}
+
+	args.result = godot_line_edit;
+	return ret;
 }
 
 static bool generate_scrollbar(generate_gui_args_t&& args) {

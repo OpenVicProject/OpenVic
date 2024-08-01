@@ -134,18 +134,27 @@ func _map_to_world_coords(pos : Vector2) -> Vector3:
 	pos = pos * _map_mesh_dims + _map_mesh_corner
 	return Vector3(pos.x, 0, pos.y)
 
-func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
+func _viewport_to_world_coords(pos_viewport : Vector2) -> Vector3:
 	var ray_origin := _camera.project_ray_origin(pos_viewport)
 	var ray_normal := _camera.project_ray_normal(pos_viewport)
 	# Plane with normal (0,1,0) facing upwards, at a distance 0 from the origin
 	var intersection : Variant = Plane(0, 1, 0, 0).intersects_ray(ray_origin, ray_normal)
 	if typeof(intersection) == TYPE_VECTOR3:
-		return _world_to_map_coords(intersection as Vector3)
+		return intersection
 	else:
 		# Normals parallel to the xz-plane could cause null intersections,
 		# but the camera's orientation should prevent such normals
 		push_error("Invalid intersection: ", intersection)
-		return Vector2(0.5, 0.5)
+		return _map_to_world_coords(Vector2(0.5, 0.5))
+
+func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
+	return _world_to_map_coords(_viewport_to_world_coords(pos_viewport))
+
+func look_at_map_position(pos : Vector2) -> void:
+	var viewport_centre : Vector2 = Vector2(0.5, 0.5) * _viewport_dims / GuiScale.get_current_guiscale()
+	var pos_delta : Vector3 = _map_to_world_coords(pos) - _viewport_to_world_coords(viewport_centre)
+	_camera.position.x += pos_delta.x
+	_camera.position.z += pos_delta.z
 
 func zoom_in() -> void:
 	_zoom_target -= _zoom_target_step

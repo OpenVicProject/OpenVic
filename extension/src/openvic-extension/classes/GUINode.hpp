@@ -6,6 +6,7 @@
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/panel.hpp>
 #include <godot_cpp/classes/ref.hpp>
@@ -58,6 +59,7 @@ namespace OpenVic {
 		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node(godot::Node* node);
 		static GUIScrollbar* get_gui_scrollbar_from_node(godot::Node* node);
 		static GUIListBox* get_gui_listbox_from_node(godot::Node* node);
+		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
 
 		godot::Button* get_button_from_nodepath(godot::NodePath const& path) const;
 		godot::Label* get_label_from_nodepath(godot::NodePath const& path) const;
@@ -67,6 +69,7 @@ namespace OpenVic {
 		GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_nodepath(godot::NodePath const& path) const;
 		GUIScrollbar* get_gui_scrollbar_from_nodepath(godot::NodePath const& path) const;
 		GUIListBox* get_gui_listbox_from_nodepath(godot::NodePath const& path) const;
+		godot::LineEdit* get_line_edit_from_nodepath(godot::NodePath const& path) const;
 
 		/* Helper functions to get textures from TextureRects and Buttons. */
 		static godot::Ref<godot::Texture2D> get_texture_from_node(godot::Node* node);

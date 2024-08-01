@@ -73,8 +73,18 @@ namespace OpenVic {
 			std::vector<Pop const*> pops, filtered_pops;
 		};
 
+		struct search_panel_t {
+			struct entry_t {
+				std::variant<ProvinceInstance const*, State const*, CountryInstance const*> target;
+				godot::String display_name, search_name, identifier;
+			};
+			std::vector<entry_t> entry_cache;
+			std::vector<size_t> result_indices;
+		};
+
 	private:
 		population_menu_t population_menu;
+		search_panel_t search_panel;
 
 		/* Emitted when the number of visible province list rows changes (list generated or state entry expanded).*/
 		static godot::StringName const& _signal_population_menu_province_list_changed();
@@ -83,8 +93,12 @@ namespace OpenVic {
 		static godot::StringName const& _signal_population_menu_province_list_selected_changed();
 		/* Emitted when the selected/filtered collection of pops changes. */
 		static godot::StringName const& _signal_population_menu_pops_changed();
+		/* Emitted when the collection of possible search results changes. */
+		static godot::StringName const& _signal_search_cache_changed();
 
 		godot::String get_state_name(State const& state) const;
+		godot::String get_country_name(CountryInstance const& country) const;
+		godot::String get_country_adjective(CountryInstance const& country) const;
 
 	protected:
 		static void _bind_methods();
@@ -145,6 +159,15 @@ namespace OpenVic {
 		godot::PackedStringArray get_population_menu_distribution_setup_info() const;
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
+
+		/* Find/Search Panel */
+		// TODO - update on country government type change and state creation/destruction
+		// (which automatically includes country creation/destruction)
+		godot::Error generate_search_cache();
+		void update_search_results(godot::String const& text);
+		godot::PackedStringArray get_search_result_rows(int32_t start, int32_t count) const;
+		int32_t get_search_result_row_count() const;
+		godot::Vector2 get_search_result_position(int32_t result_index) const;
 	};
 }
 

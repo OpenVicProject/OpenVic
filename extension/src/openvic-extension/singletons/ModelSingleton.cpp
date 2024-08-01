@@ -309,7 +309,7 @@ bool ModelSingleton::add_unit_dict(
 	}
 
 	dict[position_key] =
-		game_singleton->map_position_to_world_coords(unit.get_position()->get_province_definition().get_unit_position());
+		game_singleton->normalise_map_position(unit.get_position()->get_province_definition().get_unit_position());
 
 	if (display_unit_type->get_unit_category() != UnitType::unit_category_t::INFANTRY) {
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
@@ -447,7 +447,7 @@ bool ModelSingleton::add_building_dict(
 
 	dict[model_key] = get_model_dict(*actor);
 
-	dict[position_key] = game_singleton->map_position_to_world_coords(
+	dict[position_key] = game_singleton->normalise_map_position(
 		position_ptr != nullptr ? *position_ptr : province_definition.get_centre()
 	);
 

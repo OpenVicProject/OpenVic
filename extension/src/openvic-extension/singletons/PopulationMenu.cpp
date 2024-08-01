@@ -110,7 +110,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				country_dict[type_key] = population_menu_t::LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
-				country_dict[name_key] = std_view_to_godot_string(country_entry.country.get_identifier());
+				country_dict[name_key] = menu_singleton.get_country_name(country_entry.country);
 				country_dict[size_key] = country_entry.country.get_total_population();
 				country_dict[change_key] = 0;
 				country_dict[selected_key] = country_entry.selected;
