@@ -11,13 +11,12 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::std_view_to_godot_string;
-using OpenVic::Utilities::std_view_to_godot_string_name;
-
 void GFXSpriteTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXSpriteTexture::clear);
 
-	OV_BIND_METHOD(GFXSpriteTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name", "icon" }, DEFVAL(GFX::NO_FRAMES));
+	OV_BIND_METHOD(
+		GFXSpriteTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name", "icon" }, DEFVAL(GFX::NO_FRAMES)
+	);
 	OV_BIND_METHOD(GFXSpriteTexture::get_gfx_texture_sprite_name);
 
 	OV_BIND_METHOD(GFXSpriteTexture::set_icon_index, { "new_icon_index" });
@@ -31,7 +30,9 @@ void GFXSpriteTexture::_bind_methods() {
 GFXSpriteTexture::GFXSpriteTexture()
   : gfx_texture_sprite { nullptr }, icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
-Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
+Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(
+	GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon
+) {
 	Ref<GFXSpriteTexture> texture;
 	texture.instantiate();
 	ERR_FAIL_NULL_V(texture, nullptr);
@@ -56,7 +57,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 		AssetManager* asset_manager = AssetManager::get_singleton();
 		ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-		const StringName texture_file = std_view_to_godot_string_name(new_gfx_texture_sprite->get_texture_file());
+		const StringName texture_file = Utilities::std_to_godot_string(new_gfx_texture_sprite->get_texture_file());
 
 		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will re-use this image from its internal cache. */
 		const Ref<Image> image = asset_manager->get_image(texture_file);
@@ -98,14 +99,15 @@ Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sp
 	ERR_FAIL_NULL_V_MSG(
 		new_texture_sprite, FAILED, vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
-			std_view_to_godot_string(sprite->get_type()), std_view_to_godot_string(GFX::TextureSprite::get_type_static())
+			Utilities::std_to_godot_string(sprite->get_type()),
+			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())
 		)
 	);
 	return set_gfx_texture_sprite(new_texture_sprite, icon);
 }
 
 String GFXSpriteTexture::get_gfx_texture_sprite_name() const {
-	return gfx_texture_sprite != nullptr ? std_view_to_godot_string(gfx_texture_sprite->get_name()) : String {};
+	return gfx_texture_sprite != nullptr ? Utilities::std_to_godot_string(gfx_texture_sprite->get_name()) : String {};
 }
 
 Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {

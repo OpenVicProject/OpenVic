@@ -103,6 +103,8 @@ func _add_result_button() -> bool:
 		return false
 
 	button.pressed.connect(_result_selected.bind(_result_buttons.size()))
+	# Country/State/Province display names are already translated in the MenuSingleton
+	button.auto_translate = false
 
 	_results_list_box.add_child(child)
 	_result_buttons.push_back(button)

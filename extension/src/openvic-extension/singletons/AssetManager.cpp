@@ -9,9 +9,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::godot_to_std_string;
-using OpenVic::Utilities::std_to_godot_string;
-
 void AssetManager::_bind_methods() {
 	OV_BIND_METHOD(AssetManager::get_image, { "path", "load_flags" }, DEFVAL(LOAD_FLAG_CACHE_IMAGE));
 	OV_BIND_METHOD(AssetManager::get_texture, { "path", "load_flags" }, DEFVAL(LOAD_FLAG_CACHE_TEXTURE));
@@ -41,8 +38,9 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
-	const String lookedup_path =
-		std_to_godot_string(game_singleton->get_dataloader().lookup_image_file(godot_to_std_string(path)).string());
+	const String lookedup_path = Utilities::std_to_godot_string(
+		game_singleton->get_dataloader().lookup_image_file(Utilities::godot_to_std_string(path)).string()
+	);
 	ERR_FAIL_COND_V_MSG(lookedup_path.is_empty(), nullptr, vformat("Failed to look up image: %s", path));
 
 	const Ref<Image> image = Utilities::load_godot_image(lookedup_path);
@@ -145,8 +143,9 @@ Ref<Font> AssetManager::get_font(StringName const& name) {
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	const String font_path = font_dir + name + font_ext;
-	const String lookedup_font_path =
-		std_to_godot_string(game_singleton->get_dataloader().lookup_file(godot_to_std_string(font_path)).string());
+	const String lookedup_font_path = Utilities::std_to_godot_string(
+		game_singleton->get_dataloader().lookup_file(Utilities::godot_to_std_string(font_path)).string()
+	);
 	if (lookedup_font_path.is_empty()) {
 		fonts.emplace(name, nullptr);
 

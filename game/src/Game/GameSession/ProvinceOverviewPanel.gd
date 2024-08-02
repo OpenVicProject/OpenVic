@@ -2,7 +2,7 @@ extends GUINode
 
 # Header
 var _province_name_label : Label
-var _region_name_label : Label
+var _state_name_label : Label
 var _slave_status_icon : TextureRect
 var _colony_status_button : Button
 var _colony_status_button_texture : GFXSpriteTexture
@@ -137,7 +137,10 @@ func _ready() -> void:
 
 	# Header
 	_province_name_label = get_label_from_nodepath(^"./province_view/province_view_header/province_name")
-	_region_name_label = get_label_from_nodepath(^"./province_view/province_view_header/state_name")
+	_state_name_label = get_label_from_nodepath(^"./province_view/province_view_header/state_name")
+	if _state_name_label:
+		# State names are already translated in the MenuSingleton
+		_state_name_label.auto_translate = false
 	_slave_status_icon = get_texture_rect_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
 	var slave_status_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/slave_state_icon")
 	if slave_status_icon_texture:
@@ -257,9 +260,8 @@ func _update_info() -> void:
 		if _province_name_label:
 			_province_name_label.text = GUINode.format_province_name(_province_info.get(_province_info_province_key, _missing_suffix))
 
-		if _region_name_label:
-			_region_name_label.text = _province_info.get(_province_info_state_key,
-				_province_info_state_key + _missing_suffix)
+		if _state_name_label:
+			_state_name_label.text = _province_info.get(_province_info_state_key, tr(_province_info_state_key + _missing_suffix))
 
 		if _slave_status_icon:
 			_slave_status_icon.visible = _province_info.get(_province_info_slave_status_key, false)

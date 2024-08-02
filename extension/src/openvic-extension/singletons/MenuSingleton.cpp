@@ -13,15 +13,13 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::std_to_godot_string;
-using OpenVic::Utilities::std_view_to_godot_string;
-
 StringName const& MenuSingleton::_signal_population_menu_province_list_changed() {
 	static const StringName signal_population_menu_province_list_changed = "population_menu_province_list_changed";
 	return signal_population_menu_province_list_changed;
 }
 StringName const& MenuSingleton::_signal_population_menu_province_list_selected_changed() {
-	static const StringName signal_population_menu_province_list_selected_changed = "population_menu_province_list_selected_changed";
+	static const StringName signal_population_menu_province_list_selected_changed =
+		"population_menu_province_list_selected_changed";
 	return signal_population_menu_province_list_selected_changed;
 }
 StringName const& MenuSingleton::_signal_population_menu_pops_changed() {
@@ -36,7 +34,7 @@ StringName const& MenuSingleton::_signal_search_cache_changed() {
 String MenuSingleton::get_state_name(State const& state) const {
 	StateSet const& state_set = state.get_state_set();
 
-	const String region_identifier = std_view_to_godot_string(state_set.get_region().get_identifier());
+	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
 
 	String name = tr(region_identifier);
 
@@ -46,7 +44,7 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 	if (!named) {
 		// Capital province name
-		name = tr(GUINode::format_province_name(std_view_to_godot_string(state.get_capital()->get_identifier())));
+		name = tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
 
 		if (!owned) {
 			static const StringName region_key = "REGION_NAME";
@@ -72,7 +70,7 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 String MenuSingleton::get_country_name(CountryInstance const& country) const {
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
-		const String government_name_key = std_to_godot_string(StringUtils::append_string_views(
+		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", country.get_government_type()->get_identifier()
 		));
 
@@ -83,14 +81,14 @@ String MenuSingleton::get_country_name(CountryInstance const& country) const {
 		}
 	}
 
-	return tr(std_view_to_godot_string(country.get_identifier()));
+	return tr(Utilities::std_to_godot_string(country.get_identifier()));
 }
 
 String MenuSingleton::get_country_adjective(CountryInstance const& country) const {
 	static constexpr std::string_view adjective = "_ADJ";
 
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
-		const String government_adjective_key = std_to_godot_string(StringUtils::append_string_views(
+		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", country.get_government_type()->get_identifier(), adjective
 		));
 
@@ -101,7 +99,7 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 		}
 	}
 
-	return tr(std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
+	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
 void MenuSingleton::_bind_methods() {
@@ -209,6 +207,48 @@ MenuSingleton::~MenuSingleton() {
 
 /* PROVINCE OVERVIEW PANEL */
 
+static TypedArray<Dictionary> _make_buildings_dict_array(
+	ProvinceInstance const* province
+) {
+	std::vector<BuildingInstance> const& buildings = province->get_buildings();
+
+	if (buildings.empty()) {
+		return {};
+	}
+
+	static const StringName building_info_level_key = "level";
+	static const StringName building_info_expansion_state_key = "expansion_state";
+	static const StringName building_info_start_date_key = "start_date";
+	static const StringName building_info_end_date_key = "end_date";
+	static const StringName building_info_expansion_progress_key = "expansion_progress";
+
+	/* This system relies on the province buildings all being present in the right order. It will have to
+	 * be changed if we want to support variable combinations and permutations of province buildings. */
+	TypedArray<Dictionary> buildings_array;
+
+	if (buildings_array.resize(buildings.size()) == OK) {
+		for (size_t idx = 0; idx < buildings.size(); ++idx) {
+			BuildingInstance const& building = buildings[idx];
+
+			Dictionary building_dict;
+			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
+			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
+			building_dict[building_info_start_date_key] = Utilities::std_to_godot_string(building.get_start_date().to_string());
+			building_dict[building_info_end_date_key] = Utilities::std_to_godot_string(building.get_end_date().to_string());
+			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
+
+			buildings_array[idx] = std::move(building_dict);
+		}
+	} else {
+		UtilityFunctions::push_error(
+			"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()),
+			") for province ", Utilities::std_to_godot_string(province->get_identifier())
+		);
+	}
+
+	return buildings_array;
+}
+
 Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
@@ -239,7 +279,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	}
 	Dictionary ret;
 
-	ret[province_info_province_key] = std_view_to_godot_string(province->get_identifier());
+	ret[province_info_province_key] = Utilities::std_to_godot_string(province->get_identifier());
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
@@ -252,25 +292,25 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	TerrainType const* terrain_type = province->get_terrain_type();
 	if (terrain_type != nullptr) {
-		ret[province_info_terrain_type_key] = std_view_to_godot_string(terrain_type->get_identifier());
+		ret[province_info_terrain_type_key] = Utilities::std_to_godot_string(terrain_type->get_identifier());
 	}
 
 	ret[province_info_life_rating_key] = province->get_life_rating();
 
 	CountryInstance const* controller = province->get_controller();
 	if (controller != nullptr) {
-		ret[province_info_controller_key] = std_view_to_godot_string(controller->get_identifier());
+		ret[province_info_controller_key] = Utilities::std_to_godot_string(controller->get_identifier());
 	}
 
 	GoodDefinition const* rgo = province->get_rgo();
 	if (rgo != nullptr) {
-		ret[province_info_rgo_name_key] = std_view_to_godot_string(rgo->get_identifier());
+		ret[province_info_rgo_name_key] = Utilities::std_to_godot_string(rgo->get_identifier());
 		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
 	}
 
 	Crime const* crime = province->get_crime();
 	if (crime != nullptr) {
-		ret[province_info_crime_name_key] = std_view_to_godot_string(crime->get_identifier());
+		ret[province_info_crime_name_key] = Utilities::std_to_godot_string(crime->get_identifier());
 		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
 	}
 
@@ -299,49 +339,22 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		PackedStringArray cores_array;
 		if (cores_array.resize(cores.size()) == OK) {
 			for (size_t idx = 0; idx < cores.size(); ++idx) {
-				cores_array[idx] = std_view_to_godot_string(cores.data()[idx]->get_identifier());
+				cores_array[idx] = Utilities::std_to_godot_string(cores.data()[idx]->get_identifier());
 			}
 			ret[province_info_cores_key] = std::move(cores_array);
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize cores array to the correct size (", static_cast<int64_t>(cores.size()), ") for province ",
-				std_view_to_godot_string(province->get_identifier())
+				Utilities::std_to_godot_string(province->get_identifier())
 			);
 		}
 	}
 
-	static const StringName building_info_level_key = "level";
-	static const StringName building_info_expansion_state_key = "expansion_state";
-	static const StringName building_info_start_date_key = "start_date";
-	static const StringName building_info_end_date_key = "end_date";
-	static const StringName building_info_expansion_progress_key = "expansion_progress";
-
-	std::vector<BuildingInstance> const& buildings = province->get_buildings();
-	if (!buildings.empty()) {
-		/* This system relies on the province buildings all being present in the right order. It will have to
-		 * be changed if we want to support variable combinations and permutations of province buildings. */
-		TypedArray<Dictionary> buildings_array;
-		if (buildings_array.resize(buildings.size()) == OK) {
-			for (size_t idx = 0; idx < buildings.size(); ++idx) {
-				BuildingInstance const& building = buildings[idx];
-
-				Dictionary building_dict;
-				building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
-				building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
-				building_dict[building_info_start_date_key] = std_to_godot_string(building.get_start_date().to_string());
-				building_dict[building_info_end_date_key] = std_to_godot_string(building.get_end_date().to_string());
-				building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
-
-				buildings_array[idx] = std::move(building_dict);
-			}
-			ret[province_info_buildings_key] = std::move(buildings_array);
-		} else {
-			UtilityFunctions::push_error(
-				"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()),
-				") for province ", std_view_to_godot_string(province->get_identifier())
-			);
-		}
+	TypedArray<Dictionary> building_dict_array = _make_buildings_dict_array(province);
+	if (!building_dict_array.is_empty()) {
+		ret[province_info_buildings_key] = std::move(building_dict_array);
 	}
+
 	return ret;
 }
 
@@ -363,7 +376,7 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 		building_index < 0 || building_index >= province_building_types.size(), {},
 		vformat("Invalid province building index: %d", building_index)
 	);
-	return std_view_to_godot_string(province_building_types[building_index]->get_identifier());
+	return Utilities::std_to_godot_string(province_building_types[building_index]->get_identifier());
 }
 
 Error MenuSingleton::expand_selected_province_building(int32_t building_index) {
@@ -505,7 +518,7 @@ Error MenuSingleton::generate_search_cache() {
 	search_panel.entry_cache.reserve(provinces.size() + state_sets.size() + countries.size());
 
 	for (ProvinceInstance const& province : provinces) {
-		String identifier = std_view_to_godot_string(province.get_identifier());
+		String identifier = Utilities::std_to_godot_string(province.get_identifier());
 		String display_name = tr(GUINode::format_province_name(identifier));
 		String search_name = display_name.to_lower();
 
@@ -534,7 +547,7 @@ Error MenuSingleton::generate_search_cache() {
 
 			search_panel.entry_cache.push_back({
 				&country, std::move(display_name), std::move(search_name),
-				std_view_to_godot_string(country.get_identifier()).to_lower()
+				Utilities::std_to_godot_string(country.get_identifier()).to_lower()
 			});
 		}
 	}

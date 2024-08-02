@@ -8,8 +8,6 @@
 using namespace godot;
 using namespace OpenVic;
 
-using OpenVic::Utilities::std_view_to_godot_string;
-
 StringName const& GFXPieChartTexture::_slice_identifier_key() {
 	static const StringName slice_identifier_key = "identifier";
 	return slice_identifier_key;
@@ -109,7 +107,8 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()), vformat("Invalid slice keys at index %d", i)
+			!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
+			vformat("Invalid slice keys at index %d", i)
 		);
 		const slice_t slice = std::make_pair(slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]);
 		if (slice.second > 0.0f) {
@@ -171,12 +170,13 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	ERR_FAIL_NULL_V_MSG(
 		new_pie_chart, FAILED, vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name,
-			std_view_to_godot_string(sprite->get_type()), std_view_to_godot_string(GFX::PieChart::get_type_static())
+			Utilities::std_to_godot_string(sprite->get_type()),
+			Utilities::std_to_godot_string(GFX::PieChart::get_type_static())
 		)
 	);
 	return set_gfx_pie_chart(new_pie_chart);
 }
 
 String GFXPieChartTexture::get_gfx_pie_chart_name() const {
-	return gfx_pie_chart != nullptr ? std_view_to_godot_string(gfx_pie_chart->get_name()) : String {};
+	return gfx_pie_chart != nullptr ? Utilities::std_to_godot_string(gfx_pie_chart->get_name()) : String {};
 }

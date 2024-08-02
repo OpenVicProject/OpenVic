@@ -11,8 +11,6 @@ using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
-using OpenVic::Utilities::std_view_to_godot_string;
-
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
  * so we must use wrapper functions to delay their initialisation. */
 StringName const& GUIListBox::_signal_scroll_index_changed() {
@@ -252,7 +250,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 
 	gui_listbox = new_gui_listbox;
 
-	const String scrollbar_name = std_view_to_godot_string(gui_listbox->get_scrollbar_name());
+	const String scrollbar_name = Utilities::std_to_godot_string(gui_listbox->get_scrollbar_name());
 
 	Error err = OK;
 
@@ -300,7 +298,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 }
 
 String GUIListBox::get_gui_listbox_name() const {
-	return gui_listbox != nullptr ? std_view_to_godot_string(gui_listbox->get_name()) : String {};
+	return gui_listbox != nullptr ? Utilities::std_to_godot_string(gui_listbox->get_name()) : String {};
 }
 
 GUIScrollbar* GUIListBox::get_scrollbar() const {

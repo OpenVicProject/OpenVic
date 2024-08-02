@@ -9,8 +9,6 @@
 using namespace OpenVic;
 using namespace godot;
 
-using OpenVic::Utilities::std_view_to_godot_string;
-
 Error GUIOverlappingElementsBox::_update_child_positions() {
 	ERR_FAIL_NULL_V(gui_overlapping_elements_box, FAILED);
 	const int32_t child_count = get_child_count();
@@ -108,7 +106,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 			)
 		);
 		Error err = OK;
-		const String gui_child_element_name = std_view_to_godot_string(gui_child_element->get_name()) + "_";
+		const String gui_child_element_name = Utilities::std_to_godot_string(gui_child_element->get_name()) + "_";
 		do {
 			Control* child = nullptr;
 			const String name = gui_child_element_name + itos(child_count);
@@ -155,7 +153,9 @@ Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
 }
 
 String GUIOverlappingElementsBox::get_gui_overlapping_elements_box_name() const {
-	return gui_overlapping_elements_box != nullptr ? std_view_to_godot_string(gui_overlapping_elements_box->get_name()) : String {};
+	return gui_overlapping_elements_box != nullptr
+		? Utilities::std_to_godot_string(gui_overlapping_elements_box->get_name())
+		: String {};
 }
 
 Error GUIOverlappingElementsBox::set_gui_child_element(GUI::Element const* new_gui_child_element) {
@@ -184,5 +184,5 @@ Error GUIOverlappingElementsBox::set_gui_child_element_name(
 }
 
 String GUIOverlappingElementsBox::get_gui_child_element_name() const {
-	return gui_child_element != nullptr ? std_view_to_godot_string(gui_child_element->get_name()) : String {};
+	return gui_child_element != nullptr ? Utilities::std_to_godot_string(gui_child_element->get_name()) : String {};
 }

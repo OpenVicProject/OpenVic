@@ -14,23 +14,11 @@
 namespace OpenVic::Utilities {
 
 	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
-		return str.ascii().get_data();
+		return str.utf8().get_data();
 	}
 
-	_FORCE_INLINE_ godot::String std_to_godot_string(std::string const& str) {
-		return str.c_str();
-	}
-
-	_FORCE_INLINE_ godot::String std_view_to_godot_string(std::string_view const& str) {
-		return std_to_godot_string(static_cast<std::string>(str));
-	}
-
-	_FORCE_INLINE_ godot::StringName std_to_godot_string_name(std::string const& str) {
-		return str.c_str();
-	}
-
-	_FORCE_INLINE_ godot::StringName std_view_to_godot_string_name(std::string_view const& str) {
-		return std_to_godot_string_name(static_cast<std::string>(str));
+	_FORCE_INLINE_ godot::String std_to_godot_string(std::string_view const& str) {
+		return godot::String::utf8(str.data(), str.length());
 	}
 
 	godot::String int_to_string_suffixed(int64_t val);
