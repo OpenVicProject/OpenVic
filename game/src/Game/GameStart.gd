@@ -105,8 +105,32 @@ func _setup_compatibility_mode_paths() -> void:
 		_compatibility_path_list.push_back(actual_base_path + "/mod/" + mod_name)
 
 func _load_compatibility_mode() -> void:
-	if GameSingleton.load_defines_compatibility_mode(_compatibility_path_list) != OK:
+	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
+		push_error("Errors setting game roots!")
+
+	setup_title_theme()
+
+	if GameSingleton.load_defines_compatibility_mode() != OK:
 		push_error("Errors loading game defines!")
+	
+	SoundSingleton.load_sounds()
+	SoundSingleton.load_music()
+	MusicConductor.add_compat_songs()
+
+func setup_title_theme() -> void:
+	SoundSingleton.load_title_theme()
+
+	MusicConductor.setup_compat_song(SoundSingleton.title_theme)
+
+	var song_paths = MusicConductor.get_all_song_paths()
+	var title_index = song_paths.find(SoundSingleton.title_theme)
+	if title_index != -1:
+		MusicConductor.call_deferred("start_song_by_index",title_index)
+	if len(MusicConductor._available_songs) <= 0:
+		push_error("No song available to play")
+	else:
+		MusicConductor.call_deferred("start_current_song")
+	
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
