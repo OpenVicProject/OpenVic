@@ -1,0 +1,50 @@
+name: Mod Feature Request
+description: Request a feature for the sake of mods
+labels: ["enhancement", "mod feature proposal", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - If this feature was in Victoria 2, specifically for Compatibility mode, please report a [Victoria 2 discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-victoria-2-discrepency.yml) instead.
+        - If this feature only intends to include mechanical additions to the vanilla experience, please report it as a [gameplay feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-gameplay-feature-request.yml).
+        - Write a descriptive proposal title above.
+        - Search [open](https://github.com/OpenVicProject/OpenVic/labels/mod%20feature%20proposal) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aclosed+label%3A%22mod+feature+proposal%22+) proposals to ensure the feature has not already been suggested.
+
+  - type: dropdown
+    attributes:
+      label: Purpose
+      description: |
+        For what purpose does this request seek to serve?
+      options:
+        - Mods
+        - Source Code Extensions
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: If you are working on a project that needs this feature, describe the project you are working on
+      description: This is important to know the *context* in which the feature is being proposed. Features used in real projects are more likely to be added.
+      placeholder: Example - "A cold war overhaul mod"
+
+  - type: textarea
+    attributes:
+      label: Describe the problem or limitation you are having in your project
+      placeholder: Example - "TODO"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the feature / enhancement and how it helps to overcome the problem or limitation
+      placeholder: Example - "TODO"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: If this enhancement will not be used often, can it be worked around with a few lines of script?
+      placeholder: Example - "This can be worked around, but it is not particularly convenient."
+    validations:
+      required: true
