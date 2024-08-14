@@ -14,8 +14,8 @@ var _province_list_types : Array[MenuSingleton.ProvinceListEntry]
 var _province_list_indices : PackedInt32Array
 var _province_list_panels : Array[Panel]
 var _province_list_button_icons : Array[GFXSpriteTexture]
-var _province_list_name_labels : Array[Label]
-var _province_list_size_labels : Array[Label]
+var _province_list_name_labels : Array[GUITextLabel]
+var _province_list_size_labels : Array[GUITextLabel]
 var _province_list_growth_icons : Array[GFXSpriteTexture]
 var _province_list_colony_buttons : Array[Button]
 var _province_list_national_focus_icons : Array[GFXSpriteTexture]
@@ -33,19 +33,19 @@ var _pop_list_scrollbar : GUIScrollbar
 var _pop_list_scroll_index : int = 0
 
 var _pop_list_rows : Array[Panel]
-var _pop_list_size_labels : Array[Label]
+var _pop_list_size_labels : Array[GUITextLabel]
 var _pop_list_type_buttons : Array[Button]
 var _pop_list_type_icons : Array[GFXSpriteTexture]
 var _pop_list_producing_icons : Array[GFXSpriteTexture]
-var _pop_list_culture_labels : Array[Label]
+var _pop_list_culture_labels : Array[GUITextLabel]
 var _pop_list_religion_icons : Array[GFXSpriteTexture]
-var _pop_list_location_labels : Array[Label]
-var _pop_list_militancy_labels : Array[Label]
-var _pop_list_consciousness_labels : Array[Label]
+var _pop_list_location_labels : Array[GUITextLabel]
+var _pop_list_militancy_labels : Array[GUITextLabel]
+var _pop_list_consciousness_labels : Array[GUITextLabel]
 var _pop_list_ideology_charts : Array[GFXPieChartTexture]
 var _pop_list_issues_charts : Array[GFXPieChartTexture]
 var _pop_list_unemployment_progressbars : Array[TextureProgressBar]
-var _pop_list_cash_labels : Array[Label]
+var _pop_list_cash_labels : Array[GUITextLabel]
 var _pop_list_life_needs_progressbars : Array[TextureProgressBar]
 var _pop_list_everyday_needs_progressbars : Array[TextureProgressBar]
 var _pop_list_luxury_needs_progressbars : Array[TextureProgressBar]
@@ -58,7 +58,7 @@ var _pop_list_political_movement_icons : Array[GFXSpriteTexture]
 var _pop_list_national_movement_texture_rects : Array[TextureRect]
 var _pop_list_national_movement_flags : Array[GFXMaskedFlagTexture]
 var _pop_list_size_change_icons : Array[GFXSpriteTexture]
-var _pop_list_literacy_labels : Array[Label]
+var _pop_list_literacy_labels : Array[GUITextLabel]
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
@@ -142,9 +142,9 @@ func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListE
 		)
 		_province_list_button_icons[index] = GUINode.get_gfx_sprite_texture_from_node(base_button)
 
-	_province_list_name_labels[index] = GUINode.get_label_from_node(entry_panel.get_node(^"./poplist_name"))
+	_province_list_name_labels[index] = GUINode.get_gui_text_label_from_node(entry_panel.get_node(^"./poplist_name"))
 
-	_province_list_size_labels[index] = GUINode.get_label_from_node(entry_panel.get_node(^"./poplist_numpops"))
+	_province_list_size_labels[index] = GUINode.get_gui_text_label_from_node(entry_panel.get_node(^"./poplist_numpops"))
 
 	_province_list_growth_icons[index] = GUINode.get_gfx_sprite_texture_from_node(entry_panel.get_node(^"./growth_indicator"))
 
@@ -273,9 +273,9 @@ func _setup_distribution_windows() -> void:
 			_pop_screen_panel.add_child(distribution_panel)
 			distribution_panel.set_position(distribution_start + distribution_step * Vector2(index % columns, index / columns))
 
-			var name_label : Label = GUINode.get_label_from_node(distribution_panel.get_node(^"./item_name"))
+			var name_label : GUITextLabel = GUINode.get_gui_text_label_from_node(distribution_panel.get_node(^"./item_name"))
 			if name_label:
-				name_label.text = distribution_names[index]
+				name_label.set_text(distribution_names[index])
 
 			distribution_chart = GUINode.get_gfx_pie_chart_texture_from_node(distribution_panel.get_node(^"./chart"))
 			distribution_list = GUINode.get_gui_listbox_from_node(distribution_panel.get_node(^"./member_names"))
@@ -318,7 +318,7 @@ func _setup_pop_list() -> void:
 		height += pop_row_panel.size.y
 		_pop_list_rows.push_back(pop_row_panel)
 
-		_pop_list_size_labels.push_back(GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_size")))
+		_pop_list_size_labels.push_back(GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_size")))
 
 		var pop_type_button : Button = GUINode.get_button_from_node(pop_row_panel.get_node(^"./pop_type"))
 		# TODO - open pop details menu on pop type button press
@@ -328,21 +328,17 @@ func _setup_pop_list() -> void:
 
 		_pop_list_producing_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./pop_producing_icon")))
 
-		var culture_label : Label = GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_nation"))
-		if culture_label:
-			culture_label.set_text_overrun_behavior(TextServer.OVERRUN_TRIM_ELLIPSIS)
+		var culture_label : GUITextLabel = GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_nation"))
 		_pop_list_culture_labels.push_back(culture_label)
 
 		_pop_list_religion_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./pop_religion")))
 
-		var location_label : Label = GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_location"))
-		if location_label:
-			location_label.set_text_overrun_behavior(TextServer.OVERRUN_TRIM_ELLIPSIS)
+		var location_label : GUITextLabel = GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_location"))
 		_pop_list_location_labels.push_back(location_label)
 
-		_pop_list_militancy_labels.push_back(GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_mil")))
+		_pop_list_militancy_labels.push_back(GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_mil")))
 
-		_pop_list_consciousness_labels.push_back(GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_con")))
+		_pop_list_consciousness_labels.push_back(GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_con")))
 
 		_pop_list_ideology_charts.push_back(GUINode.get_gfx_pie_chart_texture_from_node(pop_row_panel.get_node(^"./pop_ideology")))
 
@@ -350,7 +346,7 @@ func _setup_pop_list() -> void:
 
 		_pop_list_unemployment_progressbars.push_back(GUINode.get_progress_bar_from_node(pop_row_panel.get_node(^"./pop_unemployment_bar")))
 
-		_pop_list_cash_labels.push_back(GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_cash")))
+		_pop_list_cash_labels.push_back(GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_cash")))
 
 		var pop_list_life_needs_progressbar : TextureProgressBar = GUINode.get_progress_bar_from_node(pop_row_panel.get_node(^"./lifeneed_progress"))
 		if pop_list_life_needs_progressbar:
@@ -394,7 +390,7 @@ func _setup_pop_list() -> void:
 
 		_pop_list_size_change_icons.push_back(GUINode.get_gfx_sprite_texture_from_node(pop_row_panel.get_node(^"./growth_indicator")))
 
-		_pop_list_literacy_labels.push_back(GUINode.get_label_from_node(pop_row_panel.get_node(^"./pop_literacy")))
+		_pop_list_literacy_labels.push_back(GUINode.get_gui_text_label_from_node(pop_row_panel.get_node(^"./pop_literacy")))
 
 func _notification(what : int) -> void:
 	match what:
@@ -462,7 +458,6 @@ func _update_province_list(scroll_index : int = -1) -> void:
 				GUINode.format_province_name(province_list_info[name_key]) if type == MenuSingleton.LIST_ENTRY_PROVINCE
 				else province_list_info[name_key]
 			)
-			_province_list_name_labels[index].set_text_overrun_behavior(TextServer.OVERRUN_TRIM_ELLIPSIS)
 
 		if _province_list_size_labels[index]:
 			_province_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(province_list_info[size_key]))
@@ -551,12 +546,11 @@ func _update_distributions():
 				if colour_icon_rect:
 					colour_icon_rect.set_modulate(distribution_row[slice_colour_key])
 
-				var identifier_label : Label = GUINode.get_label_from_node(child.get_node(^"./legend_title"))
+				var identifier_label : GUITextLabel = GUINode.get_gui_text_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
-					identifier_label.set_text_overrun_behavior(TextServer.OVERRUN_TRIM_ELLIPSIS)
 					identifier_label.set_text(distribution_row[slice_identifier_key])
 
-				var weight_label : Label = GUINode.get_label_from_node(child.get_node(^"./legend_value"))
+				var weight_label : GUITextLabel = GUINode.get_gui_text_label_from_node(child.get_node(^"./legend_value"))
 				if weight_label:
 					weight_label.set_text("%s%%" % GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 1))
 

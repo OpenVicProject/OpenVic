@@ -4,6 +4,7 @@
 
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -119,7 +120,7 @@ Ref<ImageTexture> AssetManager::get_texture(StringName const& path, LoadFlags lo
 	}
 }
 
-Ref<Font> AssetManager::get_font(StringName const& name) {
+Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	const font_map_t::const_iterator it = fonts.find(name);
 	if (it != fonts.end()) {
 		ERR_FAIL_NULL_V_MSG(it->second, nullptr, vformat("Failed to load font previously: %s", name));
@@ -152,7 +153,7 @@ Ref<Font> AssetManager::get_font(StringName const& name) {
 		ERR_FAIL_V_MSG(nullptr, vformat("Failed to look up font: %s", font_path));
 	}
 
-	const Ref<Font> font = Utilities::load_godot_font(lookedup_font_path, image);
+	const Ref<FontFile> font = Utilities::load_godot_font(lookedup_font_path, image);
 	if (font.is_null()) {
 		fonts.emplace(name, nullptr);
 
@@ -164,4 +165,41 @@ Ref<Font> AssetManager::get_font(StringName const& name) {
 
 	fonts.emplace(name, font);
 	return font;
+}
+
+Error AssetManager::preload_textures() {
+	static const String currency_sprite_big = "GFX_tooltip_money_big";
+	static const String currency_sprite_medium = "GFX_tooltip_money_small";
+	static const String currency_sprite_small = "GFX_tooltip_money";
+
+	constexpr auto load = [](String const& sprite_name, Ref<GFXSpriteTexture>& texture) -> bool {
+		GFX::Sprite const* sprite = UITools::get_gfx_sprite(sprite_name);
+		ERR_FAIL_NULL_V(sprite, false);
+
+		GFX::IconTextureSprite const* icon_sprite = sprite->cast_to<GFX::IconTextureSprite>();
+		ERR_FAIL_NULL_V(icon_sprite, false);
+
+		texture = GFXSpriteTexture::make_gfx_sprite_texture(icon_sprite);
+		ERR_FAIL_NULL_V(texture, false);
+
+		return true;
+	};
+
+	bool ret = true;
+
+	ret &= load(currency_sprite_big, currency_texture_big);
+	ret &= load(currency_sprite_medium, currency_texture_medium);
+	ret &= load(currency_sprite_small, currency_texture_small);
+
+	return ERR(ret);
+}
+
+Ref<GFXSpriteTexture> const& AssetManager::get_currency_texture(real_t height) const {
+	if (height > currency_texture_big->get_height()) {
+		return currency_texture_big;
+	} else if (height > currency_texture_medium->get_height()) {
+		return currency_texture_medium;
+	} else {
+		return currency_texture_small;
+	}
 }

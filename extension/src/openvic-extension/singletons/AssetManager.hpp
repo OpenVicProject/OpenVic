@@ -1,11 +1,13 @@
 #pragma once
 
 #include <godot_cpp/classes/atlas_texture.hpp>
-#include <godot_cpp/classes/font.hpp>
+#include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 
 namespace OpenVic {
 	class AssetManager : public godot::Object {
@@ -32,7 +34,7 @@ namespace OpenVic {
 		};
 		/* deque_ordered_map to avoid the need to reallocate. */
 		using image_asset_map_t = deque_ordered_map<godot::StringName, image_asset_t>;
-		using font_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::Font>>;
+		using font_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::FontFile>>;
 
 		image_asset_map_t image_assets;
 		font_map_t fonts;
@@ -68,7 +70,18 @@ namespace OpenVic {
 
 		/* Search for and load a font with the specified name from the game defines' font directory, first checking the
 		 * AssetManager's font cache in case it has already been loaded, and returning nullptr if font loading fails. */
-		godot::Ref<godot::Font> get_font(godot::StringName const& name);
+		godot::Ref<godot::FontFile> get_font(godot::StringName const& name);
+
+	private:
+		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_big);    // 32x32
+		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_medium); // 24x24
+		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_small);  // 16x16
+
+	public:
+		godot::Error preload_textures();
+
+		/* Get the largest currency texture with height less than the specified font height. */
+		godot::Ref<GFXSpriteTexture> const& get_currency_texture(real_t height) const;
 	};
 }
 

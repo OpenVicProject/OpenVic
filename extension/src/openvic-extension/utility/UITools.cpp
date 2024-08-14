@@ -2,7 +2,6 @@
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
-#include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/panel.hpp>
 #include <godot_cpp/classes/style_box_empty.hpp>
@@ -19,6 +18,7 @@
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/classes/GUITextLabel.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -500,55 +500,22 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 }
 
 static bool generate_text(generate_gui_args_t&& args) {
-	using namespace OpenVic::Utilities::literals;
-
 	GUI::Text const& text = static_cast<GUI::Text const&>(args.element);
 
 	const String text_name = Utilities::std_to_godot_string(text.get_name());
 
-	Label* godot_label = nullptr;
-	bool ret = new_control(godot_label, text, args.name);
-	ERR_FAIL_NULL_V_MSG(godot_label, false, vformat("Failed to create Label for GUI text %s", text_name));
+	GUITextLabel* text_label = nullptr;
+	bool ret = new_control(text_label, text, args.name);
+	ERR_FAIL_NULL_V_MSG(text_label, false, vformat("Failed to create GUITextLabel for GUI text %s", text_name));
 
-	godot_label->set_text(Utilities::std_to_godot_string(text.get_text()));
+	text_label->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
-	static const Vector2 default_padding { 1.0_real, 0.0_real };
-	const Vector2 border_size = Utilities::to_godot_fvec2(text.get_border_size()) + default_padding;
-	const Vector2 max_size = Utilities::to_godot_fvec2(text.get_max_size());
-	godot_label->set_position(godot_label->get_position() + border_size);
-	godot_label->set_custom_minimum_size(max_size - 2 * border_size);
-
-	using enum GUI::AlignedElement::format_t;
-	static const ordered_map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {
-		{ left, HORIZONTAL_ALIGNMENT_LEFT },
-		{ centre, HORIZONTAL_ALIGNMENT_CENTER },
-		{ right, HORIZONTAL_ALIGNMENT_RIGHT }
-	};
-
-	const decltype(format_map)::const_iterator it = format_map.find(text.get_format());
-	if (it != format_map.end()) {
-		godot_label->set_horizontal_alignment(it->second);
-	} else {
-		UtilityFunctions::push_error("Invalid text format (horizontal alignment) for GUI text ", text_name);
+	if (text_label->set_gui_text(&text) != OK) {
+		UtilityFunctions::push_error("Error initialising GUITextLabel for GUI text ", text_name);
 		ret = false;
 	}
 
-	if (text.get_font() != nullptr) {
-		const StringName font_file = Utilities::std_to_godot_string(text.get_font()->get_fontname());
-		const Ref<Font> font = args.asset_manager.get_font(font_file);
-		if (font.is_valid()) {
-			static const StringName font_theme = "font";
-			godot_label->add_theme_font_override(font_theme, font);
-		} else {
-			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI text ", text_name);
-			ret = false;
-		}
-		const Color colour = Utilities::to_godot_color(text.get_font()->get_colour());
-		static const StringName font_color_theme = "font_color";
-		godot_label->add_theme_color_override(font_color_theme, colour);
-	}
-
-	args.result = godot_label;
+	args.result = text_label;
 	return ret;
 }
 
@@ -564,7 +531,14 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 		vformat("Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name)
 	);
 	box->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
-	ret &= box->set_gui_overlapping_elements_box(&overlapping_elements) == OK;
+
+	if (box->set_gui_overlapping_elements_box(&overlapping_elements) != OK) {
+		UtilityFunctions::push_error(
+			"Error initialising GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
+		);
+		ret = false;
+	}
+
 	args.result = box;
 	return ret;
 }

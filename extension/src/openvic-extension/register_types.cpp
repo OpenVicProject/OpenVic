@@ -10,6 +10,7 @@
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/classes/GUITextLabel.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
@@ -43,10 +44,6 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	_load_localisation = memnew(LoadLocalisation);
 	Engine::get_singleton()->register_singleton("LoadLocalisation", LoadLocalisation::get_singleton());
 
-	ClassDB::register_class<SoundSingleton>();
-	_sound_singleton = memnew(SoundSingleton);
-	Engine::get_singleton()->register_singleton("SoundSingleton", SoundSingleton::get_singleton());
-
 	ClassDB::register_class<GameSingleton>();
 	_game_singleton = memnew(GameSingleton);
 	Engine::get_singleton()->register_singleton("GameSingleton", GameSingleton::get_singleton());
@@ -62,6 +59,10 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<AssetManager>();
 	_asset_manager_singleton = memnew(AssetManager);
 	Engine::get_singleton()->register_singleton("AssetManager", AssetManager::get_singleton());
+
+	ClassDB::register_class<SoundSingleton>();
+	_sound_singleton = memnew(SoundSingleton);
+	Engine::get_singleton()->register_singleton("SoundSingleton", SoundSingleton::get_singleton());
 
 	ClassDB::register_class<MapMesh>();
 	ClassDB::register_abstract_class<GFXCorneredTileSupportingTexture>();
@@ -79,6 +80,7 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<GUINode>();
 	ClassDB::register_class<GUIOverlappingElementsBox>();
 	ClassDB::register_class<GUIScrollbar>();
+	ClassDB::register_class<GUITextLabel>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {

@@ -112,7 +112,7 @@ func _load_compatibility_mode() -> void:
 
 	if GameSingleton.load_defines_compatibility_mode() != OK:
 		push_error("Errors loading game defines!")
-	
+
 	SoundSingleton.load_sounds()
 	SoundSingleton.load_music()
 	MusicConductor.add_compat_songs()
@@ -130,7 +130,6 @@ func setup_title_theme() -> void:
 		push_error("No song available to play")
 	else:
 		MusicConductor.call_deferred("start_current_song")
-	
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
