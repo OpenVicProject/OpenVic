@@ -22,6 +22,7 @@
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
+#include "openvic-extension/singletons/CursorSingleton.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
@@ -32,6 +33,7 @@ using namespace godot;
 using namespace OpenVic;
 
 static Checksum* _checksum_singleton = nullptr;
+static CursorSingleton* _cursor_singleton = nullptr;
 static LoadLocalisation* _load_localisation = nullptr;
 static GameSingleton* _game_singleton = nullptr;
 static MenuSingleton* _menu_singleton = nullptr;
@@ -47,6 +49,10 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<Checksum>();
 	_checksum_singleton = memnew(Checksum);
 	Engine::get_singleton()->register_singleton("Checksum", Checksum::get_singleton());
+
+	ClassDB::register_class<CursorSingleton>();
+	_cursor_singleton = memnew(CursorSingleton);
+	Engine::get_singleton()->register_singleton("CursorSingleton", CursorSingleton::get_singleton());
 
 	ClassDB::register_class<LoadLocalisation>();
 	_load_localisation = memnew(LoadLocalisation);
@@ -110,6 +116,9 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("Checksum");
 	memdelete(_checksum_singleton);
+
+	Engine::get_singleton()->unregister_singleton("CursorSingleton");
+	memdelete(_cursor_singleton);
 
 	Engine::get_singleton()->unregister_singleton("LoadLocalisation");
 	memdelete(_load_localisation);
