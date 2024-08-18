@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CursorSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+		This singleton handles the dataloading and access to the windows .cur and .ani cursors found in the [code]/cursors[/code] folder. The functionality for setting and animating the cursors is done by the CursorManager gd script.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_resolution">
+			<return type="void" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="base_resolution_index" type="int" default="0" />
+			<param index="2" name="target_resolution" type="Vector2" default="Vector2(64, 64)" />
+			<description>
+				Takes the cursor image at [param base_resolution_index] then scales it to [param target_resolution] then saves it to the image as an extra resolution option.
+			</description>
+		</method>
+		<method name="get_animation_length" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+				Returns the length of the sequence for the cursor [param cursor_name]. This will be greater than or equal to the number of animation frames.
+			</description>
+		</method>
+		<method name="get_display_rates" qualifiers="const">
+			<return type="PackedFloat32Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+				Returns an array containing how long each frame should last for an animated cursor [param cursor_name]. The size of this array will be the same as the size of the sequence array.
+			</description>
+		</method>
+		<method name="get_frames" qualifiers="const">
+			<return type="ImageTexture[]" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="resolution_index" type="int" default="0" />
+			<description>
+				Returns an array of [ImageTexture] animation frames given a [param cursor_name] and a [param resolution_index].
+			</description>
+		</method>
+		<method name="get_hotspots" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="resolution_index" type="int" default="0" />
+			<description>
+				Returns an array of cursor click positions given a [param cursor_name] and [param resolution_index].
+			</description>
+		</method>
+		<method name="get_resolutions" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+				Returns an array of all the image resolutions contained in the cursor.
+			</description>
+		</method>
+		<method name="get_sequence" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+				Returns a list of frame indices used to produce an animation.
+			</description>
+		</method>
+		<method name="load_cursors">
+			<return type="int" enum="Error" />
+			<description>
+				Loads the cursors from the [code]/cursors[/code] folder. This function must be called before any other cursor related function.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cursor_names" type="StringName[]" setter="" getter="get_cursor_names" default="[]">
+			A list of cursor file names.
+		</member>
+	</members>
+</class>

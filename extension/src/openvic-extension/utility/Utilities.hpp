@@ -8,6 +8,7 @@
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
 #include <openvic-simulation/types/Vector.hpp>
+#include "godot_cpp/classes/file_access.hpp"
 
 #define ERR(x) ((x) ? OK : FAILED)
 
@@ -19,6 +20,10 @@ namespace OpenVic::Utilities {
 
 	_FORCE_INLINE_ godot::String std_to_godot_string(std::string_view const& str) {
 		return godot::String::utf8(str.data(), str.length());
+	}
+
+	_FORCE_INLINE_ godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int64_t size = 4) {
+		return file->get_buffer(size).get_string_from_ascii();
 	}
 
 	godot::String int_to_string_suffixed(int64_t val);
