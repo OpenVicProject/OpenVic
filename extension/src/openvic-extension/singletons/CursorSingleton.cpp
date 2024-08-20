@@ -2,14 +2,14 @@
 
 #include <vector>
 
-#include <godot_cpp/core/error_macros.hpp>
-#include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/classes/dir_access.hpp>
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/classes/scene_tree.hpp>
+#include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/string.hpp>
 
-#include <openvic-extension/utility/Utilities.hpp>
 #include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
@@ -93,7 +93,7 @@ void CursorSingleton::generate_resolution(String const& name, int base_res_index
 		image.instantiate();
 		image->create(target_res.x, target_res.y, false, Image::Format::FORMAT_RGBA8);
 		image->copy_from(texture->get_image());
-		image->resize(target_res.x,target_res.y,godot::Image::INTERPOLATE_BILINEAR);
+		image->resize(target_res.x,target_res.y,Image::INTERPOLATE_BILINEAR);
 
 
 		Ref<ImageTexture> new_texture = Ref<ImageTexture>();
@@ -116,11 +116,11 @@ void CursorSingleton::generate_resolution(String const& name, int base_res_index
 //, std::string_view const& base_folder
 String CursorSingleton::to_define_file_name(String const& path) const {
 	String name = path.replace("\\","/");
-    return name.get_slice("gfx/cursors/",1).get_slice(".",0);
+	return name.get_slice("gfx/cursors/",1).get_slice(".",0);
 }
 
 bool CursorSingleton::load_cursors() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
 	
 	static constexpr std::string_view cursor_directory = "gfx/cursors";
@@ -146,7 +146,7 @@ bool CursorSingleton::load_cursors() {
 	}
 
 	for(std::filesystem::path const& file_name : cursor_files) {
-		String file = std_to_godot_string(file_name.string()); //.stem()
+		String file = std_to_godot_string(file_name.string());
 		String name = to_define_file_name(file);
 
 		if(!_load_cursor_cur(name,file)){
@@ -155,7 +155,7 @@ bool CursorSingleton::load_cursors() {
 		}
 	}
 	for(std::filesystem::path const& file_name : animated_cursor_files) {
-		String file = std_to_godot_string(file_name.string()); //.stem()
+		String file = std_to_godot_string(file_name.string());
 		String name = to_define_file_name(file);
 
 		if(!_load_cursor_ani(name,file)){
@@ -283,7 +283,7 @@ bool CursorSingleton::_load_cursor_ani(String const& name, String const& path) {
 		}
 	}
 
-    cursor_asset_t cursor = {
+	cursor_asset_t cursor = {
 		hotspots_by_resolution,
 		frames_by_resolution,
 		resolutions,
@@ -303,7 +303,7 @@ String CursorSingleton::read_riff_str(Ref<FileAccess> const& file, int size) con
 }
 
 bool CursorSingleton::_load_cursor_cur(String const& name, String const& path) {
-    const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
+	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
 	image_hotspot_pair_asset_t pair = _load_pair(file);
 	
 	std::vector<Array> frames_by_resolution;
@@ -323,13 +323,13 @@ bool CursorSingleton::_load_cursor_cur(String const& name, String const& path) {
 		hotspots_by_resolution.push_back(hotspots);
 	}
 
-    cursor_asset_t cursor = {
+	cursor_asset_t cursor = {
 		hotspots_by_resolution,
 		frames_by_resolution,
 		resolutions,
 		1
 		};
-    cursors.emplace(std::move(name),cursor);
+	cursors.emplace(std::move(name),cursor);
 	return true;
 }
 
@@ -404,7 +404,7 @@ CursorSingleton::image_hotspot_pair_asset_t CursorSingleton::_load_pair(Ref<File
 			int offset = 40 + paletteSize*4;
 
 			//where the transparency AND mask starts
-			int maskOffset = offset + _get_row_start(dimensions,dimensions.y,bitsPerPixel); //TODO
+			int maskOffset = offset + _get_row_start(dimensions,dimensions.y,bitsPerPixel);
 
 			PackedByteArray pixelData = PackedByteArray();
 
@@ -455,7 +455,7 @@ CursorSingleton::image_hotspot_pair_asset_t CursorSingleton::_load_pair(Ref<File
 		Ref<ImageTexture> imageTexture = Ref<ImageTexture>();
 		imageTexture.instantiate();
 
-        imageTexture = imageTexture->create_from_image(image);
+		imageTexture = imageTexture->create_from_image(image);
 		
 		if(imageTexture.is_null()){
 			Logger::error("Image Texture ",godot_to_std_string(file->get_path())," was null!");

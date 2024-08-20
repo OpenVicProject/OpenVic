@@ -2,18 +2,17 @@
 
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/object.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
-
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
+#include <openvic-simulation/dataloader/Dataloader.hpp>
 #include <openvic-extension/singletons/GameSingleton.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 #include <openvic-simulation/types/IdentifierRegistry.hpp>
-#include <openvic-simulation/dataloader/Dataloader.hpp>
 
 namespace OpenVic {
 
@@ -62,7 +61,7 @@ namespace OpenVic {
 		static void _bind_methods();
 
 		godot::String to_define_file_name(godot::String const& path) const;
-        godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int size=4) const;
+		godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int size=4) const;
 
 	private:
 		//helper functions for the loaders
