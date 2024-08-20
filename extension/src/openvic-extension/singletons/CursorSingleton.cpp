@@ -21,12 +21,12 @@ using namespace OpenVic::NodeTools;
 void CursorSingleton::_bind_methods() {
 	OV_BIND_METHOD(CursorSingleton::load_cursors);
 	OV_BIND_METHOD(CursorSingleton::get_frames,{"cursor name","resolution index"},"normal",0);
-	OV_BIND_METHOD(CursorSingleton::get_hotspots,"normal",0);
-	OV_BIND_METHOD(CursorSingleton::get_animationLength,"normal");
-	OV_BIND_METHOD(CursorSingleton::get_displayRates,"normal");
-	OV_BIND_METHOD(CursorSingleton::get_sequence,"normal");
-	OV_BIND_METHOD(CursorSingleton::get_resolutions,"normal");
-	OV_BIND_METHOD(CursorSingleton::generate_resolution,"normal",0,Vector2i(64,64));
+	OV_BIND_METHOD(CursorSingleton::get_hotspots,{"cursor name","resolution index"},"normal",0);
+	OV_BIND_METHOD(CursorSingleton::get_animationLength,{"cursor name"},"normal");
+	OV_BIND_METHOD(CursorSingleton::get_displayRates,{"cursor name"},"normal");
+	OV_BIND_METHOD(CursorSingleton::get_sequence,{"cursor name"},"normal");
+	OV_BIND_METHOD(CursorSingleton::get_resolutions,{"cursor name"},"normal");
+	OV_BIND_METHOD(CursorSingleton::generate_resolution,{"cursor name","base resolution index", "target resolution"},"normal",0,Vector2i(64,64));
 	OV_BIND_METHOD(CursorSingleton::get_cursor_names);
 
 	ADD_PROPERTY(PropertyInfo(
