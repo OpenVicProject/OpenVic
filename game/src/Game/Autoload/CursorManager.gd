@@ -120,15 +120,10 @@ var cooldown = 0.0
 func _process(delta) -> void:
 	#TODO: Remove test code when done testing
 	cooldown -= delta
-	var cursor_names = [
-		"aero_busy", "drum", "aero_link_i",
-		"attack_move","busy","cant_move","deploy_not_valid","deploy_valid","dragselect",
-		"embark","exploration","friendly_move","no_move","normal","objective","selected"
-	]
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and cooldown <= 0:
 		cooldown = 0.3
-		cur_ind = (cur_ind + 1) % cursor_names.size()
-		set_compat_cursor(cursor_names[cur_ind])
+		cur_ind = (cur_ind + 1) % CursorSingleton.cursor_names.size()
+		set_compat_cursor(CursorSingleton.cursor_names[cur_ind])
 	#end test code
 
 	#only attempt to update the mouse when this wont crash anything
