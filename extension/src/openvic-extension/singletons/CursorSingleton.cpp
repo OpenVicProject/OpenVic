@@ -20,13 +20,20 @@ using namespace OpenVic::NodeTools;
 
 void CursorSingleton::_bind_methods() {
 	OV_BIND_METHOD(CursorSingleton::load_cursors);
-	OV_BIND_METHOD(CursorSingleton::get_frames,"normal",0);
+	OV_BIND_METHOD(CursorSingleton::get_frames,{"cursor name","resolution index"},"normal",0);
 	OV_BIND_METHOD(CursorSingleton::get_hotspots,"normal",0);
 	OV_BIND_METHOD(CursorSingleton::get_animationLength,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_displayRates,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_sequence,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_resolutions,"normal");
 	OV_BIND_METHOD(CursorSingleton::generate_resolution,"normal",0,Vector2i(64,64));
+	OV_BIND_METHOD(CursorSingleton::get_cursor_names);
+
+	ADD_PROPERTY(PropertyInfo(
+		Variant::ARRAY,
+		"cursor_names", PROPERTY_HINT_ARRAY_TYPE,
+		"String"),
+	"", "get_cursor_names");
 }
 
 CursorSingleton* CursorSingleton::get_singleton() {
@@ -153,6 +160,9 @@ bool CursorSingleton::load_cursors() {
 			Logger::error("failed to load normal cursor at path ",file_name);
 			ret = false;
 		}
+		else{
+			cursor_names.append(name);
+		}
 	}
 	for(std::filesystem::path const& file_name : animated_cursor_files) {
 		String file = std_to_godot_string(file_name.string());
@@ -161,6 +171,9 @@ bool CursorSingleton::load_cursors() {
 		if(!_load_cursor_ani(name,file)){
 			Logger::error("failed to load animated cursor at path ",file_name);
 			ret = false;
+		}
+		else{
+			cursor_names.append(name);
 		}
 	}
 

@@ -51,6 +51,7 @@ namespace OpenVic {
 		using cursor_map_t = deque_ordered_map<godot::StringName, cursor_asset_t>;
 		cursor_map_t cursors;
 
+		godot::Array PROPERTY(cursor_names);
 
 	public:
 		CursorSingleton();

@@ -29,7 +29,11 @@ class compat_Cursor:
 			self.sequence = CursorSingleton.get_sequence(self.cursor_name)
 			self.timings = CursorSingleton.get_displayRates(self.cursor_name)
 			self.timeToFrame = self.timings[self.sequence[currentFrame]]
-		
+	
+	func reset():
+		currentFrame = 0
+		timeToFrame = self.timings[self.sequence[0]]
+	
 	func set_resolution(resolution : Vector2i) -> void:
 		var index = resolutions.find(resolution)
 		if index != -1:
@@ -96,6 +100,18 @@ var queuedCursors : Dictionary = {
 	Input.CURSOR_IBEAM:null
 }
 
+var loaded_cursors : Dictionary = {}
+
+func load_cursors() -> void:
+	CursorSingleton.load_cursors()
+	for cursor_name in CursorSingleton.cursor_names:
+		var shape:Input.CursorShape = Input.CURSOR_ARROW
+		if cursor_name == "busy":
+			shape = Input.CURSOR_BUSY
+		var cursor = compat_Cursor.new(cursor_name,shape)
+		cursor.set_resolution(preferred_res)
+		loaded_cursors[cursor_name] = cursor
+
 #temp TODO: Remove when done testing
 var cur_ind = 0
 var cooldown = 0.0
@@ -120,27 +136,31 @@ func _process(delta) -> void:
 		var advanceFrame = true #dont go to next frame if we just switched cursors
 		var mouseShape:Input.CursorShape = Input.get_current_cursor_shape()
 
-		#instead of changeQueued, we need to check if the queued cursor pointer matches the current pointer
 		for shape in currentCursors.keys():
 			if currentCursors[shape] != queuedCursors[shape] and queuedCursors[shape] != null:
 				currentCursors[shape] = queuedCursors[shape]
-				currentCursors[shape].set_hardware_cursor(0)
+				currentCursors[shape].set_hardware_cursor()
+				#this is the currently active shape, set the active cursor, make it frame 0 and 
+				#make sure we dont skip this frame
 				if mouseShape == shape:
 					advanceFrame = false
 					activeCursor = currentCursors[shape]
+					activeCursor.reset()
 		
+		#The mouse's cursor shape changed (something like we started hovering over text)
+		# reset the current cursor's frame, then switch the active cursor
 		if activeCursor != null and mouseShape != activeCursor.shape:
 			#Current mouse type changed, need to make sure that if the cursor of this new type
 			# is animated, we are providing its frames instead of the frames of the previous active cursor
-			activeCursor.currentFrame = 0 # reset the frame in the sequence to use
-			activeCursor.set_hardware_cursor(0)
+			activeCursor.reset() # reset the frame in the sequence to use
+			activeCursor.set_hardware_cursor()
 			
 			if mouseShape in currentCursors and currentCursors[mouseShape] != null:
 				activeCursor = currentCursors[mouseShape]
-				activeCursor.currentFrame = 0
+				activeCursor.reset()
 			advanceFrame = false
 			
-		#if we didnt change cursors, do an update
+		#if we didnt change cursors and are animated, do an update
 		if activeCursor != null and activeCursor.is_animated:
 			activeCursor._process_cursor(delta,advanceFrame)
 	
@@ -150,18 +170,26 @@ func set_prefered_res(res_in:Vector2i) -> void:
 
 #override_other_queued is to stop an animation frame from taking precedence over
 #a cursor switch
-func set_compat_cursor(cursor_name:String, cursor_shape:Input.CursorShape = Input.CURSOR_ARROW) -> void:
-	var cursor = compat_Cursor.new(cursor_name,cursor_shape)
-	cursor.set_resolution(preferred_res)
-	set_mouse_cursor(cursor)
+func set_compat_cursor(cursor_name:String, cursor_shape:Input.CursorShape = -1) -> void:
+	#var cursor = compat_Cursor.new(cursor_name,cursor_shape)
+	if cursor_name in loaded_cursors:
+		var cursor = loaded_cursors[cursor_name]
+		if cursor_shape != -1:
+			cursor.shape = cursor_shape 
+		cursor.set_resolution(preferred_res)
+		set_mouse_cursor(cursor)
+	else:
+		push_warning("Cursor name %s is not among loaded cursors" % cursor_name)
 	
 # To safely change the mouse cursor, the mouse must be over the window
 # these 2 functions help ensure we do it safely
 func set_mouse_cursor(cursor:compat_Cursor) -> void:
 	if mouseOverWindow and windowFocused:
 		activeCursor = cursor
+		activeCursor.currentFrame = 0
 		currentCursors[cursor.shape] = cursor
 		queuedCursors[cursor.shape] = null
+		activeCursor.set_hardware_cursor(0)
 	else:
 		queuedCursors[cursor.shape] = cursor
 

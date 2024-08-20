@@ -108,8 +108,9 @@ func _load_compatibility_mode() -> void:
 	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
 		push_error("Errors setting game roots!")
 	
-	CursorSingleton.load_cursors()
+	#CursorSingleton.load_cursors()
 	CursorManager.set_prefered_res(Vector2i(48,48))
+	CursorManager.load_cursors()
 	CursorManager.set_compat_cursor("normal",Input.CURSOR_ARROW)
 	#TODO: Change Busy to be shape Input.CURSOR_BUSY when done testing
 	CursorManager.set_compat_cursor("busy",Input.CURSOR_IBEAM)
