@@ -38,9 +38,10 @@ namespace OpenVic {
 
 		//.cur files use all but the last 2 properties, rest are for .ani
 		//use vector2i instead of ref<vector2i> because of "unreference is not a member of godot::vector2i"
+		//images is an array of ImageTexture, just godot doesn't like typed arrays with image texture for some reason
 		struct cursor_asset_t {
-			std::vector<godot::Vector2i> hotspots;
-			std::vector<godot::Ref<godot::ImageTexture>> images;
+			std::vector<godot::TypedArray<godot::Vector2i>> hotspots;
+			std::vector<godot::Array> images;
 			godot::TypedArray<godot::Vector2i> resolutions;
 			int animationLength; //1 for static cursors
 			std::optional<godot::TypedArray<float>> displayRates;
@@ -85,12 +86,13 @@ namespace OpenVic {
 		bool load_cursors();
 		
 		//getters for the different cursor properties
-		godot::Ref<godot::ImageTexture> get_image(godot::String const& name, int index = 0);
-		godot::Vector2i get_hotspot(godot::String const& name, int index = 0);
+		godot::Array get_frames(godot::String const& name, int res_index = 0);
+		godot::TypedArray<godot::Vector2i> get_hotspots(godot::String const& name, int res_index = 0);
 		int get_animationLength(godot::String const& name);
 		godot::TypedArray<godot::Vector2i> get_resolutions(godot::String const& name);
 		godot::TypedArray<float> get_displayRates(godot::String const& name);
 		godot::TypedArray<int> get_sequence(godot::String const& name);
+		void generate_resolution(godot::String const& name, int base_res_index, godot::Vector2i target_res);
 
 	};
 

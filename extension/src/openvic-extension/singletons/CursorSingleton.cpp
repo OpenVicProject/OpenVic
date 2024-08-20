@@ -20,12 +20,13 @@ using namespace OpenVic::NodeTools;
 
 void CursorSingleton::_bind_methods() {
 	OV_BIND_METHOD(CursorSingleton::load_cursors);
-	OV_BIND_METHOD(CursorSingleton::get_image,"normal",0);
-	OV_BIND_METHOD(CursorSingleton::get_hotspot,"normal",0);
+	OV_BIND_METHOD(CursorSingleton::get_frames,"normal",0);
+	OV_BIND_METHOD(CursorSingleton::get_hotspots,"normal",0);
 	OV_BIND_METHOD(CursorSingleton::get_animationLength,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_displayRates,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_sequence,"normal");
 	OV_BIND_METHOD(CursorSingleton::get_resolutions,"normal");
+	OV_BIND_METHOD(CursorSingleton::generate_resolution,"normal",0,Vector2i(64,64));
 }
 
 CursorSingleton* CursorSingleton::get_singleton() {
@@ -43,18 +44,18 @@ CursorSingleton::~CursorSingleton() {
 }
 
 
-Ref<ImageTexture> CursorSingleton::get_image(String const& name, int index){
-	if(index < cursors[name].images.size()){
-		return cursors[name].images[index];
+Array CursorSingleton::get_frames(String const& name, int res_index){
+	if(res_index < cursors[name].images.size()){
+		return cursors[name].images[res_index];
 	}
-	return nullptr;
+	return Array();
 }
 
-Vector2i CursorSingleton::get_hotspot(String const& name, int index){
-	if(index < cursors[name].hotspots.size()){
-		return cursors[name].hotspots[index];
+TypedArray<Vector2i> CursorSingleton::get_hotspots(String const& name, int res_index){
+	if(res_index < cursors[name].images.size()){
+		return cursors[name].hotspots[res_index];
 	}
-	return Vector2i(0,0);
+	return TypedArray<Vector2i>();
 }
 
 int CursorSingleton::get_animationLength(String const& name){
@@ -77,6 +78,39 @@ TypedArray<int> CursorSingleton::get_sequence(String const& name){
 		return cursors[name].sequence.value();
 	}
 	return TypedArray<int>();
+}
+
+void CursorSingleton::generate_resolution(String const& name, int base_res_index, Vector2i target_res){
+	cursor_asset_t* cursor = &cursors[name];
+	Array new_frameset;
+	TypedArray<Vector2i> new_hotspots;
+
+	for(int i=0;i<cursor->images[base_res_index].size();i++){
+
+		Ref<ImageTexture> texture = static_cast<Ref<ImageTexture>>(cursor->images[base_res_index][i]);
+		
+		Ref<Image> image;
+		image.instantiate();
+		image->create(target_res.x, target_res.y, false, Image::Format::FORMAT_RGBA8);
+		image->copy_from(texture->get_image());
+		image->resize(target_res.x,target_res.y,godot::Image::INTERPOLATE_BILINEAR);
+
+
+		Ref<ImageTexture> new_texture = Ref<ImageTexture>();
+		new_texture.instantiate();
+		new_texture->set_image(image);
+
+		new_frameset.push_back(new_texture);
+
+		Vector2i base_hotspot = cursor->hotspots[base_res_index][i];
+		Vector2i scale_ratio = target_res / static_cast<Vector2i>(cursor->resolutions[base_res_index]);
+		new_hotspots.push_back(base_hotspot*scale_ratio);
+
+	}
+
+	cursor->images.push_back(new_frameset);
+	cursor->hotspots.push_back(new_hotspots);
+	cursor->resolutions.push_back(target_res);
 }
 
 //, std::string_view const& base_folder
@@ -143,11 +177,12 @@ bool CursorSingleton::_load_cursor_ani(String const& name, String const& path) {
 	String form_type = read_riff_str(file);
 
 	//important variables
-	std::vector<godot::Vector2i> hotspots;
-	std::vector<godot::Ref<godot::ImageTexture>> images;
-	godot::TypedArray<Vector2i> resolutions;
-	godot::TypedArray<float> displayRates;
-	godot::TypedArray<int> sequence;
+	std::vector<Array> frames_by_resolution;
+	std::vector<TypedArray<Vector2i>> hotspots_by_resolution;
+
+	TypedArray<Vector2i> resolutions;
+	TypedArray<float> displayRates;
+	TypedArray<int> sequence;
 
 	//ani header variables
 	int numFrames;
@@ -188,14 +223,26 @@ bool CursorSingleton::_load_cursor_ani(String const& name, String const& path) {
 
 			image_hotspot_pair_asset_t pair = _load_pair(file);
 			//basically pushback an array
-			
-			images.insert(std::end(images),std::begin(pair.images),std::end(pair.images));
-			hotspots.insert(std::end(hotspots),std::begin(pair.hotspots),std::end(pair.hotspots));
 
 			//only store the resolutions from one frame
 			if(resolutions.is_empty()){
 				for(int i=0;i<pair.images.size();i++){
+					
+					TypedArray<Vector2i> hotspots;
+					Array images;
+					images.push_back(pair.images[i]);
+					hotspots.push_back(pair.hotspots[i]);
+					frames_by_resolution.push_back(images);
+					hotspots_by_resolution.push_back(hotspots);
+
 					resolutions.push_back(Vector2i(pair.images[i]->get_width(),pair.images[i]->get_height()));
+				}
+
+			}
+			else {
+				for(int i=0;i<pair.images.size();i++){
+					frames_by_resolution[i].push_back(pair.images[i]);
+					hotspots_by_resolution[i].push_back(pair.hotspots[i]);
 				}
 			}
 
@@ -237,8 +284,8 @@ bool CursorSingleton::_load_cursor_ani(String const& name, String const& path) {
 	}
 
     cursor_asset_t cursor = {
-		hotspots,
-		images,
+		hotspots_by_resolution,
+		frames_by_resolution,
 		resolutions,
 		static_cast<int>(sequence.size())
 	};
@@ -259,14 +306,26 @@ bool CursorSingleton::_load_cursor_cur(String const& name, String const& path) {
     const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
 	image_hotspot_pair_asset_t pair = _load_pair(file);
 	
-	godot::TypedArray<Vector2i> resolutions;
+	std::vector<Array> frames_by_resolution;
+	std::vector<TypedArray<Vector2i>> hotspots_by_resolution;
+
+	TypedArray<Vector2i> resolutions;
+
 	for(int i=0;i<pair.images.size();i++){
 		resolutions.push_back(Vector2i(pair.images[i]->get_width(),pair.images[i]->get_height()));
+		
+		Array frames;
+		frames.push_back(pair.images[i]);
+		frames_by_resolution.push_back(frames);
+
+		TypedArray<Vector2i> hotspots;
+		hotspots.push_back(pair.hotspots[i]);
+		hotspots_by_resolution.push_back(hotspots);
 	}
 
     cursor_asset_t cursor = {
-		pair.hotspots,
-		pair.images,
+		hotspots_by_resolution,
+		frames_by_resolution,
 		resolutions,
 		1
 		};
@@ -275,7 +334,7 @@ bool CursorSingleton::_load_cursor_cur(String const& name, String const& path) {
 }
 
 //used to load a .cur file from a file (could be the a whole .cur file, or a .cur within a .ani file)
-CursorSingleton::image_hotspot_pair_asset_t CursorSingleton::_load_pair(godot::Ref<godot::FileAccess> const& file) {
+CursorSingleton::image_hotspot_pair_asset_t CursorSingleton::_load_pair(Ref<FileAccess> const& file) {
 	image_hotspot_pair_asset_t pairs = {};
 
 	//.cur's within .anis won't start of the beginning of the file, so save where they start
@@ -442,7 +501,6 @@ PackedByteArray CursorSingleton::_read_24bit_pixel(int i, int offset, PackedByte
 	int b = imageData[offset + (i*3) + 0];
 	int g = imageData[offset + (i*3) + 1];
 	int r = imageData[offset + (i*3) + 2];
-	//int x = imageData[offset + (i*4) + 3] * notTransparent;
 
 	pixel.append(r);
 	pixel.append(g);
@@ -508,7 +566,7 @@ int CursorSingleton::_rotate_right(int byte, int size){
 	return ((byte & 0b1) << (size-1)) | (byte >> 1);
 }
 
-int CursorSingleton::_load_int_256(godot::Ref<godot::FileAccess> const& file){
+int CursorSingleton::_load_int_256(Ref<FileAccess> const& file){
 	int value = file->get_8();
 	if(value == 0) value = 256;
 	return value;
