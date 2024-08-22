@@ -87,15 +87,15 @@ func _ready() -> void:
 	# income
 	var _lower_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_0_slider")
 	if _lower_class_slider and _lower_class_label:
-		_lower_class_slider.value_changed.connect(func(value : int) -> void: _lower_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3))
+		_lower_class_slider.value_changed.connect(func(value : int) -> void: _lower_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
 		_lower_class_slider.emit_value_changed()
 	var _middle_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_1_slider")
 	if _middle_class_slider and _middle_class_label:
-		_middle_class_slider.value_changed.connect(func(value : int) -> void: _middle_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3))
+		_middle_class_slider.value_changed.connect(func(value : int) -> void: _middle_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
 		_middle_class_slider.emit_value_changed()
 	var _upper_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_2_slider")
 	if _upper_class_slider and _upper_class_label:
-		_upper_class_slider.value_changed.connect(func(value : int) -> void: _upper_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3))
+		_upper_class_slider.value_changed.connect(func(value : int) -> void: _upper_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
 		_upper_class_slider.emit_value_changed()
 
 	# costs
@@ -123,7 +123,7 @@ func _ready() -> void:
 		if _administration_exp_label:
 			_exp_1_slider.value_changed.connect(func(value : int) -> void: _administration_exp_label.text = "%s¤" % GUINode.float_to_string_dp_dynamic(value))
 		if _admin_efficiency_label:
-			_exp_1_slider.value_changed.connect(func(value : int) -> void: _admin_efficiency_label.text = "%s%%" % value)
+			_exp_1_slider.value_changed.connect(func(value : int) -> void: _admin_efficiency_label.text = "%s%%" % GUINode.float_to_string_dp(value, 1))
 		_exp_1_slider.emit_value_changed()
 	var _exp_2_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/exp_2_slider")
 	if _exp_2_slider and _social_exp_label:
@@ -140,7 +140,7 @@ func _ready() -> void:
 		if _tariff_val_label:
 			_tariff_slider.value_changed.connect(func(value : int) -> void: _tariff_val_label.text = "%s¤" % GUINode.float_to_string_dp_dynamic(value))
 		if _tariffs_percent_label:
-			_tariff_slider.value_changed.connect(func(value : int) -> void: _tariffs_percent_label.text = "%s%%" % value)
+			_tariff_slider.value_changed.connect(func(value : int) -> void: _tariffs_percent_label.text = "%s%%" % GUINode.float_to_string_dp(value, 1))
 		_tariff_slider.emit_value_changed()
 
 	# debt buttons

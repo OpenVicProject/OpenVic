@@ -510,7 +510,11 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	text_label->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
-	if (text_label->set_gui_text(&text) != OK) {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	GFX::Font::colour_codes_t const* override_colour_codes = game_singleton != nullptr
+		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes() : nullptr;
+
+	if (text_label->set_gui_text(&text, override_colour_codes) != OK) {
 		UtilityFunctions::push_error("Error initialising GUITextLabel for GUI text ", text_name);
 		ret = false;
 	}

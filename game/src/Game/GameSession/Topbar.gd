@@ -269,8 +269,7 @@ func _update_info() -> void:
 		_country_name_label.set_text(player_country)
 
 	if _country_rank_label:
-		# TODO - fix label alignment
-		_country_rank_label.set_text(" %d" % 1)
+		_country_rank_label.set_text(str(1))
 
 	if _country_prestige_label:
 		_country_prestige_label.set_text(str(11))
@@ -294,7 +293,7 @@ func _update_info() -> void:
 		var available_colonial_power : int = 123
 		var total_colonial_power : int = 456
 		_country_colonial_power_label.set_text(
-			("%s/%s" if available_colonial_power > 0 else "§R%s§!/%s") % [available_colonial_power, total_colonial_power]
+			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, total_colonial_power]
 		)
 
 	## Time control
@@ -334,7 +333,7 @@ func _update_info() -> void:
 		_technology_current_research_label.set_text("TB_TECH_NO_CURRENT")
 
 	if _technology_literacy_label:
-		_technology_literacy_label.set_text("§Y%s%%" % GUINode.float_to_string_dp(80.0, 1))
+		_technology_literacy_label.set_text("§Y%s§W%%" % GUINode.float_to_string_dp(80.0, 1))
 
 	if _technology_research_points_label:
 		_technology_research_points_label.set_text("§Y%s" % GUINode.float_to_string_dp(10.0, 2))
