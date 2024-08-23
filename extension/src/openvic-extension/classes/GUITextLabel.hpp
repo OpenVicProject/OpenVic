@@ -1,6 +1,7 @@
 #pragma once
 
 #include <godot_cpp/classes/control.hpp>
+#include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 
@@ -18,15 +19,19 @@ namespace OpenVic {
 
 		godot::String PROPERTY(text);
 		godot::Dictionary PROPERTY(substitution_dict);
-		godot::HorizontalAlignment PROPERTY(alignment);
-		godot::Vector2 border_size;
+		godot::HorizontalAlignment PROPERTY(horizontal_alignment);
+		godot::Size2 PROPERTY(max_size); // Actual max size is max_size - 2 * border_size
+		godot::Size2 PROPERTY(border_size); // The padding between the Nodes bounding box and the text within it
+		godot::Rect2 PROPERTY(adjusted_rect); // Offset + size after adjustment to fit content size
+		bool PROPERTY_CUSTOM_PREFIX(auto_adjust_to_content_size, will);
 
-		godot::Ref<godot::FontFile> font;
-		godot::Color default_colour;
+		godot::Ref<godot::Font> font;
+		int32_t PROPERTY(font_size);
+		godot::Color PROPERTY(default_colour);
 		GFX::Font::colour_codes_t const* colour_codes;
 		godot::Ref<GFXSpriteTexture> currency_texture;
 
-		godot::Ref<godot::StyleBoxTexture> PROPERTY(background);
+		godot::Ref<godot::StyleBoxTexture> background;
 
 		struct string_segment_t {
 			godot::String text;
@@ -54,24 +59,38 @@ namespace OpenVic {
 
 		/* Reset gui_text to nullptr and reset current text. */
 		void clear();
-
+		/* Return the name of the GUI::Text, or an empty String if it's null. */
+		godot::String get_gui_text_name() const;
 		/* Set the GUI::Text. */
 		godot::Error set_gui_text(
 			GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes = nullptr
 		);
 
-		/* Return the name of the GUI::Text, or an empty String if it's null. */
-		godot::String get_gui_text_name() const;
-
 		void set_text(godot::String const& new_text);
+
 		void add_substitution(godot::String const& key, godot::String const& value);
 		void set_substitution_dict(godot::Dictionary const& new_substitution_dict);
 		void clear_substitutions();
 
-	private:
-		godot::Vector2 get_content_max_size() const;
+		void set_horizontal_alignment(godot::HorizontalAlignment new_horizontal_alignment);
+		void set_max_size(godot::Size2 new_max_size);
+		void set_border_size(godot::Size2 new_border_size);
+		void set_auto_adjust_to_content_size(bool new_auto_adjust_to_content_size);
 
-		godot::Error _update_font(GFX::Font::colour_codes_t const* override_colour_codes);
+		godot::Ref<godot::Font> get_font() const;
+		void set_font(godot::Ref<godot::Font> const& new_font);
+		godot::Error set_font_file(godot::Ref<godot::FontFile> const& new_font_file);
+		godot::Error set_font_size(int32_t new_font_size);
+		void set_default_colour(godot::Color const& new_default_colour);
+
+		godot::Ref<GFXSpriteTexture> get_currency_texture() const;
+
+		godot::Ref<godot::StyleBoxTexture> get_background() const;
+		void set_background_texture(godot::Ref<godot::Texture2D> const& new_texture);
+		void set_background_stylebox(godot::Ref<godot::StyleBoxTexture> const& new_stylebox_texture);
+
+	private:
+		void update_stylebox_border_size();
 		real_t get_string_width(godot::String const& string) const;
 		real_t get_segment_width(segment_t const& segment) const;
 
@@ -92,5 +111,6 @@ namespace OpenVic {
 			godot::String const& string, godot::Color const& colour, line_t& line
 		) const;
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;
+		void adjust_to_content_size();
 	};
 }

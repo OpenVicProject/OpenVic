@@ -1,5 +1,6 @@
 #include "GUITextLabel.hpp"
 
+#include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -11,8 +12,11 @@ using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
+static constexpr int32_t DEFAULT_FONT_SIZE = 16;
+
 void GUITextLabel::_bind_methods() {
 	OV_BIND_METHOD(GUITextLabel::clear);
+	OV_BIND_METHOD(GUITextLabel::get_gui_text_name);
 
 	OV_BIND_METHOD(GUITextLabel::get_text);
 	OV_BIND_METHOD(GUITextLabel::set_text, { "new_text" });
@@ -22,11 +26,57 @@ void GUITextLabel::_bind_methods() {
 	OV_BIND_METHOD(GUITextLabel::set_substitution_dict, { "new_substitution_dict" });
 	OV_BIND_METHOD(GUITextLabel::clear_substitutions);
 
-	OV_BIND_METHOD(GUITextLabel::get_alignment);
-	OV_BIND_METHOD(GUITextLabel::get_gui_text_name);
+	OV_BIND_METHOD(GUITextLabel::get_horizontal_alignment);
+	OV_BIND_METHOD(GUITextLabel::set_horizontal_alignment, { "new_horizontal_alignment" });
+	OV_BIND_METHOD(GUITextLabel::get_max_size);
+	OV_BIND_METHOD(GUITextLabel::set_max_size, { "new_max_size" });
+	OV_BIND_METHOD(GUITextLabel::get_border_size);
+	OV_BIND_METHOD(GUITextLabel::set_border_size, { "new_border_size" });
+	OV_BIND_METHOD(GUITextLabel::get_adjusted_rect);
+	OV_BIND_METHOD(GUITextLabel::will_auto_adjust_to_content_size);
+	OV_BIND_METHOD(GUITextLabel::set_auto_adjust_to_content_size, { "new_auto_adjust_to_content_size" });
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text"), "set_text", "get_text");
+	OV_BIND_METHOD(GUITextLabel::get_font);
+	OV_BIND_METHOD(GUITextLabel::set_font, { "new_font" });
+	OV_BIND_METHOD(GUITextLabel::set_font_file, { "new_font_file" });
+	OV_BIND_METHOD(GUITextLabel::get_font_size);
+	OV_BIND_METHOD(GUITextLabel::set_font_size, { "new_font_size" });
+	OV_BIND_METHOD(GUITextLabel::get_default_colour);
+	OV_BIND_METHOD(GUITextLabel::set_default_colour, { "new_default_colour" });
+	OV_BIND_METHOD(GUITextLabel::get_currency_texture);
+
+	OV_BIND_METHOD(GUITextLabel::get_background);
+	OV_BIND_METHOD(GUITextLabel::set_background_texture, { "new_texture" });
+	OV_BIND_METHOD(GUITextLabel::set_background_stylebox, { "new_stylebox_texture" });
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "substitution_dict"), "set_substitution_dict", "get_substitution_dict");
+	ADD_PROPERTY(
+		PropertyInfo(Variant::INT, "horizontal_alignment", PROPERTY_HINT_ENUM, "Left,Centre,Right,Fill"),
+		"set_horizontal_alignment", "get_horizontal_alignment"
+	);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "max_size", PROPERTY_HINT_NONE, "suffix:px"), "set_max_size", "get_max_size");
+	ADD_PROPERTY(
+		PropertyInfo(Variant::VECTOR2, "border_size", PROPERTY_HINT_NONE, "suffix:px"), "set_border_size", "get_border_size"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::RECT2, "adjusted_rect", PROPERTY_HINT_NONE, "suffix:px"), "", "get_adjusted_rect"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::BOOL, "auto_adjust_to_content_size"), "set_auto_adjust_to_content_size",
+		"will_auto_adjust_to_content_size"
+	);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "font", PROPERTY_HINT_RESOURCE_TYPE, "Font"), "set_font", "get_font");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "font_size", PROPERTY_HINT_NONE, "suffix:px"), "set_font_size", "get_font_size");
+	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "default_colour"), "set_default_colour", "get_default_colour");
+	ADD_PROPERTY(
+		PropertyInfo(Variant::OBJECT, "currency_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "", "get_currency_texture"
+	);
+	ADD_PROPERTY(
+		PropertyInfo(Variant::OBJECT, "background", PROPERTY_HINT_RESOURCE_TYPE, "StyleBoxTexture"), "set_background_stylebox",
+		"get_background"
+	);
 }
 
 void GUITextLabel::_notification(int what) {
@@ -37,38 +87,35 @@ void GUITextLabel::_notification(int what) {
 	} break;
 	case NOTIFICATION_DRAW: {
 		const RID ci = get_canvas_item();
-		const Size2 size = get_size();
 
 		if (background.is_valid()) {
-			draw_style_box(background, Rect2 { {}, size });
+			draw_style_box(background, adjusted_rect);
 		}
 
 		if (font.is_null()) {
 			return;
 		}
 
-		const Vector2 content_max_size = get_content_max_size();
-
 		// Starting offset needed
 		static const Vector2 base_offset { 1.0_real, -1.0_real };
-		const Vector2 offset = base_offset + border_size;
+		const Vector2 offset = base_offset + adjusted_rect.position + border_size;
 		Vector2 position = offset;
 
 		for (line_t const& line : lines) {
 			position.x = offset.x;
-			switch (alignment) {
+			switch (horizontal_alignment) {
 			case HORIZONTAL_ALIGNMENT_CENTER: {
-				position.x += (content_max_size.width - line.width + 1.0_real) / 2.0_real;
+				position.x += (adjusted_rect.size.width - 2 * border_size.width - line.width + 1.0_real) / 2.0_real;
 			} break;
 			case HORIZONTAL_ALIGNMENT_RIGHT: {
-				position.x += content_max_size.width - line.width;
+				position.x += adjusted_rect.size.width - 2 * border_size.width - line.width;
 			} break;
 			case HORIZONTAL_ALIGNMENT_LEFT:
 			default:
 				break;
 			}
 
-			position.y += font->get_ascent(font->get_fixed_size());
+			position.y += font->get_ascent(font_size);
 
 			for (segment_t const& segment : line.segments) {
 				string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment);
@@ -84,14 +131,14 @@ void GUITextLabel::_notification(int what) {
 					}
 				} else {
 					font->draw_string(
-						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font->get_fixed_size(),
+						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size,
 						string_segment->colour
 					);
 					position.x += string_segment->width;
 				}
 			}
 
-			position.y += font->get_descent(font->get_fixed_size());
+			position.y += font->get_descent(font_size);
 		}
 
 	} break;
@@ -99,17 +146,39 @@ void GUITextLabel::_notification(int what) {
 }
 
 GUITextLabel::GUITextLabel()
-  : gui_text { nullptr }, alignment { HORIZONTAL_ALIGNMENT_LEFT }, colour_codes { nullptr }, line_update_queued { false } {}
+  : gui_text { nullptr },
+	text {},
+	substitution_dict {},
+	horizontal_alignment { HORIZONTAL_ALIGNMENT_LEFT },
+	max_size {},
+	border_size {},
+	adjusted_rect {},
+	auto_adjust_to_content_size { false },
+	font {},
+	font_size { DEFAULT_FONT_SIZE },
+	default_colour {},
+	colour_codes { nullptr },
+	currency_texture {},
+	background {},
+	lines {},
+	line_update_queued { false } {}
 
 void GUITextLabel::clear() {
 	gui_text = nullptr;
 
 	text = String {};
 	substitution_dict.clear();
-	alignment = HORIZONTAL_ALIGNMENT_LEFT;
+	horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT;
+	max_size = {};
 	border_size = {};
+	adjusted_rect = {};
+	auto_adjust_to_content_size = false;
 
-	_update_font(nullptr);
+	font.unref();
+	font_size = DEFAULT_FONT_SIZE;
+	default_colour = {};
+	colour_codes = nullptr;
+	currency_texture.unref();
 
 	background.unref();
 	lines.clear();
@@ -117,6 +186,10 @@ void GUITextLabel::clear() {
 	line_update_queued = false;
 
 	queue_redraw();
+}
+
+String GUITextLabel::get_gui_text_name() const {
+	return gui_text != nullptr ? Utilities::std_to_godot_string(gui_text->get_name()) : String {};
 }
 
 Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
@@ -131,7 +204,7 @@ Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colou
 
 	gui_text = new_gui_text;
 
-	text = Utilities::std_to_godot_string(gui_text->get_text());
+	set_text(Utilities::std_to_godot_string(gui_text->get_text()));
 
 	using enum GUI::AlignedElement::format_t;
 	static const ordered_map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {
@@ -140,47 +213,58 @@ Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colou
 		{ right, HORIZONTAL_ALIGNMENT_RIGHT }
 	};
 	const decltype(format_map)::const_iterator it = format_map.find(gui_text->get_format());
-	alignment = it != format_map.end() ? it->second : HORIZONTAL_ALIGNMENT_LEFT;
+	set_horizontal_alignment(it != format_map.end() ? it->second : HORIZONTAL_ALIGNMENT_LEFT);
 
-	set_custom_minimum_size(Utilities::to_godot_fvec2(gui_text->get_max_size()));
-	border_size = Utilities::to_godot_fvec2(gui_text->get_border_size());
+	set_max_size(Utilities::to_godot_fvec2(gui_text->get_max_size()));
+	set_border_size(Utilities::to_godot_fvec2(gui_text->get_border_size()));
+
+	colour_codes = override_colour_codes != nullptr ? override_colour_codes : &gui_text->get_font()->get_colour_codes();
+	set_default_colour(Utilities::to_godot_color(gui_text->get_font()->get_colour()));
+
+	font.unref();
+	font_size = DEFAULT_FONT_SIZE;
+	currency_texture.unref();
+	background.unref();
+
+	Error err = OK;
+
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	if (asset_manager != nullptr) {
+		const StringName font_filepath = Utilities::std_to_godot_string(gui_text->get_font()->get_fontname());
+		Ref<FontFile> font_file = asset_manager->get_font(font_filepath);
+		if (font_file.is_valid()) {
+			if (set_font_file(font_file) != OK) {
+				err = FAILED;
+			}
+		} else {
+			UtilityFunctions::push_error("Failed to load font \"", font_filepath, "\" for GUITextLabel");
+			err = FAILED;
+		}
+
+		if (!gui_text->get_texture_file().empty()) {
+			const StringName texture_path = Utilities::std_to_godot_string(gui_text->get_texture_file());
+			Ref<ImageTexture> texture = asset_manager->get_texture(texture_path);
+			if (texture.is_valid()) {
+				set_background_texture(texture);
+			} else {
+				UtilityFunctions::push_error("Failed to load texture \"", texture_path, "\" for GUITextLabel ", get_name());
+				err = FAILED;
+			}
+		}
+	} else {
+		UtilityFunctions::push_error("Failed to get AssetManager singleton for GUITextLabel");
+		err = FAILED;
+	}
 
 	_queue_line_update();
 
-	Error err = _update_font(override_colour_codes);
-
-	background.unref();
-
-	if (!gui_text->get_texture_file().empty()) {
-		AssetManager* asset_manager = AssetManager::get_singleton();
-		ERR_FAIL_NULL_V(asset_manager, FAILED);
-
-		const StringName texture_path = Utilities::std_to_godot_string(gui_text->get_texture_file());
-		Ref<ImageTexture> texture = asset_manager->get_texture(texture_path);
-		ERR_FAIL_NULL_V_MSG(
-			texture, FAILED, vformat("Failed to load texture \"%s\" for GUITextLabel %s", texture_path, get_name())
-		);
-
-		background.instantiate();
-		ERR_FAIL_NULL_V(background, FAILED);
-		background->set_texture(texture);
-
-		background->set_texture_margin(SIDE_LEFT, border_size.x);
-		background->set_texture_margin(SIDE_RIGHT, border_size.x);
-		background->set_texture_margin(SIDE_TOP, border_size.y);
-		background->set_texture_margin(SIDE_BOTTOM, border_size.y);
-	}
-
 	return err;
-}
-
-String GUITextLabel::get_gui_text_name() const {
-	return gui_text != nullptr ? Utilities::std_to_godot_string(gui_text->get_name()) : String {};
 }
 
 void GUITextLabel::set_text(String const& new_text) {
 	if (text != new_text) {
 		text = new_text;
+
 		_queue_line_update();
 	}
 }
@@ -189,6 +273,7 @@ void GUITextLabel::add_substitution(String const& key, String const& value) {
 	Variant& existing_value = substitution_dict[key];
 	if (existing_value != value) {
 		existing_value = value;
+
 		_queue_line_update();
 	}
 }
@@ -201,42 +286,129 @@ void GUITextLabel::set_substitution_dict(Dictionary const& new_substitution_dict
 void GUITextLabel::clear_substitutions() {
 	if (!substitution_dict.is_empty()) {
 		substitution_dict.clear();
+
 		_queue_line_update();
 	}
 }
 
-Vector2 GUITextLabel::get_content_max_size() const {
-	return get_size() - 2 * border_size;
+void GUITextLabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_alignment) {
+	if (horizontal_alignment != new_horizontal_alignment) {
+		horizontal_alignment = new_horizontal_alignment;
+
+		_queue_line_update();
+	}
 }
 
-Error GUITextLabel::_update_font(GFX::Font::colour_codes_t const* override_colour_codes) {
-	if (gui_text == nullptr || gui_text->get_font() == nullptr) {
-		font.unref();
-		default_colour = {};
-		colour_codes = nullptr;
-		currency_texture.unref();
+void GUITextLabel::set_max_size(Size2 new_max_size) {
+	if (max_size != new_max_size) {
+		max_size = new_max_size;
 
-		return OK;
+		set_custom_minimum_size(max_size);
+		set_size(max_size);
+
+		_queue_line_update();
 	}
+}
 
-	default_colour = Utilities::to_godot_color(gui_text->get_font()->get_colour());
-	colour_codes = override_colour_codes != nullptr ? override_colour_codes : &gui_text->get_font()->get_colour_codes();
+void GUITextLabel::set_border_size(Size2 new_border_size) {
+	if (border_size != new_border_size) {
+		border_size = new_border_size;
+
+		update_stylebox_border_size();
+
+		_queue_line_update();
+	}
+}
+
+void GUITextLabel::set_auto_adjust_to_content_size(bool new_auto_adjust_to_content_size) {
+	if (auto_adjust_to_content_size != new_auto_adjust_to_content_size) {
+		auto_adjust_to_content_size = new_auto_adjust_to_content_size;
+
+		adjust_to_content_size();
+
+		queue_redraw();
+	}
+}
+
+Ref<Font> GUITextLabel::get_font() const {
+	return font;
+}
+
+void GUITextLabel::set_font(Ref<Font> const& new_font) {
+	font = new_font;
+
+	_queue_line_update();
+}
+
+Error GUITextLabel::set_font_file(Ref<FontFile> const& new_font_file) {
+	ERR_FAIL_NULL_V(new_font_file, FAILED);
+
+	set_font(new_font_file);
+
+	return set_font_size(new_font_file->get_fixed_size());
+}
+
+Error GUITextLabel::set_font_size(int32_t new_font_size) {
+	font_size = new_font_size;
+
+	_queue_line_update();
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V_MSG(asset_manager, FAILED, "Failed to get AssetManager singleton for GUITextLabel");
 
-	const StringName font_file = Utilities::std_to_godot_string(gui_text->get_font()->get_fontname());
-	font = asset_manager->get_font(font_file);
-	ERR_FAIL_NULL_V_MSG(font, FAILED, vformat("Failed to load font \"%s\" for GUITextLabel", font_file));
-
-	currency_texture = asset_manager->get_currency_texture(font->get_fixed_size());
+	currency_texture = asset_manager->get_currency_texture(font_size);
 	ERR_FAIL_NULL_V(currency_texture, FAILED);
 
 	return OK;
 }
 
+void GUITextLabel::set_default_colour(Color const& new_default_colour) {
+	if (default_colour != new_default_colour) {
+		default_colour = new_default_colour;
+		_queue_line_update();
+	}
+}
+
+Ref<GFXSpriteTexture> GUITextLabel::get_currency_texture() const {
+	return currency_texture;
+}
+
+Ref<StyleBoxTexture> GUITextLabel::get_background() const {
+	return background;
+}
+
+void GUITextLabel::set_background_texture(Ref<Texture2D> const& new_texture) {
+	Ref<StyleBoxTexture> new_background;
+
+	if (new_texture.is_valid()) {
+		new_background.instantiate();
+		ERR_FAIL_NULL(new_background);
+
+		new_background->set_texture(new_texture);
+	}
+
+	set_background_stylebox(new_background);
+}
+
+void GUITextLabel::set_background_stylebox(Ref<StyleBoxTexture> const& new_stylebox_texture) {
+	if (background != new_stylebox_texture) {
+		background = new_stylebox_texture;
+		update_stylebox_border_size();
+		queue_redraw();
+	}
+}
+
+void GUITextLabel::update_stylebox_border_size() {
+	if (background.is_valid()) {
+		background->set_texture_margin(SIDE_LEFT, border_size.width);
+		background->set_texture_margin(SIDE_RIGHT, border_size.width);
+		background->set_texture_margin(SIDE_TOP, border_size.height);
+		background->set_texture_margin(SIDE_BOTTOM, border_size.height);
+	}
+}
+
 real_t GUITextLabel::get_string_width(String const& string) const {
-	return font->get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, font->get_fixed_size()).x;
+	return font->get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).width;
 }
 
 real_t GUITextLabel::get_segment_width(segment_t const& segment) const {
@@ -276,7 +448,7 @@ void GUITextLabel::_update_lines() {
 
 	lines = wrap_lines(unwrapped_lines);
 
-	// TODO - trim and add ellipsis if necessary
+	adjust_to_content_size();
 
 	queue_redraw();
 }
@@ -293,7 +465,7 @@ String GUITextLabel::generate_substituted_text(String const& base_text) const {
 
 		int64_t marker_end_pos = base_text.find(SUBSTITUTION_MARKER, marker_start_pos + SUBSTITUTION_MARKER.length());
 		if (marker_end_pos == -1) {
-			return result;
+			marker_end_pos = base_text.length();
 		}
 
 		String key = base_text.substr(
@@ -301,12 +473,15 @@ String GUITextLabel::generate_substituted_text(String const& base_text) const {
 		);
 		String value = substitution_dict.get(key, String {});
 
-		result += value;
+		// Use the un-substituted key if no value is found or the value is empty
+		result += value.is_empty() ? key : is_auto_translating() ? tr(value) : value;
 
 		start_pos = marker_end_pos + SUBSTITUTION_MARKER.length();
 	}
 
-	result += base_text.substr(start_pos);
+	if (start_pos < base_text.length()) {
+		result += base_text.substr(start_pos);
+	}
 
 	return result;
 }
@@ -446,10 +621,10 @@ void GUITextLabel::separate_currency_segments(
 std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& unwrapped_lines) const {
 	std::vector<line_t> wrapped_lines;
 
-	const Size2 size = get_content_max_size();
+	const Size2 max_content_size = max_size - 2 * border_size;
 
 	for (line_t& line : unwrapped_lines) {
-		if (line.width <= size.x) {
+		if (line.width <= max_content_size.width) {
 			wrapped_lines.push_back(std::move(line));
 		} else {
 			line_t* current_line = &wrapped_lines.emplace_back();
@@ -457,7 +632,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 			for (segment_t& segment : line.segments) {
 				const real_t segment_width = get_segment_width(segment);
 
-				if (current_line->width + segment_width <= size.x) {
+				if (current_line->width + segment_width <= max_content_size.width) {
 					// Segement on current line
 					current_line->segments.emplace_back(std::move(segment));
 					current_line->width += segment_width;
@@ -473,7 +648,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 						String whole_segment_string = string.substr(start_pos);
 						real_t whole_segment_width = get_string_width(whole_segment_string);
 
-						if (current_line->width + whole_segment_width > size.x) {
+						if (current_line->width + whole_segment_width > max_content_size.width) {
 							String new_segment_string;
 							real_t new_segment_width = 0.0_real;
 
@@ -483,7 +658,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 							while ((marker_pos = whole_segment_string.find(SPACE_MARKER, last_marker_pos)) != -1) {
 								String substring = whole_segment_string.substr(0, marker_pos);
 								const real_t width = get_string_width(substring);
-								if (current_line->width + width <= size.x) {
+								if (current_line->width + width <= max_content_size.width) {
 									new_segment_string = std::move(substring);
 									new_segment_width = width;
 									last_marker_pos = marker_pos + SPACE_MARKER.length();
@@ -524,10 +699,15 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 		}
 	}
 
-	if (wrapped_lines.size() > 1 && wrapped_lines.size() * font->get_height(font->get_fixed_size()) > size.y) {
+	const auto is_over_max_height = [this, &wrapped_lines, &max_content_size]() -> bool {
+		return wrapped_lines.size() > 1
+			&& wrapped_lines.size() * font->get_height(font_size) > max_content_size.height;
+	};
+
+	if (is_over_max_height()) {
 		do {
 			wrapped_lines.pop_back();
-		} while (wrapped_lines.size() > 1 && wrapped_lines.size() * font->get_height(font->get_fixed_size()) > size.y);
+		} while (is_over_max_height());
 
 		static const String ELLIPSIS = "...";
 		const real_t ellipsis_width = get_string_width(ELLIPSIS);
@@ -535,7 +715,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 		line_t& last_line = wrapped_lines.back();
 		Color last_colour = default_colour;
 
-		while (last_line.segments.size() > 0 && last_line.width + ellipsis_width > size.x) {
+		while (last_line.segments.size() > 0 && last_line.width + ellipsis_width > max_content_size.width) {
 			if (string_segment_t* string_segment = std::get_if<string_segment_t>(&last_line.segments.back())) {
 				last_colour = string_segment->colour;
 
@@ -561,4 +741,34 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 	}
 
 	return wrapped_lines;
+}
+
+void GUITextLabel::adjust_to_content_size() {
+	if (auto_adjust_to_content_size) {
+		adjusted_rect = {};
+
+		for (line_t const& line : lines) {
+			if (adjusted_rect.size.width < line.width) {
+				adjusted_rect.size.width = line.width;
+			}
+		}
+
+		adjusted_rect.size.height = lines.size() * font->get_height(font_size);
+
+		adjusted_rect.size += 2 * border_size;
+
+		switch (horizontal_alignment) {
+		case HORIZONTAL_ALIGNMENT_CENTER: {
+			adjusted_rect.position.x = (max_size.width - adjusted_rect.size.width + 1.0_real) / 2.0_real;
+		} break;
+		case HORIZONTAL_ALIGNMENT_RIGHT: {
+			adjusted_rect.position.x = max_size.width - adjusted_rect.size.width;
+		} break;
+		case HORIZONTAL_ALIGNMENT_LEFT:
+		default:
+			break;
+		}
+	} else {
+		adjusted_rect = { {}, max_size };
+	}
 }
