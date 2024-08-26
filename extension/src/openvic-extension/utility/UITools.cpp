@@ -15,10 +15,10 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
-#include "openvic-extension/classes/GUITextLabel.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -504,22 +504,22 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	const String text_name = Utilities::std_to_godot_string(text.get_name());
 
-	GUITextLabel* text_label = nullptr;
-	bool ret = new_control(text_label, text, args.name);
-	ERR_FAIL_NULL_V_MSG(text_label, false, vformat("Failed to create GUITextLabel for GUI text %s", text_name));
+	GUILabel* gui_label = nullptr;
+	bool ret = new_control(gui_label, text, args.name);
+	ERR_FAIL_NULL_V_MSG(gui_label, false, vformat("Failed to create GUILabel for GUI text %s", text_name));
 
-	text_label->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+	gui_label->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	GFX::Font::colour_codes_t const* override_colour_codes = game_singleton != nullptr
 		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes() : nullptr;
 
-	if (text_label->set_gui_text(&text, override_colour_codes) != OK) {
-		UtilityFunctions::push_error("Error initialising GUITextLabel for GUI text ", text_name);
+	if (gui_label->set_gui_text(&text, override_colour_codes) != OK) {
+		UtilityFunctions::push_error("Error initialising GUILabel for GUI text ", text_name);
 		ret = false;
 	}
 
-	args.result = text_label;
+	args.result = gui_label;
 	return ret;
 }
 

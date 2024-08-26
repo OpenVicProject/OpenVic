@@ -1,4 +1,4 @@
-#include "GUITextLabel.hpp"
+#include "GUILabel.hpp"
 
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
@@ -14,40 +14,40 @@ using namespace OpenVic::Utilities::literals;
 
 static constexpr int32_t DEFAULT_FONT_SIZE = 16;
 
-void GUITextLabel::_bind_methods() {
-	OV_BIND_METHOD(GUITextLabel::clear);
-	OV_BIND_METHOD(GUITextLabel::get_gui_text_name);
+void GUILabel::_bind_methods() {
+	OV_BIND_METHOD(GUILabel::clear);
+	OV_BIND_METHOD(GUILabel::get_gui_text_name);
 
-	OV_BIND_METHOD(GUITextLabel::get_text);
-	OV_BIND_METHOD(GUITextLabel::set_text, { "new_text" });
+	OV_BIND_METHOD(GUILabel::get_text);
+	OV_BIND_METHOD(GUILabel::set_text, { "new_text" });
 
-	OV_BIND_METHOD(GUITextLabel::get_substitution_dict);
-	OV_BIND_METHOD(GUITextLabel::add_substitution, { "key", "value" });
-	OV_BIND_METHOD(GUITextLabel::set_substitution_dict, { "new_substitution_dict" });
-	OV_BIND_METHOD(GUITextLabel::clear_substitutions);
+	OV_BIND_METHOD(GUILabel::get_substitution_dict);
+	OV_BIND_METHOD(GUILabel::add_substitution, { "key", "value" });
+	OV_BIND_METHOD(GUILabel::set_substitution_dict, { "new_substitution_dict" });
+	OV_BIND_METHOD(GUILabel::clear_substitutions);
 
-	OV_BIND_METHOD(GUITextLabel::get_horizontal_alignment);
-	OV_BIND_METHOD(GUITextLabel::set_horizontal_alignment, { "new_horizontal_alignment" });
-	OV_BIND_METHOD(GUITextLabel::get_max_size);
-	OV_BIND_METHOD(GUITextLabel::set_max_size, { "new_max_size" });
-	OV_BIND_METHOD(GUITextLabel::get_border_size);
-	OV_BIND_METHOD(GUITextLabel::set_border_size, { "new_border_size" });
-	OV_BIND_METHOD(GUITextLabel::get_adjusted_rect);
-	OV_BIND_METHOD(GUITextLabel::will_auto_adjust_to_content_size);
-	OV_BIND_METHOD(GUITextLabel::set_auto_adjust_to_content_size, { "new_auto_adjust_to_content_size" });
+	OV_BIND_METHOD(GUILabel::get_horizontal_alignment);
+	OV_BIND_METHOD(GUILabel::set_horizontal_alignment, { "new_horizontal_alignment" });
+	OV_BIND_METHOD(GUILabel::get_max_size);
+	OV_BIND_METHOD(GUILabel::set_max_size, { "new_max_size" });
+	OV_BIND_METHOD(GUILabel::get_border_size);
+	OV_BIND_METHOD(GUILabel::set_border_size, { "new_border_size" });
+	OV_BIND_METHOD(GUILabel::get_adjusted_rect);
+	OV_BIND_METHOD(GUILabel::will_auto_adjust_to_content_size);
+	OV_BIND_METHOD(GUILabel::set_auto_adjust_to_content_size, { "new_auto_adjust_to_content_size" });
 
-	OV_BIND_METHOD(GUITextLabel::get_font);
-	OV_BIND_METHOD(GUITextLabel::set_font, { "new_font" });
-	OV_BIND_METHOD(GUITextLabel::set_font_file, { "new_font_file" });
-	OV_BIND_METHOD(GUITextLabel::get_font_size);
-	OV_BIND_METHOD(GUITextLabel::set_font_size, { "new_font_size" });
-	OV_BIND_METHOD(GUITextLabel::get_default_colour);
-	OV_BIND_METHOD(GUITextLabel::set_default_colour, { "new_default_colour" });
-	OV_BIND_METHOD(GUITextLabel::get_currency_texture);
+	OV_BIND_METHOD(GUILabel::get_font);
+	OV_BIND_METHOD(GUILabel::set_font, { "new_font" });
+	OV_BIND_METHOD(GUILabel::set_font_file, { "new_font_file" });
+	OV_BIND_METHOD(GUILabel::get_font_size);
+	OV_BIND_METHOD(GUILabel::set_font_size, { "new_font_size" });
+	OV_BIND_METHOD(GUILabel::get_default_colour);
+	OV_BIND_METHOD(GUILabel::set_default_colour, { "new_default_colour" });
+	OV_BIND_METHOD(GUILabel::get_currency_texture);
 
-	OV_BIND_METHOD(GUITextLabel::get_background);
-	OV_BIND_METHOD(GUITextLabel::set_background_texture, { "new_texture" });
-	OV_BIND_METHOD(GUITextLabel::set_background_stylebox, { "new_stylebox_texture" });
+	OV_BIND_METHOD(GUILabel::get_background);
+	OV_BIND_METHOD(GUILabel::set_background_texture, { "new_texture" });
+	OV_BIND_METHOD(GUILabel::set_background_stylebox, { "new_stylebox_texture" });
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "substitution_dict"), "set_substitution_dict", "get_substitution_dict");
@@ -79,7 +79,7 @@ void GUITextLabel::_bind_methods() {
 	);
 }
 
-void GUITextLabel::_notification(int what) {
+void GUILabel::_notification(int what) {
 	switch (what) {
 	case NOTIFICATION_RESIZED:
 	case NOTIFICATION_TRANSLATION_CHANGED: {
@@ -145,7 +145,7 @@ void GUITextLabel::_notification(int what) {
 	}
 }
 
-GUITextLabel::GUITextLabel()
+GUILabel::GUILabel()
   : gui_text { nullptr },
 	text {},
 	substitution_dict {},
@@ -163,7 +163,7 @@ GUITextLabel::GUITextLabel()
 	lines {},
 	line_update_queued { false } {}
 
-void GUITextLabel::clear() {
+void GUILabel::clear() {
 	gui_text = nullptr;
 
 	text = String {};
@@ -188,11 +188,11 @@ void GUITextLabel::clear() {
 	queue_redraw();
 }
 
-String GUITextLabel::get_gui_text_name() const {
+String GUILabel::get_gui_text_name() const {
 	return gui_text != nullptr ? Utilities::std_to_godot_string(gui_text->get_name()) : String {};
 }
 
-Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
+Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
 	if (gui_text == new_gui_text) {
 		return OK;
 	}
@@ -237,7 +237,7 @@ Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colou
 				err = FAILED;
 			}
 		} else {
-			UtilityFunctions::push_error("Failed to load font \"", font_filepath, "\" for GUITextLabel");
+			UtilityFunctions::push_error("Failed to load font \"", font_filepath, "\" for GUILabel");
 			err = FAILED;
 		}
 
@@ -247,12 +247,12 @@ Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colou
 			if (texture.is_valid()) {
 				set_background_texture(texture);
 			} else {
-				UtilityFunctions::push_error("Failed to load texture \"", texture_path, "\" for GUITextLabel ", get_name());
+				UtilityFunctions::push_error("Failed to load texture \"", texture_path, "\" for GUILabel ", get_name());
 				err = FAILED;
 			}
 		}
 	} else {
-		UtilityFunctions::push_error("Failed to get AssetManager singleton for GUITextLabel");
+		UtilityFunctions::push_error("Failed to get AssetManager singleton for GUILabel");
 		err = FAILED;
 	}
 
@@ -261,7 +261,7 @@ Error GUITextLabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colou
 	return err;
 }
 
-void GUITextLabel::set_text(String const& new_text) {
+void GUILabel::set_text(String const& new_text) {
 	if (text != new_text) {
 		text = new_text;
 
@@ -269,7 +269,7 @@ void GUITextLabel::set_text(String const& new_text) {
 	}
 }
 
-void GUITextLabel::add_substitution(String const& key, String const& value) {
+void GUILabel::add_substitution(String const& key, String const& value) {
 	Variant& existing_value = substitution_dict[key];
 	if (existing_value != value) {
 		existing_value = value;
@@ -278,12 +278,12 @@ void GUITextLabel::add_substitution(String const& key, String const& value) {
 	}
 }
 
-void GUITextLabel::set_substitution_dict(Dictionary const& new_substitution_dict) {
+void GUILabel::set_substitution_dict(Dictionary const& new_substitution_dict) {
 	substitution_dict = new_substitution_dict;
 	_queue_line_update();
 }
 
-void GUITextLabel::clear_substitutions() {
+void GUILabel::clear_substitutions() {
 	if (!substitution_dict.is_empty()) {
 		substitution_dict.clear();
 
@@ -291,7 +291,7 @@ void GUITextLabel::clear_substitutions() {
 	}
 }
 
-void GUITextLabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_alignment) {
+void GUILabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_alignment) {
 	if (horizontal_alignment != new_horizontal_alignment) {
 		horizontal_alignment = new_horizontal_alignment;
 
@@ -299,7 +299,7 @@ void GUITextLabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_a
 	}
 }
 
-void GUITextLabel::set_max_size(Size2 new_max_size) {
+void GUILabel::set_max_size(Size2 new_max_size) {
 	if (max_size != new_max_size) {
 		max_size = new_max_size;
 
@@ -310,7 +310,7 @@ void GUITextLabel::set_max_size(Size2 new_max_size) {
 	}
 }
 
-void GUITextLabel::set_border_size(Size2 new_border_size) {
+void GUILabel::set_border_size(Size2 new_border_size) {
 	if (border_size != new_border_size) {
 		border_size = new_border_size;
 
@@ -320,7 +320,7 @@ void GUITextLabel::set_border_size(Size2 new_border_size) {
 	}
 }
 
-void GUITextLabel::set_auto_adjust_to_content_size(bool new_auto_adjust_to_content_size) {
+void GUILabel::set_auto_adjust_to_content_size(bool new_auto_adjust_to_content_size) {
 	if (auto_adjust_to_content_size != new_auto_adjust_to_content_size) {
 		auto_adjust_to_content_size = new_auto_adjust_to_content_size;
 
@@ -330,17 +330,17 @@ void GUITextLabel::set_auto_adjust_to_content_size(bool new_auto_adjust_to_conte
 	}
 }
 
-Ref<Font> GUITextLabel::get_font() const {
+Ref<Font> GUILabel::get_font() const {
 	return font;
 }
 
-void GUITextLabel::set_font(Ref<Font> const& new_font) {
+void GUILabel::set_font(Ref<Font> const& new_font) {
 	font = new_font;
 
 	_queue_line_update();
 }
 
-Error GUITextLabel::set_font_file(Ref<FontFile> const& new_font_file) {
+Error GUILabel::set_font_file(Ref<FontFile> const& new_font_file) {
 	ERR_FAIL_NULL_V(new_font_file, FAILED);
 
 	set_font(new_font_file);
@@ -348,13 +348,13 @@ Error GUITextLabel::set_font_file(Ref<FontFile> const& new_font_file) {
 	return set_font_size(new_font_file->get_fixed_size());
 }
 
-Error GUITextLabel::set_font_size(int32_t new_font_size) {
+Error GUILabel::set_font_size(int32_t new_font_size) {
 	font_size = new_font_size;
 
 	_queue_line_update();
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
-	ERR_FAIL_NULL_V_MSG(asset_manager, FAILED, "Failed to get AssetManager singleton for GUITextLabel");
+	ERR_FAIL_NULL_V_MSG(asset_manager, FAILED, "Failed to get AssetManager singleton for GUILabel");
 
 	currency_texture = asset_manager->get_currency_texture(font_size);
 	ERR_FAIL_NULL_V(currency_texture, FAILED);
@@ -362,22 +362,22 @@ Error GUITextLabel::set_font_size(int32_t new_font_size) {
 	return OK;
 }
 
-void GUITextLabel::set_default_colour(Color const& new_default_colour) {
+void GUILabel::set_default_colour(Color const& new_default_colour) {
 	if (default_colour != new_default_colour) {
 		default_colour = new_default_colour;
 		_queue_line_update();
 	}
 }
 
-Ref<GFXSpriteTexture> GUITextLabel::get_currency_texture() const {
+Ref<GFXSpriteTexture> GUILabel::get_currency_texture() const {
 	return currency_texture;
 }
 
-Ref<StyleBoxTexture> GUITextLabel::get_background() const {
+Ref<StyleBoxTexture> GUILabel::get_background() const {
 	return background;
 }
 
-void GUITextLabel::set_background_texture(Ref<Texture2D> const& new_texture) {
+void GUILabel::set_background_texture(Ref<Texture2D> const& new_texture) {
 	Ref<StyleBoxTexture> new_background;
 
 	if (new_texture.is_valid()) {
@@ -390,7 +390,7 @@ void GUITextLabel::set_background_texture(Ref<Texture2D> const& new_texture) {
 	set_background_stylebox(new_background);
 }
 
-void GUITextLabel::set_background_stylebox(Ref<StyleBoxTexture> const& new_stylebox_texture) {
+void GUILabel::set_background_stylebox(Ref<StyleBoxTexture> const& new_stylebox_texture) {
 	if (background != new_stylebox_texture) {
 		background = new_stylebox_texture;
 		update_stylebox_border_size();
@@ -398,7 +398,7 @@ void GUITextLabel::set_background_stylebox(Ref<StyleBoxTexture> const& new_style
 	}
 }
 
-void GUITextLabel::update_stylebox_border_size() {
+void GUILabel::update_stylebox_border_size() {
 	if (background.is_valid()) {
 		background->set_texture_margin(SIDE_LEFT, border_size.width);
 		background->set_texture_margin(SIDE_RIGHT, border_size.width);
@@ -407,11 +407,11 @@ void GUITextLabel::update_stylebox_border_size() {
 	}
 }
 
-real_t GUITextLabel::get_string_width(String const& string) const {
+real_t GUILabel::get_string_width(String const& string) const {
 	return font->get_string_size(string, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).width;
 }
 
-real_t GUITextLabel::get_segment_width(segment_t const& segment) const {
+real_t GUILabel::get_segment_width(segment_t const& segment) const {
 	if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
 		return string_segment->width;
 	} else if (currency_texture.is_valid()) {
@@ -421,15 +421,15 @@ real_t GUITextLabel::get_segment_width(segment_t const& segment) const {
 	}
 }
 
-void GUITextLabel::_queue_line_update() {
+void GUILabel::_queue_line_update() {
 	if (!line_update_queued) {
 		line_update_queued = true;
 
-		callable_mp(this, &GUITextLabel::_update_lines).call_deferred();
+		callable_mp(this, &GUILabel::_update_lines).call_deferred();
 	}
 }
 
-void GUITextLabel::_update_lines() {
+void GUILabel::_update_lines() {
 	line_update_queued = false;
 	lines.clear();
 
@@ -453,7 +453,7 @@ void GUITextLabel::_update_lines() {
 	queue_redraw();
 }
 
-String GUITextLabel::generate_substituted_text(String const& base_text) const {
+String GUILabel::generate_substituted_text(String const& base_text) const {
 	static const String SUBSTITUTION_MARKER = String::chr(0x24); // $
 
 	String result;
@@ -486,7 +486,7 @@ String GUITextLabel::generate_substituted_text(String const& base_text) const {
 	return result;
 }
 
-std::pair<String, GUITextLabel::colour_instructions_t> GUITextLabel::generate_display_text_and_colour_instructions(
+std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_text_and_colour_instructions(
 	String const& substituted_text
 ) const {
 	static const String COLOUR_MARKER = String::chr(0xA7); // §
@@ -518,7 +518,7 @@ std::pair<String, GUITextLabel::colour_instructions_t> GUITextLabel::generate_di
 	return { std::move(result), std::move(colour_instructions) };
 }
 
-std::vector<GUITextLabel::line_t> GUITextLabel::generate_lines_and_segments(
+std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 	String const& display_text, colour_instructions_t const& colour_instructions
 ) const {
 	static constexpr char RESET_COLOUR_CODE = '!';
@@ -562,7 +562,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::generate_lines_and_segments(
 	return unwrapped_lines;
 }
 
-void GUITextLabel::separate_lines(
+void GUILabel::separate_lines(
 	String const& string, Color const& colour, std::vector<line_t>& unwrapped_lines
 ) const {
 	static const String NEWLINE_MARKER = "\n";
@@ -585,7 +585,7 @@ void GUITextLabel::separate_lines(
 	}
 }
 
-void GUITextLabel::separate_currency_segments(
+void GUILabel::separate_currency_segments(
 	String const& string, Color const& colour, line_t& line
 ) const {
 	static const String CURRENCY_MARKER = String::chr(0xA4); // ¤
@@ -618,7 +618,7 @@ void GUITextLabel::separate_currency_segments(
 	}
 }
 
-std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& unwrapped_lines) const {
+std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrapped_lines) const {
 	std::vector<line_t> wrapped_lines;
 
 	const Size2 max_content_size = max_size - 2 * border_size;
@@ -743,7 +743,7 @@ std::vector<GUITextLabel::line_t> GUITextLabel::wrap_lines(std::vector<line_t>& 
 	return wrapped_lines;
 }
 
-void GUITextLabel::adjust_to_content_size() {
+void GUILabel::adjust_to_content_size() {
 	if (auto_adjust_to_content_size) {
 		adjusted_rect = {};
 

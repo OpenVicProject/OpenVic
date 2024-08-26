@@ -3,21 +3,21 @@ extends GUINode
 # Country info
 var _country_flag_texture : GFXMaskedFlagTexture
 var _country_flag_overlay_texture : GFXSpriteTexture
-var _country_name_label : GUITextLabel
-var _country_rank_label : GUITextLabel
-var _country_prestige_label : GUITextLabel
-var _country_prestige_rank_label : GUITextLabel
-var _country_industrial_power_label : GUITextLabel
-var _country_industrial_power_rank_label : GUITextLabel
-var _country_military_power_label : GUITextLabel
-var _country_military_power_rank_label : GUITextLabel
-var _country_colonial_power_label : GUITextLabel
+var _country_name_label : GUILabel
+var _country_rank_label : GUILabel
+var _country_prestige_label : GUILabel
+var _country_prestige_rank_label : GUILabel
+var _country_industrial_power_label : GUILabel
+var _country_industrial_power_rank_label : GUILabel
+var _country_military_power_label : GUILabel
+var _country_military_power_rank_label : GUILabel
+var _country_colonial_power_label : GUILabel
 
 # Time controls
 var _speed_up_button : Button
 var _speed_down_button : Button
 var _speed_indicator_texture : GFXSpriteTexture
-var _date_label : GUITextLabel
+var _date_label : GUILabel
 
 # NationManagement.Screen-Button
 var _nation_management_buttons : Dictionary
@@ -32,48 +32,48 @@ var _production_alert_unemployment_texture : GFXSpriteTexture
 
 # Budget
 # TODO - line chart
-var _budget_funds_label : GUITextLabel
+var _budget_funds_label : GUILabel
 
 # Technology
 var _technology_progress_bar : TextureProgressBar
-var _technology_current_research_label : GUITextLabel
-var _technology_literacy_label : GUITextLabel
-var _technology_research_points_label : GUITextLabel
+var _technology_current_research_label : GUILabel
+var _technology_literacy_label : GUILabel
+var _technology_research_points_label : GUILabel
 
 # Politics
 var _politics_party_icon : TextureRect
-var _politics_party_label : GUITextLabel
-var _politics_suppression_points_label : GUITextLabel
-var _politics_infamy_label : GUITextLabel
+var _politics_party_label : GUILabel
+var _politics_suppression_points_label : GUILabel
+var _politics_infamy_label : GUILabel
 var _politics_reforms_texture : GFXSpriteTexture
 var _politics_decisions_texture : GFXSpriteTexture
 var _politics_election_texture : GFXSpriteTexture
 var _politics_rebels_texture : GFXSpriteTexture
 
 # Population
-var _population_total_size_label : GUITextLabel
-var _population_national_foci_label : GUITextLabel
-var _population_militancy_label : GUITextLabel
-var _population_consciousness_label : GUITextLabel
+var _population_total_size_label : GUILabel
+var _population_national_foci_label : GUILabel
+var _population_militancy_label : GUILabel
+var _population_consciousness_label : GUILabel
 
 # Trade
 var _trade_imported_textures : Array[GFXSpriteTexture]
 var _trade_exported_textures : Array[GFXSpriteTexture]
 
 # Diplomacy
-var _diplomacy_peace_label : GUITextLabel
+var _diplomacy_peace_label : GUILabel
 var _diplomacy_war_enemies_overlapping_elements_box : GUIOverlappingElementsBox
-var _diplomacy_diplomatic_points_label : GUITextLabel
+var _diplomacy_diplomatic_points_label : GUILabel
 var _diplomacy_alert_colony_texture : GFXSpriteTexture
 var _diplomacy_alert_crisis_texture : GFXSpriteTexture
 var _diplomacy_alert_sphere_texture : GFXSpriteTexture
 var _diplomacy_alert_great_power_texture : GFXSpriteTexture
 
 # Military
-var _military_army_size_label : GUITextLabel
-var _military_navy_size_label : GUITextLabel
-var _military_mobilisation_size_label : GUITextLabel
-var _military_leadership_points_label : GUITextLabel
+var _military_army_size_label : GUILabel
+var _military_navy_size_label : GUILabel
+var _military_mobilisation_size_label : GUILabel
+var _military_leadership_points_label : GUILabel
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
@@ -102,15 +102,15 @@ func _ready() -> void:
 		)
 		_country_flag_texture = GUINode.get_gfx_masked_flag_texture_from_node(country_flag_button)
 	_country_flag_overlay_texture = get_gfx_sprite_texture_from_nodepath(^"./topbar/topbar_flag_overlay")
-	_country_name_label = get_gui_text_label_from_nodepath(^"./topbar/CountryName")
-	_country_rank_label = get_gui_text_label_from_nodepath(^"./topbar/nation_totalrank")
-	_country_prestige_label = get_gui_text_label_from_nodepath(^"./topbar/country_prestige")
-	_country_prestige_rank_label = get_gui_text_label_from_nodepath(^"./topbar/selected_prestige_rank")
-	_country_industrial_power_label = get_gui_text_label_from_nodepath(^"./topbar/country_economic")
-	_country_industrial_power_rank_label = get_gui_text_label_from_nodepath(^"./topbar/selected_industry_rank")
-	_country_military_power_label = get_gui_text_label_from_nodepath(^"./topbar/country_military")
-	_country_military_power_rank_label = get_gui_text_label_from_nodepath(^"./topbar/selected_military_rank")
-	_country_colonial_power_label = get_gui_text_label_from_nodepath(^"./topbar/country_colonial_power")
+	_country_name_label = get_gui_label_from_nodepath(^"./topbar/CountryName")
+	_country_rank_label = get_gui_label_from_nodepath(^"./topbar/nation_totalrank")
+	_country_prestige_label = get_gui_label_from_nodepath(^"./topbar/country_prestige")
+	_country_prestige_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_prestige_rank")
+	_country_industrial_power_label = get_gui_label_from_nodepath(^"./topbar/country_economic")
+	_country_industrial_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_industry_rank")
+	_country_military_power_label = get_gui_label_from_nodepath(^"./topbar/country_military")
+	_country_military_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_military_rank")
+	_country_colonial_power_label = get_gui_label_from_nodepath(^"./topbar/country_colonial_power")
 
 	# Time controls
 	_speed_up_button = get_button_from_nodepath(^"./topbar/button_speedup")
@@ -126,7 +126,7 @@ func _ready() -> void:
 	if speed_indicator_button:
 		speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
 		_speed_indicator_texture = GUINode.get_gfx_sprite_texture_from_node(speed_indicator_button)
-	_date_label = get_gui_text_label_from_nodepath(^"./topbar/DateText")
+	_date_label = get_gui_label_from_nodepath(^"./topbar/DateText")
 
 	# Nation management screens
 	const screen_nodepaths : Dictionary = {
@@ -162,17 +162,17 @@ func _ready() -> void:
 	_production_alert_unemployment_texture = get_gfx_sprite_texture_from_nodepath(^"./topbar/alert_unemployed_workers")
 
 	# Budget
-	_budget_funds_label = get_gui_text_label_from_nodepath(^"./topbar/budget_funds")
+	_budget_funds_label = get_gui_label_from_nodepath(^"./topbar/budget_funds")
 
 	# Technology
 	_technology_progress_bar = get_progress_bar_from_nodepath(^"./topbar/topbar_tech_progress")
-	_technology_current_research_label = get_gui_text_label_from_nodepath(^"./topbar/tech_current_research")
-	_technology_literacy_label = get_gui_text_label_from_nodepath(^"./topbar/tech_literacy_value")
-	_technology_research_points_label = get_gui_text_label_from_nodepath(^"./topbar/topbar_researchpoints_value")
+	_technology_current_research_label = get_gui_label_from_nodepath(^"./topbar/tech_current_research")
+	_technology_literacy_label = get_gui_label_from_nodepath(^"./topbar/tech_literacy_value")
+	_technology_research_points_label = get_gui_label_from_nodepath(^"./topbar/topbar_researchpoints_value")
 
 	# Politics
 	_politics_party_icon = get_texture_rect_from_nodepath(^"./topbar/politics_party_icon")
-	_politics_party_label = get_gui_text_label_from_nodepath(^"./topbar/politics_ruling_party")
+	_politics_party_label = get_gui_label_from_nodepath(^"./topbar/politics_ruling_party")
 	var politics_suppression_button : Button = get_button_from_nodepath(^"./topbar/topbar_supression_icon")
 	if politics_suppression_button:
 		politics_suppression_button.pressed.connect(
@@ -180,8 +180,8 @@ func _ready() -> void:
 				# TODO - open the politics menu on the Movements tab
 				Events.NationManagementScreens.toggle_nation_management_screen(NationManagement.Screen.POLITICS)
 		)
-	_politics_suppression_points_label = get_gui_text_label_from_nodepath(^"./topbar/politics_supressionpoints_value")
-	_politics_infamy_label = get_gui_text_label_from_nodepath(^"./topbar/politics_infamy_value")
+	_politics_suppression_points_label = get_gui_label_from_nodepath(^"./topbar/politics_supressionpoints_value")
+	_politics_infamy_label = get_gui_label_from_nodepath(^"./topbar/politics_infamy_value")
 	var politics_reforms_button : Button = get_button_from_nodepath(^"./topbar/alert_can_do_reforms")
 	if politics_reforms_button:
 		politics_reforms_button.pressed.connect(
@@ -209,10 +209,10 @@ func _ready() -> void:
 		_politics_rebels_texture = GUINode.get_gfx_sprite_texture_from_node(politics_rebels_button)
 
 	# Population
-	_population_total_size_label = get_gui_text_label_from_nodepath(^"./topbar/population_total_value")
-	_population_national_foci_label = get_gui_text_label_from_nodepath(^"./topbar/topbar_focus_value")
-	_population_militancy_label = get_gui_text_label_from_nodepath(^"./topbar/population_avg_mil_value")
-	_population_consciousness_label = get_gui_text_label_from_nodepath(^"./topbar/population_avg_con_value")
+	_population_total_size_label = get_gui_label_from_nodepath(^"./topbar/population_total_value")
+	_population_national_foci_label = get_gui_label_from_nodepath(^"./topbar/topbar_focus_value")
+	_population_militancy_label = get_gui_label_from_nodepath(^"./topbar/population_avg_mil_value")
+	_population_consciousness_label = get_gui_label_from_nodepath(^"./topbar/population_avg_con_value")
 
 	# Trade
 	const TRADE_GOOD_COUNT : int = 3
@@ -221,9 +221,9 @@ func _ready() -> void:
 		_trade_exported_textures.push_back(get_gfx_sprite_texture_from_nodepath("./topbar/topbar_export%d" % idx))
 
 	# Diplomacy
-	_diplomacy_peace_label = get_gui_text_label_from_nodepath(^"./topbar/diplomacy_status")
+	_diplomacy_peace_label = get_gui_label_from_nodepath(^"./topbar/diplomacy_status")
 	_diplomacy_war_enemies_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./topbar/diplomacy_at_war")
-	_diplomacy_diplomatic_points_label = get_gui_text_label_from_nodepath(^"./topbar/diplomacy_diplopoints_value")
+	_diplomacy_diplomatic_points_label = get_gui_label_from_nodepath(^"./topbar/diplomacy_diplopoints_value")
 	var diplomacy_alert_colony_button : Button = get_button_from_nodepath(^"./topbar/alert_colony")
 	if diplomacy_alert_colony_button:
 		diplomacy_alert_colony_button.pressed.connect(
@@ -237,10 +237,10 @@ func _ready() -> void:
 	_diplomacy_alert_great_power_texture = get_gfx_sprite_texture_from_nodepath(^"./topbar/alert_loosing_gp")
 
 	# Military
-	_military_army_size_label = get_gui_text_label_from_nodepath(^"./topbar/military_army_value")
-	_military_navy_size_label = get_gui_text_label_from_nodepath(^"./topbar/military_navy_value")
-	_military_mobilisation_size_label = get_gui_text_label_from_nodepath(^"./topbar/military_manpower_value")
-	_military_leadership_points_label = get_gui_text_label_from_nodepath(^"./topbar/military_leadership_value")
+	_military_army_size_label = get_gui_label_from_nodepath(^"./topbar/military_army_value")
+	_military_navy_size_label = get_gui_label_from_nodepath(^"./topbar/military_navy_value")
+	_military_mobilisation_size_label = get_gui_label_from_nodepath(^"./topbar/military_manpower_value")
+	_military_leadership_points_label = get_gui_label_from_nodepath(^"./topbar/military_leadership_value")
 
 	_update_info()
 	_update_speed_controls()

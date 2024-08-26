@@ -21,10 +21,10 @@
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
+#include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
-#include "openvic-extension/classes/GUITextLabel.hpp"
 
 namespace OpenVic {
 	class GUINode : public godot::Control {
@@ -52,7 +52,7 @@ namespace OpenVic {
 		static godot::Vector2 get_gui_position(godot::String const& gui_scene, godot::String const& gui_position);
 
 		static godot::Button* get_button_from_node(godot::Node* node);
-		static GUITextLabel* get_gui_text_label_from_node(godot::Node* node);
+		static GUILabel* get_gui_label_from_node(godot::Node* node);
 		static godot::Panel* get_panel_from_node(godot::Node* node);
 		static godot::TextureProgressBar* get_progress_bar_from_node(godot::Node* node);
 		static godot::TextureRect* get_texture_rect_from_node(godot::Node* node);
@@ -62,7 +62,7 @@ namespace OpenVic {
 		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
 
 		godot::Button* get_button_from_nodepath(godot::NodePath const& path) const;
-		GUITextLabel* get_gui_text_label_from_nodepath(godot::NodePath const& path) const;
+		GUILabel* get_gui_label_from_nodepath(godot::NodePath const& path) const;
 		godot::Panel* get_panel_from_nodepath(godot::NodePath const& path) const;
 		godot::TextureProgressBar* get_progress_bar_from_nodepath(godot::NodePath const& path) const;
 		godot::TextureRect* get_texture_rect_from_nodepath(godot::NodePath const& path) const;

@@ -4,36 +4,36 @@ var _active : bool = false
 var _incVal : int = 0 # incremental value to see the UI update, replace later by real values
 
 # income
-var _lower_class_label : GUITextLabel
-var _middle_class_label : GUITextLabel
-var _upper_class_label : GUITextLabel
-var _gold_label : GUITextLabel
-var _total_inc_label : GUITextLabel
+var _lower_class_label : GUILabel
+var _middle_class_label : GUILabel
+var _upper_class_label : GUILabel
+var _gold_label : GUILabel
+var _total_inc_label : GUILabel
 
 # debt
-var _national_bank_label : GUITextLabel
-var _total_funds_label : GUITextLabel
-var _debt_val_label : GUITextLabel
-var _interest_val_label : GUITextLabel
+var _national_bank_label : GUILabel
+var _total_funds_label : GUILabel
+var _debt_val_label : GUILabel
+var _interest_val_label : GUILabel
 
 # costs
-var _nat_stock_val_label : GUITextLabel
-var _nat_stock_exp_label : GUITextLabel
-var _mil_cost_val_label : GUITextLabel
-var _overseas_cost_val_label : GUITextLabel
-var _ind_sub_val_label : GUITextLabel
-var _admin_efficiency_label : GUITextLabel
-var _education_exp_label : GUITextLabel
-var _administration_exp_label : GUITextLabel
-var _social_exp_label : GUITextLabel
-var _military_exp_label : GUITextLabel
-var _total_exp_label : GUITextLabel
+var _nat_stock_val_label : GUILabel
+var _nat_stock_exp_label : GUILabel
+var _mil_cost_val_label : GUILabel
+var _overseas_cost_val_label : GUILabel
+var _ind_sub_val_label : GUILabel
+var _admin_efficiency_label : GUILabel
+var _education_exp_label : GUILabel
+var _administration_exp_label : GUILabel
+var _social_exp_label : GUILabel
+var _military_exp_label : GUILabel
+var _total_exp_label : GUILabel
 
 # others
-var _tariffs_percent_label : GUITextLabel
-var _tariff_val_label : GUITextLabel
-var _diplomatic_balance_label : GUITextLabel
-var _balance_label : GUITextLabel
+var _tariffs_percent_label : GUILabel
+var _tariff_val_label : GUILabel
+var _diplomatic_balance_label : GUILabel
+var _balance_label : GUILabel
 
 var _lower_class_chart : GFXPieChartTexture
 var _middle_class_chart : GFXPieChartTexture
@@ -55,33 +55,33 @@ func _ready() -> void:
 
 	# labels
 	# income
-	_lower_class_label = get_gui_text_label_from_nodepath(^"./country_budget/tax_0_inc")
-	_middle_class_label = get_gui_text_label_from_nodepath(^"./country_budget/tax_1_inc")
-	_upper_class_label = get_gui_text_label_from_nodepath(^"./country_budget/tax_2_inc")
-	_gold_label = get_gui_text_label_from_nodepath(^"./country_budget/gold_inc")
-	_total_inc_label = get_gui_text_label_from_nodepath(^"./country_budget/total_inc")
+	_lower_class_label = get_gui_label_from_nodepath(^"./country_budget/tax_0_inc")
+	_middle_class_label = get_gui_label_from_nodepath(^"./country_budget/tax_1_inc")
+	_upper_class_label = get_gui_label_from_nodepath(^"./country_budget/tax_2_inc")
+	_gold_label = get_gui_label_from_nodepath(^"./country_budget/gold_inc")
+	_total_inc_label = get_gui_label_from_nodepath(^"./country_budget/total_inc")
 	# debt
-	_national_bank_label = get_gui_text_label_from_nodepath(^"./country_budget/national_bank_val")
-	_total_funds_label = get_gui_text_label_from_nodepath(^"./country_budget/total_funds_val")
-	_debt_val_label = get_gui_text_label_from_nodepath(^"./country_budget/debt_val")
-	_interest_val_label = get_gui_text_label_from_nodepath(^"./country_budget/interest_val")
+	_national_bank_label = get_gui_label_from_nodepath(^"./country_budget/national_bank_val")
+	_total_funds_label = get_gui_label_from_nodepath(^"./country_budget/total_funds_val")
+	_debt_val_label = get_gui_label_from_nodepath(^"./country_budget/debt_val")
+	_interest_val_label = get_gui_label_from_nodepath(^"./country_budget/interest_val")
 	# costs
-	_nat_stock_val_label = get_gui_text_label_from_nodepath(^"./country_budget/nat_stock_val")
-	_nat_stock_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/nat_stock_est")
-	_mil_cost_val_label = get_gui_text_label_from_nodepath(^"./country_budget/mil_cost_val")
-	_overseas_cost_val_label = get_gui_text_label_from_nodepath(^"./country_budget/overseas_cost_val")
-	_ind_sub_val_label = get_gui_text_label_from_nodepath(^"./country_budget/ind_sub_val")
-	_admin_efficiency_label = get_gui_text_label_from_nodepath(^"./country_budget/admin_efficiency")
-	_education_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/exp_val_0")
-	_administration_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/exp_val_1")
-	_social_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/exp_val_2")
-	_military_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/exp_val_3")
-	_total_exp_label = get_gui_text_label_from_nodepath(^"./country_budget/total_exp")
+	_nat_stock_val_label = get_gui_label_from_nodepath(^"./country_budget/nat_stock_val")
+	_nat_stock_exp_label = get_gui_label_from_nodepath(^"./country_budget/nat_stock_est")
+	_mil_cost_val_label = get_gui_label_from_nodepath(^"./country_budget/mil_cost_val")
+	_overseas_cost_val_label = get_gui_label_from_nodepath(^"./country_budget/overseas_cost_val")
+	_ind_sub_val_label = get_gui_label_from_nodepath(^"./country_budget/ind_sub_val")
+	_admin_efficiency_label = get_gui_label_from_nodepath(^"./country_budget/admin_efficiency")
+	_education_exp_label = get_gui_label_from_nodepath(^"./country_budget/exp_val_0")
+	_administration_exp_label = get_gui_label_from_nodepath(^"./country_budget/exp_val_1")
+	_social_exp_label = get_gui_label_from_nodepath(^"./country_budget/exp_val_2")
+	_military_exp_label = get_gui_label_from_nodepath(^"./country_budget/exp_val_3")
+	_total_exp_label = get_gui_label_from_nodepath(^"./country_budget/total_exp")
 	# others
-	_tariffs_percent_label = get_gui_text_label_from_nodepath(^"./country_budget/tariffs_percent")
-	_tariff_val_label = get_gui_text_label_from_nodepath(^"./country_budget/tariff_val")
-	_diplomatic_balance_label = get_gui_text_label_from_nodepath(^"./country_budget/diplomatic_balance")
-	_balance_label = get_gui_text_label_from_nodepath(^"./country_budget/balance")
+	_tariffs_percent_label = get_gui_label_from_nodepath(^"./country_budget/tariffs_percent")
+	_tariff_val_label = get_gui_label_from_nodepath(^"./country_budget/tariff_val")
+	_diplomatic_balance_label = get_gui_label_from_nodepath(^"./country_budget/diplomatic_balance")
+	_balance_label = get_gui_label_from_nodepath(^"./country_budget/balance")
 
 	# sliders
 	# income

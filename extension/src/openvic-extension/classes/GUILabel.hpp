@@ -10,8 +10,8 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 
 namespace OpenVic {
-	class GUITextLabel : public godot::Control {
-		GDCLASS(GUITextLabel, godot::Control)
+	class GUILabel : public godot::Control {
+		GDCLASS(GUILabel, godot::Control)
 
 		using colour_instructions_t = std::vector<std::pair<int64_t, char>>;
 
@@ -55,7 +55,7 @@ namespace OpenVic {
 		void _notification(int what);
 
 	public:
-		GUITextLabel();
+		GUILabel();
 
 		/* Reset gui_text to nullptr and reset current text. */
 		void clear();

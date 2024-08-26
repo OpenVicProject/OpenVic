@@ -6,11 +6,11 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
-#include "openvic-extension/classes/GUITextLabel.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
@@ -76,11 +76,11 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<GFXMaskedFlagTexture>();
 
 	ClassDB::register_class<GFXPieChartTexture>();
+	ClassDB::register_class<GUILabel>();
 	ClassDB::register_class<GUIListBox>();
 	ClassDB::register_class<GUINode>();
 	ClassDB::register_class<GUIOverlappingElementsBox>();
 	ClassDB::register_class<GUIScrollbar>();
-	ClassDB::register_class<GUITextLabel>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {

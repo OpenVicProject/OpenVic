@@ -40,7 +40,7 @@ using namespace OpenVic;
 
 #define APPLY_TO_CHILD_TYPES(F) \
 	F(Button, button) \
-	F(GUITextLabel, gui_text_label) \
+	F(GUILabel, gui_label) \
 	F(Panel, panel) \
 	F(TextureProgressBar, progress_bar) \
 	F(TextureRect, texture_rect) \
