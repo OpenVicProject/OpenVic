@@ -146,7 +146,7 @@ Vector2 GUIListBox::_get_minimum_size() const {
 	}
 }
 
-void GUIListBox::_gui_input(godot::Ref<godot::InputEvent> const& event) {
+void GUIListBox::_gui_input(Ref<InputEvent> const& event) {
 	ERR_FAIL_NULL(event);
 
 	if (scrollbar == nullptr) {

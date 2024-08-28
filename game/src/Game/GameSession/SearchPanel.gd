@@ -5,7 +5,7 @@ extends GUINode
 var _search_panel : Panel
 var _search_line_edit : LineEdit
 var _results_list_box : GUIListBox
-var _result_buttons : Array[Button]
+var _result_buttons : Array[GUIIconButton]
 
 var _drag_active : bool = false
 var _drag_anchor : Vector2
@@ -19,11 +19,11 @@ func _ready() -> void:
 
 	_search_panel = get_panel_from_nodepath(^"./goto_box")
 
-	var close_button : Button = get_button_from_nodepath(^"./goto_box/cancel")
+	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./goto_box/cancel")
 	if close_button:
 		close_button.pressed.connect(hide)
 
-	var panel_button : Button = get_button_from_nodepath(^"./goto_box/goto_box")
+	var panel_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./goto_box/goto_box")
 	if panel_button:
 		panel_button.button_down.connect(_start_drag)
 		panel_button.button_up.connect(_end_drag)
@@ -97,7 +97,7 @@ func _add_result_button() -> bool:
 	if not child:
 		return false
 
-	var button : Button = GUINode.get_button_from_node(child.get_node(^"./game"))
+	var button : GUIIconButton = GUINode.get_gui_icon_button_from_node(child.get_node(^"./game"))
 	if not button:
 		child.queue_free()
 		return false

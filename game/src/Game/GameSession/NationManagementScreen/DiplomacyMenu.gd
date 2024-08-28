@@ -11,7 +11,7 @@ func _ready() -> void:
 
 	add_gui_element("country_diplomacy", "country_diplomacy")
 
-	var close_button : Button = get_button_from_nodepath(^"./country_diplomacy/close_button")
+	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_diplomacy/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))
 

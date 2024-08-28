@@ -3,7 +3,9 @@
 #include <godot_cpp/classes/atlas_texture.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/vector2.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
@@ -66,6 +68,10 @@ namespace OpenVic {
 		 * occur, regardless of whether it was orginally flipped or not). */
 		godot::Ref<godot::ImageTexture> get_texture(
 			godot::StringName const& path, LoadFlags load_flags = LOAD_FLAG_CACHE_TEXTURE
+		);
+
+		static godot::Ref<godot::StyleBoxTexture> make_stylebox_texture(
+			godot::Ref<godot::Texture2D> const& texture, godot::Vector2 const& border = {}
 		);
 
 		/* Search for and load a font with the specified name from the game defines' font directory, first checking the

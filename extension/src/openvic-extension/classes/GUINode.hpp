@@ -1,7 +1,6 @@
 #pragma once
 
 #include <godot_cpp/classes/bit_map.hpp>
-#include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/input_event.hpp>
@@ -10,20 +9,21 @@
 #include <godot_cpp/classes/panel.hpp>
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
-#include <godot_cpp/classes/texture_progress_bar.hpp>
-#include <godot_cpp/classes/texture_rect.hpp>
 #include <godot_cpp/templates/vector.hpp>
 #include <godot_cpp/variant/node_path.hpp>
 #include <godot_cpp/variant/rect2.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
-#include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
-#include "openvic-extension/classes/GFXPieChartTexture.hpp"
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
+#include "openvic-extension/classes/GUIIcon.hpp"
+#include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
+#include "openvic-extension/classes/GUIMaskedFlag.hpp"
+#include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
+#include "openvic-extension/classes/GUIPieChart.hpp"
+#include "openvic-extension/classes/GUIProgressBar.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 
 namespace OpenVic {
@@ -51,36 +51,35 @@ namespace OpenVic {
 
 		static godot::Vector2 get_gui_position(godot::String const& gui_scene, godot::String const& gui_position);
 
-		static godot::Button* get_button_from_node(godot::Node* node);
+		static GUIIconButton* get_gui_icon_button_from_node(godot::Node* node);
+		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node(godot::Node* node);
 		static GUILabel* get_gui_label_from_node(godot::Node* node);
 		static godot::Panel* get_panel_from_node(godot::Node* node);
-		static godot::TextureProgressBar* get_progress_bar_from_node(godot::Node* node);
-		static godot::TextureRect* get_texture_rect_from_node(godot::Node* node);
+		static GUIProgressBar* get_gui_progress_bar_from_node(godot::Node* node);
+		static GUIIcon* get_gui_icon_from_node(godot::Node* node);
+		static GUIMaskedFlag* get_gui_masked_flag_from_node(godot::Node* node);
+		static GUIPieChart* get_gui_pie_chart_from_node(godot::Node* node);
 		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node(godot::Node* node);
 		static GUIScrollbar* get_gui_scrollbar_from_node(godot::Node* node);
 		static GUIListBox* get_gui_listbox_from_node(godot::Node* node);
 		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
 
-		godot::Button* get_button_from_nodepath(godot::NodePath const& path) const;
+		GUIIconButton* get_gui_icon_button_from_nodepath(godot::NodePath const& path) const;
+		GUIMaskedFlagButton* get_gui_masked_flag_button_from_nodepath(godot::NodePath const& path) const;
 		GUILabel* get_gui_label_from_nodepath(godot::NodePath const& path) const;
 		godot::Panel* get_panel_from_nodepath(godot::NodePath const& path) const;
-		godot::TextureProgressBar* get_progress_bar_from_nodepath(godot::NodePath const& path) const;
-		godot::TextureRect* get_texture_rect_from_nodepath(godot::NodePath const& path) const;
+		GUIProgressBar* get_gui_progress_bar_from_nodepath(godot::NodePath const& path) const;
+		GUIIcon* get_gui_icon_from_nodepath(godot::NodePath const& path) const;
+		GUIMaskedFlag* get_gui_masked_flag_from_nodepath(godot::NodePath const& path) const;
+		GUIPieChart* get_gui_pie_chart_from_nodepath(godot::NodePath const& path) const;
 		GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_nodepath(godot::NodePath const& path) const;
 		GUIScrollbar* get_gui_scrollbar_from_nodepath(godot::NodePath const& path) const;
 		GUIListBox* get_gui_listbox_from_nodepath(godot::NodePath const& path) const;
 		godot::LineEdit* get_line_edit_from_nodepath(godot::NodePath const& path) const;
 
-		/* Helper functions to get textures from TextureRects and Buttons. */
+		/* Helper functions to get textures from TextureRects and GUIButtons. */
 		static godot::Ref<godot::Texture2D> get_texture_from_node(godot::Node* node);
-		static godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture_from_node(godot::Node* node);
-		static godot::Ref<GFXMaskedFlagTexture> get_gfx_masked_flag_texture_from_node(godot::Node* node);
-		static godot::Ref<GFXPieChartTexture> get_gfx_pie_chart_texture_from_node(godot::Node* node);
-
 		godot::Ref<godot::Texture2D> get_texture_from_nodepath(godot::NodePath const& path) const;
-		godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture_from_nodepath(godot::NodePath const& path) const;
-		godot::Ref<GFXMaskedFlagTexture> get_gfx_masked_flag_texture_from_nodepath(godot::NodePath const& path) const;
-		godot::Ref<GFXPieChartTexture> get_gfx_pie_chart_texture_from_nodepath(godot::NodePath const& path) const;
 
 		godot::Error hide_node(godot::NodePath const& path) const;
 		godot::Error hide_nodes(godot::TypedArray<godot::NodePath> const& paths) const;

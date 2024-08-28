@@ -561,7 +561,7 @@ Error MenuSingleton::generate_search_cache() {
 	return OK;
 }
 
-void MenuSingleton::update_search_results(godot::String const& text) {
+void MenuSingleton::update_search_results(String const& text) {
 	// Sanatise input
 	const String search_text = text.strip_edges().to_lower();
 

@@ -1,23 +1,23 @@
 #include "UITools.hpp"
 
-#include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
 #include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/panel.hpp>
 #include <godot_cpp/classes/style_box_empty.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
-#include <godot_cpp/classes/texture_progress_bar.hpp>
-#include <godot_cpp/classes/texture_rect.hpp>
 #include <godot_cpp/classes/theme.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
-#include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
-#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUIButton.hpp"
+#include "openvic-extension/classes/GUIIcon.hpp"
+#include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
+#include "openvic-extension/classes/GUIMaskedFlag.hpp"
+#include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
+#include "openvic-extension/classes/GUIPieChart.hpp"
+#include "openvic-extension/classes/GUIProgressBar.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
@@ -113,29 +113,6 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	return ret;
 }
 
-static bool add_theme_stylebox(
-	Control* control, StringName const& theme_name, Ref<Texture2D> const& texture, Vector2 border = {}
-) {
-	Ref<StyleBoxTexture> stylebox;
-	stylebox.instantiate();
-	ERR_FAIL_NULL_V(stylebox, false);
-	stylebox->set_texture(texture);
-
-	static const StringName changed_signal = "changed";
-	static const StringName emit_changed_func = "emit_changed";
-	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
-
-	if (border != Vector2 {}) {
-		stylebox->set_texture_margin(SIDE_LEFT, border.x);
-		stylebox->set_texture_margin(SIDE_RIGHT, border.x);
-		stylebox->set_texture_margin(SIDE_TOP, border.y);
-		stylebox->set_texture_margin(SIDE_BOTTOM, border.y);
-	}
-
-	control->add_theme_stylebox_override(theme_name, stylebox);
-	return true;
-};
-
 static bool generate_icon(generate_gui_args_t&& args) {
 	using namespace OpenVic::Utilities::literals;
 
@@ -146,154 +123,70 @@ static bool generate_icon(generate_gui_args_t&& args) {
 	/* Change to use sprite type to choose Godot node type! */
 	bool ret = true;
 	if (icon.get_sprite() != nullptr) {
-		if (icon.get_sprite()->is_type<GFX::IconTextureSprite>()) {
-			TextureRect* godot_texture_rect = nullptr;
-			ret &= new_control(godot_texture_rect, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
+		if (GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>()) {
+			GUIIcon* gui_icon = nullptr;
+			ret &= new_control(gui_icon, icon, args.name);
+			ERR_FAIL_NULL_V_MSG(
+				gui_icon, false, vformat("Failed to create GUIIcon for GUI icon %s", icon_name)
+			);
 
-			godot_texture_rect->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
+			gui_icon->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
-			GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>();
-			Ref<GFXSpriteTexture> texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite, icon.get_frame());
-			if (texture.is_valid()) {
-				godot_texture_rect->set_texture(texture);
-			} else {
-				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI icon ", icon_name);
+			if (gui_icon->set_gfx_texture_sprite(texture_sprite, icon.get_frame()) != OK) {
+				UtilityFunctions::push_error("Error setting up GUIIcon for GUI icon ", icon_name);
 				ret = false;
 			}
 
 			const float scale = icon.get_scale();
-			godot_texture_rect->set_scale({ scale, scale });
+			gui_icon->set_scale({ scale, scale });
 
-			args.result = godot_texture_rect;
-		} else if (icon.get_sprite()->is_type<GFX::MaskedFlag>()) {
-			TextureRect* godot_texture_rect = nullptr;
-			ret &= new_control(godot_texture_rect, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
-
-			GFX::MaskedFlag const* masked_flag = icon.get_sprite()->cast_to<GFX::MaskedFlag>();
-			Ref<GFXMaskedFlagTexture> texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
-			if (texture.is_valid()) {
-				godot_texture_rect->set_texture(texture);
-			} else {
-				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI icon ", icon_name);
-				ret = false;
-			}
-
-			args.result = godot_texture_rect;
-		} else if (icon.get_sprite()->is_type<GFX::ProgressBar>()) {
-			TextureProgressBar* godot_progress_bar = nullptr;
-			ret &= new_control(godot_progress_bar, icon, args.name);
+			args.result = gui_icon;
+		} else if (GFX::MaskedFlag const* masked_flag = icon.get_sprite()->cast_to<GFX::MaskedFlag>()) {
+			GUIMaskedFlag* gui_masked_flag = nullptr;
+			ret &= new_control(gui_masked_flag, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
-				godot_progress_bar, false, vformat("Failed to create TextureProgressBar for GUI icon %s", icon_name)
+				gui_masked_flag, false, vformat("Failed to create GUIMaskedFlag for GUI icon %s", icon_name)
 			);
 
-			static constexpr double MIN_VALUE = 0.0, MAX_VALUE = 1.0;
-			static constexpr uint32_t STEPS = 100;
-
-			godot_progress_bar->set_nine_patch_stretch(true);
-			godot_progress_bar->set_step((MAX_VALUE - MIN_VALUE) / STEPS);
-			godot_progress_bar->set_min(MIN_VALUE);
-			godot_progress_bar->set_max(MAX_VALUE);
-
-			GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>();
-
-			using enum AssetManager::LoadFlags;
-
-			Ref<ImageTexture> back_texture;
-			if (!progress_bar->get_back_texture_file().empty()) {
-				const StringName back_texture_file = Utilities::std_to_godot_string(progress_bar->get_back_texture_file());
-				back_texture = args.asset_manager.get_texture(back_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
-				if (back_texture.is_null()) {
-					UtilityFunctions::push_error(
-						"Failed to load progress bar sprite back texture ", back_texture_file, " for GUI icon ", icon_name
-					);
-					ret = false;
-				}
-			}
-			if (back_texture.is_null()) {
-				const Color back_colour = Utilities::to_godot_color(progress_bar->get_back_colour());
-				back_texture = Utilities::make_solid_colour_texture(
-					back_colour, progress_bar->get_size().x, progress_bar->get_size().y
-				);
-				if (back_texture.is_null()) {
-					UtilityFunctions::push_error(
-						"Failed to generate progress bar sprite ", back_colour, " back texture for GUI icon ", icon_name
-					);
-					ret = false;
-				}
-			}
-			if (back_texture.is_valid()) {
-				godot_progress_bar->set_under_texture(back_texture);
-			} else {
-				UtilityFunctions::push_error(
-					"Failed to create and set progress bar sprite back texture for GUI icon ", icon_name
-				);
+			if (gui_masked_flag->set_gfx_masked_flag(masked_flag) != OK) {
+				UtilityFunctions::push_error("Error setting up GUIMaskedFlag for GUI icon ", icon_name);
 				ret = false;
 			}
 
-			Ref<ImageTexture> progress_texture;
-			if (!progress_bar->get_progress_texture_file().empty()) {
-				const StringName progress_texture_file =
-					Utilities::std_to_godot_string(progress_bar->get_progress_texture_file());
-				progress_texture =
-					args.asset_manager.get_texture(progress_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
-				if (progress_texture.is_null()) {
-					UtilityFunctions::push_error(
-						"Failed to load progress bar sprite progress texture ", progress_texture_file, " for GUI icon ",
-						icon_name
-					);
-					ret = false;
-				}
-			}
-			if (progress_texture.is_null()) {
-				const Color progress_colour = Utilities::to_godot_color(progress_bar->get_progress_colour());
-				progress_texture = Utilities::make_solid_colour_texture(
-					progress_colour, progress_bar->get_size().x, progress_bar->get_size().y
-				);
-				if (progress_texture.is_null()) {
-					UtilityFunctions::push_error(
-						"Failed to generate progress bar sprite ", progress_colour, " progress texture for GUI icon ",
-						icon_name
-					);
-					ret = false;
-				}
-			}
-			if (progress_texture.is_valid()) {
-				godot_progress_bar->set_progress_texture(progress_texture);
-			} else {
-				UtilityFunctions::push_error(
-					"Failed to create and set progress bar sprite progress texture for GUI icon ", icon_name
-				);
-				ret = false;
-			}
-
-			// TODO - work out why progress bar is missing bottom border pixel (e.g. province building expansion bar)
-			godot_progress_bar->set_custom_minimum_size(
-				Utilities::to_godot_fvec2(static_cast<fvec2_t>(progress_bar->get_size()))
+			args.result = gui_masked_flag;
+		} else if (GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>()) {
+			GUIProgressBar* gui_progress_bar = nullptr;
+			ret &= new_control(gui_progress_bar, icon, args.name);
+			ERR_FAIL_NULL_V_MSG(
+				gui_progress_bar, false, vformat("Failed to create GUIProgressBar for GUI icon %s", icon_name)
 			);
 
-			args.result = godot_progress_bar;
-		} else if (icon.get_sprite()->is_type<GFX::PieChart>()) {
-			TextureRect* godot_texture_rect = nullptr;
-			ret &= new_control(godot_texture_rect, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(godot_texture_rect, false, vformat("Failed to create TextureRect for GUI icon %s", icon_name));
-
-			GFX::PieChart const* pie_chart = icon.get_sprite()->cast_to<GFX::PieChart>();
-			Ref<GFXPieChartTexture> texture = GFXPieChartTexture::make_gfx_pie_chart_texture(pie_chart);
-			if (texture.is_valid()) {
-				godot_texture_rect->set_texture(texture);
-				// TODO - work out why this is needed
-				Vector2 pos = godot_texture_rect->get_position();
-				pos.x -= texture->get_width() / 2.0_real;
-				godot_texture_rect->set_position(pos);
-			} else {
-				UtilityFunctions::push_error("Failed to make GFXPieChartTexture for GUI icon ", icon_name);
+			if (gui_progress_bar->set_gfx_progress_bar(progress_bar) != OK) {
+				UtilityFunctions::push_error("Error setting up GUIProgressBar for GUI icon ", icon_name);
 				ret = false;
 			}
 
-			args.result = godot_texture_rect;
-		} else if (icon.get_sprite()->is_type<GFX::LineChart>()) {
+			args.result = gui_progress_bar;
+		} else if (GFX::PieChart const* pie_chart = icon.get_sprite()->cast_to<GFX::PieChart>()) {
+			GUIPieChart* gui_pie_chart = nullptr;
+			ret &= new_control(gui_pie_chart, icon, args.name);
+			ERR_FAIL_NULL_V_MSG(
+				gui_pie_chart, false, vformat("Failed to create GUIPieChart for GUI icon %s", icon_name)
+			);
+
+			if (gui_pie_chart->set_gfx_pie_chart(pie_chart) == OK) {
+				// For some reason pie charts are defined by their top-centre position, so we need to subtract
+				// half the width from the x-coordinate to fix this and position the GUIPieChart correctly.
+				Vector2 pos = gui_pie_chart->get_position();
+				pos.x -= gui_pie_chart->get_gfx_pie_chart_texture()->get_width() / 2.0_real;
+				gui_pie_chart->set_position(pos);
+			} else {
+				UtilityFunctions::push_error("Error setting up GUIPieChart for GUI icon ", icon_name);
+				ret = false;
+			}
+
+			args.result = gui_pie_chart;
+		} else if (GFX::LineChart const* line_chart = icon.get_sprite()->cast_to<GFX::LineChart>()) {
 			// TODO - generate line chart
 		} else {
 			UtilityFunctions::push_error(
@@ -327,86 +220,53 @@ static bool generate_button(generate_gui_args_t&& args) {
 	// TODO - shortcut, clicksound, rotation (?)
 	const String button_name = Utilities::std_to_godot_string(button.get_name());
 
-	Button* godot_button = nullptr;
-	bool ret = new_control(godot_button, button, args.name);
-	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI button %s", button_name));
+	ERR_FAIL_NULL_V_MSG(button.get_sprite(), false, vformat("Null sprite for GUI button %s", button_name));
 
-	godot_button->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+	GUIButton* gui_button = nullptr;
+	bool ret = true;
 
-	godot_button->set_text(Utilities::std_to_godot_string(button.get_text()));
+	if (GFX::IconTextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::IconTextureSprite>()) {
+		GUIIconButton* gui_icon_button = nullptr;
+		ret &= new_control(gui_icon_button, button, args.name);
+		ERR_FAIL_NULL_V_MSG(gui_icon_button, false, vformat("Failed to create GUIIconButton for GUI button %s", button_name));
 
-	if (button.get_sprite() != nullptr) {
-		Ref<GFXButtonStateHavingTexture> texture;
-		if (button.get_sprite()->is_type<GFX::IconTextureSprite>()) {
-			GFX::IconTextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::IconTextureSprite>();
-			texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
-			if (texture.is_null()) {
-				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI button ", button_name);
-				ret = false;
-			}
-		} else if (button.get_sprite()->is_type<GFX::MaskedFlag>()) {
-			GFX::MaskedFlag const* masked_flag = button.get_sprite()->cast_to<GFX::MaskedFlag>();
-			texture = GFXMaskedFlagTexture::make_gfx_masked_flag_texture(masked_flag);
-			if (texture.is_null()) {
-				UtilityFunctions::push_error("Failed to make GFXMaskedFlagTexture for GUI button ", button_name);
-				ret = false;
-			}
-		} else {
-			UtilityFunctions::push_error(
-				"Invalid sprite type ", Utilities::std_to_godot_string(button.get_sprite()->get_type()),
-				" for GUI button ", button_name
-			);
+		if (gui_icon_button->set_gfx_texture_sprite(texture_sprite) != OK) {
+			UtilityFunctions::push_error("Error setting up GUIIconButton for GUI button ", button_name);
 			ret = false;
 		}
 
-		if (texture.is_valid()) {
-			godot_button->set_custom_minimum_size(texture->get_size());
+		gui_button = gui_icon_button;
+	} else if (GFX::MaskedFlag const* masked_flag = button.get_sprite()->cast_to<GFX::MaskedFlag>()) {
+		GUIMaskedFlagButton* gui_masked_flag_button = nullptr;
+		ret &= new_control(gui_masked_flag_button, button, args.name);
+		ERR_FAIL_NULL_V_MSG(
+			gui_masked_flag_button, false, vformat("Failed to create GUIMaskedFlagButton for GUI button %s", button_name)
+		);
 
-			static const StringName normal_theme = "normal";
-			ret &= add_theme_stylebox(godot_button, normal_theme, texture);
-
-			using enum GFXButtonStateTexture::ButtonState;
-			for (GFXButtonStateTexture::ButtonState button_state : { HOVER, PRESSED, DISABLED }) {
-				Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
-				if (button_state_texture.is_valid()) {
-					ret &= add_theme_stylebox(
-						godot_button, button_state_texture->get_button_state_name(), button_state_texture
-					);
-				} else {
-					UtilityFunctions::push_error(
-						"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
-						" GFXButtonStateTexture for GUI button ", button_name
-					);
-					ret = false;
-				}
-			}
+		if (gui_masked_flag_button->set_gfx_masked_flag(masked_flag) != OK) {
+			UtilityFunctions::push_error("Error setting up GUIMaskedFlagButton for GUI button ", button_name);
+			ret = false;
 		}
+
+		gui_button = gui_masked_flag_button;
 	} else {
-		UtilityFunctions::push_error("Null sprite for GUI button ", button_name);
-		ret = false;
+		ERR_FAIL_V_MSG(
+			false, vformat(
+				"Invalid sprite type %s for GUI button %s", Utilities::std_to_godot_string(button.get_sprite()->get_type()),
+				button_name
+			)
+		);
 	}
+
+	gui_button->set_mouse_filter(Control::MOUSE_FILTER_PASS);
+
+	gui_button->set_text(Utilities::std_to_godot_string(button.get_text()));
 
 	if (button.get_font() != nullptr) {
-		const StringName font_file = Utilities::std_to_godot_string(button.get_font()->get_fontname());
-		const Ref<Font> font = args.asset_manager.get_font(font_file);
-		if (font.is_valid()) {
-			static const StringName font_theme = "font";
-			godot_button->add_theme_font_override(font_theme, font);
-		} else {
-			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI button ", button_name);
-			ret = false;
-		}
-
-		static const std::vector<StringName> button_font_themes {
-			"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
-		};
-		const Color colour = Utilities::to_godot_color(button.get_font()->get_colour());
-		for (StringName const& theme_name : button_font_themes) {
-			godot_button->add_theme_color_override(theme_name, colour);
-		}
+		ret &= gui_button->set_gfx_font(button.get_font()) == OK;
 	}
 
-	args.result = godot_button;
+	args.result = gui_button;
 	return ret;
 }
 
@@ -416,86 +276,37 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	// TODO - shortcut
 	const String checkbox_name = Utilities::std_to_godot_string(checkbox.get_name());
 
-	Button* godot_button = nullptr;
-	bool ret = new_control(godot_button, checkbox, args.name);
-	ERR_FAIL_NULL_V_MSG(godot_button, false, vformat("Failed to create Button for GUI checkbutton %s", checkbox_name));
+	ERR_FAIL_NULL_V_MSG(checkbox.get_sprite(), false, vformat("Null sprite for GUI checkbox %s", checkbox_name));
 
-	godot_button->set_text(Utilities::std_to_godot_string(checkbox.get_text()));
+	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
 
-	godot_button->set_toggle_mode(true);
+	ERR_FAIL_NULL_V_MSG(
+		texture_sprite, false, vformat(
+			"Invalid sprite type %s for GUI checkbox %s", Utilities::std_to_godot_string(checkbox.get_sprite()->get_type()),
+			checkbox_name
+		)
+	);
 
-	if (checkbox.get_sprite() != nullptr) {
-		GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
+	GUIIconButton* gui_icon_button = nullptr;
+	bool ret = new_control(gui_icon_button, checkbox, args.name);
+	ERR_FAIL_NULL_V_MSG(
+		gui_icon_button, false, vformat("Failed to create GUIIconButton for GUI checkbox %s", checkbox_name)
+	);
 
-		if (texture_sprite != nullptr) {
-			Ref<GFXSpriteTexture> texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
+	gui_icon_button->set_toggle_mode(true);
 
-			if (texture.is_valid()) {
-				godot_button->set_custom_minimum_size(texture->get_size());
-
-				if (texture->get_icon_count() > 1) {
-					static const StringName toggled_signal = "toggled";
-					static const StringName set_toggled_icon_func = "set_toggled_icon";
-					godot_button->connect(
-						toggled_signal, Callable { *texture, set_toggled_icon_func }, Object::CONNECT_PERSIST
-					);
-				}
-
-				static const StringName normal_theme = "normal";
-				ret &= add_theme_stylebox(godot_button, normal_theme, texture);
-
-				using enum GFXButtonStateTexture::ButtonState;
-				for (GFXButtonStateTexture::ButtonState button_state : { HOVER, PRESSED, DISABLED }) {
-					Ref<GFXButtonStateTexture> button_state_texture = texture->get_button_state_texture(button_state);
-					if (button_state_texture.is_valid()) {
-						ret &= add_theme_stylebox(
-							godot_button, button_state_texture->get_button_state_name(), button_state_texture
-						);
-					} else {
-						UtilityFunctions::push_error(
-							"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
-							" GFXButtonStateTexture for GUI checkbox ", checkbox_name
-						);
-						ret = false;
-					}
-				}
-			} else {
-				UtilityFunctions::push_error("Failed to make GFXSpriteTexture for GUI checkbox ", checkbox_name);
-				ret = false;
-			}
-		} else {
-			UtilityFunctions::push_error(
-				"Invalid sprite type ", Utilities::std_to_godot_string(checkbox.get_sprite()->get_type()),
-				" for GUI checkbox ", checkbox_name
-			);
-			ret = false;
-		}
-	} else {
-		UtilityFunctions::push_error("Null sprite for GUI checkbox ", checkbox_name);
+	if (gui_icon_button->set_gfx_texture_sprite(texture_sprite) != OK) {
+		UtilityFunctions::push_error("Error setting up GUIIconButton for GUI checkbox ", checkbox_name);
 		ret = false;
 	}
 
-	if (checkbox.get_font() != nullptr) {
-		const StringName font_file = Utilities::std_to_godot_string(checkbox.get_font()->get_fontname());
-		const Ref<Font> font = args.asset_manager.get_font(font_file);
-		if (font.is_valid()) {
-			static const StringName font_theme = "font";
-			godot_button->add_theme_font_override(font_theme, font);
-		} else {
-			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI checkbox ", checkbox_name);
-			ret = false;
-		}
+	gui_icon_button->set_text(Utilities::std_to_godot_string(checkbox.get_text()));
 
-		static const std::vector<StringName> checkbox_font_themes {
-			"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
-		};
-		const Color colour = Utilities::to_godot_color(checkbox.get_font()->get_colour());
-		for (StringName const& theme_name : checkbox_font_themes) {
-			godot_button->add_theme_color_override(theme_name, colour);
-		}
+	if (checkbox.get_font() != nullptr) {
+		ret &= gui_icon_button->set_gfx_font(checkbox.get_font()) == OK;
 	}
 
-	args.result = godot_button;
+	args.result = gui_icon_button;
 	return ret;
 }
 
@@ -615,8 +426,14 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 		Ref<ImageTexture> texture = args.asset_manager.get_texture(texture_file);
 
 		if (texture.is_valid()) {
-			static const StringName normal_theme = "normal";
-			ret &= add_theme_stylebox(godot_line_edit, normal_theme, texture, border_size);
+			Ref<StyleBoxTexture> stylebox = AssetManager::make_stylebox_texture(texture, border_size);
+			if (stylebox.is_valid()) {
+				static const StringName normal_theme = "normal";
+				godot_line_edit->add_theme_stylebox_override(normal_theme, stylebox);
+			} else {
+				UtilityFunctions::push_error("Failed to make StyleBoxTexture for GUI button ", text_edit_box_name);
+				ret = false;
+			}
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to load texture \"", texture_file, "\" for text edit box \"", text_edit_box_name, "\""
@@ -673,7 +490,16 @@ static bool generate_window(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(godot_panel, false, vformat("Failed to create Panel for GUI window %s", window_name));
 
 	godot_panel->set_custom_minimum_size(Utilities::to_godot_fvec2(window.get_size()));
-	godot_panel->set_self_modulate({ 1.0_real, 1.0_real, 1.0_real, 0.0_real });
+
+	Ref<StyleBoxEmpty> stylebox_empty;
+	stylebox_empty.instantiate();
+	if (stylebox_empty.is_valid()) {
+		static const StringName panel_theme = "panel";
+		godot_panel->add_theme_stylebox_override(panel_theme, stylebox_empty);
+	} else {
+		UtilityFunctions::push_error("Failed to create empty style box for background of GUI window ", window_name);
+		ret = false;
+	}
 
 	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;
