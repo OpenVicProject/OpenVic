@@ -319,15 +319,28 @@ func _setup_pop_list() -> void:
 
 		var culture_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_nation"))
 		_pop_list_culture_labels.push_back(culture_label)
+		if culture_label:
+			culture_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
-		_pop_list_religion_icons.push_back(GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./pop_religion")))
+		var religion_icon : GUIIcon = GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./pop_religion"))
+		_pop_list_religion_icons.push_back(religion_icon)
+		if religion_icon:
+			religion_icon.set_mouse_filter(MOUSE_FILTER_PASS)
 
 		var location_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_location"))
 		_pop_list_location_labels.push_back(location_label)
+		if location_label:
+			location_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
-		_pop_list_militancy_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_mil")))
+		var militancy_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_mil"))
+		_pop_list_militancy_labels.push_back(militancy_label)
+		if militancy_label:
+			militancy_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
-		_pop_list_consciousness_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_con")))
+		var consciousness_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_con"))
+		_pop_list_consciousness_labels.push_back(consciousness_label)
+		if consciousness_label:
+			consciousness_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 		_pop_list_ideology_charts.push_back(GUINode.get_gui_pie_chart_from_node(pop_row_panel.get_node(^"./pop_ideology")))
 
@@ -335,17 +348,20 @@ func _setup_pop_list() -> void:
 
 		_pop_list_unemployment_progressbars.push_back(GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./pop_unemployment_bar")))
 
-		_pop_list_cash_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_cash")))
+		var cash_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_cash"))
+		_pop_list_cash_labels.push_back(cash_label)
+		if cash_label:
+			cash_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 		var pop_list_life_needs_progressbar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./lifeneed_progress"))
+		_pop_list_life_needs_progressbars.push_back(pop_list_life_needs_progressbar)
 		if pop_list_life_needs_progressbar:
 			pop_list_life_needs_progressbar.position += Vector2(1, 0)
-		_pop_list_life_needs_progressbars.push_back(pop_list_life_needs_progressbar)
 
 		var pop_list_everyday_needs_progressbar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./eveneed_progress"))
+		_pop_list_everyday_needs_progressbars.push_back(pop_list_everyday_needs_progressbar)
 		if pop_list_everyday_needs_progressbar:
 			pop_list_everyday_needs_progressbar.position += Vector2(1, 0)
-		_pop_list_everyday_needs_progressbars.push_back(pop_list_everyday_needs_progressbar)
 
 		_pop_list_luxury_needs_progressbars.push_back(GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./luxneed_progress")))
 
@@ -357,9 +373,15 @@ func _setup_pop_list() -> void:
 
 		_pop_list_national_movement_flags.push_back(GUINode.get_gui_masked_flag_from_node(pop_row_panel.get_node(^"./pop_movement_flag")))
 
-		_pop_list_size_change_icons.push_back(GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./growth_indicator")))
+		var size_change_icon : GUIIcon = GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./growth_indicator"))
+		_pop_list_size_change_icons.push_back(size_change_icon)
+		if size_change_icon:
+			size_change_icon.set_mouse_filter(MOUSE_FILTER_PASS)
 
-		_pop_list_literacy_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_literacy")))
+		var literacy_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_literacy"))
+		_pop_list_literacy_labels.push_back(literacy_label)
+		if literacy_label:
+			literacy_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 func _notification(what : int) -> void:
 	match what:
@@ -514,6 +536,10 @@ func _update_distributions():
 				var colour_icon : GUIIcon = GUINode.get_gui_icon_from_node(child.get_node(^"./legend_color"))
 				if colour_icon:
 					colour_icon.set_modulate(distribution_row[slice_colour_key])
+					colour_icon.set_mouse_filter(MOUSE_FILTER_PASS)
+					colour_icon.set_tooltip_string_and_substitution_dict("§Y$ID$§!: $PC$%", {
+						"ID": distribution_row[slice_identifier_key], "PC": GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 2)
+					})
 
 				var identifier_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
@@ -563,30 +589,60 @@ func _update_pop_list() -> void:
 				_pop_list_size_labels[index].set_text(GUINode.int_to_string_suffixed(pop_row[pop_size_key]))
 			if _pop_list_type_buttons[index]:
 				_pop_list_type_buttons[index].set_icon_index(pop_row[pop_type_icon_key])
+				# TODO - replace with actual poptype
+				_pop_list_type_buttons[index].set_tooltip_string("Pop Type #%d" % pop_row[pop_type_icon_key])
 			if _pop_list_culture_labels[index]:
 				_pop_list_culture_labels[index].set_text(pop_row[pop_culture_key])
+				_pop_list_culture_labels[index].set_tooltip_string("NO_ASSIM_NOW")
 			if _pop_list_religion_icons[index]:
 				_pop_list_religion_icons[index].set_icon_index(pop_row[pop_religion_icon_key])
+				# TODO - replace with actual religion
+				_pop_list_religion_icons[index].set_tooltip_string("Religion #%d" % pop_row[pop_religion_icon_key])
 			if _pop_list_location_labels[index]:
-				_pop_list_location_labels[index].set_text(GUINode.format_province_name(pop_row.get(pop_location_key, "")))
+				var province_name : String = GUINode.format_province_name(pop_row.get(pop_location_key, ""))
+				_pop_list_location_labels[index].set_text(province_name)
+				_pop_list_location_labels[index].set_tooltip_string(province_name)
 			if _pop_list_militancy_labels[index]:
 				_pop_list_militancy_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_militancy_key], 2))
+				# TODO - test tooltip, add monthly change + source breakdown
+				_pop_list_militancy_labels[index].set_tooltip_string("POP_MIL_TOTAL")
 			if _pop_list_consciousness_labels[index]:
 				_pop_list_consciousness_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_consciousness_key], 2))
+				# TODO - test tooltip, add monthly change + source breakdown
+				_pop_list_consciousness_labels[index].set_tooltip_string("POP_CON_TOTAL")
 			if _pop_list_ideology_charts[index]:
 				_pop_list_ideology_charts[index].set_slices_array(pop_row[pop_ideology_key])
 			if _pop_list_issues_charts[index]:
 				_pop_list_issues_charts[index].set_slices_array(pop_row[pop_issues_key])
 			if _pop_list_unemployment_progressbars[index]:
-				_pop_list_unemployment_progressbars[index].set_value_no_signal(pop_row[pop_unemployment_key])
+				var unemployment : float = pop_row[pop_unemployment_key]
+				_pop_list_unemployment_progressbars[index].set_value_no_signal(unemployment)
+				_pop_list_unemployment_progressbars[index].set_tooltip_string("%s: §Y%s%%" % [
+					tr("UNEMPLOYMENT"), GUINode.float_to_string_dp(unemployment * 100.0, 3)
+				])
 			if _pop_list_cash_labels[index]:
-				_pop_list_cash_labels[index].set_text(GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
+				_pop_list_cash_labels[index].set_text("%s¤" % GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
+				_pop_list_cash_labels[index].set_tooltip_string_and_substitution_dict("POP_DAILY_MONEY", {
+					"VAL": GUINode.float_to_string_dp(1.23, 2)
+				})
 			if _pop_list_life_needs_progressbars[index]:
-				_pop_list_life_needs_progressbars[index].set_value_no_signal(pop_row[pop_life_needs_key])
+				var life_needs : float = pop_row[pop_life_needs_key]
+				_pop_list_life_needs_progressbars[index].set_value_no_signal(life_needs)
+				_pop_list_life_needs_progressbars[index].set_tooltip_string_and_substitution_dict("GETTING_NEEDS", {
+					"NEED": "LIFE_NEEDS", "VAL": GUINode.float_to_string_dp(life_needs * 100.0, 1)
+				})
 			if _pop_list_everyday_needs_progressbars[index]:
-				_pop_list_everyday_needs_progressbars[index].set_value_no_signal(pop_row[pop_everyday_needs_key])
+				var everyday_needs : float = pop_row[pop_everyday_needs_key]
+				_pop_list_everyday_needs_progressbars[index].set_value_no_signal(everyday_needs)
+				_pop_list_everyday_needs_progressbars[index].set_tooltip_string_and_substitution_dict("GETTING_NEEDS", {
+					"NEED": "EVERYDAY_NEEDS", "VAL": GUINode.float_to_string_dp(everyday_needs * 100.0, 1)
+				})
 			if _pop_list_luxury_needs_progressbars[index]:
-				_pop_list_luxury_needs_progressbars[index].set_value_no_signal(pop_row[pop_luxury_needs_key])
+				var luxury_needs : float = pop_row[pop_luxury_needs_key]
+				_pop_list_luxury_needs_progressbars[index].set_value_no_signal(luxury_needs)
+				_pop_list_luxury_needs_progressbars[index].set_tooltip_string_and_substitution_dict("GETTING_NEEDS", {
+					"NEED": "LUXURY_NEEDS", "VAL": GUINode.float_to_string_dp(luxury_needs * 100.0, 1)
+				})
 			if _pop_list_rebel_icons[index]:
 				var rebel_icon : int = pop_row.get(pop_rebel_icon_key, 0)
 				if rebel_icon > 0:
@@ -604,9 +660,16 @@ func _update_pop_list() -> void:
 				_pop_list_national_movement_flags[index].hide()
 
 			if _pop_list_size_change_icons[index]:
-				_pop_list_size_change_icons[index].set_icon_index(get_growth_icon_index(pop_row[pop_size_change_key]))
+				var pop_change : int = pop_row[pop_size_change_key]
+				_pop_list_size_change_icons[index].set_icon_index(get_growth_icon_index(pop_change))
+				_pop_list_size_change_icons[index].set_tooltip_string("%s §%s%s" % [
+					tr("POPULATION_CHANGED_BY"), "G+" if pop_change > 0 else "Y+" if pop_change == 0 else "R", str(pop_change)
+				])
 			if _pop_list_literacy_labels[index]:
 				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key], 2))
+				_pop_list_literacy_labels[index].set_tooltip_string("%s: §G%s%%" % [
+					tr("LIT_CHANGE"), GUINode.float_to_string_dp(pop_row[pop_literacy_key] / 64.0, 2)
+				])
 
 			_pop_list_rows[index].show()
 		else:

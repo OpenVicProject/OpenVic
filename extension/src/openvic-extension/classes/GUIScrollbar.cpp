@@ -18,7 +18,11 @@ StringName const& GUIScrollbar::signal_value_changed() {
 	return signal_value_changed;
 }
 
+GUI_TOOLTIP_IMPLEMENTATIONS(GUIScrollbar)
+
 void GUIScrollbar::_bind_methods() {
+	GUI_TOOLTIP_BIND_METHODS(GUIScrollbar)
+
 	OV_BIND_METHOD(GUIScrollbar::emit_value_changed);
 	OV_BIND_METHOD(GUIScrollbar::reset);
 	OV_BIND_METHOD(GUIScrollbar::clear);
@@ -49,7 +53,7 @@ void GUIScrollbar::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(signal_value_changed(), PropertyInfo(Variant::INT, "value")));
 }
 
-GUIScrollbar::GUIScrollbar() {
+GUIScrollbar::GUIScrollbar() : tooltip_active { false } {
 	/* Anything which the constructor might not have default initialised will be set by clear(). */
 	clear();
 }
@@ -587,11 +591,16 @@ void GUIScrollbar::_gui_input(Ref<InputEvent> const& event) {
 			hover_more = !hover_more;
 			queue_redraw();
 		}
+
+		_set_tooltip_active(hover_slider || hover_track || hover_less || hover_more);
+
 		return;
 	}
 }
 
 void GUIScrollbar::_notification(int what) {
+	// GUIScrollbar doesn't use _tooltip_notification, as we don't want to show tooltips when hovering over transparent parts.
+
 	switch (what) {
 	case NOTIFICATION_VISIBILITY_CHANGED:
 	case NOTIFICATION_MOUSE_EXIT: {
@@ -600,6 +609,10 @@ void GUIScrollbar::_notification(int what) {
 		hover_less = false;
 		hover_more = false;
 		queue_redraw();
+	} break;
+
+	case NOTIFICATION_MOUSE_EXIT_SELF: {
+		_set_tooltip_active(false);
 	} break;
 
 	/* Pressing (and holding) less and more buttons. */

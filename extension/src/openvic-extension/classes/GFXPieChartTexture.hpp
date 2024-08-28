@@ -10,11 +10,17 @@ namespace OpenVic {
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
 
-		using slice_t = std::pair<godot::Color, float>;
+	public:
+		struct slice_t {
+			godot::String name;
+			godot::Color colour;
+			float weight;
+		};
 
+	private:
 		GFX::PieChart const* PROPERTY(gfx_pie_chart);
 		std::vector<slice_t> slices;
-		float total_weight;
+		float PROPERTY(total_weight);
 		godot::Ref<godot::Image> pie_chart_image;
 
 		static godot::StringName const& _slice_identifier_key();
@@ -28,6 +34,9 @@ namespace OpenVic {
 
 	public:
 		GFXPieChartTexture();
+
+		// Position must be centred and normalised so that coords are in [-1, 1].
+		slice_t const* get_slice(godot::Vector2 const& position) const;
 
 		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
 

@@ -10,7 +10,17 @@
 using namespace godot;
 using namespace OpenVic;
 
-void GUIButton::_bind_methods() {}
+GUI_TOOLTIP_IMPLEMENTATIONS(GUIButton)
+
+void GUIButton::_bind_methods() {
+	GUI_TOOLTIP_BIND_METHODS(GUIButton)
+}
+
+void GUIButton::_notification(int what) {
+	_tooltip_notification(what);
+}
+
+GUIButton::GUIButton() : tooltip_active { false } {}
 
 Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTexture> const& texture) {
 	ERR_FAIL_NULL_V(texture, FAILED);

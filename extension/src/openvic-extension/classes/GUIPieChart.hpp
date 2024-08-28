@@ -12,10 +12,21 @@ namespace OpenVic {
 
 		godot::Ref<GFXPieChartTexture> gfx_pie_chart_texture;
 
+		bool tooltip_active;
+		godot::Vector2 tooltip_position;
+
+		void _update_tooltip();
+
 	protected:
 		static void _bind_methods();
 
+		void _notification(int what);
+
 	public:
+		void _gui_input(godot::Ref<godot::InputEvent> const& event) override;
+
+		GUIPieChart();
+
 		godot::Error set_gfx_pie_chart(GFX::PieChart const* gfx_pie_chart);
 
 		godot::Ref<GFXPieChartTexture> get_gfx_pie_chart_texture() const;
@@ -24,6 +35,6 @@ namespace OpenVic {
 
 		godot::String get_gfx_pie_chart_name() const;
 
-		godot::Error set_slices_array(GFXPieChartTexture::godot_pie_chart_data_t const& new_slices) const;
+		godot::Error set_slices_array(GFXPieChartTexture::godot_pie_chart_data_t const& new_slices);
 	};
 }

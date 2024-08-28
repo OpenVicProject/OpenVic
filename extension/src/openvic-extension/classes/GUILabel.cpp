@@ -14,7 +14,30 @@ using namespace OpenVic::Utilities::literals;
 
 static constexpr int32_t DEFAULT_FONT_SIZE = 16;
 
+GUI_TOOLTIP_IMPLEMENTATIONS(GUILabel)
+
+String const& GUILabel::get_colour_marker() {
+	static const String COLOUR_MARKER = String::chr(0xA7); // §
+	return COLOUR_MARKER;
+}
+
+String const& GUILabel::get_currency_marker() {
+	static const String CURRENCY_MARKER = String::chr(0xA4); // ¤
+	return CURRENCY_MARKER;
+}
+
+String const& GUILabel::get_substitution_marker() {
+	static const String SUBSTITUTION_MARKER = String::chr(0x24); // $
+	return SUBSTITUTION_MARKER;
+}
+
 void GUILabel::_bind_methods() {
+	GUI_TOOLTIP_BIND_METHODS(GUILabel)
+
+	OV_BIND_SMETHOD(get_colour_marker);
+	OV_BIND_SMETHOD(get_currency_marker);
+	OV_BIND_SMETHOD(get_substitution_marker);
+
 	OV_BIND_METHOD(GUILabel::clear);
 	OV_BIND_METHOD(GUILabel::get_gui_text_name);
 
@@ -80,6 +103,8 @@ void GUILabel::_bind_methods() {
 }
 
 void GUILabel::_notification(int what) {
+	_tooltip_notification(what);
+
 	switch (what) {
 	case NOTIFICATION_RESIZED:
 	case NOTIFICATION_TRANSLATION_CHANGED: {
@@ -146,7 +171,8 @@ void GUILabel::_notification(int what) {
 }
 
 GUILabel::GUILabel()
-  : gui_text { nullptr },
+  : tooltip_active { false },
+	gui_text { nullptr },
 	text {},
 	substitution_dict {},
 	horizontal_alignment { HORIZONTAL_ALIGNMENT_LEFT },
@@ -454,29 +480,30 @@ void GUILabel::_update_lines() {
 }
 
 String GUILabel::generate_substituted_text(String const& base_text) const {
-	static const String SUBSTITUTION_MARKER = String::chr(0x24); // $
-
 	String result;
 	int64_t start_pos = 0;
 	int64_t marker_start_pos;
 
-	while ((marker_start_pos = base_text.find(SUBSTITUTION_MARKER, start_pos)) != -1) {
+	while ((marker_start_pos = base_text.find(get_substitution_marker(), start_pos)) != -1) {
 		result += base_text.substr(start_pos, marker_start_pos - start_pos);
 
-		int64_t marker_end_pos = base_text.find(SUBSTITUTION_MARKER, marker_start_pos + SUBSTITUTION_MARKER.length());
+		int64_t marker_end_pos = base_text.find(
+			get_substitution_marker(), marker_start_pos + get_substitution_marker().length()
+		);
 		if (marker_end_pos == -1) {
 			marker_end_pos = base_text.length();
 		}
 
 		String key = base_text.substr(
-			marker_start_pos + SUBSTITUTION_MARKER.length(), marker_end_pos - marker_start_pos - SUBSTITUTION_MARKER.length()
+			marker_start_pos + get_substitution_marker().length(),
+			marker_end_pos - marker_start_pos - get_substitution_marker().length()
 		);
 		String value = substitution_dict.get(key, String {});
 
 		// Use the un-substituted key if no value is found or the value is empty
 		result += value.is_empty() ? key : is_auto_translating() ? tr(value) : value;
 
-		start_pos = marker_end_pos + SUBSTITUTION_MARKER.length();
+		start_pos = marker_end_pos + get_substitution_marker().length();
 	}
 
 	if (start_pos < base_text.length()) {
@@ -489,25 +516,23 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_text_and_colour_instructions(
 	String const& substituted_text
 ) const {
-	static const String COLOUR_MARKER = String::chr(0xA7); // §
-
 	String result;
 	colour_instructions_t colour_instructions;
 	int64_t start_pos = 0;
 	int64_t marker_pos;
 
-	while ((marker_pos = substituted_text.find(COLOUR_MARKER, start_pos)) != -1) {
+	while ((marker_pos = substituted_text.find(get_colour_marker(), start_pos)) != -1) {
 		result += substituted_text.substr(start_pos, marker_pos - start_pos);
 
-		if (marker_pos + COLOUR_MARKER.length() < substituted_text.length()) {
-			const char32_t colour_code = substituted_text[marker_pos + COLOUR_MARKER.length()];
+		if (marker_pos + get_colour_marker().length() < substituted_text.length()) {
+			const char32_t colour_code = substituted_text[marker_pos + get_colour_marker().length()];
 
 			// Check that the colour code can be safely cast to a char
 			if (colour_code >> sizeof(char) * CHAR_BIT == 0) {
 				colour_instructions.emplace_back(result.length(), static_cast<char>(colour_code));
 			}
 
-			start_pos = marker_pos + COLOUR_MARKER.length() + 1;
+			start_pos = marker_pos + get_colour_marker().length() + 1;
 		} else {
 			return { std::move(result), std::move(colour_instructions) };
 		}
@@ -588,8 +613,6 @@ void GUILabel::separate_lines(
 void GUILabel::separate_currency_segments(
 	String const& string, Color const& colour, line_t& line
 ) const {
-	static const String CURRENCY_MARKER = String::chr(0xA4); // ¤
-
 	const auto push_string_segment = [this, &string, &colour, &line](int64_t start, int64_t end) -> void {
 		String substring = string.substr(start, end - start);
 		const real_t width = get_string_width(substring);
@@ -602,7 +625,7 @@ void GUILabel::separate_currency_segments(
 
 	const real_t currency_width = currency_texture.is_valid() ? currency_texture->get_width() : 0.0_real;
 
-	while ((marker_pos = string.find(CURRENCY_MARKER, start_pos)) != -1) {
+	while ((marker_pos = string.find(get_currency_marker(), start_pos)) != -1) {
 		if (start_pos < marker_pos) {
 			push_string_segment(start_pos, marker_pos);
 		}
@@ -610,7 +633,7 @@ void GUILabel::separate_currency_segments(
 		line.segments.push_back(currency_segment_t {});
 		line.width += currency_width;
 
-		start_pos = marker_pos + CURRENCY_MARKER.length();
+		start_pos = marker_pos + get_currency_marker().length();
 	}
 
 	if (start_pos < string.length()) {

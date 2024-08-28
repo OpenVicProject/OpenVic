@@ -42,6 +42,12 @@ var _debt_chart : GUIPieChart
 
 const _screen : NationManagement.Screen = NationManagement.Screen.BUDGET
 
+# TODO - testing function, should be replaced with calls to SIM which trigger UI updates through gamestate_updated
+func _on_tax_slider_changed(slider : GUIScrollbar, label : GUILabel, tooltip : String, value : int) -> void:
+	label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1)
+	slider.set_tooltip_string("%s: §Y%s%%" % [tr(tooltip), GUINode.float_to_string_dp(value, 1)])
+
+
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
 
@@ -87,15 +93,24 @@ func _ready() -> void:
 	# income
 	var _lower_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_0_slider")
 	if _lower_class_slider and _lower_class_label:
-		_lower_class_slider.value_changed.connect(func(value : int) -> void: _lower_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_lower_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_lower_class_slider, _lower_class_label, "BUDGET_TAX_POOR", value)
+		)
 		_lower_class_slider.emit_value_changed()
 	var _middle_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_1_slider")
 	if _middle_class_slider and _middle_class_label:
-		_middle_class_slider.value_changed.connect(func(value : int) -> void: _middle_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_middle_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_middle_class_slider, _middle_class_label, "BUDGET_TAX_MIDDLE", value)
+		)
 		_middle_class_slider.emit_value_changed()
 	var _upper_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_2_slider")
 	if _upper_class_slider and _upper_class_label:
-		_upper_class_slider.value_changed.connect(func(value : int) -> void: _upper_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_upper_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_upper_class_slider, _upper_class_label, "BUDGET_TAX_RICH", value)
+		)
 		_upper_class_slider.emit_value_changed()
 
 	# costs

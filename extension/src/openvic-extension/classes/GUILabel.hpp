@@ -8,10 +8,13 @@
 #include <openvic-simulation/interface/GUI.hpp>
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
+#include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
 	class GUILabel : public godot::Control {
 		GDCLASS(GUILabel, godot::Control)
+
+		GUI_TOOLTIP_DEFINITIONS
 
 		using colour_instructions_t = std::vector<std::pair<int64_t, char>>;
 
@@ -55,6 +58,10 @@ namespace OpenVic {
 		void _notification(int what);
 
 	public:
+		static godot::String const& get_colour_marker();
+		static godot::String const& get_currency_marker();
+		static godot::String const& get_substitution_marker();
+
 		GUILabel();
 
 		/* Reset gui_text to nullptr and reset current text. */

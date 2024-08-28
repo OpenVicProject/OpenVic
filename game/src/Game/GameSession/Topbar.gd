@@ -16,6 +16,7 @@ var _country_colonial_power_label : GUILabel
 # Time controls
 var _speed_up_button : GUIIconButton
 var _speed_down_button : GUIIconButton
+var _pause_bg_button : GUIButton
 var _speed_indicator_button : GUIIconButton
 var _date_label : GUILabel
 
@@ -101,24 +102,42 @@ func _ready() -> void:
 	_country_flag_overlay_icon = get_gui_icon_from_nodepath(^"./topbar/topbar_flag_overlay")
 	_country_name_label = get_gui_label_from_nodepath(^"./topbar/CountryName")
 	_country_rank_label = get_gui_label_from_nodepath(^"./topbar/nation_totalrank")
+	if _country_rank_label:
+		_country_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_prestige_label = get_gui_label_from_nodepath(^"./topbar/country_prestige")
+	if _country_prestige_label:
+		_country_prestige_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_prestige_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_prestige_rank")
+	if _country_prestige_rank_label:
+		_country_prestige_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_industrial_power_label = get_gui_label_from_nodepath(^"./topbar/country_economic")
+	if _country_industrial_power_label:
+		_country_industrial_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_industrial_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_industry_rank")
+	if _country_industrial_power_rank_label:
+		_country_industrial_power_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_military_power_label = get_gui_label_from_nodepath(^"./topbar/country_military")
+	if _country_military_power_label:
+		_country_military_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_military_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_military_rank")
+	if _country_military_power_rank_label:
+		_country_military_power_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_colonial_power_label = get_gui_label_from_nodepath(^"./topbar/country_colonial_power")
+	if _country_colonial_power_label:
+		_country_colonial_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 	# Time controls
 	_speed_up_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speedup")
 	if _speed_up_button:
 		_speed_up_button.pressed.connect(_on_increase_speed_button_pressed)
+		_speed_up_button.set_tooltip_string("TOPBAR_INC_SPEED")
 	_speed_down_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speeddown")
 	if _speed_down_button:
 		_speed_down_button.pressed.connect(_on_decrease_speed_button_pressed)
-	var pause_bg_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./topbar/pause_bg")
-	if pause_bg_button:
-		pause_bg_button.pressed.connect(_on_play_pause_button_pressed)
+		_speed_down_button.set_tooltip_string("TOPBAR_DEC_SPEED")
+	_pause_bg_button = get_gui_icon_button_from_nodepath(^"./topbar/pause_bg")
+	if _pause_bg_button:
+		_pause_bg_button.pressed.connect(_on_play_pause_button_pressed)
 	_speed_indicator_button = get_gui_icon_button_from_nodepath(^"./topbar/speed_indicator")
 	if _speed_indicator_button:
 		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
@@ -141,6 +160,8 @@ func _ready() -> void:
 			button.pressed.connect(
 				Events.NationManagementScreens.toggle_nation_management_screen.bind(screen)
 			)
+			# TODO - test tooltip, replace with actual shortcut strings
+			button.set_tooltip_string(tr("SHORTCUT") + "F3")
 			_nation_management_buttons[screen] = button
 	Events.NationManagementScreens.update_active_nation_management_screen.connect(
 		_on_update_active_nation_management_screen
@@ -158,10 +179,25 @@ func _ready() -> void:
 	_budget_funds_label = get_gui_label_from_nodepath(^"./topbar/budget_funds")
 
 	# Technology
+	var tech_button : GUIIconButton = _nation_management_buttons[NationManagement.Screen.TECHNOLOGY]
 	_technology_progress_bar = get_gui_progress_bar_from_nodepath(^"./topbar/topbar_tech_progress")
+	if _technology_progress_bar and tech_button:
+		_technology_progress_bar.reparent(tech_button)
 	_technology_current_research_label = get_gui_label_from_nodepath(^"./topbar/tech_current_research")
+	if _technology_current_research_label:
+		_technology_current_research_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		if tech_button:
+			_technology_current_research_label.reparent(tech_button)
 	_technology_literacy_label = get_gui_label_from_nodepath(^"./topbar/tech_literacy_value")
+	if _technology_literacy_label:
+		_technology_literacy_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		if tech_button:
+			_technology_literacy_label.reparent(tech_button)
 	_technology_research_points_label = get_gui_label_from_nodepath(^"./topbar/topbar_researchpoints_value")
+	if _technology_research_points_label:
+		_technology_research_points_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		if tech_button:
+			_technology_research_points_label.reparent(tech_button)
 
 	# Politics
 	_politics_party_icon = get_gui_icon_from_nodepath(^"./topbar/politics_party_icon")
@@ -238,45 +274,66 @@ func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_info()
+			_update_speed_controls()
 
 func _update_info() -> void:
 	# Placeholder data
 	const player_country : String = "ENG"
+	const player_rank : int = 0
+
+	const RANK_NAMES : PackedStringArray = [
+		"DIPLOMACY_GREATNATION_STATUS",
+		"DIPLOMACY_COLONIALNATION_STATUS",
+		"DIPLOMACY_CIVILIZEDNATION_STATUS",
+		"DIPLOMACY_UNCIVILIZEDNATION_STATUS"
+	]
 
 	## Country info
 	if _country_flag_button:
 		_country_flag_button.set_flag_country_name(player_country)
+		_country_flag_button.set_tooltip_string_and_substitution_dict("PLAYER_COUNTRY_TOPBAR_RANK", {
+			"NAME": player_country, "RANK": RANK_NAMES[player_rank]
+		})
 
 	if _country_flag_overlay_icon:
 		# 1 - Great Power
 		# 2 - Secondary Power
 		# 3 - Civilised
 		# 4 - Uncivilised
-		_country_flag_overlay_icon.set_icon_index(1)
+		_country_flag_overlay_icon.set_icon_index(1 + player_rank)
 
 	if _country_name_label:
 		_country_name_label.set_text(player_country)
 
 	if _country_rank_label:
 		_country_rank_label.set_text(str(1))
+		_country_rank_label.set_tooltip_string_and_substitution_dict("PLAYER_COUNTRY_TOPBAR_RANK", {
+			"NAME": player_country, "RANK": RANK_NAMES[player_rank]
+		})
 
 	if _country_prestige_label:
 		_country_prestige_label.set_text(str(11))
+		_country_military_power_label.set_tooltip_string("RANK_PRESTIGE")
 
 	if _country_prestige_rank_label:
 		_country_prestige_rank_label.set_text(str(1))
+		_country_military_power_label.set_tooltip_string("RANK_PRESTIGE")
 
 	if _country_industrial_power_label:
 		_country_industrial_power_label.set_text(str(22))
+		_country_military_power_label.set_tooltip_string("RANK_INDUSTRY")
 
 	if _country_industrial_power_rank_label:
 		_country_industrial_power_rank_label.set_text(str(2))
+		_country_military_power_label.set_tooltip_string("RANK_INDUSTRY")
 
 	if _country_military_power_label:
 		_country_military_power_label.set_text(str(33))
+		_country_military_power_label.set_tooltip_string("RANK_MILITARY")
 
 	if _country_military_power_rank_label:
 		_country_military_power_rank_label.set_text(str(3))
+		_country_military_power_rank_label.set_tooltip_string("RANK_MILITARY")
 
 	if _country_colonial_power_label:
 		var available_colonial_power : int = 123
@@ -284,6 +341,7 @@ func _update_info() -> void:
 		_country_colonial_power_label.set_text(
 			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, total_colonial_power]
 		)
+		_country_colonial_power_label.set_tooltip_string("COLONIAL_POINTS")
 
 	## Time control
 	if _date_label:
@@ -320,12 +378,21 @@ func _update_info() -> void:
 	if _technology_current_research_label:
 		# TODO - set current research or "unciv_nation" (in red) if uncivilised
 		_technology_current_research_label.set_text("TB_TECH_NO_CURRENT")
+		_technology_current_research_label.set_tooltip_string("TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP")
 
 	if _technology_literacy_label:
-		_technology_literacy_label.set_text("§Y%s§W%%" % GUINode.float_to_string_dp(80.0, 1))
+		var literacy_float : float = 80.0
+		var literacy_string : String = GUINode.float_to_string_dp(80.0, 1)
+		_technology_literacy_label.set_text("§Y%s§W%%" % literacy_string)
+		_technology_literacy_label.set_tooltip_string_and_substitution_dict("TOPBAR_AVG_LITERACY", { "AVG": literacy_string })
 
 	if _technology_research_points_label:
 		_technology_research_points_label.set_text("§Y%s" % GUINode.float_to_string_dp(10.0, 2))
+		# TODO - test tooltip, replace with actual values from the simulation
+		_technology_research_points_label.set_tooltip_string_and_substitution_dict("TECH_DAILY_RESEARCHPOINTS_TOOLTIP", {
+			"POPTYPE": "Clergymen", "VALUE": GUINode.float_to_string_dp(1.42, 2),
+			"FRACTION": GUINode.float_to_string_dp(0.95, 2), "OPTIMAL": GUINode.float_to_string_dp(2, 2)
+		})
 
 	## Politics
 	if _politics_party_icon:
@@ -418,6 +485,9 @@ func _update_info() -> void:
 		_military_leadership_points_label.set_text("§Y%d" % 15)
 
 func _update_speed_controls() -> void:
+	var paused : bool = MenuSingleton.is_paused()
+	var speed : int = MenuSingleton.get_speed()
+
 	#  TODO - decide whether to disable these or not
 	# (they don't appear to get disabled in the base game)
 	#if _speed_up_button:
@@ -426,10 +496,25 @@ func _update_speed_controls() -> void:
 	#if _speed_down_button:
 	#	_speed_down_button.disabled = not MenuSingleton.can_decrease_speed()
 
+	if _pause_bg_button:
+		_pause_bg_button.set_tooltip_string("TOPBAR_DATE_IS_PAUSED" if paused else "TOPBAR_DATE")
+
 	if _speed_indicator_button:
 		var index : int = 1
-		if not MenuSingleton.is_paused():
-			index += MenuSingleton.get_speed() + 1
+		if paused:
+			_speed_indicator_button.set_tooltip_string("TOPBAR_PAUSE_INDICATOR")
+		else:
+			index += speed + 1
+			const SPEED_NAMES : PackedStringArray = [
+				"SLOWEST_SPEED",
+				"SLOW_SPEED",
+				"NORMAL_SPEED",
+				"FAST_SPEED",
+				"FASTEST_SPEED"
+			]
+			_speed_indicator_button.set_tooltip_string_and_substitution_dict(
+				"TOPBAR_SPEED_INDICATOR", { "SPEED": SPEED_NAMES[speed] if speed < SPEED_NAMES.size() else str(speed) }
+			)
 		_speed_indicator_button.set_icon_index(index)
 
 # REQUIREMENTS:
