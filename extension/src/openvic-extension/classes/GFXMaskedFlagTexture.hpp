@@ -6,6 +6,7 @@
 
 namespace OpenVic {
 	struct CountryDefinition;
+	struct CountryInstance;
 
 	class GFXMaskedFlagTexture : public GFXButtonStateHavingTexture {
 		GDCLASS(GFXMaskedFlagTexture, GFXButtonStateHavingTexture)
@@ -55,9 +56,9 @@ namespace OpenVic {
 
 		/* Look up the specified country's current flag type, then call set_flag_country_and_type
 		 * with the country and its flag type as arguments. */
-		godot::Error set_flag_country(CountryDefinition const* new_flag_country);
+		godot::Error set_flag_country(CountryInstance const* new_flag_country);
 
-		/* Look up the country with the specified identifier, then call set_flag_country with the country its argument. */
+		/* Look up the country with the specified identifier, then call set_flag_country with the country as its argument. */
 		godot::Error set_flag_country_name(godot::String const& new_flag_country_name);
 
 		/* Return the name of the selected flag's country, or an empty String if it's null. */
