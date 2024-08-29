@@ -107,6 +107,10 @@ Military:
     reinforce_rate: sum of reinforce_rate modifiers from tech
     reinforce_speed: sum of reinforce_speed modifiers on country
     5 * round(... /5): round to multiple of 5
+  Regiment experience gain per day of combat:
+    formula: d6 * defines.military.EXP_GAIN_DIV * (1 + sum of experience gain modifiers) + unexplained
+    d6: random integer (inclusive) 1-6
+    unexplained: see https://discord.com/channels/1062018115275325480/1062021872545447936/1278664121323356190 or https://media.discordapp.net/attachments/1062021872545447936/1278666211848228906/image.png?ex=66d1a235&is=66d050b5&hm=47bafd0f86451a25aebd7b728e96dda264bc0704a4e398ca59931390a902b968&=&format=webp&quality=lossless
 Politics:
   Westernisation:
     Upper house reform support:
