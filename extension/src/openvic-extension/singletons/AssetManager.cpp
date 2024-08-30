@@ -120,6 +120,29 @@ Ref<ImageTexture> AssetManager::get_texture(StringName const& path, LoadFlags lo
 	}
 }
 
+Ref<StyleBoxTexture> AssetManager::make_stylebox_texture(Ref<Texture2D> const& texture, Vector2 const& border) {
+	ERR_FAIL_NULL_V(texture, nullptr);
+
+	Ref<StyleBoxTexture> stylebox;
+	stylebox.instantiate();
+	ERR_FAIL_NULL_V(stylebox, nullptr);
+
+	stylebox->set_texture(texture);
+
+	static const StringName changed_signal = "changed";
+	static const StringName emit_changed_func = "emit_changed";
+	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
+
+	if (border != Vector2 {}) {
+		stylebox->set_texture_margin(SIDE_LEFT, border.x);
+		stylebox->set_texture_margin(SIDE_RIGHT, border.x);
+		stylebox->set_texture_margin(SIDE_TOP, border.y);
+		stylebox->set_texture_margin(SIDE_BOTTOM, border.y);
+	}
+
+	return stylebox;
+}
+
 Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	const font_map_t::const_iterator it = fonts.find(name);
 	if (it != fonts.end()) {

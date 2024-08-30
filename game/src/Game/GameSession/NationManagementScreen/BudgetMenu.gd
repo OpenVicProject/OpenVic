@@ -35,12 +35,18 @@ var _tariff_val_label : GUILabel
 var _diplomatic_balance_label : GUILabel
 var _balance_label : GUILabel
 
-var _lower_class_chart : GFXPieChartTexture
-var _middle_class_chart : GFXPieChartTexture
-var _upper_class_chart : GFXPieChartTexture
-var _debt_chart : GFXPieChartTexture
+var _lower_class_chart : GUIPieChart
+var _middle_class_chart : GUIPieChart
+var _upper_class_chart : GUIPieChart
+var _debt_chart : GUIPieChart
 
 const _screen : NationManagement.Screen = NationManagement.Screen.BUDGET
+
+# TODO - testing function, should be replaced with calls to SIM which trigger UI updates through gamestate_updated
+func _on_tax_slider_changed(slider : GUIScrollbar, label : GUILabel, tooltip : String, value : int) -> void:
+	label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1)
+	slider.set_tooltip_string("%s: §Y%s%%" % [tr(tooltip), GUINode.float_to_string_dp(value, 1)])
+
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
@@ -49,7 +55,7 @@ func _ready() -> void:
 
 	add_gui_element("country_budget", "country_budget")
 
-	var close_button : Button = get_button_from_nodepath(^"./country_budget/close_button")
+	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))
 
@@ -87,15 +93,24 @@ func _ready() -> void:
 	# income
 	var _lower_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_0_slider")
 	if _lower_class_slider and _lower_class_label:
-		_lower_class_slider.value_changed.connect(func(value : int) -> void: _lower_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_lower_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_lower_class_slider, _lower_class_label, "BUDGET_TAX_POOR", value)
+		)
 		_lower_class_slider.emit_value_changed()
 	var _middle_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_1_slider")
 	if _middle_class_slider and _middle_class_label:
-		_middle_class_slider.value_changed.connect(func(value : int) -> void: _middle_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_middle_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_middle_class_slider, _middle_class_label, "BUDGET_TAX_MIDDLE", value)
+		)
 		_middle_class_slider.emit_value_changed()
 	var _upper_class_slider : GUIScrollbar = get_gui_scrollbar_from_nodepath(^"./country_budget/tax_2_slider")
 	if _upper_class_slider and _upper_class_label:
-		_upper_class_slider.value_changed.connect(func(value : int) -> void: _upper_class_label.text = "%s¤" % GUINode.float_to_string_dp(value, 3 if abs(value) < 1000 else 1))
+		_upper_class_slider.value_changed.connect(
+			func (value : int) -> void:
+				_on_tax_slider_changed(_upper_class_slider, _upper_class_label, "BUDGET_TAX_RICH", value)
+		)
 		_upper_class_slider.emit_value_changed()
 
 	# costs
@@ -144,30 +159,30 @@ func _ready() -> void:
 		_tariff_slider.emit_value_changed()
 
 	# debt buttons
-	var _tab_takenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_takenloans")
+	var _tab_takenloans_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/tab_takenloans")
 	if _tab_takenloans_button:
 		_tab_takenloans_button.pressed.connect(_switch_loans_tab.bind(true))
-	var _tab_givenloans_button : Button = get_button_from_nodepath(^"./country_budget/tab_givenloans")
+	var _tab_givenloans_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/tab_givenloans")
 	if _tab_givenloans_button:
 		_tab_givenloans_button.pressed.connect(_switch_loans_tab.bind(false))
-	var _debt_sort_country_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_country")
+	var _debt_sort_country_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/debt_sort_country")
 	if _debt_sort_country_button:
 		_debt_sort_country_button.pressed.connect(_sort_loans.bind(true))
-	var _debt_sort_amount_button : Button = get_button_from_nodepath(^"./country_budget/debt_sort_amount")
+	var _debt_sort_amount_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/debt_sort_amount")
 	if _debt_sort_amount_button:
 		_debt_sort_amount_button.pressed.connect(_sort_loans.bind(false))
-	var _take_loan_button : Button = get_button_from_nodepath(^"./country_budget/take_loan")
+	var _take_loan_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/take_loan")
 	if _take_loan_button:
 		_take_loan_button.pressed.connect(_take_loan)
-	var _repay_loan_button : Button = get_button_from_nodepath(^"./country_budget/repay_loan")
+	var _repay_loan_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/repay_loan")
 	if _repay_loan_button:
 		_repay_loan_button.pressed.connect(_repay_loan)
 
 	# charts
-	_lower_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_0")
-	_middle_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_1")
-	_upper_class_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_2")
-	_debt_chart = get_gfx_pie_chart_texture_from_nodepath(^"./country_budget/chart_debt")
+	_lower_class_chart = get_gui_pie_chart_from_nodepath(^"./country_budget/chart_0")
+	_middle_class_chart = get_gui_pie_chart_from_nodepath(^"./country_budget/chart_1")
+	_upper_class_chart = get_gui_pie_chart_from_nodepath(^"./country_budget/chart_2")
+	_debt_chart = get_gui_pie_chart_from_nodepath(^"./country_budget/chart_debt")
 
 	# TODO - generate strata pop type icons
 

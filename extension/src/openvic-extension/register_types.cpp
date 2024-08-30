@@ -6,11 +6,19 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GUIButton.hpp"
+#include "openvic-extension/classes/GUIIcon.hpp"
+#include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
+#include "openvic-extension/classes/GUIMaskedFlag.hpp"
+#include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
+#include "openvic-extension/classes/GUIPieChart.hpp"
+#include "openvic-extension/classes/GUIProgressBar.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/classes/GUITextureRect.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
@@ -76,11 +84,23 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<GFXMaskedFlagTexture>();
 
 	ClassDB::register_class<GFXPieChartTexture>();
+	ClassDB::register_class<GUIButton>();
 	ClassDB::register_class<GUILabel>();
 	ClassDB::register_class<GUIListBox>();
 	ClassDB::register_class<GUINode>();
 	ClassDB::register_class<GUIOverlappingElementsBox>();
+	ClassDB::register_class<GUIPieChart>();
+	ClassDB::register_class<GUIProgressBar>();
 	ClassDB::register_class<GUIScrollbar>();
+	ClassDB::register_class<GUITextureRect>();
+
+	/* Depend on GUITextureRect */
+	ClassDB::register_class<GUIIcon>();
+	ClassDB::register_class<GUIMaskedFlag>();
+
+	/* Depend on GUIButton */
+	ClassDB::register_class<GUIIconButton>();
+	ClassDB::register_class<GUIMaskedFlagButton>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {

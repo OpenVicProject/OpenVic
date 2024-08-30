@@ -1,5 +1,6 @@
 #pragma once
 
+#include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/pop/Pop.hpp>
@@ -95,6 +96,10 @@ namespace OpenVic {
 		static godot::StringName const& _signal_population_menu_pops_changed();
 		/* Emitted when the collection of possible search results changes. */
 		static godot::StringName const& _signal_search_cache_changed();
+		/* Emitted when the current tooltip changes. Arguments: text (godot::String), substitution_dict (godot::Dictionary),
+		 * position (godot::Vector2). If text is empty then the tooltip will be hidden, otherwise the text will be shown at
+		 * the given position. */
+		static godot::StringName const& _signal_update_tooltip();
 
 		godot::String get_state_name(State const& state) const;
 		godot::String get_country_name(CountryInstance const& country) const;
@@ -109,6 +114,15 @@ namespace OpenVic {
 		/* This should only be called AFTER GameSingleton has been initialised! */
 		MenuSingleton();
 		~MenuSingleton();
+
+		/* TOOLTIP */
+		void show_tooltip(
+			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
+		);
+		void show_control_tooltip(
+			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Control const* control
+		);
+		void hide_tooltip();
 
 		/* PROVINCE OVERVIEW PANEL */
 		/* Get info to display in Province Overview Panel, packaged in a Dictionary using StringName constants as keys. */

@@ -6,10 +6,13 @@
 #include <openvic-simulation/interface/GUI.hpp>
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
+#include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
+
+		GUI_TOOLTIP_DEFINITIONS
 
 		GUI::Scrollbar const* PROPERTY(gui_scrollbar);
 
@@ -74,6 +77,7 @@ namespace OpenVic {
 
 	protected:
 		static void _bind_methods();
+
 		void _notification(int what);
 
 	public:

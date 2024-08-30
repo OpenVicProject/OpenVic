@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=21 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/TradeMenu.gd" id="10_mv1r6"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/DiplomacyMenu.gd" id="11_fu7ys"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/MilitaryMenu.gd" id="12_6h6nc"]
+[ext_resource type="Script" path="res://src/Game/GameSession/Tooltip.gd" id="20_3306e"]
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_model_manager", "_game_session_menu")]
 editor_description = "SS-102, UI-546"
@@ -155,6 +156,11 @@ anchor_right = 1.0
 offset_left = -150.0
 offset_right = 0.0
 grow_horizontal = 0
+
+[node name="Tooltip" type="GUINode" parent="UICanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 15
+script = ExtResource("20_3306e")
 
 [connection signal="detailed_view_changed" from="MapView" to="ModelManager" method="set_visible"]
 [connection signal="map_view_camera_changed" from="MapView" to="UICanvasLayer/UI/MapControlPanel" method="_on_map_view_camera_changed"]

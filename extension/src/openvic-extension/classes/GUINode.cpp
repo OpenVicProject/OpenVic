@@ -3,7 +3,6 @@
 #include <limits>
 
 #include <godot_cpp/classes/bit_map.hpp>
-#include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/canvas_item.hpp>
 #include <godot_cpp/classes/check_box.hpp>
 #include <godot_cpp/classes/control.hpp>
@@ -17,7 +16,6 @@
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/classes/texture_progress_bar.hpp>
-#include <godot_cpp/classes/texture_rect.hpp>
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/core/object.hpp>
@@ -39,20 +37,18 @@ using namespace godot;
 using namespace OpenVic;
 
 #define APPLY_TO_CHILD_TYPES(F) \
-	F(Button, button) \
+	F(GUIIconButton, gui_icon_button) \
+	F(GUIMaskedFlagButton, gui_masked_flag_button) \
 	F(GUILabel, gui_label) \
 	F(Panel, panel) \
-	F(TextureProgressBar, progress_bar) \
-	F(TextureRect, texture_rect) \
+	F(GUIProgressBar, gui_progress_bar) \
+	F(GUIIcon, gui_icon) \
+	F(GUIMaskedFlag, gui_masked_flag) \
+	F(GUIPieChart, gui_pie_chart) \
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
 	F(GUIScrollbar, gui_scrollbar) \
 	F(GUIListBox, gui_listbox) \
 	F(LineEdit, line_edit)
-
-#define APPLY_TO_TEXTURE_TYPES(F) \
-	F(GFXSpriteTexture, gfx_sprite_texture) \
-	F(GFXMaskedFlagTexture, gfx_masked_flag_texture) \
-	F(GFXPieChartTexture, gfx_pie_chart_texture)
 
 void GUINode::_bind_methods() {
 	OV_BIND_SMETHOD(generate_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
@@ -74,12 +70,10 @@ void GUINode::_bind_methods() {
 
 	APPLY_TO_CHILD_TYPES(GET_BINDINGS)
 
+#undef GET_BINDINGS
+
 	OV_BIND_SMETHOD(get_texture_from_node, { "node" });
 	OV_BIND_METHOD(GUINode::get_texture_from_nodepath, { "path" });
-
-	APPLY_TO_TEXTURE_TYPES(GET_BINDINGS)
-
-#undef GET_BINDINGS
 
 	OV_BIND_METHOD(GUINode::hide_node, { "path" });
 	OV_BIND_METHOD(GUINode::hide_nodes, { "paths" });
@@ -151,63 +145,43 @@ APPLY_TO_CHILD_TYPES(CHILD_GET_FUNCTIONS)
 
 #undef CHILD_GET_FUNCTIONS
 
+#undef APPLY_TO_CHILD_TYPES
+
 Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 	ERR_FAIL_NULL_V(node, nullptr);
 	if (TextureRect const* texture_rect = Object::cast_to<TextureRect>(node); texture_rect != nullptr) {
 		const Ref<Texture2D> texture = texture_rect->get_texture();
 		ERR_FAIL_NULL_V_MSG(texture, nullptr, vformat("Failed to get Texture2D from TextureRect %s", node->get_name()));
 		return texture;
-	} else if (Button const* button = Object::cast_to<Button>(node); button != nullptr) {
+	} else if (GUIButton const* button = Object::cast_to<GUIButton>(node); button != nullptr) {
 		static const StringName theme_name_normal = "normal";
 		const Ref<StyleBox> stylebox = button->get_theme_stylebox(theme_name_normal);
 		ERR_FAIL_NULL_V_MSG(
-			stylebox, nullptr, vformat("Failed to get StyleBox %s from Button %s", theme_name_normal, node->get_name())
+			stylebox, nullptr, vformat("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
 		);
 		const Ref<StyleBoxTexture> stylebox_texture = stylebox;
 		ERR_FAIL_NULL_V_MSG(
 			stylebox_texture, nullptr, vformat(
-				"Failed to cast StyleBox %s from Button %s to type StyleBoxTexture", theme_name_normal, node->get_name()
+				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
 			)
 		);
 		const Ref<Texture2D> result = stylebox_texture->get_texture();
 		ERR_FAIL_NULL_V_MSG(
 			result, nullptr,
-			vformat("Failed to get Texture2D from StyleBoxTexture %s from Button %s", theme_name_normal, node->get_name())
+			vformat("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name())
 		);
 		return result;
 	}
 	ERR_FAIL_V_MSG(
-		nullptr, vformat("Failed to cast node %s from type %s to TextureRect or Button", node->get_name(), node->get_class())
+		nullptr, vformat(
+			"Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
+		)
 	);
 }
 
 Ref<Texture2D> GUINode::get_texture_from_nodepath(NodePath const& path) const {
 	return get_texture_from_node(get_node_internal(path));
 }
-
-template<std::derived_from<Texture2D> T>
-static Ref<T> _cast_texture(Ref<Texture2D> const& texture) {
-	ERR_FAIL_NULL_V(texture, nullptr);
-	const Ref<T> result = texture;
-	ERR_FAIL_NULL_V_MSG(
-		result, nullptr, vformat("Failed to cast Texture2D from type %s to %s", texture->get_class(), T::get_class_static())
-	);
-	return result;
-}
-
-#define TEXTURE_GET_FUNCTIONS(type, name) \
-	Ref<type> GUINode::get_##name##_from_node(Node* node) { \
-		return _cast_texture<type>(get_texture_from_node(node)); \
-	} \
-	Ref<type> GUINode::get_##name##_from_nodepath(NodePath const& path) const { \
-		return _cast_texture<type>(get_texture_from_nodepath(path)); \
-	}
-
-APPLY_TO_TEXTURE_TYPES(TEXTURE_GET_FUNCTIONS)
-
-#undef TEXTURE_GET_FUNCTIONS
-
-#undef APPLY_TO_CHILD_TYPES
 
 Error GUINode::hide_node(NodePath const& path) const {
 	CanvasItem* node = _cast_node<CanvasItem>(get_node_internal(path));

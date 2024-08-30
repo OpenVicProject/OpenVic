@@ -30,6 +30,10 @@ StringName const& MenuSingleton::_signal_search_cache_changed() {
 	static const StringName signal_search_cache_changed = "search_cache_changed";
 	return signal_search_cache_changed;
 }
+StringName const& MenuSingleton::_signal_update_tooltip() {
+	static const StringName signal_update_tooltip = "update_tooltip";
+	return signal_update_tooltip;
+}
 
 String MenuSingleton::get_state_name(State const& state) const {
 	StateSet const& state_set = state.get_state_set();
@@ -103,6 +107,16 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 }
 
 void MenuSingleton::_bind_methods() {
+	/* TOOLTIP */
+	OV_BIND_METHOD(MenuSingleton::show_tooltip, { "text", "substitution_dict", "position" });
+	OV_BIND_METHOD(MenuSingleton::show_control_tooltip, { "text", "substitution_dict", "control" });
+	OV_BIND_METHOD(MenuSingleton::hide_tooltip);
+
+	ADD_SIGNAL(MethodInfo(
+		_signal_update_tooltip(), PropertyInfo(Variant::STRING, "text"),
+		PropertyInfo(Variant::DICTIONARY, "substitution_dict"), PropertyInfo(Variant::VECTOR2, "position")
+	));
+
 	/* PROVINCE OVERVIEW PANEL */
 	OV_BIND_METHOD(MenuSingleton::get_province_info_from_index, { "index" });
 	OV_BIND_METHOD(MenuSingleton::get_province_building_count);
@@ -203,6 +217,25 @@ MenuSingleton::MenuSingleton() : population_menu {
 MenuSingleton::~MenuSingleton() {
 	ERR_FAIL_COND(singleton != this);
 	singleton = nullptr;
+}
+
+/* TOOLTIP */
+
+void MenuSingleton::show_tooltip(String const& text, Dictionary const& substitution_dict, Vector2 const& position) {
+	emit_signal(_signal_update_tooltip(), text, substitution_dict, position);
+}
+
+void MenuSingleton::show_control_tooltip(String const& text, Dictionary const& substitution_dict, Control const* control) {
+	ERR_FAIL_NULL(control);
+
+	using namespace OpenVic::Utilities::literals;
+	static const Vector2 offset { 0.0_real, 64.0_real };
+
+	show_tooltip(text, substitution_dict, control->get_global_position() + offset);
+}
+
+void MenuSingleton::hide_tooltip() {
+	show_tooltip({}, {}, {});
 }
 
 /* PROVINCE OVERVIEW PANEL */
@@ -561,7 +594,7 @@ Error MenuSingleton::generate_search_cache() {
 	return OK;
 }
 
-void MenuSingleton::update_search_results(godot::String const& text) {
+void MenuSingleton::update_search_results(String const& text) {
 	// Sanatise input
 	const String search_text = text.strip_edges().to_lower();
 
