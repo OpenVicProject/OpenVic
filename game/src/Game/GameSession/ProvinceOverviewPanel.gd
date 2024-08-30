@@ -1,13 +1,13 @@
 extends GUINode
 
 # Header
-var _province_name_label : Label
-var _state_name_label : Label
+var _province_name_label : GUILabel
+var _state_name_label : GUILabel
 var _slave_status_icon : TextureRect
 var _colony_status_button : Button
 var _colony_status_button_texture : GFXSpriteTexture
-var _administrative_percentage_label : Label
-var _owner_percentage_label : Label
+var _administrative_percentage_label : GUILabel
+var _owner_percentage_label : GUILabel
 var _province_modifiers_overlapping_elements_box : GUIOverlappingElementsBox
 var _terrain_type_texture : GFXSpriteTexture
 var _life_rating_bar : TextureProgressBar
@@ -15,21 +15,21 @@ var _controller_flag_texture : GFXMaskedFlagTexture
 
 # Statistics
 var _rgo_icon_texture : GFXSpriteTexture
-var _rgo_produced_label : Label
-var _rgo_income_label : Label
+var _rgo_produced_label : GUILabel
+var _rgo_income_label : GUILabel
 var _rgo_employment_percentage_texture : GFXSpriteTexture
-var _rgo_employment_population_label : Label
-var _rgo_employment_percentage_label : Label
-var _crime_name_label : Label
+var _rgo_employment_population_label : GUILabel
+var _rgo_employment_percentage_label : GUILabel
+var _crime_name_label : GUILabel
 var _crime_icon_texture : GFXSpriteTexture
-var _crime_fighting_label : Label
-var _total_population_label : Label
-var _migration_label : Label
-var _population_growth_label : Label
+var _crime_fighting_label : GUILabel
+var _total_population_label : GUILabel
+var _migration_label : GUILabel
+var _population_growth_label : GUILabel
 var _pop_types_piechart : GFXPieChartTexture
 var _pop_ideologies_piechart : GFXPieChartTexture
 var _pop_cultures_piechart : GFXPieChartTexture
-var _supply_limit_label : Label
+var _supply_limit_label : GUILabel
 var _cores_overlapping_elements_box : GUIOverlappingElementsBox
 
 # Buildings
@@ -48,7 +48,7 @@ class BuildingSlot:
 	var _expand_button : Button
 	var _expanding_icon : TextureRect
 	var _expanding_progress_bar : TextureProgressBar
-	var _expanding_label : Label
+	var _expanding_label : GUILabel
 
 	func _init(new_slot_index : int, new_slot_node : Control) -> void:
 		if new_slot_index < 0:
@@ -68,7 +68,7 @@ class BuildingSlot:
 				else:
 					icon.hide()
 
-		var building_name := GUINode.get_label_from_node(_slot_node.get_node(^"./description"))
+		var building_name := GUINode.get_gui_label_from_node(_slot_node.get_node(^"./description"))
 		if building_name:
 			building_name.text = MenuSingleton.get_province_building_identifier(_slot_index)
 		_expand_button = GUINode.get_button_from_node(_slot_node.get_node(^"./expand"))
@@ -79,7 +79,7 @@ class BuildingSlot:
 		if _expanding_progress_bar:
 			_expanding_progress_bar.max_value = 1.0
 			_expanding_progress_bar.step = _expanding_progress_bar.max_value / 100
-		_expanding_label = GUINode.get_label_from_node(_slot_node.get_node(^"./expand_text"))
+		_expanding_label = GUINode.get_gui_label_from_node(_slot_node.get_node(^"./expand_text"))
 
 	enum ExpansionState { CannotExpand, CanExpand, Preparing, Expanding }
 
@@ -136,8 +136,8 @@ func _ready() -> void:
 		close_button.pressed.connect(_on_close_button_pressed)
 
 	# Header
-	_province_name_label = get_label_from_nodepath(^"./province_view/province_view_header/province_name")
-	_state_name_label = get_label_from_nodepath(^"./province_view/province_view_header/state_name")
+	_province_name_label = get_gui_label_from_nodepath(^"./province_view/province_view_header/province_name")
+	_state_name_label = get_gui_label_from_nodepath(^"./province_view/province_view_header/state_name")
 	if _state_name_label:
 		# State names are already translated in the MenuSingleton
 		_state_name_label.auto_translate = false
@@ -150,8 +150,8 @@ func _ready() -> void:
 	var admin_icon_texture : GFXSpriteTexture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_view_header/admin_icon")
 	if admin_icon_texture:
 		admin_icon_texture.set_icon_index(MenuSingleton.get_administrative_pop_icon_index())
-	_administrative_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/admin_efficiency")
-	_owner_percentage_label = get_label_from_nodepath(^"./province_view/province_view_header/owner_presence")
+	_administrative_percentage_label = get_gui_label_from_nodepath(^"./province_view/province_view_header/admin_efficiency")
+	_owner_percentage_label = get_gui_label_from_nodepath(^"./province_view/province_view_header/owner_presence")
 	_province_modifiers_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_view_header/province_modifiers")
 	if _province_modifiers_overlapping_elements_box and _province_modifiers_overlapping_elements_box.set_gui_child_element_name("province_interface", "prov_state_modifier") != OK:
 		_province_modifiers_overlapping_elements_box = null # hide province modifiers box since we can't do anything with it
@@ -161,17 +161,17 @@ func _ready() -> void:
 
 	# Statistics
 	_rgo_icon_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/goods_type")
-	_rgo_produced_label = get_label_from_nodepath(^"./province_view/province_statistics/produced")
-	_rgo_income_label = get_label_from_nodepath(^"./province_view/province_statistics/income")
+	_rgo_produced_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/produced")
+	_rgo_income_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/income")
 	_rgo_employment_percentage_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/employment_ratio")
-	_rgo_employment_population_label = get_label_from_nodepath(^"./province_view/province_statistics/rgo_population")
-	_rgo_employment_percentage_label = get_label_from_nodepath(^"./province_view/province_statistics/rgo_percent")
-	_crime_name_label = get_label_from_nodepath(^"./province_view/province_statistics/crime_name")
+	_rgo_employment_population_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/rgo_population")
+	_rgo_employment_percentage_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/rgo_percent")
+	_crime_name_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/crime_name")
 	_crime_icon_texture = get_gfx_sprite_texture_from_nodepath(^"./province_view/province_statistics/crime_icon")
-	_crime_fighting_label = get_label_from_nodepath(^"./province_view/province_statistics/crimefight_percent")
-	_total_population_label = get_label_from_nodepath(^"./province_view/province_statistics/total_population")
-	_migration_label = get_label_from_nodepath(^"./province_view/province_statistics/migration")
-	_population_growth_label = get_label_from_nodepath(^"./province_view/province_statistics/growth")
+	_crime_fighting_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/crimefight_percent")
+	_total_population_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/total_population")
+	_migration_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/migration")
+	_population_growth_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/growth")
 	_pop_types_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/workforce_chart")
 	_pop_ideologies_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/ideology_chart")
 	_pop_cultures_piechart = get_gfx_pie_chart_texture_from_nodepath(^"./province_view/province_statistics/culture_chart")
@@ -183,7 +183,7 @@ func _ready() -> void:
 				_on_close_button_pressed()
 				Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.POPULATION)
 		)
-	_supply_limit_label = get_label_from_nodepath(^"./province_view/province_statistics/supply_limit_label")
+	_supply_limit_label = get_gui_label_from_nodepath(^"./province_view/province_statistics/supply_limit_label")
 	_cores_overlapping_elements_box = get_gui_overlapping_elements_box_from_nodepath(^"./province_view/province_statistics/core_icons")
 	if _cores_overlapping_elements_box and _cores_overlapping_elements_box.set_gui_child_element_name("province_interface", "province_core") != OK:
 		_cores_overlapping_elements_box = null # hide cores box since we can't do anything with it
@@ -314,7 +314,7 @@ func _update_info() -> void:
 
 		if _rgo_income_label:
 			# TODO - add £ sign and replace placeholder with actual value
-			_rgo_income_label.text = "%s £" % GUINode.float_to_string_dp(12.34567, 3)
+			_rgo_income_label.text = "%s¤" % GUINode.float_to_string_dp(12.34567, 3)
 
 		if _rgo_employment_percentage_texture:
 			pass

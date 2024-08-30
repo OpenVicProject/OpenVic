@@ -63,6 +63,11 @@ String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
 	return String::num(val, decimal_places).pad_decimals(decimal_places);
 }
 
+String Utilities::float_to_string_dp_dynamic(float val) {
+	const float abs_val = std::abs(val);
+	return float_to_string_dp(val, abs_val < 2.0f ? 3 : abs_val < 10.0f ? 2 : 1);
+}
+
 /* Date formatted like this: "January 1, 1836" (with the month localised, if possible). */
 String Utilities::date_to_formatted_string(Date date) {
 	const String month_name = Utilities::std_to_godot_string(date.get_month_name());

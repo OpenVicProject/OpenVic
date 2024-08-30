@@ -40,7 +40,7 @@ using namespace OpenVic;
 
 #define APPLY_TO_CHILD_TYPES(F) \
 	F(Button, button) \
-	F(Label, label) \
+	F(GUILabel, gui_label) \
 	F(Panel, panel) \
 	F(TextureProgressBar, progress_bar) \
 	F(TextureRect, texture_rect) \
@@ -90,6 +90,7 @@ void GUINode::_bind_methods() {
 	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
+	OV_BIND_SMETHOD(float_to_string_dp_dynamic, { "val" });
 	OV_BIND_SMETHOD(format_province_name, { "province_identifier" });
 }
 
@@ -264,6 +265,10 @@ String GUINode::float_to_string_suffixed(float val) {
 
 String GUINode::float_to_string_dp(float val, int32_t decimal_places) {
 	return Utilities::float_to_string_dp(val, decimal_places);
+}
+
+String GUINode::float_to_string_dp_dynamic(float val) {
+	return Utilities::float_to_string_dp_dynamic(val);
 }
 
 String GUINode::format_province_name(String const& province_identifier) {

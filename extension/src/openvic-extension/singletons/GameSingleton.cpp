@@ -597,7 +597,7 @@ Error GameSingleton::set_compatibility_mode_roots(PackedStringArray const& file_
 Error GameSingleton::load_defines_compatibility_mode() {
 	Error err = OK;
 	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
-	
+
 	if (!game_manager.load_definitions(add_message)) {
 		UtilityFunctions::push_error("Failed to load defines!");
 		err = FAILED;
@@ -613,6 +613,12 @@ Error GameSingleton::load_defines_compatibility_mode() {
 	}
 	if (_load_map_images() != OK) {
 		UtilityFunctions::push_error("Failed to load map images!");
+		err = FAILED;
+	}
+
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	if (asset_manager == nullptr || asset_manager->preload_textures() != OK) {
+		UtilityFunctions::push_error("Failed to preload assets!");
 		err = FAILED;
 	}
 
