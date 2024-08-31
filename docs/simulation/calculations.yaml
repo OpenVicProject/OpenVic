@@ -147,11 +147,11 @@ POPs:
       RGO wages:
         Owners:
           if minimum worker wages > normal worker wage:
-            formula: (RGO income - total worker income) * owner POP size / owners * (1 - effective tax) 
+            formula: (RGO income - total worker income) * owner POP size / n_owners * (1 - effective tax) 
           else:
-            formula: RGO income * min(0.5, 2 * owners / workers) * owner POP size / owners * (1 - effective tax) 
-            owners: total size of owner POPs in state
-            workers: number of employed workers in RGO
+            formula: RGO income * min(0.5, 2 * n_owners / n_workers) * owner POP size / n_owners * (1 - effective tax) 
+            n_owners: total size of owner POPs in state
+            n_workers: number of employed workers in RGO
             min(0.5: Hardcoded maximum of half the RGO income.
             2*: Hardcoded value.
         Workers:
@@ -160,8 +160,8 @@ POPs:
             if minimum wage > normal wage:
               formula: min(minimum wage, RGO income * employed workers in POP / total non-slave employed workers) * (1 - effective tax) 
             else:
-              formula: RGO income * max(0.5, 1 - 2 * owners / workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
-              owners: total size of owner POPs in state
-              workers: number of employed workers in RGO
+              formula: RGO income * max(0.5, 1 - 2 * n_owners / n_workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
+              n_owners: total size of owner POPs in state
+              n_workers: number of employed workers in RGO
               max(0.5: Hardcoded minimum of half the RGO income.
               2*: Hardcoded value.
