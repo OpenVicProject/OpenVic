@@ -60,7 +60,7 @@ Economy:
         relative maximum:
             if employees count = 0 & max employees >= 6667: 0.2775 * Vacancies
             else: ceil(0.15 * Vacancies) - 1
-          0.15: Hardcoded value
+          0.15: Hardcoded value.
           0.2775: 1 - (1 - 0.15)^2
           note: Rounding is unknown for the 0.2775 case. See https://discord.com/channels/1063392556160909312/1063416834650554398/1204520366643347476
       Minimum employees hired per day:
@@ -147,21 +147,36 @@ POPs:
       RGO wages:
         Owners:
           if minimum worker wages > normal worker wage:
-            formula: (RGO income - total worker income) * owner POP size / owners * (1 - effective tax) 
+            formula: (RGO income - total worker income) * owner POP size / n_owners * (1 - effective tax) 
           else:
-            formula: RGO income * min(0.5, 2 * owners / workers) * owner POP size / owners * (1 - effective tax) 
-            owners: total size of owner POPs in state
-            workers: number of employed workers in RGO
+            formula: RGO income * min(0.5, 2 * n_owners / n_workers) * owner POP size / n_owners * (1 - effective tax) 
+            n_owners: total size of owner POPs in state
+            n_workers: number of employed workers in RGO
             min(0.5: Hardcoded maximum of half the RGO income.
-            2*: Hardcoded value.
+            2 *: Hardcoded value.
         Workers:
           if is_slave: 0
           else:
             if minimum wage > normal wage:
               formula: min(minimum wage, RGO income * employed workers in POP / total non-slave employed workers) * (1 - effective tax) 
             else:
-              formula: RGO income * max(0.5, 1 - 2 * owners / workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
-              owners: total size of owner POPs in state
-              workers: number of employed workers in RGO
+              formula: RGO income * max(0.5, 1 - 2 * n_owners / n_workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
+              n_owners: total size of owner POPs in state
+              n_workers: number of employed workers in RGO
               max(0.5: Hardcoded minimum of half the RGO income.
-              2*: Hardcoded value.
+              2 *: Hardcoded value.
+Scores:
+  Industrial power:
+    formula: sum of investment scores + sum of state factory scores
+    investment score: money_invested * defines.country.INVESTMENT_SCORE_FACTOR / 100
+    state factory score:
+      if n_workers > 0:
+        formula: sum_factory_levels_in_state * max(0.2, min(4, floor(n_workers_in_state / 100) * 400 / sum_workforce_in_state))
+        sum_factory_levels_in_state: sum of factory levels in the state
+        max(0.2: Hardcoded minimum score per factory level.
+        min(4: Hardcoded maximum score per factory level.
+        floor(n_workers_in_state / 100): Hardcoded number step.
+        400: Hardcoded value.
+        n_workers_in_state: Total size of worker POPs in state (employed or not).
+        sum_workforce_in_state: Sum of factory level * workforce, defined in /common/production_types.txt.
+      else: 0
