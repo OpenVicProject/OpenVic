@@ -178,5 +178,19 @@ Scores:
         floor(n_workers_in_state / 100): Hardcoded number step.
         400: Hardcoded value.
         n_workers_in_state: Total size of worker POPs in state (employed or not).
-        sum_workforce_in_state: Sum of factory level * workforce, defined in /common/production_types.txt.
+        sum_workforce_in_state: Sum of (factory level * workforce), defined in /common/production_types.txt.
       else: 0
+  Military power:
+    formula: soldier & army score + capital ship score + leaders score
+    soldier & army score:
+      formula: disarmed penalty * regular army size * supply consumption * sum unit stats / (7 * (1 + n_unit_types))
+      disarmed penalty:
+        if is_disarmed: defines.diplomacy.DISARMAMENT_ARMY_HIT
+        else: 1
+      regular army size: min(4 * number of deployed non-mobilised regiments, possible regiment count)
+      supply consumption: From army tab, not unit types.
+      sum unit stats: Sum of ((attack + defence + land_attack_modifier + land_defense_modifier) * discipline) for each land unit type (including locked).
+      n_unit_types: Number of land unit types (including locked).
+      7*: Hardcoded value.
+    capital ship score: Sum of ((hull + naval_defense_modifier) * (gun_power + naval_attack_modifier)) for each capital ship instance.
+    leader score: min(number of generals, number of deployed non-mobilised regiments)
