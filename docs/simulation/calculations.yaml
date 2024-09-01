@@ -192,5 +192,8 @@ Scores:
       sum unit stats: Sum of ((attack + defence + land_attack_modifier + land_defense_modifier) * discipline) for each land unit type (including locked).
       n_unit_types: Number of land unit types (including locked).
       7*: Hardcoded value.
-    capital ship score: Sum of ((hull + naval_defense_modifier) * (gun_power + naval_attack_modifier)) for each capital ship instance.
+    capital ship score:
+      formula: sum ship stats / 250
+      sum ship stats: Sum of ((hull + naval_defense_modifier) * (gun_power + naval_attack_modifier)) for each capital ship instance.
+      /250: Hardcoded value.
     leader score: min(number of generals, number of deployed non-mobilised regiments)
