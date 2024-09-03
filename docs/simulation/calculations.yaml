@@ -135,6 +135,7 @@ POPs:
     Monthly literacy change:
       formula: defines.pops.LITERACY_CHANGE_SPEED * local clergy factor * (1 + education_efficiency) * (1 + education_efficiency_modifier) * educational spending slider
       local clergy factor: ((clergy POPs in province / total POPs in province) - defines.pops.BASE_CLERGY_FOR_LITERACY) / (defines.pops.MAX_CLERGY_FOR_LITERACY - defines.pops.BASE_CLERGY_FOR_LITERACY)
+      note: clergy POPs are all pop types with can_reduce_consciousness = yes
   Needs:
     Base needs scalar: (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand) * defines.pop.BASE_GOODS_DEMAND * POP size / 200000
     Life needs scalar: Base needs scalar * (1 + <strata>_life_needs modifier)
