@@ -68,7 +68,7 @@ Economy:
         absolute minimum: 50 (hardcoded value)
         relative minimum: floor(defines.economy.EMPLOYMENT_HIRE_LOWEST * employees count)
 Military:
-  Maximum units per soldier POP:
+  Maximum regiments per soldier POP:
     if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
     else:
       formula: ceil(POP size / (POP_SIZE_PER_REGIMENT * location factor))
@@ -78,35 +78,49 @@ Military:
         else if is colony: defines.military.POP_MIN_SIZE_FOR_REGIMENT_COLONY_MULTIPLIER
         else if location is core: 1
         else: defines.military.POP_MIN_SIZE_FOR_REGIMENT_NONCORE_MULTIPLIER
-  Reinforcements per army:
-    formula: 5 * round(supply factor * sum of unit reinforcements * REINFORCE_SPEED * local reinforce rate * (1 + reinforce_rate) * (1 + reinforce_speed) / 5)
-    supply factor:
-      if unit received all its supplies: 1
-      else:
-        formula: ((x^(n+1) - 1)/(x - 1) - 1) / n
-        x: received supply
-        n: number of units in the army
-    unit reinforcements: 1000 * max_strength * unit reinforce rate
-      max_strength: as defined in /units/<unit>.txt
-      1000: (max_)strength is defined in thousands of soldiers. Reinforcements per army uses the number of soldiers.
-      unit reinforce rate:
-        if unit is mobilised: 0.5
-        else if pop is too small for a single unit: 0.5
-        else if pop supports too many units: Maximum units per soldier POP / number of supported units
-        else: 1
-    REINFORCE_SPEED: defines.military.REINFORCE_SPEED
-    local reinforce rate:
-      if location owner == army owner: 2
-      else if army is exiled: 0
-      else if location is uncolonised: 0
-      else if location controller is hostile:
-        if location neighbours a province controlled by an ally in this war: 0.5
-        else if location is coastal & not blockaded: 0.25
-        else: 0.1
-      else: 1
-    reinforce_rate: sum of reinforce_rate modifiers from tech
-    reinforce_speed: sum of reinforce_speed modifiers on country
-    5 * round(... /5): round to multiple of 5
+  Reinforcing:
+    Regiment reinforcements fraction * 1000:
+      formula:
+        if regiment is full strength: 0
+        else: min(trunc(regiment reinforce rate * supply factor * reinforcements multiplier * 1000), 1000)
+      unit type strength: as defined in /units/<unit>.txt
+      1000: strength is defined in thousands of soldiers. Reinforcements per army uses the number of soldiers.
+      regiment reinforce rate:
+          if regiment is mobilised: 0.5
+          else if pop is too small for a single regiment: 0.5
+          else if pop supports too many regiments: Maximum regiments per soldier POP / number of supported regiments
+          else: 1
+      reinforcements multiplier:
+        formula: REINFORCE_SPEED * local reinforce rate * (1 + reinforce_rate) * (1 + reinforce_speed)
+        REINFORCE_SPEED: defines.military.REINFORCE_SPEED
+        local reinforce rate:
+          if location owner == army owner: 2
+          else if army is exiled: 0
+          else if location is uncolonised: 0
+          else if location controller is hostile:
+            if location neighbours a province controlled by an ally in this war: 0.5
+            else if location is coastal & not blockaded: 0.25
+            else: 0.1
+          else: 1
+        reinforce_rate: sum of reinforce_rate modifiers from tech
+        reinforce_speed: sum of reinforce_speed modifiers on country
+      supply factor:
+        if army received all its supplies: 1
+        else:
+          formula: x^(1+i)
+          x: received supply
+          i: 0 based index of regiment in the army
+      trunc(... * 1000): Truncated to 1/1000th.
+      min(..., 1000): Capped at max strength.
+    Regiment reinforcements:
+      formula: trunc(unit type strength * Regiment reinforcements fraction * 1000)
+      unit type strength: as defined in /units/<unit>.txt
+      trunc(unit type strength * ...): Truncated to integers in the case unit type strength isn't an integer already.
+    Reinforcements per army (tooltip): sum of Regiment reinforcements
+    Regiment experience after reinforcing:
+      formula: xp before reinforcing / (1 + trunc(Regiment reinforcements fraction * 1000 / 3) / 1000)
+      trunc(... / 3): Hardcoded.
+      / 1000: to counter * 1000.
   Regiment experience gain per day of combat:
     formula: d6 * defines.military.EXP_GAIN_DIV * (1 + sum of experience gain modifiers) + unexplained
     d6: random integer (inclusive) 1-6
