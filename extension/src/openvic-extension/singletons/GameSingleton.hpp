@@ -124,6 +124,6 @@ namespace OpenVic {
 		void set_selected_province(int32_t index);
 		void unset_selected_province();
 
-		void try_tick();
+		godot::Error update_clock();
 	};
 }
