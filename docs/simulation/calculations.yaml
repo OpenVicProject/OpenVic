@@ -199,7 +199,7 @@ Scores:
         sum_workforce_in_state: Sum of (factory level * workforce), defined in /common/production_types.txt.
       else: 0
   Military power:
-    formula: soldier & army score + capital ship score + leaders score
+    formula: soldier & army score + capital ship score + leader score
     soldier & army score:
       formula: disarmed penalty * regular army size * supply consumption * sum unit stats / (7 * (1 + n_unit_types))
       disarmed penalty:
@@ -214,4 +214,4 @@ Scores:
       formula: sum ship stats / 250
       sum ship stats: Sum of ((hull + naval_defense_modifier) * (gun_power + naval_attack_modifier)) for each capital ship instance.
       /250: Hardcoded value.
-    leader score: min(number of generals, number of deployed non-mobilised regiments)
+    leader score: min(number of admirals + number of generals, number of deployed non-mobilised regiments)
