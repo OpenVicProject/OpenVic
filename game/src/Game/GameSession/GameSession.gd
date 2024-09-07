@@ -14,7 +14,7 @@ func _ready() -> void:
 	MusicConductor.select_next_song()
 
 func _process(_delta : float) -> void:
-	GameSingleton.try_tick()
+	GameSingleton.update_clock()
 
 # REQUIREMENTS:
 # * SS-42

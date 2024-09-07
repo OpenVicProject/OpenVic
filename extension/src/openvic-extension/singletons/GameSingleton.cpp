@@ -69,7 +69,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 	OV_BIND_METHOD(GameSingleton::unset_selected_province);
 
-	OV_BIND_METHOD(GameSingleton::try_tick);
+	OV_BIND_METHOD(GameSingleton::update_clock);
 
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
 	ADD_SIGNAL(MethodInfo(_signal_province_selected(), PropertyInfo(Variant::INT, "index")));
@@ -349,11 +349,8 @@ void GameSingleton::unset_selected_province() {
 	set_selected_province(ProvinceDefinition::NULL_INDEX);
 }
 
-void GameSingleton::try_tick() {
-	InstanceManager* instance_manager = get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().conditionally_advance_game();
+Error GameSingleton::update_clock() {
+	return ERR(game_manager.update_clock());
 }
 
 Error GameSingleton::_load_map_images() {
