@@ -71,7 +71,7 @@ Military:
   Maximum regiments per soldier POP:
     if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
     else:
-      formula: ceil(POP size / (POP_SIZE_PER_REGIMENT * location factor))
+      formula: 1 + trunc(POP size / (POP_SIZE_PER_REGIMENT * location factor))
       POP_SIZE_PER_REGIMENT: defines.military.POP_SIZE_PER_REGIMENT
       location factor:
         if is protectorate: defines.military.POP_MIN_SIZE_FOR_REGIMENT_PROTECTORATE_MULTIPLIER
