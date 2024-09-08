@@ -31,12 +31,18 @@ String const& GUILabel::get_substitution_marker() {
 	return SUBSTITUTION_MARKER;
 }
 
+String const& GUILabel::get_flag_marker() {
+	static const String FLAG_MARKER = String::chr(0x40); // @
+	return FLAG_MARKER;
+}
+
 void GUILabel::_bind_methods() {
 	GUI_TOOLTIP_BIND_METHODS(GUILabel)
 
 	OV_BIND_SMETHOD(get_colour_marker);
 	OV_BIND_SMETHOD(get_currency_marker);
 	OV_BIND_SMETHOD(get_substitution_marker);
+	OV_BIND_SMETHOD(get_flag_marker);
 
 	OV_BIND_METHOD(GUILabel::clear);
 	OV_BIND_METHOD(GUILabel::get_gui_text_name);

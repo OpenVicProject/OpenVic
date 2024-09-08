@@ -115,6 +115,10 @@ namespace OpenVic {
 		MenuSingleton();
 		~MenuSingleton();
 
+		static godot::String get_tooltip_separator();
+		godot::String get_country_name_from_identifier(godot::String const& country_identifier) const;
+		godot::String get_country_adjective_from_identifier(godot::String const& country_identifier) const;
+
 		/* TOOLTIP */
 		void show_tooltip(
 			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
@@ -133,6 +137,9 @@ namespace OpenVic {
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
+
+		/* TOPBAR */
+		godot::Dictionary get_topbar_info() const;
 
 		/* TIME/SPEED CONTROL PANEL */
 		void set_paused(bool paused);

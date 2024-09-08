@@ -15,6 +15,8 @@ namespace OpenVic {
 
 		GameManager game_manager;
 
+		CountryInstance const* PROPERTY(viewed_country);
+
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
 		godot::Ref<godot::Image> province_colour_image;
@@ -123,6 +125,9 @@ namespace OpenVic {
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);
 		void unset_selected_province();
+
+		void set_viewed_country(CountryInstance const* new_viewed_country);
+		void set_viewed_country_by_province_index(int32_t province_index);
 
 		godot::Error update_clock();
 	};

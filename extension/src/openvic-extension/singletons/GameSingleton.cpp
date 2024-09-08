@@ -69,6 +69,8 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
 	OV_BIND_METHOD(GameSingleton::unset_selected_province);
 
+	OV_BIND_METHOD(GameSingleton::set_viewed_country_by_province_index, { "province_index" });
+
 	OV_BIND_METHOD(GameSingleton::update_clock);
 
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
@@ -95,7 +97,7 @@ void GameSingleton::_on_clock_state_changed() {
 GameSingleton::GameSingleton()
 	: game_manager {
 		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
-	} {
+	}, viewed_country { nullptr } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -138,6 +140,10 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
 	ERR_FAIL_NULL_V(menu_singleton, FAILED);
 	ret &= menu_singleton->_population_menu_update_provinces() == OK;
+
+	// TODO - replace with actual starting country
+	set_viewed_country(instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG"));
+	ERR_FAIL_NULL_V(viewed_country, FAILED);
 
 	return ERR(ret);
 }
@@ -347,6 +353,27 @@ void GameSingleton::set_selected_province(int32_t index) {
 
 void GameSingleton::unset_selected_province() {
 	set_selected_province(ProvinceDefinition::NULL_INDEX);
+}
+
+void GameSingleton::set_viewed_country(CountryInstance const* new_viewed_country) {
+	if (viewed_country != new_viewed_country) {
+		viewed_country = new_viewed_country;
+
+		Logger::info("Set viewed country to: ", viewed_country != nullptr ? viewed_country->get_identifier() : "NULL");
+
+		_on_gamestate_updated();
+	}
+}
+
+void GameSingleton::set_viewed_country_by_province_index(int32_t province_index) {
+	InstanceManager* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	ProvinceInstance const* province_instance =
+		instance_manager->get_map_instance().get_province_instance_by_index(province_index);
+	ERR_FAIL_NULL(province_instance);
+
+	set_viewed_country(province_instance->get_owner());
 }
 
 Error GameSingleton::update_clock() {

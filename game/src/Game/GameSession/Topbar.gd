@@ -263,9 +263,19 @@ func _ready() -> void:
 
 	# Military
 	_military_army_size_label = get_gui_label_from_nodepath(^"./topbar/military_army_value")
+	if _military_army_size_label:
+		_military_army_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_military_army_size_label.set_text("§Y$CURR$/$MAX$")
+		_military_army_size_label.set_tooltip_string("TOPBAR_ARMY_TOOLTIP")
 	_military_navy_size_label = get_gui_label_from_nodepath(^"./topbar/military_navy_value")
+	if _military_navy_size_label:
+		_military_navy_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_military_mobilisation_size_label = get_gui_label_from_nodepath(^"./topbar/military_manpower_value")
+	if _military_mobilisation_size_label:
+		_military_mobilisation_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_military_leadership_points_label = get_gui_label_from_nodepath(^"./topbar/military_leadership_value")
+	if _military_leadership_points_label:
+		_military_leadership_points_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 	_update_info()
 	_update_speed_controls()
@@ -276,72 +286,115 @@ func _notification(what : int) -> void:
 			_update_info()
 			_update_speed_controls()
 
-func _update_info() -> void:
-	# Placeholder data
-	const player_country : String = "ENG"
-	const player_rank : int = 0
+enum CountryStatus {
+	GREAT_POWER,
+	SECONDARY_POWER,
+	CIVILISED,
+	PARTIALLY_CIVILISED,
+	UNCIVILISED,
+	PRIMITIVE
+}
 
-	const RANK_NAMES : PackedStringArray = [
+func _update_info() -> void:
+	var topbar_info : Dictionary = MenuSingleton.get_topbar_info()
+
+	## Country info
+	const country_key : StringName = &"country"
+	const country_status_key : StringName = &"country_status"
+	const total_rank_key : StringName = &"total_rank"
+
+	const prestige_key : StringName = &"prestige"
+	const prestige_rank_key : StringName = &"prestige_rank"
+	const prestige_tooltip_key : StringName = &"prestige_tooltip"
+
+	const industrial_power_key : StringName = &"industrial_power"
+	const industrial_rank_key : StringName = &"industrial_rank"
+	const industrial_power_tooltip_key : StringName = &"industrial_power_tooltip"
+
+	const military_power_key : StringName = &"military_power"
+	const military_rank_key : StringName = &"military_rank"
+	const military_power_tooltip_key : StringName = &"military_power_tooltip"
+
+	const colonial_power_available_key : StringName = &"colonial_power_available"
+	const colonial_power_max_key : StringName = &"colonial_power_max"
+	const colonial_power_tooltip_key : StringName = &"colonial_power_tooltip"
+
+	const COUNTRY_STATUS_NAMES : PackedStringArray = [
 		"DIPLOMACY_GREATNATION_STATUS",
 		"DIPLOMACY_COLONIALNATION_STATUS",
 		"DIPLOMACY_CIVILIZEDNATION_STATUS",
-		"DIPLOMACY_UNCIVILIZEDNATION_STATUS"
+		"DIPLOMACY_ALMOST_WESTERN_NATION_STATUS",
+		"DIPLOMACY_UNCIVILIZEDNATION_STATUS",
+		"DIPLOMACY_PRIMITIVENATION_STATUS"
 	]
 
-	## Country info
+	var country_identifier : String = topbar_info.get(country_key, "")
+	var country_name : String = MenuSingleton.get_country_name_from_identifier(country_identifier)
+	var country_status : int = topbar_info.get(country_status_key, CountryStatus.UNCIVILISED)
+
+	var country_name_rank_tooltip : String = tr("PLAYER_COUNTRY_TOPBAR_RANK") + MenuSingleton.get_tooltip_separator() + tr("RANK_TOTAL_D")
+	var country_name_rank_dict : Dictionary = {
+		"NAME": country_name,
+		"RANK": COUNTRY_STATUS_NAMES[country_status]
+	}
+
 	if _country_flag_button:
-		_country_flag_button.set_flag_country_name(player_country)
-		_country_flag_button.set_tooltip_string_and_substitution_dict("PLAYER_COUNTRY_TOPBAR_RANK", {
-			"NAME": player_country, "RANK": RANK_NAMES[player_rank]
-		})
+		_country_flag_button.set_flag_country_name(country_identifier)
+		_country_flag_button.set_tooltip_string_and_substitution_dict(country_name_rank_tooltip, country_name_rank_dict)
 
 	if _country_flag_overlay_icon:
 		# 1 - Great Power
 		# 2 - Secondary Power
 		# 3 - Civilised
-		# 4 - Uncivilised
-		_country_flag_overlay_icon.set_icon_index(1 + player_rank)
+		# 4 - All Uncivilised
+		_country_flag_overlay_icon.set_icon_index(1 + min(country_status, CountryStatus.PARTIALLY_CIVILISED))
 
 	if _country_name_label:
-		_country_name_label.set_text(player_country)
+		_country_name_label.set_text(country_name)
 
 	if _country_rank_label:
-		_country_rank_label.set_text(str(1))
-		_country_rank_label.set_tooltip_string_and_substitution_dict("PLAYER_COUNTRY_TOPBAR_RANK", {
-			"NAME": player_country, "RANK": RANK_NAMES[player_rank]
-		})
+		_country_rank_label.set_text(str(topbar_info.get(total_rank_key, 0)))
+		_country_rank_label.set_tooltip_string_and_substitution_dict(country_name_rank_tooltip, country_name_rank_dict)
+
+	var prestige_tooltip : String = tr("RANK_PRESTIGE") + topbar_info.get(prestige_tooltip_key, "") + MenuSingleton.get_tooltip_separator() + tr("RANK_PRESTIGE_D")
 
 	if _country_prestige_label:
-		_country_prestige_label.set_text(str(11))
-		_country_military_power_label.set_tooltip_string("RANK_PRESTIGE")
+		_country_prestige_label.set_text(str(topbar_info.get(prestige_key, 0)))
+		_country_prestige_label.set_tooltip_string(prestige_tooltip)
 
 	if _country_prestige_rank_label:
-		_country_prestige_rank_label.set_text(str(1))
-		_country_military_power_label.set_tooltip_string("RANK_PRESTIGE")
+		_country_prestige_rank_label.set_text(str(topbar_info.get(prestige_rank_key, 0)))
+		_country_prestige_rank_label.set_tooltip_string(prestige_tooltip)
+
+	var industrial_power_tooltip : String = tr("RANK_INDUSTRY") + MenuSingleton.get_tooltip_separator() + tr("RANK_INDUSTRY_D") + topbar_info.get(industrial_power_tooltip_key, "")
 
 	if _country_industrial_power_label:
-		_country_industrial_power_label.set_text(str(22))
-		_country_military_power_label.set_tooltip_string("RANK_INDUSTRY")
+		_country_industrial_power_label.set_text(str(topbar_info.get(industrial_power_key, 0)))
+		_country_industrial_power_label.set_tooltip_string(industrial_power_tooltip)
 
 	if _country_industrial_power_rank_label:
-		_country_industrial_power_rank_label.set_text(str(2))
-		_country_military_power_label.set_tooltip_string("RANK_INDUSTRY")
+		_country_industrial_power_rank_label.set_text(str(topbar_info.get(industrial_rank_key, 0)))
+		_country_industrial_power_rank_label.set_tooltip_string(industrial_power_tooltip)
+
+	var military_power_tooltip : String = tr("RANK_MILITARY") + MenuSingleton.get_tooltip_separator() + tr("RANK_MILITARY_D") + topbar_info.get(military_power_tooltip_key, "")
 
 	if _country_military_power_label:
-		_country_military_power_label.set_text(str(33))
-		_country_military_power_label.set_tooltip_string("RANK_MILITARY")
+		_country_military_power_label.set_text(str(topbar_info.get(military_power_key, 0)))
+		_country_military_power_label.set_tooltip_string(military_power_tooltip)
 
 	if _country_military_power_rank_label:
-		_country_military_power_rank_label.set_text(str(3))
-		_country_military_power_rank_label.set_tooltip_string("RANK_MILITARY")
+		_country_military_power_rank_label.set_text(str(topbar_info.get(military_rank_key, 0)))
+		_country_military_power_rank_label.set_tooltip_string(military_power_tooltip)
 
 	if _country_colonial_power_label:
-		var available_colonial_power : int = 123
-		var total_colonial_power : int = 456
+		var available_colonial_power : int = topbar_info.get(colonial_power_available_key, 0)
+		var max_colonial_power : int = topbar_info.get(colonial_power_max_key, 0)
 		_country_colonial_power_label.set_text(
-			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, total_colonial_power]
+			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, max_colonial_power]
 		)
-		_country_colonial_power_label.set_tooltip_string("COLONIAL_POINTS")
+		_country_colonial_power_label.set_tooltip_string(tr("COLONIAL_POINTS") + MenuSingleton.get_tooltip_separator() + (
+			topbar_info.get(colonial_power_tooltip_key, "") if country_status <= CountryStatus.SECONDARY_POWER else tr("NON_COLONIAL_POWER")
+		))
 
 	## Time control
 	if _date_label:
@@ -472,17 +525,46 @@ func _update_info() -> void:
 		_diplomacy_alert_great_power_icon.set_icon_index(2)
 
 	## Military
+	const regiment_count_key : StringName = &"regiment_count";
+	const max_supported_regiments_key : StringName = &"max_supported_regiments";
+
+	var regiment_count : String = str(topbar_info.get(regiment_count_key, 0))
+
 	if _military_army_size_label:
-		_military_army_size_label.set_text("§Y%d/%d" % [57, 120])
+		var army_size_dict : Dictionary = {
+			"CURR": regiment_count, "MAX": str(topbar_info.get(max_supported_regiments_key, 0))
+		}
+		_military_army_size_label.set_substitution_dict(army_size_dict)
+		_military_army_size_label.set_tooltip_substitution_dict(army_size_dict)
 
 	if _military_navy_size_label:
-		_military_navy_size_label.set_text("§Y%d/%d" % [123, 267])
+		_military_navy_size_label.set_text("§Y%d/%d" % [0, 0])
+
+	const mobilised_key : StringName = &"mobilised"
+	const mobilisation_regiments_key : StringName = &"mobilisation_regiments"
+	const mobilisation_impact_key : StringName = &"mobilisation_impact"
+	const war_policy_key : StringName = &"war_policy"
+	const mobilisation_max_regiments_key : StringName = &"mobilisation_max_regiments"
 
 	if _military_mobilisation_size_label:
-		_military_mobilisation_size_label.set_text("§Y%d" % 38)
+		if topbar_info.get(mobilised_key, false):
+			_military_mobilisation_size_label.set_text("§R-")
+			_military_mobilisation_size_label.set_tooltip_string("TOPBAR_MOBILIZED")
+		else:
+			var mobilisation_regiments : String = str(topbar_info.get(mobilisation_regiments_key, 0))
+			var mobilisation_impact : String = GUINode.float_to_string_dp(topbar_info.get(mobilisation_impact_key, 0), 1) + "%"
+
+			_military_mobilisation_size_label.set_text("§Y" + mobilisation_regiments)
+			_military_mobilisation_size_label.set_tooltip_string_and_substitution_dict(
+				tr("TOPBAR_MOBILIZE_TOOLTIP") + "\n\n" + tr("MOBILIZATION_IMPACT_LIMIT_DESC") + "\n" + tr("MOBILIZATION_IMPACT_LIMIT_DESC2").replace("$CURR$", "$CURR2$"),
+				{
+					"CURR": mobilisation_regiments, "IMPACT": mobilisation_impact, "POLICY": topbar_info.get(war_policy_key, ""),
+					"UNITS": str(topbar_info.get(mobilisation_max_regiments_key, 0)), "CURR2": regiment_count
+				}
+			)
 
 	if _military_leadership_points_label:
-		_military_leadership_points_label.set_text("§Y%d" % 15)
+		_military_leadership_points_label.set_text("§Y%d" % 0)
 
 func _update_speed_controls() -> void:
 	var paused : bool = MenuSingleton.is_paused()

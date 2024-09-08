@@ -107,6 +107,10 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 }
 
 void MenuSingleton::_bind_methods() {
+	OV_BIND_SMETHOD(get_tooltip_separator);
+	OV_BIND_METHOD(MenuSingleton::get_country_name_from_identifier, { "country_identifier" });
+	OV_BIND_METHOD(MenuSingleton::get_country_adjective_from_identifier, { "country_identifier" });
+
 	/* TOOLTIP */
 	OV_BIND_METHOD(MenuSingleton::show_tooltip, { "text", "substitution_dict", "position" });
 	OV_BIND_METHOD(MenuSingleton::show_control_tooltip, { "text", "substitution_dict", "control" });
@@ -125,6 +129,9 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_rgo_owner_pop_icon_index);
+
+	/* TOPBAR */
+	OV_BIND_METHOD(MenuSingleton::get_topbar_info);
 
 	/* TIME/SPEED CONTROL PANEL */
 	OV_BIND_METHOD(MenuSingleton::set_paused, { "paused" });
@@ -217,6 +224,49 @@ MenuSingleton::MenuSingleton() : population_menu {
 MenuSingleton::~MenuSingleton() {
 	ERR_FAIL_COND(singleton != this);
 	singleton = nullptr;
+}
+
+String MenuSingleton::get_tooltip_separator() {
+	static const String tooltip_separator = "\n" + String { "-" }.repeat(14) + "\n";
+	return tooltip_separator;
+}
+
+String MenuSingleton::get_country_name_from_identifier(String const& country_identifier) const {
+	if (country_identifier.is_empty()) {
+		return {};
+	}
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
+
+	CountryInstance const* country = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
+		Utilities::godot_to_std_string(country_identifier)
+	);
+	ERR_FAIL_NULL_V(country, {});
+
+	return get_country_name(*country);
+}
+
+String MenuSingleton::get_country_adjective_from_identifier(String const& country_identifier) const {
+	if (country_identifier.is_empty()) {
+		return {};
+	}
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
+
+	CountryInstance const* country = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
+		Utilities::godot_to_std_string(country_identifier)
+	);
+	ERR_FAIL_NULL_V(country, {});
+
+	return get_country_adjective(*country);
 }
 
 /* TOOLTIP */
@@ -450,6 +500,157 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
+}
+
+/* TOPBAR */
+
+Dictionary MenuSingleton::get_topbar_info() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	CountryInstance const* country = game_singleton->get_viewed_country();
+	if (country == nullptr) {
+		return {};
+	}
+
+	Dictionary ret;
+
+	// Country / Ranking
+	static const StringName country_key = "country";
+	static const StringName country_status_key = "country_status";
+	static const StringName total_rank_key = "total_rank";
+
+	ret[country_key] = Utilities::std_to_godot_string(country->get_identifier());
+	ret[country_status_key] = static_cast<int32_t>(country->get_country_status());
+	ret[total_rank_key] = static_cast<uint64_t>(country->get_total_rank());
+
+	static const StringName prestige_key = "prestige";
+	static const StringName prestige_rank_key = "prestige_rank";
+	static const StringName prestige_tooltip_key = "prestige_tooltip";
+
+	ret[prestige_key] = country->get_prestige().to_int32_t();
+	ret[prestige_rank_key] = static_cast<uint64_t>(country->get_prestige_rank());
+	ret[prestige_tooltip_key] = String {}; // TODO - list prestige sources (e.g. power status)
+
+	static const StringName industrial_power_key = "industrial_power";
+	static const StringName industrial_rank_key = "industrial_rank";
+	static const StringName industrial_power_tooltip_key = "industrial_power_tooltip";
+
+	ret[industrial_power_key] = country->get_industrial_power().to_int32_t();
+	ret[industrial_rank_key] = static_cast<uint64_t>(country->get_industrial_rank());
+	{
+		String industrial_power_tooltip;
+
+		// Pair: State name / Power
+		std::vector<std::pair<String, fixed_point_t>> industrial_power_states;
+		for (auto const& [state, power] : country->get_industrial_power_from_states()) {
+			industrial_power_states.emplace_back(get_state_name(*state), power);
+		}
+		std::sort(
+			industrial_power_states.begin(), industrial_power_states.end(),
+			[](auto const& a, auto const& b) -> bool {
+				// Sort by greatest power, then by state name alphabetically
+				return a.second != b.second ? a.second > b.second : a.first < b.first;
+			}
+		);
+		for (auto const& [state_name, power] : industrial_power_states) {
+			industrial_power_tooltip += "\n" + state_name + ": " + GUILabel::get_colour_marker() + "Y"
+				+ GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
+		}
+
+		// Tuple: Country identifier / Country name / Power
+		std::vector<std::tuple<String, String, fixed_point_t>> industrial_power_from_investments;
+		for (auto const& [country, power] : country->get_industrial_power_from_investments()) {
+			industrial_power_from_investments.emplace_back(
+				Utilities::std_to_godot_string(country->get_identifier()), get_country_name(*country), power
+			);
+		}
+		std::sort(
+			industrial_power_from_investments.begin(), industrial_power_from_investments.end(),
+			[](auto const& a, auto const& b) -> bool {
+				// Sort by greatest power, then by country name alphabetically
+				return std::get<2>(a) != std::get<2>(b) ? std::get<2>(a) > std::get<2>(b) : std::get<1>(a) < std::get<1>(b);
+			}
+		);
+		for (auto const& [country_identifier, country_name, power] : industrial_power_from_investments) {
+			industrial_power_tooltip += "\n" + GUILabel::get_flag_marker() + country_identifier + country_name + ": "
+				+ GUILabel::get_colour_marker() + "Y" + GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker()
+				+ "!";
+		}
+
+		ret[industrial_power_tooltip_key] = std::move(industrial_power_tooltip);
+	}
+
+	static const StringName military_power_key = "military_power";
+	static const StringName military_rank_key = "military_rank";
+	static const StringName military_power_tooltip_key = "military_power_tooltip";
+
+	ret[military_power_key] = country->get_military_power().to_int32_t();
+	ret[military_rank_key] = static_cast<uint64_t>(country->get_military_rank());
+	{
+		String military_power_tooltip;
+
+		for (auto const& [source, power] : {
+			std::pair
+			{ "MIL_FROM_TROOPS", country->get_military_power_from_land() },
+			{ "MIL_FROM_CAP_SHIPS", country->get_military_power_from_sea() },
+			{ "MIL_FROM_LEADERS", country->get_military_power_from_leaders() }
+		}) {
+			if (power != 0) {
+				military_power_tooltip += "\n" + tr(source) + ": " + GUILabel::get_colour_marker() + "Y"
+					+ GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
+			}
+		}
+
+		ret[military_power_tooltip_key] = std::move(military_power_tooltip);
+	}
+
+	static const StringName colonial_power_available_key = "colonial_power_available";
+	static const StringName colonial_power_max_key = "colonial_power_max";
+	static const StringName colonial_power_tooltip_key = "colonial_power_tooltip";
+	// TODO - colonial power info
+	ret[colonial_power_available_key] = 0;
+	ret[colonial_power_max_key] = 0;
+	ret[colonial_power_tooltip_key] = String {};
+
+	// Production
+
+	// Budget
+
+	// Technology
+
+	// Politics
+
+	// Population
+
+	// Trade
+
+	// Diplomacy
+
+	// Military
+	static const StringName regiment_count_key = "regiment_count";
+	static const StringName max_supported_regiments_key = "max_supported_regiments";
+
+	ret[regiment_count_key] = static_cast<uint64_t>(country->get_regiment_count());
+	ret[max_supported_regiments_key] = static_cast<uint64_t>(country->get_max_supported_regiment_count());
+
+	static const StringName mobilised_key = "mobilised";
+	static const StringName mobilisation_regiments_key = "mobilisation_regiments";
+	static const StringName mobilisation_impact_key = "mobilisation_impact";
+	static const StringName war_policy_key = "war_policy";
+	static const StringName mobilisation_max_regiments_key = "mobilisation_max_regiments";
+
+	if (country->is_mobilised()) {
+		ret[mobilised_key] = true;
+	} else {
+		ret[mobilised_key] = false;
+		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
+		ret[mobilisation_impact_key] = country->get_mobilisation_impact().to_float();
+		ret[war_policy_key] = String {}; // TODO - get ruling party's war policy
+		ret[mobilisation_max_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_max_regiment_count());
+	}
+
+	return ret;
 }
 
 /* TIME/SPEED CONTROL PANEL */

@@ -61,6 +61,7 @@ namespace OpenVic {
 		static godot::String const& get_colour_marker();
 		static godot::String const& get_currency_marker();
 		static godot::String const& get_substitution_marker();
+		static godot::String const& get_flag_marker();
 
 		GUILabel();
 
