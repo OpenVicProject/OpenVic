@@ -195,7 +195,7 @@ Scores:
         min(4: Hardcoded maximum score per factory level.
         floor(n_workers_in_state / 100): Hardcoded number step.
         400: Hardcoded value.
-        n_workers_in_state: Total size of worker POPs in state (employed or not).
+        n_workers_in_state: Total size of POPs in state (employed or not) where POP type has `can_work_factory = yes`.
         sum_workforce_in_state: Sum of (factory level * workforce), defined in /common/production_types.txt.
       else: 0
   Military power:
