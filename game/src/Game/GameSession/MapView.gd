@@ -225,7 +225,11 @@ func _unhandled_input(event : InputEvent) -> void:
 	elif event.is_action_pressed(_action_right_click):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
+				# TODO - open diplomacy screen on province owner or viewed country if province has no owner
+				#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
+				GameSingleton.set_viewed_country_by_province_index(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+			else:
+				print("Right-clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):
 		if _drag_active:
 			push_warning("Drag being activated while already active!")
