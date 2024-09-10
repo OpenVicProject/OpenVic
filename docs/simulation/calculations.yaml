@@ -189,14 +189,14 @@ Scores:
     investment score: money_invested * defines.country.INVESTMENT_SCORE_FACTOR / 100
     state factory score:
       if n_workers > 0:
-        formula: sum_factory_levels_in_state * max(0.2, min(4, floor(n_workers_in_state / 100) * 400 / sum_workforce_in_state))
+        formula: sum_factory_levels_in_state * max(0.2, min(4, floor(n_workers_in_state / 100) * 400 / total_factory_jobs_in_state))
         sum_factory_levels_in_state: sum of factory levels in the state
         max(0.2: Hardcoded minimum score per factory level.
         min(4: Hardcoded maximum score per factory level.
         floor(n_workers_in_state / 100): Hardcoded number step.
         400: Hardcoded value.
         n_workers_in_state: Total size of POPs in state (employed or not) where POP type has `can_work_factory = yes`.
-        sum_workforce_in_state: Sum of (factory level * workforce), defined in /common/production_types.txt.
+        total_factory_jobs_in_state: Sum of (factory level * workforce), defined in /common/production_types.txt.
       else: 0
   Military power:
     formula: soldier & army score + capital ship score + leader score
