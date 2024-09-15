@@ -16,7 +16,6 @@ using OpenVic::Utilities::std_to_godot_string;
 
 using namespace godot;
 using namespace OpenVic;
-using namespace OpenVic::NodeTools;
 
 void CursorSingleton::_bind_methods() {
 	OV_BIND_METHOD(CursorSingleton::load_cursors);
@@ -59,7 +58,7 @@ Array CursorSingleton::get_frames(String const& name, int res_index){
 }
 
 TypedArray<Vector2i> CursorSingleton::get_hotspots(String const& name, int res_index){
-	if(res_index < cursors[name].images.size()){
+	if(res_index < cursors[name].hotspots.size()){
 		return cursors[name].hotspots[res_index];
 	}
 	return TypedArray<Vector2i>();
@@ -73,18 +72,18 @@ TypedArray<Vector2i> CursorSingleton::get_resolutions(String const& name){
 	return cursors[name].resolutions;
 }
 
-TypedArray<float> CursorSingleton::get_displayRates(String const& name){
+PackedFloat32Array CursorSingleton::get_displayRates(String const& name){
 	if(cursors[name].displayRates.has_value()){
 		return cursors[name].displayRates.value();
 	}
-	return TypedArray<float>();
+	return PackedFloat32Array();
 }
 
-TypedArray<int> CursorSingleton::get_sequence(String const& name){
-	if(cursors[name].displayRates.has_value()){
+PackedInt32Array CursorSingleton::get_sequence(String const& name){
+	if(cursors[name].sequence.has_value()){
 		return cursors[name].sequence.value();
 	}
-	return TypedArray<int>();
+	return PackedInt32Array();
 }
 
 void CursorSingleton::generate_resolution(String const& name, int base_res_index, Vector2i target_res){
@@ -128,7 +127,7 @@ String CursorSingleton::to_define_file_name(String const& path) const {
 
 bool CursorSingleton::load_cursors() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
+	ERR_FAIL_NULL_V_MSG(game_singleton, false, "Error retrieving GameSingleton");
 	
 	static constexpr std::string_view cursor_directory = "gfx/cursors";
 	bool ret = true;
@@ -194,19 +193,19 @@ bool CursorSingleton::_load_cursor_ani(String const& name, String const& path) {
 	std::vector<TypedArray<Vector2i>> hotspots_by_resolution;
 
 	TypedArray<Vector2i> resolutions;
-	TypedArray<float> displayRates;
-	TypedArray<int> sequence;
+	PackedFloat32Array displayRates;
+	PackedInt32Array sequence;
 
 	//ani header variables
-	int numFrames;
-	int numSteps;
-	Vector2i dimensions;
-	int bitCount;
-	int numPlanes; //???
-	int displayRate; //how long each frame should last
-	int flags;
-	bool iconFlag;
-	bool sequenceFlag;
+	int numFrames = 1;
+	int numSteps = 1;
+	Vector2i dimensions = Vector2i(1,1);
+	int bitCount = 1;
+	int numPlanes = 1; //???
+	int displayRate = 1; //how long each frame should last
+	int flags = 0;
+	bool iconFlag = false;
+	bool sequenceFlag = false;
 
 
 	while(file->get_position() < riff_size){
@@ -406,7 +405,7 @@ CursorSingleton::image_hotspot_pair_asset_t CursorSingleton::_load_pair(Ref<File
 			int paletteSize = imageData.decode_u32(32);
 
 			if(paletteSize == 0 && bitsPerPixel <= 8){
-				paletteSize =  static_cast<int>(pow(2, bitsPerPixel));
+				paletteSize =  1 << bitsPerPixel;
 			}
 			int importantColours = imageData.decode_u32(36);
 
@@ -542,7 +541,7 @@ PackedByteArray CursorSingleton::_read_32bit_pixel(int i, int offset, PackedByte
 int CursorSingleton::_get_row_start(Vector2i dimensions, int y_coord, int bitsPerPixel){
 	int rowCount = dimensions.x * bitsPerPixel / 32;
 	bool hasExtraRow = ((dimensions.x * bitsPerPixel) % 32) != 0;
-	rowCount += 1*hasExtraRow;
+	rowCount += hasExtraRow; //TODO 1*
 	return rowCount*y_coord*4; //4 bytes per row * rows down
 }
 

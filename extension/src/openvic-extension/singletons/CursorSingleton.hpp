@@ -43,8 +43,8 @@ namespace OpenVic {
 			std::vector<godot::Array> images;
 			godot::TypedArray<godot::Vector2i> resolutions;
 			int animationLength; //1 for static cursors
-			std::optional<godot::TypedArray<float>> displayRates;
-			std::optional<godot::TypedArray<int>> sequence;
+			std::optional<godot::PackedFloat32Array> displayRates;
+			std::optional<godot::PackedInt32Array> sequence;
 		};
 
 		//map of "subfolder/fileName.cur/.ani" -> cursor asset, subfolder comes after gfx/cursor
@@ -90,8 +90,8 @@ namespace OpenVic {
 		godot::TypedArray<godot::Vector2i> get_hotspots(godot::String const& name, int res_index = 0);
 		int get_animationLength(godot::String const& name);
 		godot::TypedArray<godot::Vector2i> get_resolutions(godot::String const& name);
-		godot::TypedArray<float> get_displayRates(godot::String const& name);
-		godot::TypedArray<int> get_sequence(godot::String const& name);
+		godot::PackedFloat32Array get_displayRates(godot::String const& name);
+		godot::PackedInt32Array get_sequence(godot::String const& name);
 		void generate_resolution(godot::String const& name, int base_res_index, godot::Vector2i target_res);
 
 	};

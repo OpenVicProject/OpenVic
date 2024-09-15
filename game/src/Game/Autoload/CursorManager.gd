@@ -9,8 +9,8 @@ class compat_Cursor:
 	var frames:Array
 	var hotspots:Array[Vector2i]
 	var is_animated:bool = false
-	var sequence:Array[int] = [0]
-	var timings:Array[float] = [1.0]
+	var sequence:PackedInt32Array = [0]
+	var timings:PackedFloat32Array = [1.0]
 	
 	#Cursor state
 	var currentFrame : int = 0
@@ -53,9 +53,8 @@ class compat_Cursor:
 		self.frames = CursorSingleton.get_frames(self.cursor_name,len(self.resolutions)-1)
 		self.hotspots = CursorSingleton.get_hotspots(self.cursor_name,len(self.resolutions)-1)
 		
-		assert(len(self.frames ) != 0)
+		assert(len(self.frames) != 0)
 
-		
 	func generate_new_res(base_res_index:int, resolution:Vector2i) -> void:
 		# resolution wasn't in among the default, need to generate it ourselves
 		CursorSingleton.generate_resolution(cursor_name,base_res_index,resolution)
@@ -88,7 +87,8 @@ var preferred_res : Vector2i = Vector2i(32,32)
 #Shape > Cursor dictionnaries
 #NOTE: In terms of V2, this is unnecessary, as the only cursor that isn't of shape
 #"arrow" in v2 is "busy", which needs to be manually triggered anyways like arrow.
-#This is needed for shapes like IBEAM which get switched to automatically
+# and so could be just left as an "arrow"
+#This would be necessary for shapes like IBEAM which get switched to automatically
 var currentCursors : Dictionary = {
 	Input.CURSOR_ARROW:null,
 	Input.CURSOR_BUSY:null,
@@ -158,36 +158,29 @@ func _process(delta) -> void:
 		#if we didnt change cursors and are animated, do an update
 		if activeCursor != null and activeCursor.is_animated:
 			activeCursor._process_cursor(delta,advanceFrame)
-	
+
 
 func set_prefered_res(res_in:Vector2i) -> void:
 	preferred_res = res_in
 
 #override_other_queued is to stop an animation frame from taking precedence over
 #a cursor switch
-func set_compat_cursor(cursor_name:String, cursor_shape:Input.CursorShape = -1) -> void:
-	#var cursor = compat_Cursor.new(cursor_name,cursor_shape)
+func set_compat_cursor(cursor_name:String) -> void:
 	if cursor_name in loaded_cursors:
 		var cursor = loaded_cursors[cursor_name]
-		if cursor_shape != -1:
-			cursor.shape = cursor_shape 
 		cursor.set_resolution(preferred_res)
-		set_mouse_cursor(cursor)
+		queuedCursors[cursor.shape] = cursor
 	else:
 		push_warning("Cursor name %s is not among loaded cursors" % cursor_name)
-	
-# To safely change the mouse cursor, the mouse must be over the window
-# these 2 functions help ensure we do it safely
-func set_mouse_cursor(cursor:compat_Cursor) -> void:
-	if mouseOverWindow and windowFocused:
-		activeCursor = cursor
-		activeCursor.currentFrame = 0
-		currentCursors[cursor.shape] = cursor
-		queuedCursors[cursor.shape] = null
-		activeCursor.set_hardware_cursor(0)
-	else:
-		queuedCursors[cursor.shape] = cursor
 
+func set_cursor_shape(cursor_name:String, cursor_shape:Input.CursorShape) -> void:
+	if cursor_name in loaded_cursors:
+		loaded_cursors[cursor_name].shape = cursor_shape
+	else:
+		push_warning("Cursor name %s is not among loaded cursors" % cursor_name)
+
+# To safely change the mouse cursor, the mouse must be over the window
+# this function helps ensure we do it safely
 func _notification(what):
 	match(what):
 		NOTIFICATION_WM_MOUSE_ENTER:
