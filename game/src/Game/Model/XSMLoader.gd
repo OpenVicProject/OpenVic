@@ -46,7 +46,8 @@ static func _load_xsm_animation(source_file : String) -> Animation:
 			0xC9: #Metadata
 				metadataChunk = readMetadataChunk(file)
 			0xCA: #Bone Animation
-				boneAnimationChunks.push_back(readBoneAnimationChunk(file, metadataChunk.use_quat_16()))
+				# v1 is float32 quaternions, v2 is int16 quaternions
+				boneAnimationChunks.push_back(readBoneAnimationChunk(file, version == 2))
 			_:
 				push_error(">> INVALID XSM CHUNK TYPE %X" % type)
 				break
@@ -155,11 +156,8 @@ class MetadataChunk:
 	func debugPrint() -> void:
 		print("FileName: %s, sourceApp: %s, exportDate: %s, ExporterV:%d.%d" %
 			[origFileName, sourceApp, exportDate, exporterMajorVersion, exporterMinorVersion])
-		print("MotionName: %s, fps: %d, MaxError: %s, Use 16-bit int Quaternions?:%s" %
-			[motionName, fps, fMaxAcceptableError, use_quat_16()])
-
-	func use_quat_16() -> bool:
-		return pad == 0x0
+		print("MotionName: %s, fps: %d, MaxError: %s" %
+			[motionName, fps, fMaxAcceptableError])
 
 static func readPosKey(file : FileAccess) -> PosKey:
 	return PosKey.new(FileAccessUtils.read_pos(file), file.get_float())

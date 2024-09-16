@@ -2,6 +2,7 @@ class_name XACLoader
 
 static var unit_shader : ShaderMaterial = preload("res://src/Game/Model/unit_colours_mat.tres")
 const MAX_UNIT_TEXTURES : int = 32 # max number of textures supported by the shader
+const EXTRA_CULL_MARGIN : int = 2 # extra margin to stop sub-meshes from being culled near the edges of screens
 static var added_unit_textures_spec : PackedStringArray
 static var added_unit_textures_diffuse : PackedStringArray
 
@@ -141,6 +142,13 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 			push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\"")
 			continue
 
+		# polySurface97 corresponds to the "arab_infantry_helmet", and needs to be removed often
+		# but only in cases where it isn't an attachment
+		const INVALID_IF_NOT_ONLY_MESH : PackedStringArray = ["polySurface97"]
+		if mesh_chunks.size() != 1 and mesh_chunk_name in INVALID_IF_NOT_ONLY_MESH:
+			push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\" because it was not the only mesh chunk in its file")
+			break
+
 		var mesh : ArrayMesh = null
 		var verts : PackedVector3Array
 		var normals : PackedVector3Array
@@ -164,6 +172,8 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 				_: # type 4 32bit colours and type 6 128bit colours aren't used
 					pass
 
+		#FIXME: find a better solution if possible
+		#pCube1 hardcoding is to fix the cruiser which doesn't properly mark its collision mesh
 		if chunk.bIsCollisionMesh or mesh_chunk_name == "pCube1":
 			var ar3d : Area3D = Area3D.new()
 			node.add_child(ar3d)
@@ -193,6 +203,9 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 		var meshInstance : MeshInstance3D = MeshInstance3D.new()
 		node.add_child(meshInstance)
 		meshInstance.owner = node
+		
+		#stop the culling of units near the tops of screens
+		meshInstance.extra_cull_margin = EXTRA_CULL_MARGIN
 
 		if mesh_chunk_name:
 			meshInstance.name = mesh_chunk_name
