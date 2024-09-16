@@ -110,10 +110,10 @@ func _load_compatibility_mode() -> void:
 	
 	CursorManager.set_prefered_res(Vector2i(48,48))
 	CursorManager.load_cursors()
-	CursorManager.set_compat_cursor("normal")
+	CursorManager.set_compat_cursor(&"normal")
 	#TODO: Change Busy to be shape Input.CURSOR_BUSY when done testing
-	CursorManager.set_cursor_shape("busy",Input.CURSOR_IBEAM)
-	CursorManager.set_compat_cursor("busy")
+	CursorManager.set_cursor_shape(&"busy",Input.CURSOR_IBEAM)
+	CursorManager.set_compat_cursor(&"busy")
 	
 	setup_title_theme()
 
