@@ -96,9 +96,14 @@ func setup_compat_song(file_name) -> void:
 	var song = SongInfo.new()
 	var stream = SoundSingleton.get_song(file_name)
 
+	if stream == null:
+		push_error("Audio Stream for compat song %s was null" % file_name)
+		return
+
 	var metadata = MusicMetadata.new()
 	metadata.set_from_stream(stream)
 	var title = metadata.title
+	
 	if title == "":
 		#use the file name without the extension if there's no metadata
 		title = file_name.split(".")[0]
