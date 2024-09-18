@@ -59,7 +59,12 @@ namespace OpenVic {
 			 *  - Nationality (Culture)
 			 *  - Issues
 			 *  - Vote */
-			std::array<fixed_point_map_t<HasIdentifierAndColour const*>, DISTRIBUTION_COUNT> distributions;
+			fixed_point_map_t<PopType const*> workforce_distribution;
+			fixed_point_map_t<Religion const*> religion_distribution;
+			fixed_point_map_t<Ideology const*> ideology_distribution;
+			fixed_point_map_t<Culture const*> culture_distribution;
+			fixed_point_map_t<Issue const*> issue_distribution;
+			fixed_point_map_t<CountryParty const*> vote_distribution;
 
 			enum PopSortKey {
 				NONE, SORT_SIZE, SORT_TYPE, SORT_CULTURE, SORT_RELIGION, SORT_LOCATION, SORT_MILITANCY, SORT_CONSCIOUSNESS,
