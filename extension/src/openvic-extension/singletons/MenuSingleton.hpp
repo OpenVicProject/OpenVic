@@ -119,6 +119,8 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
+		godot::String get_test_tooltip(int32_t line) const;
+
 		static MenuSingleton* get_singleton();
 
 		/* This should only be called AFTER GameSingleton has been initialised! */

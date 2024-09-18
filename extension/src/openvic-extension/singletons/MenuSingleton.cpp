@@ -3,7 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
-#include <openvic-simulation/misc/Modifier.hpp>
+#include <openvic-simulation/modifier/Modifier.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -193,7 +193,63 @@ String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
 	return result;
 }
 
+String MenuSingleton::get_test_tooltip(int32_t line) const {
+	String ret = "Test Tooltip " + String::num_int64(line);
+
+	const RuleSet test_rules = [&line]() {
+		RuleSet ret;
+
+		GameSingleton const* game_singleton = GameSingleton::get_singleton();
+		ERR_FAIL_NULL_V(game_singleton, ret);
+
+		bool value = true;
+
+		for (auto const& rule : game_singleton->get_definition_manager().get_politics_manager().get_rule_manager().get_rules()) {
+			if (line > 0) {
+				line--;
+			} else {
+				ret.set_rule(rule, value);
+			}
+			value = !value;
+		}
+
+		return ret;
+	}();
+
+	if (test_rules.get_rule_count() > 0) {
+		ret += get_tooltip_separator() + make_rules_tooltip(test_rules);
+	}
+
+	const ModifierValue test_modifier = [&line]() {
+		ModifierValue ret;
+
+		GameSingleton const* game_singleton = GameSingleton::get_singleton();
+		ERR_FAIL_NULL_V(game_singleton, ret);
+
+		fixed_point_t value = 0;
+
+		for (auto const& effect : game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effects()) {
+			if (line > 0) {
+				line--;
+			} else {
+				ret.set_effect(effect, value);
+			}
+			value++;
+		}
+
+		return ret;
+	}();
+
+	if (test_modifier.get_effect_count() > 0) {
+		ret += get_tooltip_separator() + make_modifier_effects_tooltip(test_modifier);
+	}
+
+	return ret;
+}
+
 void MenuSingleton::_bind_methods() {
+	OV_BIND_METHOD(MenuSingleton::get_test_tooltip, { "line" });
+
 	OV_BIND_SMETHOD(get_tooltip_separator);
 	OV_BIND_METHOD(MenuSingleton::get_country_name_from_identifier, { "country_identifier" });
 	OV_BIND_METHOD(MenuSingleton::get_country_adjective_from_identifier, { "country_identifier" });

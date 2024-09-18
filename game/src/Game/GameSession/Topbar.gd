@@ -295,6 +295,16 @@ enum CountryStatus {
 	PRIMITIVE
 }
 
+var test_scroll : int = 0
+
+func _input(event) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_O:
+			test_scroll -= 1
+		elif event.keycode == KEY_P:
+			test_scroll += 1
+		_update_info()
+
 func _update_info() -> void:
 	var topbar_info : Dictionary = MenuSingleton.get_topbar_info()
 
@@ -392,9 +402,10 @@ func _update_info() -> void:
 		_country_colonial_power_label.set_text(
 			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, max_colonial_power]
 		)
-		_country_colonial_power_label.set_tooltip_string(tr("COLONIAL_POINTS") + MenuSingleton.get_tooltip_separator() + (
-			topbar_info.get(colonial_power_tooltip_key, "") if country_status <= CountryStatus.SECONDARY_POWER else tr("NON_COLONIAL_POWER")
-		))
+		#_country_colonial_power_label.set_tooltip_string(tr("COLONIAL_POINTS") + MenuSingleton.get_tooltip_separator() + (
+			#topbar_info.get(colonial_power_tooltip_key, "") if country_status <= CountryStatus.SECONDARY_POWER else tr("NON_COLONIAL_POWER")
+		#))
+		_country_colonial_power_label.set_tooltip_string("(Use O and P to scroll) " + MenuSingleton.get_test_tooltip(test_scroll))
 
 	## Time control
 	if _date_label:
