@@ -523,7 +523,16 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 		String value = substitution_dict.get(key, String {});
 
 		// Use the un-substituted key if no value is found or the value is empty
-		result += value.is_empty() ? key : is_auto_translating() ? tr(value) : value;
+		if (value.is_empty()) {
+			value = key;
+		}
+
+		// Translate the value if auto-translating (even if it's the key after a failed substitution)
+		if (is_auto_translating()) {
+			value = tr(value);
+		}
+
+		result += value;
 
 		start_pos = marker_end_pos + get_substitution_marker().length();
 	}

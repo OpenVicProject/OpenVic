@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
+#include <openvic-simulation/misc/Modifier.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -104,6 +105,92 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 	}
 
 	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
+}
+
+String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifier) const {
+	if (modifier.empty()) {
+		return {};
+	}
+
+	String result;
+
+	for (auto const& [effect, value] : modifier.get_values()) {
+		if (!result.is_empty()) {
+			result += "\n";
+		}
+
+		result += tr(Utilities::std_to_godot_string(effect->get_localisation_key()));
+
+		static const String post_name_text = ": " + GUILabel::get_colour_marker();
+		result += post_name_text;
+
+		if (value == 0) {
+			result += "Y";
+		} else if (effect->is_positive_good() == value > 0) {
+			result += "G";
+		} else {
+			result += "R";
+		}
+
+		if (value >= 0) {
+			result += "+";
+		}
+
+		static constexpr int32_t DECIMAL_PLACES = 2;
+
+		using enum ModifierEffect::format_t;
+
+		switch (effect->get_format()) {
+		case PROPORTION_DECIMAL:
+			result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
+			break;
+		case PERCENTAGE_DECIMAL:
+			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
+			break;
+		case INT:
+			result += String::num_int64(value.to_int64_t());
+			break;
+		case RAW_DECIMAL: [[fallthrough]];
+		default: // Use raw decimal as fallback format
+			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
+			break;
+		}
+
+		static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+		result += end_text;
+	}
+
+	return result;
+}
+
+String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
+	if (rules.empty()) {
+		return {};
+	}
+
+	static const StringName yes_key = "YES";
+	static const StringName no_key = "NO";
+
+	static const String start_text = ": " + GUILabel::get_colour_marker();
+	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+
+	const String enabled_text = start_text + String { "G" } + tr(yes_key) + end_text;
+	const String disabled_text = start_text + String { "R" } + tr(no_key) + end_text;
+
+	String result;
+
+	for (auto const& [rule_group, rule_map] : rules.get_rule_groups()) {
+		for (auto const& [rule, enabled] : rule_map) {
+			if (!result.is_empty()) {
+				result += "\n";
+			}
+
+			result += tr(Utilities::std_to_godot_string(rule->get_localisation_key()))
+				+ (enabled ? enabled_text : disabled_text);
+		}
+	}
+
+	return result;
 }
 
 void MenuSingleton::_bind_methods() {
