@@ -47,6 +47,8 @@ void GUILabel::_bind_methods() {
 	OV_BIND_METHOD(GUILabel::clear);
 	OV_BIND_METHOD(GUILabel::get_gui_text_name);
 
+	OV_BIND_METHOD(GUILabel::force_update_lines);
+
 	OV_BIND_METHOD(GUILabel::get_text);
 	OV_BIND_METHOD(GUILabel::set_text, { "new_text" });
 
@@ -57,6 +59,7 @@ void GUILabel::_bind_methods() {
 
 	OV_BIND_METHOD(GUILabel::get_horizontal_alignment);
 	OV_BIND_METHOD(GUILabel::set_horizontal_alignment, { "new_horizontal_alignment" });
+	OV_BIND_METHOD(GUILabel::get_base_max_size);
 	OV_BIND_METHOD(GUILabel::get_max_size);
 	OV_BIND_METHOD(GUILabel::set_max_size, { "new_max_size" });
 	OV_BIND_METHOD(GUILabel::get_border_size);
@@ -293,6 +296,11 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	return err;
 }
 
+void GUILabel::force_update_lines() {
+	line_update_queued = true;
+	_update_lines();
+}
+
 void GUILabel::set_text(String const& new_text) {
 	if (text != new_text) {
 		text = new_text;
@@ -329,6 +337,10 @@ void GUILabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_align
 
 		_queue_line_update();
 	}
+}
+
+Size2 GUILabel::get_base_max_size() const {
+	return gui_text != nullptr ? Utilities::to_godot_fvec2(gui_text->get_max_size()) : Size2 {};
 }
 
 void GUILabel::set_max_size(Size2 new_max_size) {
@@ -462,6 +474,10 @@ void GUILabel::_queue_line_update() {
 }
 
 void GUILabel::_update_lines() {
+	if (!line_update_queued) {
+		return;
+	}
+
 	line_update_queued = false;
 	lines.clear();
 

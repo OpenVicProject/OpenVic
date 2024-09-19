@@ -74,6 +74,8 @@ namespace OpenVic {
 			GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes = nullptr
 		);
 
+		void force_update_lines();
+
 		void set_text(godot::String const& new_text);
 
 		void add_substitution(godot::String const& key, godot::String const& value);
@@ -81,6 +83,7 @@ namespace OpenVic {
 		void clear_substitutions();
 
 		void set_horizontal_alignment(godot::HorizontalAlignment new_horizontal_alignment);
+		godot::Size2 get_base_max_size() const;
 		void set_max_size(godot::Size2 new_max_size);
 		void set_border_size(godot::Size2 new_border_size);
 		void set_auto_adjust_to_content_size(bool new_auto_adjust_to_content_size);
