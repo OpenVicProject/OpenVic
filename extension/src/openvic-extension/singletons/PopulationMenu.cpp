@@ -379,9 +379,12 @@ Error MenuSingleton::_population_menu_update_pops() {
 Error MenuSingleton::_population_menu_update_filtered_pops() {
 	population_menu.filtered_pops.clear();
 
-	for (fixed_point_map_t<HasIdentifierAndColour const*>& distribution : population_menu.distributions) {
-		distribution.clear();
-	}
+	population_menu.workforce_distribution.clear();
+	population_menu.religion_distribution.clear();
+	population_menu.ideology_distribution.clear();
+	population_menu.culture_distribution.clear();
+	population_menu.issue_distribution.clear();
+	population_menu.vote_distribution.clear();
 
 	for (Pop const* pop : population_menu.pops) {
 		if (population_menu.pop_filters[&pop->get_type()].selected) {
@@ -390,20 +393,22 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	}
 
 	for (Pop const* pop : population_menu.filtered_pops) {
-		population_menu.distributions[0][&pop->get_type()] += pop->get_size();
-		population_menu.distributions[1][&pop->get_religion()] += pop->get_size();
-		population_menu.distributions[2] +=
-			pop->get_ideologies() * fixed_point_t::parse(pop->get_size());
-		population_menu.distributions[3][&pop->get_culture()] += pop->get_size();
-		population_menu.distributions[4] +=
-			cast_map<HasIdentifierAndColour>(pop->get_issues() * fixed_point_t::parse(pop->get_size()));
-		population_menu.distributions[5] +=
-			pop->get_votes() * fixed_point_t::parse(pop->get_size());
+		const fixed_point_t pop_size = fixed_point_t::parse(pop->get_size());
+
+		population_menu.workforce_distribution[&pop->get_type()] += pop->get_size();
+		population_menu.religion_distribution[&pop->get_religion()] += pop->get_size();
+		population_menu.ideology_distribution += pop->get_ideologies() * fixed_point_t::parse(pop->get_size());
+		population_menu.culture_distribution[&pop->get_culture()] += pop->get_size();
+		population_menu.issue_distribution += pop->get_issues() * fixed_point_t::parse(pop->get_size());
+		population_menu.vote_distribution += pop->get_votes() * fixed_point_t::parse(pop->get_size());
 	}
 
-	for (fixed_point_map_t<HasIdentifierAndColour const*>& distribution : population_menu.distributions) {
-		normalise_fixed_point_map(distribution);
-	}
+	normalise_fixed_point_map(population_menu.workforce_distribution);
+	normalise_fixed_point_map(population_menu.religion_distribution);
+	normalise_fixed_point_map(population_menu.ideology_distribution);
+	normalise_fixed_point_map(population_menu.culture_distribution);
+	normalise_fixed_point_map(population_menu.issue_distribution);
+	normalise_fixed_point_map(population_menu.vote_distribution);
 
 	return _population_menu_sort_pops();
 }
@@ -825,11 +830,14 @@ PackedStringArray MenuSingleton::get_population_menu_distribution_setup_info() c
 
 TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	TypedArray<Array> array;
-	ERR_FAIL_COND_V(array.resize(population_menu.distributions.size()) != OK, {});
+	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
-	for (int32_t idx = 0; idx < array.size(); ++idx) {
-		array[idx] = GFXPieChartTexture::distribution_to_slices_array(population_menu.distributions[idx]);
-	}
+	array[0] = GFXPieChartTexture::distribution_to_slices_array(population_menu.workforce_distribution);
+	array[1] = GFXPieChartTexture::distribution_to_slices_array(population_menu.religion_distribution);
+	array[2] = GFXPieChartTexture::distribution_to_slices_array(population_menu.ideology_distribution);
+	array[3] = GFXPieChartTexture::distribution_to_slices_array(population_menu.culture_distribution);
+	array[4] = GFXPieChartTexture::distribution_to_slices_array(population_menu.issue_distribution);
+	array[5] = GFXPieChartTexture::distribution_to_slices_array(population_menu.vote_distribution);
 
 	return array;
 }

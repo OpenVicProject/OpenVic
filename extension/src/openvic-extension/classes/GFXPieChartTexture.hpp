@@ -45,7 +45,7 @@ namespace OpenVic {
 		 *  - weight: float */
 		godot::Error set_slices_array(godot_pie_chart_data_t const& new_slices);
 
-		/* Generate slice data from a distribution of HasIdentifierAndColour derived objects, sorted by their weight.
+		/* Generate slice data from a distribution of objects satisfying HasGetIdentifierAndGetColour, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<typename Container>
 		static godot_pie_chart_data_t distribution_to_slices_array(Container const& dist)
@@ -53,17 +53,18 @@ namespace OpenVic {
 			(
 				/* fixed_point_map_t<T const*>, T derived from HasIdentifierAndColour */
 				utility::is_specialization_of_v<Container, tsl::ordered_map> &&
-				std::derived_from<std::remove_pointer_t<typename Container::key_type>, HasIdentifierAndColour> &&
+				HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>> &&
 				std::is_same_v<typename Container::mapped_type, fixed_point_t>
 			) || (
 				/* IndexedMap<T, fixed_point_t>, T derived from HasIdentifierAndColour */
 				utility::is_specialization_of_v<Container, IndexedMap> &&
-				std::derived_from<typename Container::key_t, HasIdentifierAndColour> &&
+				HasGetIdentifierAndGetColour<typename Container::key_type> &&
 				std::is_same_v<typename Container::value_t, fixed_point_t>
 			)
 		) {
 			using namespace godot;
-			using entry_t = std::pair<HasIdentifierAndColour const*, fixed_point_t>;
+			using key_type = std::remove_pointer_t<typename Container::key_type>;
+			using entry_t = std::pair<key_type const*, fixed_point_t>;
 			std::vector<entry_t> sorted_dist;
 
 			if constexpr (utility::is_specialization_of_v<Container, tsl::ordered_map>) {
@@ -78,7 +79,7 @@ namespace OpenVic {
 				for (size_t index = 0; index < dist.size(); ++index) {
 					fixed_point_t const& value = dist[index];
 					if (value != 0) {
-						HasIdentifierAndColour const* key = &dist(index);
+						key_type const* key = &dist(index);
 						sorted_dist.emplace_back(key, value);
 					}
 				}
