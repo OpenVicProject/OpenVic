@@ -27,7 +27,7 @@ func _process(_delta : float) -> void:
 		_progress_slider.value = MusicConductor.get_current_song_progress_percentage()
 
 func _update_play_pause_button(_arg1 : Variant = null, _arg2 : Variant = null) -> void:
-	_play_pause_button.text = "◼" if MusicConductor.is_paused() else "▶"
+	_play_pause_button.text = "▶️" if MusicConductor.is_paused() else "❚❚"
 
 func _on_play_pause_button_pressed() -> void:
 	MusicConductor.toggle_play_pause()
