@@ -11,6 +11,8 @@ namespace OpenVic {
 	struct CountryInstance;
 	struct State;
 	struct ProvinceInstance;
+	struct ModifierValue;
+	struct RuleSet;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -104,6 +106,9 @@ namespace OpenVic {
 		godot::String get_state_name(State const& state) const;
 		godot::String get_country_name(CountryInstance const& country) const;
 		godot::String get_country_adjective(CountryInstance const& country) const;
+
+		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
+		godot::String make_rules_tooltip(RuleSet const& rules) const;
 
 	protected:
 		static void _bind_methods();
