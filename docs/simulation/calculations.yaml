@@ -51,7 +51,44 @@ Economy:
       formula: MGQ * GOLD_TO_CASH_RATE
       MGQ: Money good quanity = total production of goods with money = yes
       GOLD_TO_CASH_RATE: defines.country.GOLD_TO_CASH_RATE
+    Overseas maintenance:
+      See: https://github.com/schombert/Project-Alice/blob/b7889a9c302feed851c039f1a98d73b75be3215a/docs/rules.md#overseas-penalty
   Production:
+    Resource gathering operation:
+      base workforce: defined in common/production_types.txt as workforce
+      rgo size:
+        formula: floor(1.5 * ceil(n_workers_in_state / (base workforce * (1 + terrain rgo size modifier)))
+        n_workers_in_state: Total size of POPs in state where POP type is in employees (common/production_types.txt).
+        note: Calculated when starting a new game.
+      Output:
+        formula: base output * rgo size * (1 + overseas penalty) * throughput from workers * (1 + throughput modifier) * (1 + output from workers) * (1 + output modifier)
+        base output: defined in common/production_types.txt
+        overseas penalty:
+          if province is 'overseas': overseas penalty (see economy > budget > overseas maintenance)
+          else: 0
+        workforce:
+          formula: base workforce * rgo size * (1 + rgo size modifier)
+          base workforce: Defined in common/production_types.txt as workforce.
+          rgo size modifier: sum of rgo size modifiers + sum of farm size modifiers (if farm=yes) + sum of mine size modifiers (if mine=yes)
+        job portion of workforce:
+          formula: employees with job / workforce
+          employees with job: Number of POPs employed with the job. Job being an entry in employees in common/production_types.txt.
+        effect from job:
+          formula:
+            if effect_multiplier == 1: effect_multiplier * employees with job / workforce
+            else: effect_multiplier * min(employees with job / workforce, amount)
+          effect_multiplier: defined in common/production_types.txt as part of employees (default 1)
+          amount: defined in common/production_types.txt (default 1)
+        throughput from workers: sum of effect from job for each job with `effect = throughput`
+        output from workers: sum of effect from job for each job with `effect = output`
+        throughput modifier: sum of throughput modifiers (including from owner job)
+        output modifier: sum of output modifiers (including from owner job)
+        modifier from owner job:
+          formula: effect_multiplier * n_owners_in_state / n_pops_in_state
+          effect_multiplier: defined in common/production_types.txt as part of owner (default 1)
+          n_owners_in_state: total size of owner POPs in state
+          n_pops_in_state: total size of all POPs in state
+          note: included in throughput or output modifier
     Human resource management:
       Vacancies: max employees - employees count
       Maximum employees hired per day:
@@ -165,10 +202,10 @@ POPs:
       RGO wages:
         Owners:
           if minimum worker wages > normal worker wage:
-            formula: (RGO income - total worker income) * owner POP size / n_owners * (1 - effective tax) 
+            formula: (RGO income - total worker income) * owner POP size / n_owners_in_state * (1 - effective tax) 
           else:
-            formula: RGO income * min(0.5, 2 * n_owners / n_workers) * owner POP size / n_owners * (1 - effective tax) 
-            n_owners: total size of owner POPs in state
+            formula: RGO income * min(0.5, 2 * n_owners_in_state / n_workers) * owner POP size / n_owners_in_state * (1 - effective tax) 
+            n_owners_in_state: total size of owner POPs in state
             n_workers: number of employed workers in RGO
             min(0.5: Hardcoded maximum of half the RGO income.
             2 *: Hardcoded value.
@@ -178,8 +215,8 @@ POPs:
             if minimum wage > normal wage:
               formula: min(minimum wage, RGO income * employed workers in POP / total non-slave employed workers) * (1 - effective tax) 
             else:
-              formula: RGO income * max(0.5, 1 - 2 * n_owners / n_workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
-              n_owners: total size of owner POPs in state
+              formula: RGO income * max(0.5, 1 - 2 * n_owners_in_state / n_workers) * employed workers in POP / total non-slave employed workers * (1 - effective tax) 
+              n_owners_in_state: total size of owner POPs in state
               n_workers: number of employed workers in RGO
               max(0.5: Hardcoded minimum of half the RGO income.
               2 *: Hardcoded value.
