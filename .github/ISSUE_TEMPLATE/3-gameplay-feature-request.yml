@@ -1,0 +1,18 @@
+name: Gameplay Feature Request
+description: Request a gameplay feature
+labels: ["enhancement", "game feature proposal", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - If this feature was in Victoria 2, specifically for Compatibility mode, please report a [Victoria 2 discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-victoria-2-discrepency.yml) instead.
+        - If this feature only applies to mods and contains no mechanical additions to the vanilla experience, please report it as a [mod feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=4-mod-feature-request.yml).
+        - Write a descriptive proposal title above.
+        - Search [open](https://github.com/OpenVicProject/OpenVic/labels/game%20feature%20proposal) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aclosed+label%3A%22game+feature+proposal%22+) proposals to ensure the feature has not already been suggested.
+
+  - type: textarea
+    attributes:
+      label: Describe the problem or limitation you are having with the game
+      placeholder: Example - "Pops don't produce enough RGOs advancing into the late game."
+    validations:
+      required: true
