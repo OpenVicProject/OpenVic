@@ -3,7 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
-#include <openvic-simulation/misc/Modifier.hpp>
+#include <openvic-simulation/modifier/Modifier.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -698,7 +698,10 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	// TODO - colonial power info
 	ret[colonial_power_available_key] = 0;
 	ret[colonial_power_max_key] = 0;
-	ret[colonial_power_tooltip_key] = String {};
+	ret[colonial_power_tooltip_key] =
+		// EXAMPLES TO BE REMOVED
+		// make_rules_tooltip(country->get_rule_set()) + get_tooltip_separator() +
+		make_modifier_effects_tooltip(country->get_resultant_modifier_sum().get_value_sum());
 
 	// Production
 
