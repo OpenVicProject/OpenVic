@@ -27,6 +27,7 @@ If you're installing Visual Studio 2015, ensure you choose custom and pick C++ a
 
 ### Linux Requirements
 * GCC 12.3+
+  * For Ubuntu 22.04, you need to manually install g++-12 and set that version as active
 
 #### Debian/Ubuntu Linux Install
 ```sh
@@ -43,7 +44,11 @@ apt-get install \
   libpulse-dev \
   libudev-dev \
   libxi-dev \
-  libxrandr-dev
+  libxrandr-dev \
+  g++-12
+
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
+update-alternatives --set g++ /usr/bin/g++-12
 ```
 
 #### Arch Linux Requirements
