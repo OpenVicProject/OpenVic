@@ -122,8 +122,8 @@ class MetadataChunk:
 	var unused : float
 	var fMaxAcceptableError : float
 	var fps : int # int32
-	var exporterMajorVersion : int  # byte
-	var exporterMinorVersion : int  # byte
+	var exporterMajorVersion : int # byte
+	var exporterMinorVersion : int # byte
 	var pad : int # 2x byte
 	var sourceApp : String
 	var origFileName : String

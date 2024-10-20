@@ -160,7 +160,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				return --count_counter > 0;
 			}
 
-			return  true;
+			return true;
 		}
 	} entry_visitor { *this, start, count };
 

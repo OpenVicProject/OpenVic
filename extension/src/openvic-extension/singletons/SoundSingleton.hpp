@@ -37,7 +37,7 @@ namespace OpenVic {
 			std::optional<godot::Ref<godot::AudioStreamWAV>> audioStream;
 			std::optional<fixed_point_t> volume;
 		};
-		using sfx_define_map_t = deque_ordered_map<godot::StringName,sound_asset_t>;		
+		using sfx_define_map_t = deque_ordered_map<godot::StringName,sound_asset_t>;
 		sfx_define_map_t sfx_define;
 
 		static constexpr std::string_view title_theme_name = "thecoronation_titletheme.mp3";
@@ -47,7 +47,7 @@ namespace OpenVic {
 		//property for gd scripts to access song names
 		godot::Array PROPERTY(song_list);
 		godot::String PROPERTY(title_theme);
-		
+
 		//property for gd scripts to access sound names
 		godot::Array PROPERTY(sound_list);
 
@@ -61,26 +61,25 @@ namespace OpenVic {
 
 		godot::String to_define_file_name(godot::String const& path, std::string_view const& base_folder) const;
 		godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int size=4) const;
-		
+
 	private:
 		/* Loads AudioStreams (.mp3 or .wav) at runtime using godot's functions*/
 		godot::Ref<godot::AudioStreamMP3> _load_godot_mp3(godot::String const& path) const;
 		godot::Ref<godot::AudioStreamWAV> _load_godot_wav(godot::String const& path) const;
-		
+
 	public:
 		//gets a song from the cache ('tracks' variable), or if not, then from the files using _load_godot_mp3
 		godot::Ref<godot::AudioStreamMP3> get_song(godot::String const& name);
 		godot::Ref<godot::AudioStreamWAV> get_sound(godot::String const& path);
-		
+
 		//load the files into memory
 		bool load_music();
 		bool load_sounds();
 		bool load_title_theme();
-	
+
 		//for sound effects, get the stream and relative volume it should play at from the sfx map
 		godot::Ref<godot::AudioStreamWAV> get_sound_stream(godot::String const& path);
 		float get_sound_base_volume(godot::String const& path);
 
 	};
-	
 }

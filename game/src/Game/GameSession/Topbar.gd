@@ -570,7 +570,7 @@ func _update_speed_controls() -> void:
 	var paused : bool = MenuSingleton.is_paused()
 	var speed : int = MenuSingleton.get_speed()
 
-	#  TODO - decide whether to disable these or not
+	# TODO - decide whether to disable these or not
 	# (they don't appear to get disabled in the base game)
 	#if _speed_up_button:
 	#	_speed_up_button.disabled = not MenuSingleton.can_increase_speed()

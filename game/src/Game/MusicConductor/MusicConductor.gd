@@ -34,7 +34,7 @@ func get_all_song_names() -> PackedStringArray:
 	for si : SongInfo in _available_songs:
 		songNames.append(si.song_name)
 	return songNames
-	
+
 func get_all_song_paths() -> PackedStringArray:
 	var songPaths : PackedStringArray = []
 	for si : SongInfo in _available_songs:
@@ -103,13 +103,13 @@ func setup_compat_song(file_name) -> void:
 	var metadata = MusicMetadata.new()
 	metadata.set_from_stream(stream)
 	var title = metadata.title
-	
+
 	if title == "":
 		#use the file name without the extension if there's no metadata
 		title = file_name.split(".")[0]
 	song.init_stream(file_name,title,stream)
 	_available_songs.append(song)
-	
+
 func add_compat_songs() -> void:
 	for file_name : String in SoundSingleton.song_list:
 		setup_compat_song(file_name)
@@ -128,13 +128,13 @@ func add_ootb_music() -> void:
 func generate_playlist() -> void:
 	var song_names = MusicConductor.get_all_song_paths()
 	var possible_indices = range(len(song_names)-1)
-	
+
 	var title_index = song_names.find(SoundSingleton.title_theme)
 	possible_indices.remove_at(title_index)
-	
+
 	var actual_playlist_len = min(preferred_playlist_len,len(possible_indices))
-	
-	#if the playlist size is too large or small, make it the same size as what we 
+
+	#if the playlist size is too large or small, make it the same size as what we
 	#need to support
 	if len(playlist) != actual_playlist_len:
 		playlist.resize(actual_playlist_len)
@@ -143,14 +143,14 @@ func generate_playlist() -> void:
 	#The song we just played can be in the playlist, just not the first one
 	if last_played != -1:
 		possible_indices.remove_at(last_played)
-	
+
 	#essentially shuffle-bag randomness, picking from a list of song indices
 	for i in range(actual_playlist_len):
 		var ind = randi_range(0,len(possible_indices)-1)
 		#add back the last song we just played as an option
 		if i==2:
 			possible_indices.append(last_played)
-		
+
 		playlist[i] = possible_indices[ind]
 		possible_indices.remove_at(ind)
 

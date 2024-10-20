@@ -160,7 +160,7 @@ func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListE
 	return OK
 
 func _setup_province_list() -> void:
-	if not  _province_listbox:
+	if not _province_listbox:
 		_province_listbox = get_gui_listbox_from_nodepath(^"./country_pop/pop_province_list")
 
 		if not _province_listbox:
