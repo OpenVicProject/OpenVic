@@ -3,7 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
-#include <openvic-simulation/misc/Modifier.hpp>
+#include <openvic-simulation/modifier/Modifier.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
