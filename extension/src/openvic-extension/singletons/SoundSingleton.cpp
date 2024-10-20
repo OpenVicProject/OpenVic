@@ -28,32 +28,32 @@ void SoundSingleton::_bind_methods() {
 	OV_BIND_METHOD(SoundSingleton::load_music);
 	OV_BIND_METHOD(SoundSingleton::get_song, {"song_name"});
 	OV_BIND_METHOD(SoundSingleton::get_song_list);
-	
+
 	ADD_PROPERTY(PropertyInfo(
 		Variant::ARRAY,
-		 "song_list", PROPERTY_HINT_ARRAY_TYPE,
-		 "AudioStreamMP3"),
+		"song_list", PROPERTY_HINT_ARRAY_TYPE,
+		"AudioStreamMP3"),
 	"", "get_song_list");
 
 	OV_BIND_METHOD(SoundSingleton::load_sounds);
 	OV_BIND_METHOD(SoundSingleton::get_sound_stream, {"sound_name"});
 	OV_BIND_METHOD(SoundSingleton::get_sound_base_volume, {"sound_name"});
 	OV_BIND_METHOD(SoundSingleton::get_sound_list);
-	
+
 	ADD_PROPERTY(PropertyInfo(
 		Variant::ARRAY,
-		"sound_list", 
+		"sound_list",
 		PROPERTY_HINT_ARRAY_TYPE,
 		"AudioStreamWAV"),
 	"", "get_sound_list");
-	
+
 	OV_BIND_METHOD(SoundSingleton::load_title_theme);
 	OV_BIND_METHOD(SoundSingleton::get_title_theme);
-	
+
 	ADD_PROPERTY(PropertyInfo(
 		Variant::STRING,
 		"title_theme"),
-	"", "get_title_theme"); 
+	"", "get_title_theme");
 
 }
 
@@ -71,15 +71,14 @@ SoundSingleton::~SoundSingleton() {
 	_singleton = nullptr;
 }
 
-
-//Load a sound from the path 
+//Load a sound from the path
 Ref<AudioStreamMP3> SoundSingleton::_load_godot_mp3(String const& path) const {
 	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
-	
+
 	Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
 		err != OK || file.is_null(), nullptr,
-		vformat("Failed to open mp3 file %s", path) //named %s, path, 
+		vformat("Failed to open mp3 file %s", path) //named %s, path,
 	);
 
 	const PackedByteArray data = file->get_buffer(file->get_length());
@@ -92,7 +91,7 @@ Ref<AudioStreamMP3> SoundSingleton::_load_godot_mp3(String const& path) const {
 }
 
 //slices a path down to after the base_folder, keeps the extension
-//this is because the defines refer to audio files using this format, 
+//this is because the defines refer to audio files using this format,
 //so we might as well use this form as the key for the "name"->audiostream map
 String SoundSingleton::to_define_file_name(String const& path, std::string_view const& base_folder) const {
 	String name = path.replace("\\","/");
@@ -132,7 +131,7 @@ bool SoundSingleton::load_title_theme(){
 
 	Dataloader::path_vector_t music_files = game_singleton->get_dataloader()
 		.lookup_files_in_dir_recursive(music_directory, ".mp3");
-	
+
 	if(music_files.size() < 1){
 		Logger::error("failed to load title theme: no files in music directory");
 	}
@@ -159,7 +158,7 @@ bool SoundSingleton::load_title_theme(){
 	}
 
 	if(!ret) Logger::error("Failed to load title theme!");
-	
+
 	return ret;
 }
 
@@ -167,13 +166,13 @@ bool SoundSingleton::load_music() {
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
-	
+
 	static constexpr std::string_view music_directory = "music";
 	bool ret = true;
 
 	Dataloader::path_vector_t music_files = game_singleton->get_dataloader()
 		.lookup_files_in_dir_recursive(music_directory, ".mp3");
-	
+
 	if(music_files.size() < 1){
 		Logger::error("failed to load music: no files in music directory");
 		ret = false;
@@ -190,7 +189,6 @@ bool SoundSingleton::load_music() {
 			continue; //don't try to append a null pointer to the list
 		}
 		song_list.append(name);
-		
 	}
 
 	return ret;
@@ -209,7 +207,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path){
 
 	ERR_FAIL_NULL_V_MSG(
 		sound, nullptr,
-		vformat("Failed to load sound file %s", path) //named %s, path, 
+		vformat("Failed to load sound file %s", path) //named %s, path
 	);
 
 	sfx.emplace(std::move(name), sound);
@@ -256,14 +254,14 @@ bool SoundSingleton::load_sounds() {
 	for(SoundEffect const& sound_inst : sound_manager.get_sound_effects()){
 		std::string folder_path = StringUtils::append_string_views(sound_directory, "/", sound_inst.get_file());
 		fs::path full_path = game_singleton->get_dataloader().lookup_file(folder_path, false);
-		
+
 		//UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		//the define its associated with also isn't used in game
 		if(full_path.empty()){
 			Logger::warning("The sound define ",sound_inst.get_identifier()," points to an non-existing file ", folder_path);
 			continue;
 		}
-		
+
 		Ref<AudioStreamWAV> stream = get_sound(std_to_godot_string(full_path.string()));
 		if(stream.is_null()){
 			Logger::error("failed to load sound ",sound_inst.get_identifier()," at path ",full_path);
@@ -286,13 +284,12 @@ bool SoundSingleton::load_sounds() {
 
 Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
-	
+
 	Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
 		err != OK || file.is_null(), nullptr,
 		vformat("Failed to open wav file %s", path)
 	);
-
 
 	Ref<AudioStreamWAV> sound = Ref<AudioStreamWAV>();
 	sound.instantiate();
@@ -301,7 +298,6 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 	String riff_id = read_riff_str(file); //RIFF
 	int riff_size = std::min(static_cast<uint64_t>(file->get_32()), file->get_length());
 	String form_type = read_riff_str(file); //WAVE
-
 
 	//ie. 16, 24, 32 bit audio
 	int bits_per_sample = 0;
@@ -328,13 +324,13 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 			int samplesPerSec = file->get_32();
 			int avgBytesPerSec = file->get_32();
 			int blockAlign = file->get_16();
-			
+
 			bits_per_sample = file->get_16();
 			ERR_FAIL_COND_V_MSG(
 				bits_per_sample == 24 || bits_per_sample == 32, nullptr,
 				vformat("Unsupported wav file sample rate %s", bits_per_sample)
 			);
-			
+
 			if(size > 16){
 				int extensionSize = file->get_16();
 			}
@@ -369,13 +365,12 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 					break;
 				}
 			}
-			
+
 			sound->set_mix_rate(samplesPerSec);
-			
 		}
 		else if(id=="data"){
 			PackedByteArray audio_data = file->get_buffer(size);
-			
+
 			if(bits_per_sample == 24 || bits_per_sample == 32){
 				//sound->set_data(to_16bit_wav_data(audio_data,bits_per_sample));
 				Logger::error("WAV file ",godot_to_std_string(path), " uses an unsupported sample rate ", bits_per_sample);

@@ -41,7 +41,7 @@ func play_effect_stream(sound : AudioStream, volume : float = 1.0) -> void:
 
 func play_effect(sound : String) -> void:
 	play(sound, "SFX")
-	
+
 func play_effect_compat(sfx : String, fallback : AudioStream=null) -> void:
 	var sound:AudioStreamWAV = SoundSingleton.get_sound_stream(sfx)
 	var volume:float = SoundSingleton.get_sound_base_volume(sfx)
@@ -53,4 +53,3 @@ func play_effect_compat(sfx : String, fallback : AudioStream=null) -> void:
 		play_effect_stream(fallback)
 	else:
 		push_warning("Failed to find sound %s" % sfx)
-	

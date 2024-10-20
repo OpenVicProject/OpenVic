@@ -197,13 +197,13 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 				break
 			skinning_chunk_ind += 1
 		if skinning_chunk_ind >= len(skinningChunks):
-			skinning_chunk_ind =  1
+			skinning_chunk_ind = 1
 			applyVertexWeights = false
 
 		var meshInstance : MeshInstance3D = MeshInstance3D.new()
 		node.add_child(meshInstance)
 		meshInstance.owner = node
-		
+
 		#stop the culling of units near the tops of screens
 		meshInstance.extra_cull_margin = EXTRA_CULL_MARGIN
 

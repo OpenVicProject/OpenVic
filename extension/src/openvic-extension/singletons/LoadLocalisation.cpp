@@ -34,7 +34,7 @@ Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> con
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
-		err != OK  || file.is_null(), err == OK ? FAILED : err, vformat("Failed to open localisation file: %s", file_path)
+		err != OK || file.is_null(), err == OK ? FAILED : err, vformat("Failed to open localisation file: %s", file_path)
 	);
 	int line_number = 0;
 	while (!file->eof_reached()) {

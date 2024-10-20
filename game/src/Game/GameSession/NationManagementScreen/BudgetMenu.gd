@@ -203,7 +203,7 @@ func _update_info() -> void:
 
 	if _active:
 		if _gold_label:
-			_gold_label.text  = "%s¤" % GUINode.float_to_string_dp(_incVal - (_incVal % 7), 1)
+			_gold_label.text = "%s¤" % GUINode.float_to_string_dp(_incVal - (_incVal % 7), 1)
 
 		if _total_inc_label:
 			_total_inc_label.text = "%s¤" % GUINode.float_to_string_dp_dynamic(_incVal)

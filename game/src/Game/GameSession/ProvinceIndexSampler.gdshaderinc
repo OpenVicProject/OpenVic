@@ -13,7 +13,7 @@ uvec3 vec3_to_uvec3(vec3 v) {
 // (u, v) -> (province index bottom byte, province index top byte, terrain index byte)
 uvec3 read_uvec3(vec2 uv) {
 	uv *= province_shape_subdivisions;
-	vec2 subdivision_coords = mod(floor(uv),  province_shape_subdivisions);
+	vec2 subdivision_coords = mod(floor(uv), province_shape_subdivisions);
 	float idx = subdivision_coords.x + subdivision_coords.y * province_shape_subdivisions.x;
 	return vec3_to_uvec3(texture(province_shape_tex, vec3(uv, idx)).rgb);
 }
