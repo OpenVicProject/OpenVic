@@ -105,6 +105,17 @@ Economy:
         absolute minimum: 50 (hardcoded value)
         relative minimum: floor(defines.economy.EMPLOYMENT_HIRE_LOWEST * employees count)
 Military:
+  Mobilisation:
+    Mobilised regiment limit:
+      formula: max(MIN_MOBILIZE_LIMIT, regular regiment count) * (1 + mobilization_impact)
+      MIN_MOBILIZE_LIMIT: defines.country.MIN_MOBILIZE_LIMIT
+      regular regiment count: number of deployed non-mobilised regiments
+      mobilization_impact: sum of mobilization_impact modifiers
+    Mobilisation throughput effect:
+      formula: -1 * mobilisation_size * mobilisation_economy_impact
+      -1: mobilisation reduces throughput for RGOs and factories
+      mobilisation_size: sum of mobilisation_size modifiers
+      mobilisation_economy_impact: sum of mobilisation_economy_impact modifiers
   Maximum regiments per soldier POP:
     if POP size < defines.military.POP_MIN_SIZE_FOR_REGIMENT: 0
     else:
@@ -146,7 +157,7 @@ Military:
         else:
           formula: x^(1+i)
           x: received supply
-          i: 0 based index of regiment in the army
+          i: 0-based index of regiment in the army
       trunc(... * 1000): Truncated to 1/1000th.
       min(..., 1000): Capped at max strength.
     Regiment reinforcements:
