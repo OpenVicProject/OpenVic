@@ -4,6 +4,7 @@
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -366,7 +367,7 @@ Error MenuSingleton::_population_menu_update_pops() {
 		if (province_entry != nullptr && province_entry->selected) {
 			for (Pop const& pop : province_entry->province.get_pops()) {
 				population_menu.pops.push_back(&pop);
-				population_menu_t::pop_filter_t& filter = population_menu.pop_filters[&pop.get_type()];
+				population_menu_t::pop_filter_t& filter = population_menu.pop_filters[pop.get_type()];
 				filter.count += pop.get_size();
 				// TODO - set filter.promotion_demotion_change
 			}
@@ -387,7 +388,7 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	population_menu.vote_distribution.clear();
 
 	for (Pop const* pop : population_menu.pops) {
-		if (population_menu.pop_filters[&pop->get_type()].selected) {
+		if (population_menu.pop_filters[pop->get_type()].selected) {
 			population_menu.filtered_pops.push_back(pop);
 		}
 	}
@@ -395,12 +396,12 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	for (Pop const* pop : population_menu.filtered_pops) {
 		const fixed_point_t pop_size = fixed_point_t::parse(pop->get_size());
 
-		population_menu.workforce_distribution[&pop->get_type()] += pop->get_size();
-		population_menu.religion_distribution[&pop->get_religion()] += pop->get_size();
-		population_menu.ideology_distribution += pop->get_ideologies() * fixed_point_t::parse(pop->get_size());
-		population_menu.culture_distribution[&pop->get_culture()] += pop->get_size();
-		population_menu.issue_distribution += pop->get_issues() * fixed_point_t::parse(pop->get_size());
-		population_menu.vote_distribution += pop->get_votes() * fixed_point_t::parse(pop->get_size());
+		population_menu.workforce_distribution[pop->get_type()] += pop_size;
+		population_menu.religion_distribution[&pop->get_religion()] += pop_size;
+		population_menu.ideology_distribution += pop->get_ideologies() * pop_size;
+		population_menu.culture_distribution[&pop->get_culture()] += pop_size;
+		population_menu.issue_distribution += pop->get_issues() * pop_size;
+		population_menu.vote_distribution += pop->get_votes() * pop_size;
 	}
 
 	normalise_fixed_point_map(population_menu.workforce_distribution);
@@ -678,7 +679,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		Dictionary pop_dict;
 
 		pop_dict[pop_size_key] = pop->get_size();
-		pop_dict[pop_type_icon_key] = pop->get_type().get_sprite();
+		pop_dict[pop_type_icon_key] = pop->get_type()->get_sprite();
 		pop_dict[pop_culture_key] = Utilities::std_to_godot_string(pop->get_culture().get_identifier());
 		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
 		if (pop->get_location() != nullptr) {

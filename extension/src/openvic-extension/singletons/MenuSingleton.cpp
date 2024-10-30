@@ -2,8 +2,10 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -472,10 +474,10 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		ret[province_info_controller_key] = Utilities::std_to_godot_string(controller->get_identifier());
 	}
 
-	GoodDefinition const* rgo = province->get_rgo();
-	if (rgo != nullptr) {
-		ret[province_info_rgo_name_key] = Utilities::std_to_godot_string(rgo->get_identifier());
-		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo->get_index());
+	GoodDefinition const* const rgo_good = province->get_rgo_good();
+	if (rgo_good != nullptr) {
+		ret[province_info_rgo_name_key] = Utilities::std_to_godot_string(rgo_good->get_identifier());
+		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good->get_index());
 	}
 
 	Crime const* crime = province->get_crime();
