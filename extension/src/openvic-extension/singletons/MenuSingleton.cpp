@@ -436,6 +436,10 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_controller_key = "controller";
 	static const StringName province_info_rgo_name_key = "rgo_name";
 	static const StringName province_info_rgo_icon_key = "rgo_icon";
+	static const StringName province_info_rgo_total_employees_key = "rgo_total_employees";
+	static const StringName province_info_rgo_employment_percentage_key = "rgo_employment_percentage";
+	static const StringName province_info_rgo_output_quantity_yesterday_key = "rgo_output_quantity_yesterday";
+	static const StringName province_info_rgo_revenue_yesterday_key = "rgo_revenue_yesterday";
 	static const StringName province_info_crime_name_key = "crime_name";
 	static const StringName province_info_crime_icon_key = "crime_icon";
 	static const StringName province_info_total_population_key = "total_population";
@@ -472,6 +476,17 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	CountryInstance const* controller = province->get_controller();
 	if (controller != nullptr) {
 		ret[province_info_controller_key] = Utilities::std_to_godot_string(controller->get_identifier());
+	}
+
+	ResourceGatheringOperation const& rgo = province->get_rgo();
+	ret[province_info_rgo_output_quantity_yesterday_key] = rgo.get_output_quantity_yesterday().to_float();
+	ret[province_info_rgo_revenue_yesterday_key] = rgo.get_revenue_yesterday().to_float();
+	ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
+	const Pop::pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
+	if (max_employee_count == 0) {
+		ret[province_info_rgo_employment_percentage_key] = 100.0f;
+	} else {
+		ret[province_info_rgo_employment_percentage_key] = (rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float_rounded();
 	}
 
 	GoodDefinition const* const rgo_good = province->get_rgo_good();
