@@ -11,6 +11,7 @@ namespace OpenVic {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
 
 	public:
+		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
 		struct slice_t {
 			godot::String name;
 			godot::Color colour;
@@ -29,56 +30,44 @@ namespace OpenVic {
 
 		godot::Error _generate_pie_chart_image();
 
-	protected:
-		static void _bind_methods();
-
 	public:
-		GFXPieChartTexture();
-
-		// Position must be centred and normalised so that coords are in [-1, 1].
-		slice_t const* get_slice(godot::Vector2 const& position) const;
-
-		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
-
-		/* Set slices given an Array of Dictionaries, each with the following key-value entries:
-		 *  - colour: Color
-		 *  - weight: float */
-		godot::Error set_slices_array(godot_pie_chart_data_t const& new_slices);
-
 		/* Generate slice data from a distribution of objects satisfying HasGetIdentifierAndGetColour, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<typename Container>
 		static godot_pie_chart_data_t distribution_to_slices_array(Container const& dist)
 		requires(
 			(
-				/* fixed_point_map_t<T const*>, T derived from HasIdentifierAndColour */
-				utility::is_specialization_of_v<Container, tsl::ordered_map> &&
-				HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>> &&
-				std::is_same_v<typename Container::mapped_type, fixed_point_t>
-			) || (
-				/* IndexedMap<T, fixed_point_t>, T derived from HasIdentifierAndColour */
-				utility::is_specialization_of_v<Container, IndexedMap> &&
-				HasGetIdentifierAndGetColour<typename Container::key_type> &&
-				std::is_same_v<typename Container::value_t, fixed_point_t>
+				/* ordered_map<T const*, mapped_type>, T derived from HasIdentifierAndColour */
+				utility::is_specialization_of_v<Container, tsl::ordered_map>
+				/* IndexedMap<T, mapped_type>, T derived from HasIdentifierAndColour */
+				|| utility::is_specialization_of_v<Container, IndexedMap>
 			)
+			&& HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>>
+			&& std::convertible_to<typename Container::mapped_type, float>
 		) {
 			using namespace godot;
+
 			using key_type = std::remove_pointer_t<typename Container::key_type>;
-			using entry_t = std::pair<key_type const*, fixed_point_t>;
+			using entry_t = std::pair<key_type const*, float>;
+
 			std::vector<entry_t> sorted_dist;
+			sorted_dist.reserve(dist.size());
 
 			if constexpr (utility::is_specialization_of_v<Container, tsl::ordered_map>) {
-				sorted_dist.reserve(dist.size());
-				for (entry_t const& entry : dist) {
-					ERR_CONTINUE_MSG(
-						entry.first == nullptr, vformat("Null distribution key with value %f", entry.second.to_float())
-					);
-					sorted_dist.push_back(entry);
+				for (auto const& [key, non_float_value] : dist) {
+					const float value = static_cast<float>(non_float_value);
+
+					ERR_CONTINUE_MSG(key == nullptr, vformat("Null distribution key with value %f", value));
+
+					if (value != 0.0f) {
+						sorted_dist.emplace_back(key, value);
+					}
 				}
 			} else {
 				for (size_t index = 0; index < dist.size(); ++index) {
-					fixed_point_t const& value = dist[index];
-					if (value != 0) {
+					const float value = static_cast<float>(dist[index]);
+
+					if (value != 0.0f) {
 						key_type const* key = &dist(index);
 						sorted_dist.emplace_back(key, value);
 					}
@@ -93,15 +82,29 @@ namespace OpenVic {
 			ERR_FAIL_COND_V(array.resize(sorted_dist.size()) != OK, {});
 
 			for (size_t idx = 0; idx < array.size(); ++idx) {
-				auto const& [key, val] = sorted_dist[idx];
+				auto const& [key, value] = sorted_dist[idx];
 				Dictionary sub_dict;
 				sub_dict[_slice_identifier_key()] = Utilities::std_to_godot_string(key->get_identifier());
 				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
-				sub_dict[_slice_weight_key()] = val.to_float();
+				sub_dict[_slice_weight_key()] = value;
 				array[idx] = std::move(sub_dict);
 			}
 			return array;
 		}
+
+	protected:
+		static void _bind_methods();
+
+	public:
+		GFXPieChartTexture();
+
+		// Position must be centred and normalised so that coords are in [-1, 1].
+		slice_t const* get_slice(godot::Vector2 const& position) const;
+
+		/* Set slices given an Array of Dictionaries, each with the following key-value entries:
+		 *  - colour: Color
+		 *  - weight: float */
+		godot::Error set_slices_array(godot_pie_chart_data_t const& new_slices);
 
 		/* Create a GFXPieChartTexture using the specified GFX::PieChart. Returns nullptr if gfx_pie_chart fails. */
 		static godot::Ref<GFXPieChartTexture> make_gfx_pie_chart_texture(GFX::PieChart const* gfx_pie_chart);
