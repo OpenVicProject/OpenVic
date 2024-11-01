@@ -240,6 +240,10 @@ func _update_info() -> void:
 	const _province_info_controller_key       : StringName = &"controller"
 	const _province_info_rgo_name_key         : StringName = &"rgo_name"
 	const _province_info_rgo_icon_key         : StringName = &"rgo_icon"
+	const _province_info_rgo_total_employees_key : StringName = &"rgo_total_employees"
+	const _province_info_rgo_employment_percentage_key : StringName = &"rgo_employment_percentage"
+	const _province_info_rgo_output_quantity_yesterday_key : StringName = &"rgo_output_quantity_yesterday"
+	const _province_info_rgo_revenue_yesterday_key : StringName = &"rgo_revenue_yesterday"
 	const _province_info_crime_name_key       : StringName = &"crime_name"
 	const _province_info_crime_icon_key       : StringName = &"crime_icon"
 	const _province_info_total_population_key : StringName = &"total_population"
@@ -305,22 +309,19 @@ func _update_info() -> void:
 			_rgo_icon.set_icon_index(_province_info.get(_province_info_rgo_icon_key, -1) + 2)
 
 		if _rgo_produced_label:
-			# TODO - replace name with amount produced
-			_rgo_produced_label.text = _province_info.get(_province_info_rgo_name_key, _province_info_rgo_name_key + _missing_suffix)
+			_rgo_produced_label.text = GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_output_quantity_yesterday_key, 0), 3)
 
 		if _rgo_income_label:
-			# TODO - add £ sign and replace placeholder with actual value
-			_rgo_income_label.text = "%s¤" % GUINode.float_to_string_dp(12.34567, 3)
+			_rgo_income_label.text = "%s¤" % GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_revenue_yesterday_key, 0), 3)
 
 		if _rgo_employment_percentage_icon:
-			pass
+			_rgo_employment_percentage_icon.set_icon_index(int(_province_info.get(_province_info_rgo_employment_percentage_key, 0) / 10) + 1)
 
 		if _rgo_employment_population_label:
-			# TODO - replace placeholder with actual value
-			_rgo_employment_population_label.text = GUINode.int_to_string_suffixed(_province_info.get(_province_info_total_population_key, 0) / 10)
+			_rgo_employment_population_label.text = GUINode.int_to_string_suffixed(_province_info.get(_province_info_rgo_total_employees_key, 0))
 
 		if _rgo_employment_percentage_label:
-			pass
+			_rgo_employment_percentage_label.text = "%d%%" % _province_info.get(_province_info_rgo_employment_percentage_key, 0)
 
 		if _crime_name_label:
 			_crime_name_label.text = _province_info.get(_province_info_crime_name_key, "")
