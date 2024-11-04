@@ -1,4 +1,9 @@
 #include "MenuSingleton.hpp"
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <string_view>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -12,6 +17,12 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "godot_cpp/variant/array.hpp"
+#include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/string.hpp"
+#include "openvic-simulation/country/CountryInstance.hpp"
+#include "openvic-simulation/research/Technology.hpp"
+#include "openvic-simulation/types/fixed_point/FixedPoint.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -296,6 +307,9 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_search_result_position, { "result_index" });
 
 	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
+
+	/* TECHNOLOGY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_info);
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {
@@ -974,4 +988,69 @@ Vector2 MenuSingleton::get_search_result_position(int32_t result_index) const {
 	return game_singleton->normalise_map_position(
 		std::visit(entry_visitor, search_panel.entry_cache[search_panel.result_indices[result_index]].target)
 	);
+}
+
+/* TECHNOLOGY MENU */
+godot::Dictionary MenuSingleton::get_technology_menu_info() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	static const StringName tech_folders_key = "tech_folders";
+	static const StringName tech_school_key = "tech_school";
+	static const StringName tech_school_mod_names = "tech_school_mod_names";
+	static const StringName tech_school_mod_values = "tech_school_mod_values";
+	static const StringName tech_school_mod_icons = "tech_school_mod_icons";
+
+	Dictionary ret;
+
+	std::vector<std::string_view> tech_folder_identifiers = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_identifiers();
+	Array tech_folders {};
+	for (auto folder : tech_folder_identifiers) {
+		tech_folders.push_back(Utilities::std_to_godot_string(folder));
+	}
+	ret[tech_folders_key] = tech_folders;
+
+	const CountryInstance* country = game_singleton->get_viewed_country();
+	if (country == nullptr) {
+		ret[tech_school_key] = String("traditional_academic");
+		ret[tech_school_mod_names] = Array {};
+		ret[tech_school_mod_values] = Array {};
+		return ret;
+	}
+	ret[tech_school_key] = Utilities::std_to_godot_string(country->get_tech_school() == nullptr ? "traditional_academic" : country->get_tech_school()->get_identifier());
+
+	static const auto bonus_suffix = "_research_bonus";
+	auto compareFolders = [&tech_folder_identifiers](std::pair<std::string_view, fixed_point_t> a, std::pair<std::string_view, fixed_point_t> b) -> bool {
+		std::string tempA{a.first.substr(0, a.first.find(bonus_suffix))};
+		std::string tempB{b.first.substr(0, b.first.find(bonus_suffix))};
+		return std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempA) < std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempB);
+	};
+
+	std::vector<std::pair<std::string_view, fixed_point_t>> school_modifiers;
+	if (country->get_tech_school() != nullptr) {
+		for (auto effect : country->get_tech_school()->get_values()) {
+			if (!effect.first->get_identifier().starts_with("unciv")) {
+				if (effect.second != 0) {
+					school_modifiers.push_back({effect.first->get_localisation_key(), effect.second});
+				}
+			}
+		}
+	}
+	std::sort(school_modifiers.begin(), school_modifiers.end(), compareFolders);
+
+	Array school_modifier_names {};
+	Array school_modifier_values {};
+	Array school_modifier_icons {};
+
+	for (auto modifier : school_modifiers) {
+		school_modifier_names.push_back(Utilities::std_to_godot_string(modifier.first));
+		school_modifier_values.push_back(modifier.second.to_float());
+		school_modifier_icons.push_back(1 + std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin());
+	}
+
+	ret[tech_school_mod_names] = school_modifier_names;
+	ret[tech_school_mod_values] = school_modifier_values;
+	ret[tech_school_mod_icons] = school_modifier_icons;
+
+	return ret;
 }
