@@ -4,15 +4,27 @@
 #include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
 
-#include <openvic-simulation/economy/GoodDefinition.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
+
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/population/PopType.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/PopSprite.hpp>
+#include <openvic-simulation/economy/GoodDefinition.hpp>
+#include <openvic-simulation/research/Technology.hpp>
+#include <openvic-simulation/country/CountryInstance.hpp>
+#include <openvic-simulation/modifier/ModifierEffect.hpp>
 
+#include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
@@ -72,6 +84,11 @@ String MenuSingleton::_make_modifier_effect_value_coloured(
 		value,
 		plus_for_non_negative
 	);
+}
+
+String MenuSingleton::_make_modifier_effect_tooltip(ModifierEffect const& effect, const fixed_point_t value) const {
+	return tr(Utilities::std_to_godot_string(effect.get_localisation_key())) + ": " +
+		_make_modifier_effect_value_coloured(effect, value, true);
 }
 
 String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifier) const {
@@ -204,6 +221,9 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 
 void MenuSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(get_tooltip_separator);
+	OV_BIND_SMETHOD(get_tooltip_condition_met);
+	OV_BIND_SMETHOD(get_tooltip_condition_unmet);
+
 	OV_BIND_METHOD(MenuSingleton::get_country_name_from_identifier, { "country_identifier" });
 	OV_BIND_METHOD(MenuSingleton::get_country_adjective_from_identifier, { "country_identifier" });
 
@@ -316,6 +336,11 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_search_result_position, { "result_index" });
 
 	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
+
+	/* TECHNOLOGY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_defines);
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_info);
+	OV_BIND_METHOD(MenuSingleton::get_specific_technology_info, { "technology_identifier" });
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {
@@ -340,6 +365,16 @@ String MenuSingleton::get_issue_identifier_suffix() {
 String MenuSingleton::get_tooltip_separator() {
 	static const String tooltip_separator = "\n" + String { "-" }.repeat(14) + "\n";
 	return tooltip_separator;
+}
+
+String MenuSingleton::get_tooltip_condition_met() {
+	static const String condition_met = String { "(" } + GUILabel::get_colour_marker() + String { "G*" } + GUILabel::get_colour_marker() + "W)";
+	return condition_met;
+}
+
+String MenuSingleton::get_tooltip_condition_unmet() {
+	static const String condition_unmet = String { "(" } + GUILabel::get_colour_marker() + String { "RX" } + GUILabel::get_colour_marker() + "W)";
+	return condition_unmet;
 }
 
 String MenuSingleton::get_country_name_from_identifier(String const& country_identifier) const {

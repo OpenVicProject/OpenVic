@@ -69,6 +69,7 @@ namespace OpenVic {
 		void set_tariff_rate_slider_value(fixed_point_t const value) const;
 
 		// Technology
+		void start_research(godot::String const& technology_identifier) const;
 
 		// Politics
 
