@@ -1,13 +1,15 @@
 #pragma once
 
-#include <variant>
-
+<<<<<<< HEAD
+=======
+>>>>>>> 05f564d (tech schools)
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include "godot_cpp/variant/dictionary.hpp"
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -204,6 +206,9 @@ namespace OpenVic {
 		godot::PackedStringArray get_population_menu_distribution_setup_info() const;
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
+
+		/* TECHNOLOGY MENU */
+		godot::Dictionary get_technology_menu_info() const;
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
