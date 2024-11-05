@@ -17,6 +17,7 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/string.hpp"
@@ -132,46 +133,54 @@ String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifie
 			result += "\n";
 		}
 
-		result += tr(Utilities::std_to_godot_string(effect->get_localisation_key()));
-
-		static const String post_name_text = ": " + GUILabel::get_colour_marker();
-		result += post_name_text;
-
-		if (value == 0) {
-			result += "Y";
-		} else if (effect->is_positive_good() == value > 0) {
-			result += "G";
-		} else {
-			result += "R";
-		}
-
-		if (value >= 0) {
-			result += "+";
-		}
-
-		static constexpr int32_t DECIMAL_PLACES = 2;
-
-		using enum ModifierEffect::format_t;
-
-		switch (effect->get_format()) {
-		case PROPORTION_DECIMAL:
-			result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case PERCENTAGE_DECIMAL:
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case INT:
-			result += String::num_int64(value.to_int64_t());
-			break;
-		case RAW_DECIMAL: [[fallthrough]];
-		default: // Use raw decimal as fallback format
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
-			break;
-		}
-
-		static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-		result += end_text;
+		make_modifier_effect_tooltip(*effect, value);
 	}
+
+	return result;
+}
+
+String MenuSingleton::make_modifier_effect_tooltip(ModifierEffect const& effect, fixed_point_t value) const {
+	String result;
+
+	result += tr(Utilities::std_to_godot_string(effect.get_localisation_key()));
+
+	static const String post_name_text = ": " + GUILabel::get_colour_marker();
+	result += post_name_text;
+
+	if (value == 0) {
+		result += "Y";
+	} else if (effect.is_positive_good() == value > 0) {
+		result += "G";
+	} else {
+		result += "R";
+	}
+
+	if (value >= 0) {
+		result += "+";
+	}
+
+	static constexpr int32_t DECIMAL_PLACES = 2;
+
+	using enum ModifierEffect::format_t;
+
+	switch (effect.get_format()) {
+	case PROPORTION_DECIMAL:
+		result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
+		break;
+	case PERCENTAGE_DECIMAL:
+		result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
+		break;
+	case INT:
+		result += String::num_int64(value.to_int64_t());
+		break;
+	case RAW_DECIMAL: [[fallthrough]];
+	default: // Use raw decimal as fallback format
+		result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
+		break;
+	}
+
+	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+	result += end_text;
 
 	return result;
 }
@@ -309,6 +318,7 @@ void MenuSingleton::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
 
 	/* TECHNOLOGY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_defines);
 	OV_BIND_METHOD(MenuSingleton::get_technology_menu_info);
 }
 
@@ -991,29 +1001,51 @@ Vector2 MenuSingleton::get_search_result_position(int32_t result_index) const {
 }
 
 /* TECHNOLOGY MENU */
-godot::Dictionary MenuSingleton::get_technology_menu_info() const {
+godot::Dictionary MenuSingleton::get_technology_menu_defines() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 
 	static const StringName tech_folders_key = "tech_folders";
+	static const StringName tech_areas_key = "tech_areas";
+
+	Dictionary ret;
+
+	const std::vector<OpenVic::TechnologyFolder>& tech_folders = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folders();
+
+	Array tech_folder_identifiers {};
+	Array tech_area_identifiers {};
+	for (TechnologyFolder const& folder : tech_folders) {
+		tech_folder_identifiers.push_back(Utilities::std_to_godot_string(folder.get_identifier()));
+		Array folder_areas {};
+		for (TechnologyArea const* area : folder.get_technology_areas()) {
+			folder_areas.push_back(Utilities::std_to_godot_string(area->get_identifier()));
+		}
+		tech_area_identifiers.push_back(folder_areas);
+	}
+	ret[tech_folders_key] = tech_folder_identifiers;
+	ret[tech_areas_key] = tech_area_identifiers;
+
+	return ret;
+}
+godot::Dictionary MenuSingleton::get_technology_menu_info() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
 	static const StringName tech_school_key = "tech_school";
-	static const StringName tech_school_mod_names = "tech_school_mod_names";
 	static const StringName tech_school_mod_values = "tech_school_mod_values";
 	static const StringName tech_school_mod_icons = "tech_school_mod_icons";
+	static const StringName tech_school_mod_tt = "tech_school_mod_tt";
+
+	static const StringName current_research_tech = "current_research_tech";
+	static const StringName current_research_cat = "current_research_cat";
 
 	Dictionary ret;
 
 	std::vector<std::string_view> tech_folder_identifiers = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_identifiers();
-	Array tech_folders {};
-	for (auto folder : tech_folder_identifiers) {
-		tech_folders.push_back(Utilities::std_to_godot_string(folder));
-	}
-	ret[tech_folders_key] = tech_folders;
 
 	const CountryInstance* country = game_singleton->get_viewed_country();
 	if (country == nullptr) {
 		ret[tech_school_key] = String("traditional_academic");
-		ret[tech_school_mod_names] = Array {};
 		ret[tech_school_mod_values] = Array {};
 		return ret;
 	}
@@ -1035,22 +1067,35 @@ godot::Dictionary MenuSingleton::get_technology_menu_info() const {
 				}
 			}
 		}
+		if (country->get_tech_school()->get_effect_count() > 0) {
+			std::sort(school_modifiers.begin(), school_modifiers.end(), compareFolders);
+		}
 	}
-	std::sort(school_modifiers.begin(), school_modifiers.end(), compareFolders);
 
-	Array school_modifier_names {};
 	Array school_modifier_values {};
 	Array school_modifier_icons {};
+	Array school_modifier_tt {};
 
 	for (auto modifier : school_modifiers) {
-		school_modifier_names.push_back(Utilities::std_to_godot_string(modifier.first));
+		size_t folder_id = std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin();
+
 		school_modifier_values.push_back(modifier.second.to_float());
-		school_modifier_icons.push_back(1 + std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin());
+		school_modifier_icons.push_back(1 + folder_id);
+		school_modifier_tt.push_back(make_modifier_effect_tooltip(**game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache().get_research_bonus_effects().get_item_by_key(*game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_by_index(folder_id)), modifier.second));
 	}
 
-	ret[tech_school_mod_names] = school_modifier_names;
 	ret[tech_school_mod_values] = school_modifier_values;
 	ret[tech_school_mod_icons] = school_modifier_icons;
+	ret[tech_school_mod_tt] = school_modifier_tt;
+
+	Technology const* current_research = country->get_current_research();
+	if (current_research != nullptr) {
+		ret[current_research_tech] = Utilities::std_to_godot_string(current_research->get_identifier());
+		ret[current_research_cat] = tr(Utilities::std_to_godot_string(current_research->get_area().get_folder().get_identifier())) + ", " + tr(Utilities::std_to_godot_string(current_research->get_area().get_identifier()));
+	} else {
+		ret[current_research_tech] = tr("TECHNOLOGYVIEW_NO_RESEARCH");
+		ret[current_research_cat] = "";
+	}
 
 	return ret;
 }

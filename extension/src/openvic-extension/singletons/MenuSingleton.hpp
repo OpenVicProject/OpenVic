@@ -3,11 +3,13 @@
 #include <cstdint>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 
-#include <openvic-simulation/pop/Pop.hpp>
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
-#include "godot_cpp/variant/dictionary.hpp"
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/modifier/ModifierEffect.hpp>
+#include <openvic-simulation/pop/Pop.hpp>
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -115,6 +117,7 @@ namespace OpenVic {
 		godot::String get_country_adjective(CountryInstance const& country) const;
 
 		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
+		godot::String make_modifier_effect_tooltip(ModifierEffect const& effect, fixed_point_t value) const;
 		godot::String make_rules_tooltip(RuleSet const& rules) const;
 
 	protected:
@@ -194,6 +197,7 @@ namespace OpenVic {
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
 
 		/* TECHNOLOGY MENU */
+		godot::Dictionary get_technology_menu_defines() const;
 		godot::Dictionary get_technology_menu_info() const;
 
 		/* Find/Search Panel */
