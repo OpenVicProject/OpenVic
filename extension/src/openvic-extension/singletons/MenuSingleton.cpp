@@ -20,6 +20,9 @@
 #include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/packed_float32_array.hpp"
+#include "godot_cpp/variant/packed_int32_array.hpp"
+#include "godot_cpp/variant/packed_string_array.hpp"
 #include "godot_cpp/variant/string.hpp"
 #include "openvic-simulation/country/CountryInstance.hpp"
 #include "openvic-simulation/research/Technology.hpp"
@@ -1007,26 +1010,45 @@ godot::Dictionary MenuSingleton::get_technology_menu_defines() const {
 
 	static const StringName tech_folders_key = "tech_folders";
 	static const StringName tech_areas_key = "tech_areas";
+	static const StringName technologies_key = "technologies";
+	static const StringName folder_tech_count_key = "folder_tech_count";
 
 	Dictionary ret;
 
-	const std::vector<OpenVic::TechnologyFolder>& tech_folders = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folders();
+	std::vector<OpenVic::TechnologyFolder> const& tech_folders = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folders();
 
-	Array tech_folder_identifiers {};
+	PackedStringArray tech_folder_identifiers {};
 	Array tech_area_identifiers {};
+	Array tech_identifiers {};
+	PackedInt32Array folder_tech_count {};
 	for (TechnologyFolder const& folder : tech_folders) {
 		tech_folder_identifiers.push_back(Utilities::std_to_godot_string(folder.get_identifier()));
-		Array folder_areas {};
+		int32_t num_in_folder = 0;
+
+		PackedStringArray folder_areas {};
+		Array tech_folder_nested_array {}; // tech_identifiers has three levels of nested arrays :P
 		for (TechnologyArea const* area : folder.get_technology_areas()) {
 			folder_areas.push_back(Utilities::std_to_godot_string(area->get_identifier()));
+
+			PackedStringArray area_technologies {};
+			for (Technology const* tech : area->get_technologies()) {
+				area_technologies.push_back(Utilities::std_to_godot_string(tech->get_identifier()));
+				num_in_folder++;
+			}
+			tech_folder_nested_array.push_back(std::move(area_technologies));
 		}
-		tech_area_identifiers.push_back(folder_areas);
+		tech_area_identifiers.push_back(std::move(folder_areas));
+		tech_identifiers.push_back(std::move(tech_folder_nested_array));
+		folder_tech_count.push_back(num_in_folder);
 	}
-	ret[tech_folders_key] = tech_folder_identifiers;
-	ret[tech_areas_key] = tech_area_identifiers;
+	ret[tech_folders_key] = std::move(tech_folder_identifiers);
+	ret[tech_areas_key] = std::move(tech_area_identifiers);
+	ret[technologies_key] = std::move(tech_identifiers);
+	ret[folder_tech_count_key] = std::move(folder_tech_count);
 
 	return ret;
 }
+
 godot::Dictionary MenuSingleton::get_technology_menu_info() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
@@ -1039,16 +1061,24 @@ godot::Dictionary MenuSingleton::get_technology_menu_info() const {
 	static const StringName current_research_tech = "current_research_tech";
 	static const StringName current_research_cat = "current_research_cat";
 
-	Dictionary ret;
+	static const StringName researched_technologies_key = "researched_technologies";
 
-	std::vector<std::string_view> tech_folder_identifiers = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_identifiers();
+	Dictionary ret;
 
 	const CountryInstance* country = game_singleton->get_viewed_country();
 	if (country == nullptr) {
 		ret[tech_school_key] = String("traditional_academic");
-		ret[tech_school_mod_values] = Array {};
+		ret[tech_school_mod_values] = PackedFloat32Array {};
+		ret[tech_school_mod_icons] = PackedInt32Array {};
+		ret[tech_school_mod_tt] = PackedStringArray {};
+		ret[current_research_tech] = "";
+		ret[current_research_cat] = "";
+		ret[researched_technologies_key] = PackedStringArray {};
 		return ret;
 	}
+
+	std::vector<std::string_view> tech_folder_identifiers = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_identifiers();
+
 	ret[tech_school_key] = Utilities::std_to_godot_string(country->get_tech_school() == nullptr ? "traditional_academic" : country->get_tech_school()->get_identifier());
 
 	static const auto bonus_suffix = "_research_bonus";
@@ -1058,7 +1088,7 @@ godot::Dictionary MenuSingleton::get_technology_menu_info() const {
 		return std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempA) < std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempB);
 	};
 
-	std::vector<std::pair<std::string_view, fixed_point_t>> school_modifiers;
+	std::vector<std::pair<std::string_view, fixed_point_t>> school_modifiers {};
 	if (country->get_tech_school() != nullptr) {
 		for (auto effect : country->get_tech_school()->get_values()) {
 			if (!effect.first->get_identifier().starts_with("unciv")) {
@@ -1072,30 +1102,37 @@ godot::Dictionary MenuSingleton::get_technology_menu_info() const {
 		}
 	}
 
-	Array school_modifier_values {};
-	Array school_modifier_icons {};
-	Array school_modifier_tt {};
+	PackedFloat32Array school_modifier_values {};
+	PackedInt32Array school_modifier_icons {};
+	PackedStringArray school_modifier_tt {};
 
 	for (auto modifier : school_modifiers) {
-		size_t folder_id = std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin();
+		int32_t folder_id = std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin();
 
 		school_modifier_values.push_back(modifier.second.to_float());
 		school_modifier_icons.push_back(1 + folder_id);
 		school_modifier_tt.push_back(make_modifier_effect_tooltip(**game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache().get_research_bonus_effects().get_item_by_key(*game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_by_index(folder_id)), modifier.second));
 	}
 
-	ret[tech_school_mod_values] = school_modifier_values;
-	ret[tech_school_mod_icons] = school_modifier_icons;
-	ret[tech_school_mod_tt] = school_modifier_tt;
+	ret[tech_school_mod_values] = std::move(school_modifier_values);
+	ret[tech_school_mod_icons] = std::move(school_modifier_icons);
+	ret[tech_school_mod_tt] = std::move(school_modifier_tt);
 
 	Technology const* current_research = country->get_current_research();
 	if (current_research != nullptr) {
 		ret[current_research_tech] = Utilities::std_to_godot_string(current_research->get_identifier());
 		ret[current_research_cat] = tr(Utilities::std_to_godot_string(current_research->get_area().get_folder().get_identifier())) + ", " + tr(Utilities::std_to_godot_string(current_research->get_area().get_identifier()));
 	} else {
-		ret[current_research_tech] = tr("TECHNOLOGYVIEW_NO_RESEARCH");
-		ret[current_research_cat] = "";
+		ret[current_research_tech] = String("");
+		ret[current_research_cat] = String("");
 	}
+
+	PackedStringArray researched_technologies {};
+	for (Technology const& tech : game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technologies()) {
+		if (country->is_technology_unlocked(tech))
+			researched_technologies.push_back(Utilities::std_to_godot_string(tech.get_identifier()));
+	}
+	ret[researched_technologies_key] = std::move(researched_technologies);
 
 	return ret;
 }
