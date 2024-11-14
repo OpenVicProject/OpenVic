@@ -4,14 +4,13 @@ signal minimap_clicked(pos_clicked : Vector2)
 
 const _action_click : StringName = &"map_click"
 
-@export var _minimap_texture : Control
 var _minimap_shader : ShaderMaterial
 
 var _viewport_points : PackedVector2Array
 
 func _ready() -> void:
-	_minimap_texture.custom_minimum_size = Vector2(GameSingleton.get_map_aspect_ratio(), 1.0) * 150
-	var minimap_material := _minimap_texture.get_material()
+	custom_minimum_size = Vector2(GameSingleton.get_map_aspect_ratio(), 1.0) * 150
+	var minimap_material := get_material()
 	if GameLoader.ShaderManager.set_up_shader(minimap_material, false) != OK:
 		push_error("Failed to set up minimap shader")
 	else:
@@ -32,7 +31,7 @@ func _draw() -> void:
 # REQUIREMENTS
 # * SS-81
 # * UIFUN-127
-func _gui_input(event : InputEvent) -> void:
+func _gui_input(_event : InputEvent) -> void:
 	if Input.is_action_pressed(_action_click):
 		var pos_clicked := get_local_mouse_position() / size - Vector2(0.5, 0.5)
 		if abs(pos_clicked.x) < 0.5 and abs(pos_clicked.y) < 0.5:
