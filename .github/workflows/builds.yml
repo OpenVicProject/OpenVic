@@ -151,7 +151,7 @@ jobs:
         uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@v4.1.7
         with:
           path: game/bin/openvic
           pattern: ${{ github.event.repository.name }}-*-extension
@@ -193,7 +193,7 @@ jobs:
         uses: OpenVicProject/openvic-env@master
 
       - name: Download artifact
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@v4.1.7
         with:
           path: game/bin/openvic
           pattern: ${{ github.event.repository.name }}-*-extension
@@ -242,7 +242,7 @@ jobs:
     name: 📚 Merge Files
     steps:
       - name: Download extension artifacts
-        uses: actions/download-artifact@v4.1.1
+        uses: actions/download-artifact@v4.1.7
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
         with:
           path: artifacts
