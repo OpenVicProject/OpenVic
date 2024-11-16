@@ -5,6 +5,7 @@
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/types/TextFormat.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -30,7 +31,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 
 	float starting_x = 0.0f;
 	Error err = OK;
-	using enum GUI::AlignedElement::format_t;
+	using enum text_format_t;
 	switch (gui_overlapping_elements_box->get_format()) {
 		case left:
 			break;
