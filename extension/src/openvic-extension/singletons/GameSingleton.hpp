@@ -21,7 +21,7 @@ namespace OpenVic {
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
 		godot::Ref<godot::Image> province_colour_image;
 		godot::Ref<godot::ImageTexture> province_colour_texture;
-		Mapmode::index_t mapmode_index = 0;
+		Mapmode const* mapmode; // This should never be null, if no mapmode is set then it'll point to Mapmode::ERROR_MAPMODE
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
 		static const godot::Vector2i PROPERTY(flag_dims); /* The size in pixels of an individual flag. */
@@ -34,6 +34,7 @@ namespace OpenVic {
 		static godot::StringName const& _signal_gamestate_updated();
 		static godot::StringName const& _signal_province_selected();
 		static godot::StringName const& _signal_clock_state_changed();
+		static godot::StringName const& _signal_mapmode_changed();
 
 		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
@@ -120,7 +121,9 @@ namespace OpenVic {
 
 		int32_t get_mapmode_count() const;
 		godot::String get_mapmode_identifier(int32_t index) const;
-		godot::Error set_mapmode(godot::String const& identifier);
+		godot::String get_mapmode_localisation_key(int32_t index) const;
+		int32_t get_current_mapmode_index() const;
+		godot::Error set_mapmode(int32_t index);
 		bool is_parchment_mapmode_allowed() const;
 		int32_t get_selected_province_index() const;
 		void set_selected_province(int32_t index);

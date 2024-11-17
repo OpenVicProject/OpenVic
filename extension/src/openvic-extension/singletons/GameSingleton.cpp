@@ -33,6 +33,10 @@ StringName const& GameSingleton::_signal_clock_state_changed() {
 	static const StringName signal_clock_state_changed = "clock_state_changed";
 	return signal_clock_state_changed;
 }
+StringName const& GameSingleton::_signal_mapmode_changed() {
+	static const StringName signal_mapmode_changed = "mapmode_changed";
+	return signal_mapmode_changed;
+}
 
 void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
@@ -63,7 +67,9 @@ void GameSingleton::_bind_methods() {
 
 	OV_BIND_METHOD(GameSingleton::get_mapmode_count);
 	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier);
-	OV_BIND_METHOD(GameSingleton::set_mapmode, { "identifier" });
+	OV_BIND_METHOD(GameSingleton::get_mapmode_localisation_key);
+	OV_BIND_METHOD(GameSingleton::get_current_mapmode_index);
+	OV_BIND_METHOD(GameSingleton::set_mapmode, { "index" });
 	OV_BIND_METHOD(GameSingleton::is_parchment_mapmode_allowed);
 	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
 	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
@@ -76,6 +82,7 @@ void GameSingleton::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
 	ADD_SIGNAL(MethodInfo(_signal_province_selected(), PropertyInfo(Variant::INT, "index")));
 	ADD_SIGNAL(MethodInfo(_signal_clock_state_changed()));
+	ADD_SIGNAL(MethodInfo(_signal_mapmode_changed(), PropertyInfo(Variant::INT, "index")));
 }
 
 GameSingleton* GameSingleton::get_singleton() {
@@ -95,9 +102,11 @@ void GameSingleton::_on_clock_state_changed() {
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
-	: game_manager {
+  : game_manager {
 		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
-	}, viewed_country { nullptr } {
+	},
+	viewed_country { nullptr },
+	mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -249,7 +258,7 @@ Error GameSingleton::_update_colour_image() {
 
 	InstanceManager const* instance_manager = get_instance_manager();
 	if (instance_manager != nullptr && !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
-		instance_manager->get_map_instance(), mapmode_index, colour_data_array.ptrw()
+		instance_manager->get_map_instance(), mapmode, colour_data_array.ptrw()
 	)) {
 		err = FAILED;
 	}
@@ -311,28 +320,37 @@ int32_t GameSingleton::get_mapmode_count() const {
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
-	if (mapmode != nullptr) {
-		return Utilities::std_to_godot_string(mapmode->get_identifier());
+	Mapmode const* identifier_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	if (identifier_mapmode != nullptr) {
+		return Utilities::std_to_godot_string(identifier_mapmode->get_identifier());
 	}
 	return String {};
 }
 
-Error GameSingleton::set_mapmode(String const& identifier) {
-	Mapmode const* mapmode =
-		get_definition_manager().get_mapmode_manager().get_mapmode_by_identifier(Utilities::godot_to_std_string(identifier));
-	ERR_FAIL_NULL_V_MSG(mapmode, FAILED, vformat("Failed to find mapmode with identifier: %s", identifier));
-	mapmode_index = mapmode->get_index();
-	return _update_colour_image();
+String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
+	Mapmode const* localisation_key_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	if (localisation_key_mapmode != nullptr) {
+		return Utilities::std_to_godot_string(localisation_key_mapmode->get_localisation_key());
+	}
+	return String {};
+}
+
+int32_t GameSingleton::get_current_mapmode_index() const {
+	return mapmode->get_index();
+}
+
+Error GameSingleton::set_mapmode(int32_t index) {
+	Mapmode const* new_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, vformat("Failed to find mapmode with index: %d", index));
+	mapmode = new_mapmode;
+	const Error err = _update_colour_image();
+	emit_signal(_signal_mapmode_changed(), mapmode->get_index());
+	return err;
 }
 
 bool GameSingleton::is_parchment_mapmode_allowed() const {
-	// TODO - parchment bool per mapmode?
-	// TODO - move mapmode index to SIM/Map?
-	/* Disallows parchment mapmode for the cosmetic terrain mapmode */
-	static constexpr std::string_view cosmetic_terrain_mapmode = "mapmode_terrain";
-	Mapmode const* mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(mapmode_index);
-	return mapmode != nullptr && mapmode->get_identifier() != cosmetic_terrain_mapmode;
+	/* Disallows parchment mapmode, e.g. for the cosmetic terrain mapmode */
+	return mapmode->is_parchment_mapmode_allowed();
 }
 
 int32_t GameSingleton::get_selected_province_index() const {
