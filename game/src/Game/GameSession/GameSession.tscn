@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=22 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/TradeMenu.gd" id="10_mv1r6"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/DiplomacyMenu.gd" id="11_fu7ys"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/MilitaryMenu.gd" id="12_6h6nc"]
+[ext_resource type="Script" path="res://src/Game/GameSession/Ledger.gd" id="15_vhb1p"]
 [ext_resource type="Script" path="res://src/Game/GameSession/Tooltip.gd" id="20_3306e"]
 [ext_resource type="Script" path="res://src/Game/GameSession/Menubar.gd" id="20_s1i71"]
 
@@ -108,6 +109,11 @@ layout_mode = 1
 anchors_preset = 15
 script = ExtResource("20_s1i71")
 
+[node name="Ledger" type="GUINode" parent="UICanvasLayer/UI"]
+layout_mode = 1
+anchors_preset = 15
+script = ExtResource("15_vhb1p")
+
 [node name="SearchPanel" type="GUINode" parent="UICanvasLayer/UI" node_paths=PackedStringArray("_map_view")]
 layout_mode = 1
 anchors_preset = 15
@@ -160,6 +166,7 @@ script = ExtResource("20_3306e")
 [connection signal="detailed_view_changed" from="MapView" to="ModelManager" method="set_visible"]
 [connection signal="map_view_camera_changed" from="MapView" to="UICanvasLayer/UI/Menubar" method="_on_map_view_camera_changed"]
 [connection signal="game_session_menu_button_pressed" from="UICanvasLayer/UI/Menubar" to="." method="_on_game_session_menu_button_pressed"]
+[connection signal="ledger_button_pressed" from="UICanvasLayer/UI/Menubar" to="UICanvasLayer/UI/Ledger" method="toggle_visibility"]
 [connection signal="minimap_clicked" from="UICanvasLayer/UI/Menubar" to="MapView" method="_on_minimap_clicked"]
 [connection signal="search_button_pressed" from="UICanvasLayer/UI/Menubar" to="UICanvasLayer/UI/SearchPanel" method="toggle_visibility"]
 [connection signal="zoom_in_button_pressed" from="UICanvasLayer/UI/Menubar" to="MapView" method="zoom_in"]

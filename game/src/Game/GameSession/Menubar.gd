@@ -1,6 +1,7 @@
 extends GUINode
 
 signal game_session_menu_button_pressed
+signal ledger_button_pressed
 signal search_button_pressed
 signal zoom_in_button_pressed
 signal zoom_out_button_pressed
@@ -66,6 +67,7 @@ func _ready() -> void:
 	var ledger_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./menubar/ledger_button")
 	if ledger_button:
 		ledger_button.tooltip_string = "M_LEDGER_BUTTON"
+		ledger_button.pressed.connect(_on_ledger_button_pressed)
 
 	var search_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./menubar/button_goto")
 	if search_button:
@@ -100,6 +102,9 @@ func _ready() -> void:
 # * UIFUN-10
 func _on_game_session_menu_button_pressed() -> void:
 	game_session_menu_button_pressed.emit()
+
+func _on_ledger_button_pressed() -> void:
+	ledger_button_pressed.emit()
 
 func _on_search_button_pressed() -> void:
 	search_button_pressed.emit()
