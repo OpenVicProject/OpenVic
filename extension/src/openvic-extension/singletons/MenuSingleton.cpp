@@ -482,7 +482,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	ret[province_info_rgo_output_quantity_yesterday_key] = rgo.get_output_quantity_yesterday().to_float();
 	ret[province_info_rgo_revenue_yesterday_key] = rgo.get_revenue_yesterday().to_float();
 	ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
-	const Pop::pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
+	const pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
 	if (max_employee_count == 0) {
 		ret[province_info_rgo_employment_percentage_key] = 100.0f;
 	} else {
