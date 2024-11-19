@@ -1,16 +1,26 @@
 #pragma once
 
+#include <variant>
+
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
-#include <openvic-simulation/pop/Pop.hpp>
 #include <openvic-simulation/types/IndexedMap.hpp>
+#include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
 namespace OpenVic {
 	struct CountryInstance;
 	struct State;
 	struct ProvinceInstance;
+	struct Pop;
+	struct PopType;
+	struct Religion;
+	struct Ideology;
+	struct Culture;
+	struct Issue;
+	struct CountryParty;
+	struct RebelType;
 	struct ModifierValue;
 	struct RuleSet;
 
@@ -46,7 +56,7 @@ namespace OpenVic {
 			int32_t visible_province_list_entries = 0;
 
 			struct pop_filter_t {
-				Pop::pop_size_t count, promotion_demotion_change;
+				pop_size_t count, promotion_demotion_change;
 				bool selected;
 			};
 			ordered_map<PopType const*, pop_filter_t> pop_filters;

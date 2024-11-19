@@ -482,14 +482,18 @@ static bool generate_window(generate_gui_args_t&& args) {
 
 	GUI::Window const& window = static_cast<GUI::Window const&>(args.element);
 
-	// TODO - moveable, fullscreen, dontRender (disable visibility?)
+	// TODO - moveable, dontRender (disable visibility?)
 	const String window_name = Utilities::std_to_godot_string(window.get_name());
 
 	Panel* godot_panel = nullptr;
 	bool ret = new_control(godot_panel, window, args.name);
 	ERR_FAIL_NULL_V_MSG(godot_panel, false, vformat("Failed to create Panel for GUI window %s", window_name));
 
-	godot_panel->set_custom_minimum_size(Utilities::to_godot_fvec2(window.get_size()));
+	if (window.get_fullscreen()) {
+		godot_panel->set_anchors_preset(godot::Control::PRESET_FULL_RECT);
+	} else {
+		godot_panel->set_custom_minimum_size(Utilities::to_godot_fvec2(window.get_size()));
+	}
 
 	Ref<StyleBoxEmpty> stylebox_empty;
 	stylebox_empty.instantiate();
