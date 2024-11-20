@@ -29,12 +29,12 @@
 
 
 ## 3. Scons
-- Open Windows Powershell and run the command `pip install scons`
+- Open Windows Powershell and run the command `pip install scons==4.7.0`
 
 ![](images/installation/scons-install.png)
 
 ## 4. [Godot](https://github.com/godotengine/godot/releases/latest)
-- Download Godot 4. The current version for the project will be on the [main README](../README.md) page.
+- Download Godot 4.2.2 The current version for the project will be on the [main README](../README.md) page.
 
 ![](images/installation/godot-dl-page.png)
 
