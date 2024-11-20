@@ -1,0 +1,53 @@
+name: Victoria II Discrepency
+description: "Report a discrepency from Victoria II. NOTE: Not for reporting bugs in OpenVic."
+labels: ["bug", "victoria 2 discrepency", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for filling out this discrepency report!
+
+        When reporting a bug, please follow the guidelines in this template. This helps us quickly identify the discrepency and get to work on a solution.
+        - Only open this issue if you have noticed a difference between OpenVic and Victoria II.
+        - **DO NOT FILE CRASHES HERE!** Please use the [bug report](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=1-bug-report.yml) template instead.
+        - Write a descriptive issue title above.
+        - **Always open *one* issue for *one* discrepency**. If you notice several discrepencies, make sure to create one new issue for each of them.
+        - Verify that you are using either the latest release or the latest commit. It is preferred that you check if your issue is reproducible in the latest commit - it may already have been fixed!
+        - If you're playing with custom source modifications, please test if this discrepency is reproducible in the latest official build of OpenVic before opening an issue here.
+
+  - type: checkboxes
+    attributes:
+      label: Duplicate Issue?
+      description: "Search [open](https://github.com/OpenVicProject/OpenVic/issues) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been reported. If you don't find a relevant match or if you're not sure, don't hesitate to **open a new issue**. Contributors will handle it from there if it's a duplicate."
+      options:
+      - label: I have checked for an existing discrepency report.
+        required: true
+
+  - type: textarea
+    id: game-versions
+    attributes:
+      label: Game & Version Info
+      description: |
+        Enter the OpenVic version and commit you found this discrepency on in this box. You can find and copy this by clicking on the "Game Info" button in the bottom left corner of the OpenVic main menu. If you've found this discrepency to be reproducible on multiple versions, list all of those versions here.
+      placeholder: |
+        - Found in: <v0.02_Mappa_Mundi> (c65b2a795fd35e81f7a1906d07d15c47cd94cf9c).
+        - Not reproducible in: <v0.01_Primum_Mobile> (1980012045ea4c6b314d6d12a796eda23ae8d7fa).
+    validations:
+      required: true
+
+  - type: textarea
+    id: modlist
+    attributes:
+      label: Mods or Extensions used
+      description: |
+        If you used any mods or extensions, please list them here with the version and a link to each mod/extension.
+
+  - type: textarea
+    id: discrepency-description
+    attributes:
+      label: Issue Description
+      description: |
+        Describe the discrepency briefly. What happens in OpenVic, and how does it work in Victoria II?
+        You can include images or videos with drag and drop.
+    validations:
+      required: true

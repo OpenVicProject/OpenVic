@@ -1,0 +1,27 @@
+name: Gameplay Feature Request
+description: Request a gameplay feature
+labels: ["enhancement", "game feature proposal", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        - If this feature was in Victoria II, please report a [Victoria II Discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
+        - If this feature only applies to mods and contains no mechanical additions to the vanilla experience, please report it as a [mod feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=4-mod-feature-request.yml).
+        - Write a descriptive proposal title above.
+
+  - type: checkboxes
+    attributes:
+      label: Duplicate Proposal?
+      description: "Search [open](https://github.com/OpenVicProject/OpenVic/issues) and [closed](https://github.com/OpenVicProject/OpenVic/issues?q=is%3Aissue+is%3Aclosed) proposals to ensure this feature has not already been proposed. If there is a match, you can bump it or leave a comment with your ideas and concerns. If you don't find a relevant match or if you're not sure, don't hesitate to **open a new issue**. Contributors will handle it from there if it's a duplicate."
+      options:
+      - label: I have checked for an existing feature request.
+        required: true
+
+  - type: textarea
+    id: feature-proposal
+    attributes:
+      label: Feature Description
+      description: An in-depth description of what feature you want added to OpenVic, and **why** its important to have.
+      placeholder: Example - "Add a macro builder - a menu that allows you to contruct armies or navies from templates. Think of the macro builder menu from EUIV perhaps. This will improve the game experience by allowing people to build whole armies at once rather than counting out brigades in the army build menu."
+    validations:
+      required: true
