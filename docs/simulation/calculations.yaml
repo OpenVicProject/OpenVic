@@ -54,6 +54,15 @@ Economy:
     Overseas maintenance:
       See: https://github.com/schombert/Project-Alice/blob/b7889a9c302feed851c039f1a98d73b75be3215a/docs/rules.md#overseas-penalty
   Production:
+    Factories:
+      Throughput throttling:
+        formula: min(1, max(FACTORY_PURCHASE_MIN_FACTOR, current + direction * FACTORY_PURCHASE_DRAWDOWN_FACTOR))
+        direction:
+          if total supply of output good > total demand: -1
+          else if total supply of output good < total demand: 1
+          else: 0
+        FACTORY_PURCHASE_MIN_FACTOR: defines.economy.FACTORY_PURCHASE_MIN_FACTOR
+        FACTORY_PURCHASE_DRAWDOWN_FACTOR: defines.economy.FACTORY_PURCHASE_DRAWDOWN_FACTOR
     Resource gathering operation:
       base workforce: defined in common/production_types.txt as workforce
       rgo size:
