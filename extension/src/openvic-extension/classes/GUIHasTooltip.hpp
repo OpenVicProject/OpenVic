@@ -2,14 +2,11 @@
 
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/utility_functions.hpp>
-#include <godot_cpp/variant/vector2.hpp>
 
 #include <openvic-simulation/utility/Getters.hpp>
 
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
 
 /* To add tooltip functionality to a class:
  *  - the class must be derived from Control.
@@ -40,7 +37,7 @@
 		String const& new_tooltip_string, Dictionary const& new_tooltip_substitution_dict \
 	) { \
 		if (get_mouse_filter() == MOUSE_FILTER_IGNORE) { \
-			UtilityFunctions::push_error("Tooltips won't work for \"", get_name(), "\" as it has MOUSE_FILTER_IGNORE"); \
+			set_mouse_filter(MOUSE_FILTER_PASS); \
 		} \
 		if (tooltip_string != new_tooltip_string || tooltip_substitution_dict != new_tooltip_substitution_dict) { \
 			tooltip_string = new_tooltip_string; \
@@ -52,7 +49,7 @@
 	} \
 	void CLASS::set_tooltip_string(String const& new_tooltip_string) { \
 		if (get_mouse_filter() == MOUSE_FILTER_IGNORE) { \
-			UtilityFunctions::push_error("Tooltips won't work for \"", get_name(), "\" as it has MOUSE_FILTER_IGNORE"); \
+			set_mouse_filter(MOUSE_FILTER_PASS); \
 		} \
 		if (tooltip_string != new_tooltip_string) { \
 			tooltip_string = new_tooltip_string; \
@@ -63,7 +60,7 @@
 	} \
 	void CLASS::set_tooltip_substitution_dict(Dictionary const& new_tooltip_substitution_dict) { \
 		if (get_mouse_filter() == MOUSE_FILTER_IGNORE) { \
-			UtilityFunctions::push_error("Tooltips won't work for \"", get_name(), "\" as it has MOUSE_FILTER_IGNORE"); \
+			set_mouse_filter(MOUSE_FILTER_PASS); \
 		} \
 		if (tooltip_substitution_dict != new_tooltip_substitution_dict) { \
 			tooltip_substitution_dict = new_tooltip_substitution_dict; \

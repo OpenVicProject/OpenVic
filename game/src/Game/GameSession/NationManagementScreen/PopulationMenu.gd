@@ -317,30 +317,15 @@ func _setup_pop_list() -> void:
 
 		_pop_list_producing_icons.push_back(GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./pop_producing_icon")))
 
-		var culture_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_nation"))
-		_pop_list_culture_labels.push_back(culture_label)
-		if culture_label:
-			culture_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_culture_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_nation")))
 
-		var religion_icon : GUIIcon = GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./pop_religion"))
-		_pop_list_religion_icons.push_back(religion_icon)
-		if religion_icon:
-			religion_icon.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_religion_icons.push_back(GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./pop_religion")))
 
-		var location_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_location"))
-		_pop_list_location_labels.push_back(location_label)
-		if location_label:
-			location_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_location_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_location")))
 
-		var militancy_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_mil"))
-		_pop_list_militancy_labels.push_back(militancy_label)
-		if militancy_label:
-			militancy_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_militancy_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_mil")))
 
-		var consciousness_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_con"))
-		_pop_list_consciousness_labels.push_back(consciousness_label)
-		if consciousness_label:
-			consciousness_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_consciousness_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_con")))
 
 		_pop_list_ideology_charts.push_back(GUINode.get_gui_pie_chart_from_node(pop_row_panel.get_node(^"./pop_ideology")))
 
@@ -348,10 +333,7 @@ func _setup_pop_list() -> void:
 
 		_pop_list_unemployment_progressbars.push_back(GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./pop_unemployment_bar")))
 
-		var cash_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_cash"))
-		_pop_list_cash_labels.push_back(cash_label)
-		if cash_label:
-			cash_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_cash_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_cash")))
 
 		var pop_list_life_needs_progressbar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(pop_row_panel.get_node(^"./lifeneed_progress"))
 		_pop_list_life_needs_progressbars.push_back(pop_list_life_needs_progressbar)
@@ -373,15 +355,9 @@ func _setup_pop_list() -> void:
 
 		_pop_list_national_movement_flags.push_back(GUINode.get_gui_masked_flag_from_node(pop_row_panel.get_node(^"./pop_movement_flag")))
 
-		var size_change_icon : GUIIcon = GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./growth_indicator"))
-		_pop_list_size_change_icons.push_back(size_change_icon)
-		if size_change_icon:
-			size_change_icon.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_size_change_icons.push_back(GUINode.get_gui_icon_from_node(pop_row_panel.get_node(^"./growth_indicator")))
 
-		var literacy_label : GUILabel = GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_literacy"))
-		_pop_list_literacy_labels.push_back(literacy_label)
-		if literacy_label:
-			literacy_label.set_mouse_filter(MOUSE_FILTER_PASS)
+		_pop_list_literacy_labels.push_back(GUINode.get_gui_label_from_node(pop_row_panel.get_node(^"./pop_literacy")))
 
 func _notification(what : int) -> void:
 	match what:
@@ -536,10 +512,13 @@ func _update_distributions():
 				var colour_icon : GUIIcon = GUINode.get_gui_icon_from_node(child.get_node(^"./legend_color"))
 				if colour_icon:
 					colour_icon.set_modulate(distribution_row[slice_colour_key])
-					colour_icon.set_mouse_filter(MOUSE_FILTER_PASS)
-					colour_icon.set_tooltip_string_and_substitution_dict("§Y$ID$§!: $PC$%", {
-						"ID": distribution_row[slice_identifier_key], "PC": GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 2)
-					})
+					colour_icon.set_tooltip_string_and_substitution_dict(
+						"§Y$ID$§!: $PC$%" + "\nTEST: colour_icon",
+						{
+							"ID": distribution_row[slice_identifier_key],
+							"PC": GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 2)
+						}
+					)
 
 				var identifier_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
