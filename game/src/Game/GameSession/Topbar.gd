@@ -102,29 +102,13 @@ func _ready() -> void:
 	_country_flag_overlay_icon = get_gui_icon_from_nodepath(^"./topbar/topbar_flag_overlay")
 	_country_name_label = get_gui_label_from_nodepath(^"./topbar/CountryName")
 	_country_rank_label = get_gui_label_from_nodepath(^"./topbar/nation_totalrank")
-	if _country_rank_label:
-		_country_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_prestige_label = get_gui_label_from_nodepath(^"./topbar/country_prestige")
-	if _country_prestige_label:
-		_country_prestige_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_prestige_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_prestige_rank")
-	if _country_prestige_rank_label:
-		_country_prestige_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_industrial_power_label = get_gui_label_from_nodepath(^"./topbar/country_economic")
-	if _country_industrial_power_label:
-		_country_industrial_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_industrial_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_industry_rank")
-	if _country_industrial_power_rank_label:
-		_country_industrial_power_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_military_power_label = get_gui_label_from_nodepath(^"./topbar/country_military")
-	if _country_military_power_label:
-		_country_military_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_military_power_rank_label = get_gui_label_from_nodepath(^"./topbar/selected_military_rank")
-	if _country_military_power_rank_label:
-		_country_military_power_rank_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_country_colonial_power_label = get_gui_label_from_nodepath(^"./topbar/country_colonial_power")
-	if _country_colonial_power_label:
-		_country_colonial_power_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 	# Time controls
 	_speed_up_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speedup")
@@ -184,20 +168,14 @@ func _ready() -> void:
 	if _technology_progress_bar and tech_button:
 		_technology_progress_bar.reparent(tech_button)
 	_technology_current_research_label = get_gui_label_from_nodepath(^"./topbar/tech_current_research")
-	if _technology_current_research_label:
-		_technology_current_research_label.set_mouse_filter(MOUSE_FILTER_PASS)
-		if tech_button:
-			_technology_current_research_label.reparent(tech_button)
+	if _technology_current_research_label and tech_button:
+		_technology_current_research_label.reparent(tech_button)
 	_technology_literacy_label = get_gui_label_from_nodepath(^"./topbar/tech_literacy_value")
-	if _technology_literacy_label:
-		_technology_literacy_label.set_mouse_filter(MOUSE_FILTER_PASS)
-		if tech_button:
-			_technology_literacy_label.reparent(tech_button)
+	if _technology_literacy_label and tech_button:
+		_technology_literacy_label.reparent(tech_button)
 	_technology_research_points_label = get_gui_label_from_nodepath(^"./topbar/topbar_researchpoints_value")
-	if _technology_research_points_label:
-		_technology_research_points_label.set_mouse_filter(MOUSE_FILTER_PASS)
-		if tech_button:
-			_technology_research_points_label.reparent(tech_button)
+	if _technology_research_points_label and tech_button:
+		_technology_research_points_label.reparent(tech_button)
 
 	# Politics
 	_politics_party_icon = get_gui_icon_from_nodepath(^"./topbar/politics_party_icon")
@@ -264,18 +242,11 @@ func _ready() -> void:
 	# Military
 	_military_army_size_label = get_gui_label_from_nodepath(^"./topbar/military_army_value")
 	if _military_army_size_label:
-		_military_army_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
 		_military_army_size_label.set_text("§Y$CURR$/$MAX$")
 		_military_army_size_label.set_tooltip_string("TOPBAR_ARMY_TOOLTIP")
 	_military_navy_size_label = get_gui_label_from_nodepath(^"./topbar/military_navy_value")
-	if _military_navy_size_label:
-		_military_navy_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_military_mobilisation_size_label = get_gui_label_from_nodepath(^"./topbar/military_manpower_value")
-	if _military_mobilisation_size_label:
-		_military_mobilisation_size_label.set_mouse_filter(MOUSE_FILTER_PASS)
 	_military_leadership_points_label = get_gui_label_from_nodepath(^"./topbar/military_leadership_value")
-	if _military_leadership_points_label:
-		_military_leadership_points_label.set_mouse_filter(MOUSE_FILTER_PASS)
 
 	_update_info()
 	_update_speed_controls()
@@ -539,6 +510,7 @@ func _update_info() -> void:
 
 	if _military_navy_size_label:
 		_military_navy_size_label.set_text("§Y%d/%d" % [0, 0])
+		# TODO - navy size tooltip
 
 	const mobilised_key : StringName = &"mobilised"
 	const mobilisation_regiments_key : StringName = &"mobilisation_regiments"
@@ -565,6 +537,7 @@ func _update_info() -> void:
 
 	if _military_leadership_points_label:
 		_military_leadership_points_label.set_text("§Y%d" % 0)
+		# TODO - leadership points tooltip
 
 func _update_speed_controls() -> void:
 	var paused : bool = MenuSingleton.is_paused()
