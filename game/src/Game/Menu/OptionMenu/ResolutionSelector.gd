@@ -37,7 +37,8 @@ func _sync_resolutions() -> void:
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
-			_update_resolution_options_text()
+			if is_node_ready():
+				_update_resolution_options_text()
 
 func _update_resolution_options_text() -> void:
 	for index : int in get_item_count():
