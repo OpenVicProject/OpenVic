@@ -217,7 +217,9 @@ Error AssetManager::preload_textures() {
 	return ERR(ret);
 }
 
-Ref<GFXSpriteTexture> const& AssetManager::get_currency_texture(real_t height) const {
+Ref<GFXSpriteTexture> AssetManager::get_currency_texture(real_t height) const {
+	ERR_FAIL_NULL_V(currency_texture_big, Ref<GFXSpriteTexture>());
+	ERR_FAIL_NULL_V(currency_texture_medium, Ref<GFXSpriteTexture>());
 	if (height > currency_texture_big->get_height()) {
 		return currency_texture_big;
 	} else if (height > currency_texture_medium->get_height()) {

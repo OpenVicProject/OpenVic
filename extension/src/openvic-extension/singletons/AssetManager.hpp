@@ -87,7 +87,7 @@ namespace OpenVic {
 		godot::Error preload_textures();
 
 		/* Get the largest currency texture with height less than the specified font height. */
-		godot::Ref<GFXSpriteTexture> const& get_currency_texture(real_t height) const;
+		godot::Ref<GFXSpriteTexture> get_currency_texture(real_t height) const;
 	};
 }
 
