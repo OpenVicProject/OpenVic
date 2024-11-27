@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GFXCorneredTileSupportingTexture" inherits="AtlasTexture" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="draw_rect_cornered" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="to_canvas_item" type="RID" />
+			<param index="1" name="rect" type="Rect2" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cornered_tile_border_size" qualifiers="const">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="is_cornered_tile_texture" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

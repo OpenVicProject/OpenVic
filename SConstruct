@@ -45,6 +45,10 @@ env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
 sources = env.GlobRecursive("*.cpp", paths)
 env.extension_sources = sources
 
+if env["target"] in ["editor", "template_debug"]:
+    doc_data = godot_env.GodotCPPDocData("extension/src/gen/doc_data.gen.cpp", source=Glob("extension/doc_classes/*.xml"))
+    sources.append(doc_data)
+
 # Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
 if env["intermediate_delete"]:
     from glob import glob

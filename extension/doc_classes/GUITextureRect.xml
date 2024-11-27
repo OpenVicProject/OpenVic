@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUITextureRect" inherits="TextureRect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_tooltip">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_tooltip_string_and_substitution_dict">
+			<return type="void" />
+			<param index="0" name="new_tooltip_string" type="String" />
+			<param index="1" name="new_tooltip_substitution_dict" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tooltip_active" type="bool" setter="" getter="is_tooltip_active" default="false">
+		</member>
+		<member name="tooltip_string" type="String" setter="set_tooltip_string" getter="get_tooltip_string" default="&quot;&quot;">
+		</member>
+		<member name="tooltip_substitution_dict" type="Dictionary" setter="set_tooltip_substitution_dict" getter="get_tooltip_substitution_dict" default="{}">
+		</member>
+	</members>
+</class>

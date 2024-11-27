@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SoundSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_song">
+			<return type="AudioStreamMP3" />
+			<param index="0" name="song_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_sound_base_volume">
+			<return type="float" />
+			<param index="0" name="sound_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_sound_stream">
+			<return type="AudioStreamWAV" />
+			<param index="0" name="sound_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="load_music">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load_sounds">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load_title_theme">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="song_list" type="Array" setter="" getter="get_song_list" default="[]">
+		</member>
+		<member name="sound_list" type="Array" setter="" getter="get_sound_list" default="[]">
+		</member>
+		<member name="title_theme" type="String" setter="" getter="get_title_theme" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

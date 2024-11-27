@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUILabel" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_substitution">
+			<return type="void" />
+			<param index="0" name="key" type="String" />
+			<param index="1" name="value" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_substitutions">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_tooltip">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="force_update_lines">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_base_max_size" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+			</description>
+		</method>
+		<method name="get_colour_marker" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_currency_marker" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_flag_marker" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_text_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_substitution_marker" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_background_texture">
+			<return type="void" />
+			<param index="0" name="new_texture" type="Texture2D" />
+			<description>
+			</description>
+		</method>
+		<method name="set_font_file">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_font_file" type="FontFile" />
+			<description>
+			</description>
+		</method>
+		<method name="set_font_size">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_font_size" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_tooltip_string_and_substitution_dict">
+			<return type="void" />
+			<param index="0" name="new_tooltip_string" type="String" />
+			<param index="1" name="new_tooltip_substitution_dict" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="adjusted_rect" type="Rect2" setter="" getter="get_adjusted_rect" default="Rect2(0, 0, 0, 0)">
+		</member>
+		<member name="auto_adjust_to_content_size" type="bool" setter="set_auto_adjust_to_content_size" getter="will_auto_adjust_to_content_size" default="false">
+		</member>
+		<member name="background" type="StyleBoxTexture" setter="set_background_stylebox" getter="get_background">
+		</member>
+		<member name="border_size" type="Vector2" setter="set_border_size" getter="get_border_size" default="Vector2(0, 0)">
+		</member>
+		<member name="currency_texture" type="GFXSpriteTexture" setter="" getter="get_currency_texture">
+		</member>
+		<member name="default_colour" type="Color" setter="set_default_colour" getter="get_default_colour" default="Color(0, 0, 0, 1)">
+		</member>
+		<member name="font" type="Font" setter="set_font" getter="get_font">
+		</member>
+		<member name="font_size" type="int" setter="set_font_size" getter="get_font_size" default="16">
+		</member>
+		<member name="horizontal_alignment" type="int" setter="set_horizontal_alignment" getter="get_horizontal_alignment" enum="HorizontalAlignment" default="0">
+		</member>
+		<member name="max_size" type="Vector2" setter="set_max_size" getter="get_max_size" default="Vector2(0, 0)">
+		</member>
+		<member name="substitution_dict" type="Dictionary" setter="set_substitution_dict" getter="get_substitution_dict" default="{}">
+		</member>
+		<member name="text" type="String" setter="set_text" getter="get_text" default="&quot;&quot;">
+		</member>
+		<member name="tooltip_active" type="bool" setter="" getter="is_tooltip_active" default="false">
+		</member>
+		<member name="tooltip_string" type="String" setter="set_tooltip_string" getter="get_tooltip_string" default="&quot;&quot;">
+		</member>
+		<member name="tooltip_substitution_dict" type="Dictionary" setter="set_tooltip_substitution_dict" getter="get_tooltip_substitution_dict" default="{}">
+		</member>
+	</members>
+</class>

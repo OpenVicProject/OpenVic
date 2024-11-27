@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GFXSpriteTexture" inherits="GFXButtonStateHavingTexture" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gfx_texture_sprite_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_icon_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gfx_texture_sprite_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="gfx_texture_sprite_name" type="String" />
+			<param index="1" name="icon" type="int" default="0" />
+			<description>
+			</description>
+		</method>
+		<method name="set_icon_index">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_icon_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_toggled_icon">
+			<return type="int" enum="Error" />
+			<param index="0" name="toggle" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="icon_index" type="int" setter="set_icon_index" getter="get_icon_index" default="0">
+		</member>
+	</members>
+</class>

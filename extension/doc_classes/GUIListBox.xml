@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUIListBox" inherits="Container" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_children">
+			<return type="void" />
+			<param index="0" name="remaining_child_count" type="int" default="0" />
+			<description>
+			</description>
+		</method>
+		<method name="get_fixed_item_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_fixed_item_height" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_fixed_visible_items" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_listbox_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_max_scroll_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_scroll_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_scrollbar" qualifiers="const">
+			<return type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="is_fixed" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_fixed">
+			<return type="int" enum="Error" />
+			<param index="0" name="item_count" type="int" />
+			<param index="1" name="item_height" type="float" />
+			<param index="2" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="set_scroll_index">
+			<return type="void" />
+			<param index="0" name="new_scroll_index" type="int" />
+			<param index="1" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="unset_fixed">
+			<return type="int" enum="Error" />
+			<param index="0" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="scroll_index_changed">
+			<param index="0" name="value" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

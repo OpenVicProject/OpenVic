@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUIPieChart" inherits="TextureRect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_gfx_pie_chart_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gfx_pie_chart_texture" qualifiers="const">
+			<return type="GFXPieChartTexture" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gfx_pie_chart_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="gfx_pie_chart_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_slices_array">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_slices" type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

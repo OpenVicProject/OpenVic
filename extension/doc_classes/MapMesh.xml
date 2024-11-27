@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MapMesh" inherits="PrimitiveMesh" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_core_aabb" qualifiers="const">
+			<return type="AABB" />
+			<description>
+			</description>
+		</method>
+		<method name="is_valid_uv_coord" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="_unnamed_arg0" type="Vector2" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="aspect_ratio" type="float" setter="set_aspect_ratio" getter="get_aspect_ratio" default="2.0">
+		</member>
+		<member name="repeat_proportion" type="float" setter="set_repeat_proportion" getter="get_repeat_proportion" default="0.5">
+		</member>
+		<member name="subdivide_depth" type="int" setter="set_subdivide_depth" getter="get_subdivide_depth" default="0">
+		</member>
+		<member name="subdivide_width" type="int" setter="set_subdivide_width" getter="get_subdivide_width" default="0">
+		</member>
+	</members>
+</class>
