@@ -15,16 +15,16 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
-#include "openvic-extension/classes/GUIIcon.hpp"
-#include "openvic-extension/classes/GUIIconButton.hpp"
-#include "openvic-extension/classes/GUILabel.hpp"
-#include "openvic-extension/classes/GUIListBox.hpp"
-#include "openvic-extension/classes/GUIMaskedFlag.hpp"
-#include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
-#include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
-#include "openvic-extension/classes/GUIPieChart.hpp"
-#include "openvic-extension/classes/GUIProgressBar.hpp"
-#include "openvic-extension/classes/GUIScrollbar.hpp"
+#include <openvic-extension/classes/GUIIcon.hpp>
+#include <openvic-extension/classes/GUIIconButton.hpp>
+#include <openvic-extension/classes/GUILabel.hpp>
+#include <openvic-extension/classes/GUIListBox.hpp>
+#include <openvic-extension/classes/GUIMaskedFlag.hpp>
+#include <openvic-extension/classes/GUIMaskedFlagButton.hpp>
+#include <openvic-extension/classes/GUIOverlappingElementsBox.hpp>
+#include <openvic-extension/classes/GUIPieChart.hpp>
+#include <openvic-extension/classes/GUIProgressBar.hpp>
+#include <openvic-extension/classes/GUIScrollbar.hpp>
 
 namespace OpenVic {
 	class GUINode : public godot::Control {

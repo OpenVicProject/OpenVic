@@ -5,8 +5,8 @@
 
 #include <openvic-simulation/interface/GUI.hpp>
 
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
-#include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include <openvic-extension/classes/GFXSpriteTexture.hpp>
+#include <openvic-extension/classes/GUIHasTooltip.hpp>
 
 namespace OpenVic {
 	class GUIScrollbar : public godot::Control {
@@ -52,8 +52,8 @@ namespace OpenVic {
 		/* The time between value change rate increases while the less/more button is held down (in seconds). */
 		static constexpr double BUTTON_CHANGE_ACCELERATE_DELAY = 10.0 * BUTTON_CHANGE_DELAY;
 
-		/* When the less/more button is pressed, button_change_value_base is initialised based on the shift and control keys
-		 * and button_change_value is initialised to 0. Every BUTTON_CHANGE_ACCELERATE_DELAY seconds button_change_value
+		/* When the less/more button is pressed, button_change_value_base is initialized based on the shift and control keys
+		 * and button_change_value is initialized to 0. Every BUTTON_CHANGE_ACCELERATE_DELAY seconds button_change_value
 		 * increases by button_change_value_base, and every BUTTON_CHANGE_DELAY seconds value changes by button_change_value.
 		 * If button_change_value is still 0 when the button is released, then value will be increased by
 		 * button_change_value_base so that short clicks still have an effect.*/
@@ -64,7 +64,7 @@ namespace OpenVic {
 		void _stop_button_change();
 
 		/* Changes value by button_change_value with the direction determined by orientation and pressed_less or pressed_more.
-		 * Returns true if a change occured, otherwise false. */
+		 * Returns true if a change occurred, otherwise false. */
 		bool _update_button_change();
 
 		float _value_to_ratio(int32_t val) const;

@@ -6,9 +6,9 @@
 
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 
-#include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/singletons/GameSingleton.hpp>
+#include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -56,9 +56,10 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	ERR_FAIL_COND_V_MSG(
-		culture.empty() || name.empty(), nullptr, vformat(
-			"Failed to find actor \"%s\" for culture \"%s\" - neither can be empty",
-			Utilities::std_to_godot_string(name), Utilities::std_to_godot_string(culture)
+		culture.empty() || name.empty(), nullptr,
+		vformat(
+			"Failed to find actor \"%s\" for culture \"%s\" - neither can be empty", Utilities::std_to_godot_string(name),
+			Utilities::std_to_godot_string(culture)
 		)
 	);
 
@@ -70,8 +71,11 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 
 	if (actor == nullptr) {
 		/* If no Actor exists for the specified GraphicalCultureType then try the default instead. */
-		GraphicalCultureType const* default_graphical_culture_type = game_singleton->get_definition_manager().get_pop_manager()
-			.get_culture_manager().get_default_graphical_culture_type();
+		GraphicalCultureType const* default_graphical_culture_type = //
+			game_singleton->get_definition_manager()
+				.get_pop_manager()     //
+				.get_culture_manager() //
+				.get_default_graphical_culture_type();
 
 		if (default_graphical_culture_type != nullptr && default_graphical_culture_type->get_identifier() != culture) {
 			actor_name = StringUtils::append_string_views(default_graphical_culture_type->get_identifier(), name);
@@ -85,7 +89,8 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	}
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, nullptr, vformat(
+		actor, nullptr,
+		vformat(
 			"Failed to find actor \"%s\" for culture \"%s\"", Utilities::std_to_godot_string(name),
 			Utilities::std_to_godot_string(culture)
 		)
@@ -150,15 +155,14 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 		TypedArray<Dictionary> attachments_array;
 
 		if (attachments_array.resize(attachments.size()) == OK) {
-
 			for (size_t idx = 0; idx < attachments_array.size(); ++idx) {
-
 				GFX::Actor::Attachment const& attachment = attachments[idx];
 
 				GFX::Actor const* attachment_actor = get_actor(attachment.get_actor_name());
 
 				ERR_CONTINUE_MSG(
-					attachment_actor == nullptr, vformat(
+					attachment_actor == nullptr,
+					vformat(
 						"Failed to find \"%s\" attachment actor for actor \"%s\"",
 						Utilities::std_to_godot_string(attachment.get_actor_name()),
 						Utilities::std_to_godot_string(actor.get_name())
@@ -171,7 +175,6 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				attachment_dict[attachment_model_key] = get_model_dict(*attachment_actor);
 
 				attachments_array[idx] = std::move(attachment_dict);
-
 			}
 
 			if (!attachments_array.is_empty()) {
@@ -229,9 +232,8 @@ bool ModelSingleton::add_unit_dict(
 	GraphicalCultureType const& graphical_culture_type = country->get_graphical_culture();
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
-		display_unit_type, false, vformat(
-			"Failed to get display unit type for unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())
-		)
+		display_unit_type, false,
+		vformat("Failed to get display unit type for unit \"%s\"", Utilities::std_to_godot_string(unit.get_name()))
 	);
 
 	std::string_view actor_name = display_unit_type->get_sprite();
@@ -262,12 +264,12 @@ bool ModelSingleton::add_unit_dict(
 
 	// TODO - default without requiring hardcoded name
 	static constexpr std::string_view default_fallback_actor_name = "Infantry";
-	GFX::Actor const* actor = get_cultural_actor(
-		graphical_culture_type.get_identifier(), actor_name, default_fallback_actor_name
-	);
+	GFX::Actor const* actor =
+		get_cultural_actor(graphical_culture_type.get_identifier(), actor_name, default_fallback_actor_name);
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, vformat(
+		actor, false,
+		vformat(
 			"Failed to find \"%s\" actor of graphical culture type \"%s\" for unit \"%s\"",
 			Utilities::std_to_godot_string(display_unit_type->get_sprite()),
 			Utilities::std_to_godot_string(graphical_culture_type.get_identifier()),
@@ -305,7 +307,7 @@ bool ModelSingleton::add_unit_dict(
 		dict[flag_floating_key] = true;
 	}
 
-	dict[position_key] =
+	dict[position_key] = //
 		game_singleton->normalise_map_position(unit.get_position()->get_province_definition().get_unit_position());
 
 	if (display_unit_type->get_unit_category() != UnitType::unit_category_t::INFANTRY) {
@@ -396,10 +398,8 @@ bool ModelSingleton::add_building_dict(
 
 	std::string suffix;
 
-	if (
-		&building.get_building_type() ==
-			game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
-	) {
+	if (&building.get_building_type() ==
+	    game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type()) {
 		/* Port */
 		if (!province_definition.has_port()) {
 			return true;
@@ -433,10 +433,10 @@ bool ModelSingleton::add_building_dict(
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, vformat(
-			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"",
-			Utilities::std_to_godot_string(actor_name), Utilities::std_to_godot_string(building.get_identifier()),
-			Utilities::std_to_godot_string(province.get_identifier())
+		actor, false,
+		vformat(
+			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"", Utilities::std_to_godot_string(actor_name),
+			Utilities::std_to_godot_string(building.get_identifier()), Utilities::std_to_godot_string(province.get_identifier())
 		)
 	);
 
@@ -444,9 +444,8 @@ bool ModelSingleton::add_building_dict(
 
 	dict[model_key] = get_model_dict(*actor);
 
-	dict[position_key] = game_singleton->normalise_map_position(
-		position_ptr != nullptr ? *position_ptr : province_definition.get_centre()
-	);
+	dict[position_key] =
+		game_singleton->normalise_map_position(position_ptr != nullptr ? *position_ptr : province_definition.get_centre());
 
 	if (rotation != 0.0f) {
 		dict[rotation_key] = rotation;

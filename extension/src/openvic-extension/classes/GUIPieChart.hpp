@@ -4,7 +4,7 @@
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
-#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include <openvic-extension/classes/GFXPieChartTexture.hpp>
 
 namespace OpenVic {
 	class GUIPieChart : public godot::TextureRect {

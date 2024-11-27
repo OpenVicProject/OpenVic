@@ -1,7 +1,7 @@
 #pragma once
 
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
-#include "openvic-extension/classes/GUIButton.hpp"
+#include <openvic-extension/classes/GFXSpriteTexture.hpp>
+#include <openvic-extension/classes/GUIButton.hpp>
 
 namespace OpenVic {
 	class GUIIconButton : public GUIButton {
@@ -13,9 +13,7 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
-		godot::Error set_gfx_texture_sprite(
-			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
-		);
+		godot::Error set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES);
 
 		godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture() const;
 

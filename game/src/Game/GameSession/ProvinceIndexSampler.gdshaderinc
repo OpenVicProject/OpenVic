@@ -4,7 +4,7 @@ uniform sampler2DArray province_shape_tex : repeat_enable, filter_nearest;
 // Province shape subdivisions
 uniform vec2 province_shape_subdivisions;
 
-// Convert a vector of 3 normalised floats to a vector of 3 unsigned bytes
+// Convert a vector of 3 normalized floats to a vector of 3 unsigned bytes
 uvec3 vec3_to_uvec3(vec3 v) {
 	return uvec3(v * 255.0);
 }

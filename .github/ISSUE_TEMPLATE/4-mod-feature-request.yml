@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        - If this feature was in Victoria II, please report a [Victoria II discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
+        - If this feature was in Victoria II, please report a [Victoria II Discrepancy](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepancy.yml) instead.
         - If this feature only intends to include mechanical additions to the vanilla experience, please report it as a [gameplay feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=3-gameplay-feature-request.yml).
         - Write a descriptive proposal title above.
 

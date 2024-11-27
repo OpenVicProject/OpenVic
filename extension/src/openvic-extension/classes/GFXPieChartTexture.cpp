@@ -2,8 +2,8 @@
 
 #include <numbers>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/UITools.hpp"
+#include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/UITools.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -29,7 +29,7 @@ GFXPieChartTexture::slice_t const* GFXPieChartTexture::get_slice(Vector2 const& 
 
 	static constexpr float TWO_PI = 2.0f * std::numbers::pi_v<float>;
 
-	/* Calculate the anti-clockwise angle between the point and the centre of the image.
+	/* Calculate the anti-clockwise angle between the point and the center of the image.
 	 * The y coordinate is negated as the image coordinate system's y increases downwards. */
 	float theta = atan2(-position.y, position.x);
 	if (theta < 0.0f) {
@@ -64,8 +64,8 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 
 	/* Whether we've already set the ImageTexture to an image of the right dimensions,
 	 * and so can update it without creating and setting a new image, or not. */
-	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_diameter
-		&& pie_chart_image->get_height() == pie_chart_diameter;
+	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_diameter &&
+		pie_chart_image->get_height() == pie_chart_diameter;
 
 	if (!can_update) {
 		pie_chart_image = Image::create(pie_chart_diameter, pie_chart_diameter, false, Image::FORMAT_RGBA8);
@@ -76,13 +76,11 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 
 	if (!slices.empty()) {
 		for (Vector2i point { 0, 0 }; point.y < pie_chart_diameter; ++point.y) {
-
 			for (point.x = 0; point.x < pie_chart_diameter; ++point.x) {
-
 				Vector2 offset = point;
-				// Move to the centre of the pixel
+				// Move to the center of the pixel
 				offset += Vector2 { 0.5_real, 0.5_real };
-				// Normalise to [0, 2]
+				// Normalize to [0, 2]
 				offset /= pie_chart_radius;
 				// Translate to [-1, 1]
 				offset -= Vector2 { 1.0_real, 1.0_real };
@@ -93,9 +91,7 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 			}
 		}
 	} else {
-
 		pie_chart_image->fill(background_colour);
-
 	}
 
 	if (can_update) {
@@ -113,12 +109,14 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_colour_key())
-				|| !slice_dict.has(_slice_weight_key()),
+			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_colour_key()) ||
+				!slice_dict.has(_slice_weight_key()),
 			vformat("Invalid slice keys at index %d", i)
 		);
 		const slice_t slice {
-			slice_dict[_slice_identifier_key()], slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]
+			slice_dict[_slice_identifier_key()], //
+			slice_dict[_slice_colour_key()],
+			slice_dict[_slice_weight_key()] //
 		};
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
@@ -177,10 +175,10 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::PieChart const* new_pie_chart = sprite->cast_to<GFX::PieChart>();
 	ERR_FAIL_NULL_V_MSG(
-		new_pie_chart, FAILED, vformat(
+		new_pie_chart, FAILED,
+		vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name,
-			Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(GFX::PieChart::get_type_static())
+			Utilities::std_to_godot_string(sprite->get_type()), Utilities::std_to_godot_string(GFX::PieChart::get_type_static())
 		)
 	);
 	return set_gfx_pie_chart(new_pie_chart);

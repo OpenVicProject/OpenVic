@@ -6,8 +6,8 @@
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/types/IndexedMap.hpp>
-#include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/PopSize.hpp>
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -30,14 +30,33 @@ namespace OpenVic {
 		static inline MenuSingleton* singleton = nullptr;
 
 	public:
-		enum ProvinceListEntry {
-			LIST_ENTRY_NONE, LIST_ENTRY_COUNTRY, LIST_ENTRY_STATE, LIST_ENTRY_PROVINCE
+		enum ProvinceListEntry { //
+			LIST_ENTRY_NONE,
+			LIST_ENTRY_COUNTRY,
+			LIST_ENTRY_STATE,
+			LIST_ENTRY_PROVINCE
 		};
 
 		enum PopSortKey {
-			SORT_NONE, SORT_SIZE, SORT_TYPE, SORT_CULTURE, SORT_RELIGION, SORT_LOCATION, SORT_MILITANCY, SORT_CONSCIOUSNESS,
-			SORT_IDEOLOGY, SORT_ISSUES, SORT_UNEMPLOYMENT, SORT_CASH, SORT_LIFE_NEEDS, SORT_EVERYDAY_NEEDS,
-			SORT_LUXURY_NEEDS, SORT_REBEL_FACTION, SORT_SIZE_CHANGE, SORT_LITERACY, MAX_SORT_KEY
+			SORT_NONE,
+			SORT_SIZE,
+			SORT_TYPE,
+			SORT_CULTURE,
+			SORT_RELIGION,
+			SORT_LOCATION,
+			SORT_MILITANCY,
+			SORT_CONSCIOUSNESS,
+			SORT_IDEOLOGY,
+			SORT_ISSUES,
+			SORT_UNEMPLOYMENT,
+			SORT_CASH,
+			SORT_LIFE_NEEDS,
+			SORT_EVERYDAY_NEEDS,
+			SORT_LUXURY_NEEDS,
+			SORT_REBEL_FACTION,
+			SORT_SIZE_CHANGE,
+			SORT_LITERACY,
+			MAX_SORT_KEY
 		};
 
 		struct population_menu_t {
@@ -133,7 +152,7 @@ namespace OpenVic {
 	public:
 		static MenuSingleton* get_singleton();
 
-		/* This should only be called AFTER GameSingleton has been initialised! */
+		/* This should only be called AFTER GameSingleton has been initialized! */
 		MenuSingleton();
 		~MenuSingleton();
 
@@ -142,9 +161,7 @@ namespace OpenVic {
 		godot::String get_country_adjective_from_identifier(godot::String const& country_identifier) const;
 
 		/* TOOLTIP */
-		void show_tooltip(
-			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
-		);
+		void show_tooltip(godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position);
 		void show_control_tooltip(
 			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Control const* control
 		);

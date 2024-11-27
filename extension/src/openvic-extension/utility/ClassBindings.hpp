@@ -8,7 +8,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
-#include "openvic-extension/utility/StringLiteral.hpp"
+#include <openvic-extension/utility/StringLiteral.hpp>
 
 namespace godot {
 	class Object;

@@ -248,7 +248,7 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 							influenceRange.firstInfluenceIndex + influenceRange.numInfluences
 						)
 						if len(boneWeights) > 4:
-							push_error("num BONE WEIGHTS WAS > 4, GODOT DOESNT LIKE THIS")
+							push_error("num BONE WEIGHTS WAS > 4, GODOT DOESN'T LIKE THIS")
 							# TODO: Less hacky fix?
 							boneWeights = boneWeights.slice(0,4)
 

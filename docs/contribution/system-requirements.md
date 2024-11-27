@@ -14,7 +14,7 @@ With Python 3.6+ installed, you can install Scons through pip:
 ```sh
 python -m pip install scons
 ```
-If you get `Defaulting to user installation because normal site-packages is not writeable` then open a command prompt as Administrator and run the command again. When finished call:
+If you get `Defaulting to user installation because normal site-packages is not writable` then open a command prompt as Administrator and run the command again. When finished call:
 ```
 scons --version
 ```

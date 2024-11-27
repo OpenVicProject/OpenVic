@@ -25,7 +25,7 @@ namespace OpenVic {
 
 	private:
 		GFX::Actor const* get_actor(std::string_view name, bool error_on_fail = true) const;
-		GFX::Actor const* get_cultural_actor(
+		GFX::Actor const* get_cultural_actor( //
 			std::string_view culture, std::string_view name, std::string_view fallback_name
 		) const;
 

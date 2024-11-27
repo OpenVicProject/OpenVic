@@ -4,7 +4,7 @@
 
 #include <openvic-simulation/interface/GUI.hpp>
 
-#include "openvic-extension/classes/GUIScrollbar.hpp"
+#include <openvic-extension/classes/GUIScrollbar.hpp>
 
 namespace OpenVic {
 	class GUIListBox : public godot::Container {

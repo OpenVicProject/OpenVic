@@ -7,11 +7,11 @@
 
 #include <openvic-simulation/utility/Logger.hpp>
 
-#include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/singletons/LoadLocalisation.hpp"
-#include "openvic-extension/singletons/MenuSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/singletons/AssetManager.hpp>
+#include <openvic-extension/singletons/LoadLocalisation.hpp>
+#include <openvic-extension/singletons/MenuSingleton.hpp>
+#include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -20,7 +20,7 @@ using namespace OpenVic;
 static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use these wrapper functions to delay their initialisation. */
+ * so we must use these wrapper functions to delay their initialization. */
 StringName const& GameSingleton::_signal_gamestate_updated() {
 	static const StringName signal_gamestate_updated = "gamestate_updated";
 	return signal_gamestate_updated;
@@ -102,11 +102,9 @@ void GameSingleton::_on_clock_state_changed() {
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
-  : game_manager {
-		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
-	},
-	viewed_country { nullptr },
-	mapmode { &Mapmode::ERROR_MAPMODE } {
+	: game_manager { std::bind(&GameSingleton::_on_gamestate_updated, this),
+	                 std::bind(&GameSingleton::_on_clock_state_changed, this) },
+	  viewed_country { nullptr }, mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -129,8 +127,10 @@ void GameSingleton::setup_logger() {
 }
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
-	Bookmark const* bookmark = game_manager.get_definition_manager().get_history_manager().get_bookmark_manager()
-		.get_bookmark_by_index(bookmark_index);
+	Bookmark const* bookmark =
+		game_manager.get_definition_manager().get_history_manager().get_bookmark_manager().get_bookmark_by_index( //
+			bookmark_index
+		);
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.setup_instance(bookmark);
 
@@ -138,12 +138,10 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
-		province.set_crime(
-			get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-				(province.get_province_definition().get_index() - 1)
-				% get_definition_manager().get_crime_manager().get_crime_modifier_count()
-			)
-		);
+		province.set_crime(get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
+			(province.get_province_definition().get_index() - 1) %
+			get_definition_manager().get_crime_manager().get_crime_modifier_count()
+		));
 	}
 
 	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
@@ -257,9 +255,11 @@ Error GameSingleton::_update_colour_image() {
 	Error err = OK;
 
 	InstanceManager const* instance_manager = get_instance_manager();
-	if (instance_manager != nullptr && !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
-		instance_manager->get_map_instance(), mapmode, colour_data_array.ptrw()
-	)) {
+	if (instance_manager != nullptr &&
+	    !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
+			instance_manager->get_map_instance(), mapmode, colour_data_array.ptrw()
+		) //
+	) {
 		err = FAILED;
 	}
 
@@ -268,9 +268,7 @@ Error GameSingleton::_update_colour_image() {
 		ERR_FAIL_NULL_V_EDMSG(province_colour_image, FAILED, "Failed to create province colour image");
 	}
 	/* Width is doubled as each province has a (base, stripe) colour pair. */
-	province_colour_image->set_data(
-		colour_image_width, colour_image_height, false, Image::FORMAT_RGBA8, colour_data_array
-	);
+	province_colour_image->set_data(colour_image_width, colour_image_height, false, Image::FORMAT_RGBA8, colour_data_array);
 	if (province_colour_texture.is_null()) {
 		province_colour_texture = ImageTexture::create_from_image(province_colour_image);
 		ERR_FAIL_NULL_V_EDMSG(province_colour_texture, FAILED, "Failed to create province colour texture");
@@ -429,12 +427,10 @@ Error GameSingleton::_load_map_images() {
 
 	for (int32_t v = 0; v < image_subdivisions.y; ++v) {
 		for (int32_t u = 0; u < image_subdivisions.x; ++u) {
-
 			for (int32_t y = 0; y < divided_dims.y; ++y) {
 				memcpy(
 					index_data_array.ptrw() + y * subdivision_width,
-					province_shape_data + (v * divided_dims.y + y) * province_dims.x + u * divided_dims.x,
-					subdivision_width
+					province_shape_data + (v * divided_dims.y + y) * province_dims.x + u * divided_dims.x, subdivision_width
 				);
 			}
 
@@ -476,9 +472,10 @@ Error GameSingleton::_load_terrain_variants() {
 
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
 	ERR_FAIL_COND_V_MSG(
-		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED, vformat(
-			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)",
-			sheet_width, sheet_height, SHEET_DIMS
+		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED,
+		vformat(
+			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)", sheet_width,
+			sheet_height, SHEET_DIMS
 		)
 	);
 	const int32_t slice_size = sheet_width / SHEET_DIMS;
@@ -488,9 +485,8 @@ Error GameSingleton::_load_terrain_variants() {
 	{
 		/* This is a placeholder image so that we don't have to branch to avoid looking up terrain index 0 (water).
 		 * It should never appear in game, and so is bright red to to make it obvious if it slips through. */
-		const Ref<Image> water_image = Utilities::make_solid_colour_image(
-			{ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format()
-		);
+		const Ref<Image> water_image =
+			Utilities::make_solid_colour_image({ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format());
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
 		terrain_images[0] = water_image;
 	}
@@ -499,9 +495,10 @@ Error GameSingleton::_load_terrain_variants() {
 		const Rect2i slice { idx % SHEET_DIMS * slice_size, idx / SHEET_DIMS * slice_size, slice_size, slice_size };
 		const Ref<Image> terrain_image = terrain_sheet->get_region(slice);
 
-		ERR_FAIL_COND_V_MSG(terrain_image.is_null() || terrain_image->is_empty(), FAILED, vformat(
-			"Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path
-		));
+		ERR_FAIL_COND_V_MSG(
+			terrain_image.is_null() || terrain_image->is_empty(), FAILED,
+			vformat("Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path)
+		);
 
 		terrain_images[idx + 1] = terrain_image;
 	}
@@ -565,7 +562,6 @@ Error GameSingleton::_load_flag_sheet() {
 			const Ref<Image> flag_image = asset_manager->get_image(flag_path, AssetManager::LOAD_FLAG_NONE);
 
 			if (flag_image.is_valid()) {
-
 				if (flag_image->get_format() != flag_format) {
 					flag_image->convert(flag_format);
 				}
@@ -596,7 +592,7 @@ Error GameSingleton::_load_flag_sheet() {
 	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil();
 
 	/* Calculated corresponding height (rounded up). */
-	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1 ) / flag_sheet_dims.x;
+	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1) / flag_sheet_dims.x;
 
 	const Vector2i sheet_dims = flag_sheet_dims * flag_dims;
 
@@ -668,9 +664,7 @@ Error GameSingleton::load_defines_compatibility_mode() {
 }
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
-	return Utilities::std_to_godot_string(
-		Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string()
-	);
+	return Utilities::std_to_godot_string(Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string());
 }
 
 String GameSingleton::lookup_file_path(String const& path) const {

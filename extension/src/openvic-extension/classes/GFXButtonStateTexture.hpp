@@ -28,7 +28,7 @@ namespace OpenVic {
 		GDCLASS(GFXButtonStateTexture, GFXCorneredTileSupportingTexture)
 
 	public:
-		enum ButtonState {
+		enum ButtonState { //
 			HOVER,
 			PRESSED,
 			DISABLED,

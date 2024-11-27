@@ -3,7 +3,7 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include <openvic-extension/utility/ClassBindings.hpp>
 
 using namespace OpenVic;
 using namespace godot;
@@ -14,7 +14,7 @@ void GFXCorneredTileSupportingTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXCorneredTileSupportingTexture::draw_rect_cornered, { "to_canvas_item", "rect" });
 }
 
-GFXCorneredTileSupportingTexture::GFXCorneredTileSupportingTexture() : cornered_tile_border_size {} {}
+GFXCorneredTileSupportingTexture::GFXCorneredTileSupportingTexture() {}
 
 bool GFXCorneredTileSupportingTexture::is_cornered_tile_texture() const {
 	return cornered_tile_border_size != Vector2i {};
@@ -26,8 +26,7 @@ void GFXCorneredTileSupportingTexture::draw_rect_cornered(RID const& to_canvas_i
 		if (rendering_server != nullptr) {
 			const Size2 size = get_size();
 			rendering_server->canvas_item_add_nine_patch(
-				to_canvas_item, rect, { {}, size }, get_rid(),
-				cornered_tile_border_size, size - cornered_tile_border_size
+				to_canvas_item, rect, { {}, size }, get_rid(), cornered_tile_border_size, size - cornered_tile_border_size
 			);
 		}
 	} else {
@@ -50,7 +49,7 @@ void GFXButtonStateTexture::_bind_methods() {
 	BIND_ENUM_CONSTANT(SELECTED);
 }
 
-GFXButtonStateTexture::GFXButtonStateTexture() : button_state { HOVER }, state_image {}, state_texture {} {}
+GFXButtonStateTexture::GFXButtonStateTexture() {}
 
 Ref<GFXButtonStateTexture> GFXButtonStateTexture::make_gfx_button_state_texture(
 	ButtonState button_state, Ref<Image> const& source_image, Rect2i const& region, Vector2i const& cornered_tile_border_size
@@ -69,8 +68,7 @@ Ref<GFXButtonStateTexture> GFXButtonStateTexture::make_gfx_button_state_texture(
 
 void GFXButtonStateTexture::set_button_state(ButtonState new_button_state) {
 	ERR_FAIL_COND(
-		new_button_state != HOVER && new_button_state != PRESSED &&
-		new_button_state != DISABLED && new_button_state != SELECTED
+		new_button_state != HOVER && new_button_state != PRESSED && new_button_state != DISABLED && new_button_state != SELECTED
 	);
 	button_state = new_button_state;
 }
@@ -83,8 +81,8 @@ Error GFXButtonStateTexture::generate_state_image(
 	ERR_FAIL_COND_V(!region.has_area() || !source_image_rect.encloses(region), FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	* and so can update it without creating and setting a new image, or not. */
-	bool can_update = state_image.is_valid() && state_image->get_size() == region.get_size()
-		&& state_image->get_format() == source_image->get_format();
+	bool can_update = state_image.is_valid() && state_image->get_size() == region.get_size() &&
+		state_image->get_format() == source_image->get_format();
 	if (!can_update) {
 		state_image = Image::create(region.size.width, region.size.height, false, source_image->get_format());
 		ERR_FAIL_NULL_V(state_image, FAILED);
@@ -114,11 +112,10 @@ Error GFXButtonStateTexture::generate_state_image(
 		return { std::max(colour.r - 0.3f, 0.0f), std::max(colour.g - 0.3f, 0.0f), std::max(colour.b - 0.3f, 0.0f), colour.a };
 	};
 
-	const auto colour_func =
-		button_state == HOVER ? hover_colour :
-		button_state == PRESSED ? pressed_colour :
-		button_state == DISABLED ? disabled_colour :
-		selected_colour;
+	const auto colour_func = button_state == HOVER ? hover_colour
+		: button_state == PRESSED                  ? pressed_colour
+		: button_state == DISABLED                 ? disabled_colour
+												   : selected_colour;
 
 	for (Vector2i point { 0, 0 }; point.y < state_image->get_height(); ++point.y) {
 		for (point.x = 0; point.x < state_image->get_width(); ++point.x) {
@@ -141,16 +138,11 @@ StringName const& GFXButtonStateTexture::button_state_to_name(ButtonState button
 	static const StringName name_selected = "selected";
 	static const StringName name_error = "INVALID BUTTON STATE";
 	switch (button_state) {
-		case HOVER:
-			return name_hover;
-		case PRESSED:
-			return name_pressed;
-		case DISABLED:
-			return name_disabled;
-		case SELECTED:
-			return name_selected;
-		default:
-			return name_error;
+	case HOVER:    return name_hover;
+	case PRESSED:  return name_pressed;
+	case DISABLED: return name_disabled;
+	case SELECTED: return name_selected;
+	default:       return name_error;
 	}
 }
 
@@ -179,9 +171,9 @@ void GFXButtonStateHavingTexture::_clear_button_states() {
 	}
 }
 
-GFXButtonStateHavingTexture::GFXButtonStateHavingTexture() : button_image {}, button_state_textures {} {}
+GFXButtonStateHavingTexture::GFXButtonStateHavingTexture() : button_state_textures {} {}
 
-Ref<GFXButtonStateTexture> GFXButtonStateHavingTexture::get_button_state_texture(
+Ref<GFXButtonStateTexture> GFXButtonStateHavingTexture::get_button_state_texture( //
 	GFXButtonStateTexture::ButtonState button_state
 ) {
 	const size_t button_state_index = button_state;

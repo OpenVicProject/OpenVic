@@ -4,7 +4,7 @@
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/utility/Utilities.hpp>
 
 namespace OpenVic {
 	class GFXPieChartTexture : public godot::ImageTexture {
@@ -98,7 +98,7 @@ namespace OpenVic {
 	public:
 		GFXPieChartTexture();
 
-		// Position must be centred and normalised so that coords are in [-1, 1].
+		// Position must be centered and normalized so that coords are in [-1, 1].
 		slice_t const* get_slice(godot::Vector2 const& position) const;
 
 		/* Set slices given an Array of Dictionaries, each with the following key-value entries:
@@ -116,7 +116,7 @@ namespace OpenVic {
 		/* Set the GFX::PieChart and regenerate the pie chart image. */
 		godot::Error set_gfx_pie_chart(GFX::PieChart const* new_gfx_pie_chart);
 
-		/* Search for a GFX::PieChart with the specfied name and, if successful, set it using set_gfx_pie_chart. */
+		/* Search for a GFX::PieChart with the specified name and, if successful, set it using set_gfx_pie_chart. */
 		godot::Error set_gfx_pie_chart_name(godot::String const& gfx_pie_chart_name);
 
 		/* Return the name of the GFX::PieChart, or an empty String if it's null. */

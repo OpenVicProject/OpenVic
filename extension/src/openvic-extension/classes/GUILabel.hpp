@@ -7,8 +7,8 @@
 
 #include <openvic-simulation/interface/GUI.hpp>
 
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
-#include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include <openvic-extension/classes/GFXSpriteTexture.hpp>
+#include <openvic-extension/classes/GUIHasTooltip.hpp>
 
 namespace OpenVic {
 	class GUILabel : public godot::Control {
@@ -23,8 +23,8 @@ namespace OpenVic {
 		godot::String PROPERTY(text);
 		godot::Dictionary PROPERTY(substitution_dict);
 		godot::HorizontalAlignment PROPERTY(horizontal_alignment);
-		godot::Size2 PROPERTY(max_size); // Actual max size is max_size - 2 * border_size
-		godot::Size2 PROPERTY(border_size); // The padding between the Nodes bounding box and the text within it
+		godot::Size2 PROPERTY(max_size);      // Actual max size is max_size - 2 * border_size
+		godot::Size2 PROPERTY(border_size);   // The padding between the Nodes bounding box and the text within it
 		godot::Rect2 PROPERTY(adjusted_rect); // Offset + size after adjustment to fit content size
 		bool PROPERTY_CUSTOM_PREFIX(auto_adjust_to_content_size, will);
 
@@ -115,12 +115,8 @@ namespace OpenVic {
 		std::vector<line_t> generate_lines_and_segments(
 			godot::String const& display_text, colour_instructions_t const& colour_instructions
 		) const;
-		void separate_lines(
-			godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines
-		) const;
-		void separate_currency_segments(
-			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		void separate_lines(godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines) const;
+		void separate_currency_segments(godot::String const& string, godot::Color const& colour, line_t& line) const;
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;
 		void adjust_to_content_size();
 	};

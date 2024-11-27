@@ -19,6 +19,6 @@ If the commit doesn't have the bug then run:
 ```sh
 git bisect good
 ```
-When done it will stop at the responsible commit for which you can investigate to see whats causing the issue.
+When done it will stop at the responsible commit for which you can investigate to see what's causing the issue.
 
 For more documentation on git bisect see: https://git-scm.com/docs/git-bisect

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
-#include "openvic-extension/classes/GUIButton.hpp"
+#include <openvic-extension/classes/GFXMaskedFlagTexture.hpp>
+#include <openvic-extension/classes/GUIButton.hpp>
 
 namespace OpenVic {
 	class GUIMaskedFlagButton : public GUIButton {
@@ -21,7 +21,7 @@ namespace OpenVic {
 
 		godot::String get_gfx_masked_flag_name() const;
 
-		godot::Error set_flag_country_name_and_type(
+		godot::Error set_flag_country_name_and_type( //
 			godot::String const& flag_country_name, godot::StringName const& flag_type
 		) const;
 

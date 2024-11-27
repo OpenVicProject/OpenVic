@@ -2,8 +2,9 @@
 
 #include <godot_cpp/classes/texture_progress_bar.hpp>
 
-#include "openvic-simulation/interface/GFXSprite.hpp"
-#include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include <openvic-simulation/interface/GFXSprite.hpp>
+
+#include <openvic-extension/classes/GUIHasTooltip.hpp>
 
 namespace OpenVic {
 	class GUIProgressBar : public godot::TextureProgressBar {

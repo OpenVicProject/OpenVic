@@ -1,24 +1,22 @@
 #pragma once
 
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/core/object.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
-
-#include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/audio_stream.hpp>
 #include <godot_cpp/classes/audio_stream_mp3.hpp>
 #include <godot_cpp/classes/audio_stream_wav.hpp>
+#include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
-#include <openvic-simulation/types/OrderedContainers.hpp>
 #include <openvic-simulation/types/IdentifierRegistry.hpp>
+#include <openvic-simulation/types/OrderedContainers.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 namespace OpenVic {
 
 	class SoundSingleton : public godot::Object {
-
 		GDCLASS(SoundSingleton, godot::Object);
 
 		static inline SoundSingleton* _singleton = nullptr;
@@ -37,7 +35,7 @@ namespace OpenVic {
 			std::optional<godot::Ref<godot::AudioStreamWAV>> audioStream;
 			std::optional<fixed_point_t> volume;
 		};
-		using sfx_define_map_t = deque_ordered_map<godot::StringName,sound_asset_t>;
+		using sfx_define_map_t = deque_ordered_map<godot::StringName, sound_asset_t>;
 		sfx_define_map_t sfx_define;
 
 		static constexpr std::string_view title_theme_name = "thecoronation_titletheme.mp3";
@@ -60,7 +58,7 @@ namespace OpenVic {
 		static void _bind_methods();
 
 		godot::String to_define_file_name(godot::String const& path, std::string_view const& base_folder) const;
-		godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int size=4) const;
+		godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int size = 4) const;
 
 	private:
 		/* Loads AudioStreams (.mp3 or .wav) at runtime using godot's functions*/
@@ -80,6 +78,5 @@ namespace OpenVic {
 		//for sound effects, get the stream and relative volume it should play at from the sfx map
 		godot::Ref<godot::AudioStreamWAV> get_sound_stream(godot::String const& path);
 		float get_sound_base_volume(godot::String const& path);
-
 	};
 }
