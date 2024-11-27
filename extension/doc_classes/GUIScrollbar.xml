@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUIScrollbar" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_tooltip">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="decrement_value">
+			<return type="void" />
+			<param index="0" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="emit_value_changed">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_scrollbar_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_length_override" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_max_value" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_min_value" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_orientation" qualifiers="const">
+			<return type="int" enum="Orientation" />
+			<description>
+			</description>
+		</method>
+		<method name="get_range_limit_max" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_range_limit_min" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_value" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_value_as_ratio" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="increment_value">
+			<return type="void" />
+			<param index="0" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="is_range_limited" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="reset">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gui_scrollbar_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="gui_scene" type="String" />
+			<param index="1" name="gui_scrollbar_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_length_override">
+			<return type="void" />
+			<param index="0" name="new_length_override" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_limits">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_min_value" type="int" />
+			<param index="1" name="new_max_value" type="int" />
+			<param index="2" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="set_range_limits">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_range_limit_min" type="int" />
+			<param index="1" name="new_range_limit_max" type="int" />
+			<param index="2" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="set_tooltip_string_and_substitution_dict">
+			<return type="void" />
+			<param index="0" name="new_tooltip_string" type="String" />
+			<param index="1" name="new_tooltip_substitution_dict" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="set_value">
+			<return type="void" />
+			<param index="0" name="new_value" type="int" />
+			<param index="1" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="set_value_as_ratio">
+			<return type="void" />
+			<param index="0" name="new_ratio" type="float" />
+			<param index="1" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tooltip_active" type="bool" setter="" getter="is_tooltip_active" default="false">
+		</member>
+		<member name="tooltip_string" type="String" setter="set_tooltip_string" getter="get_tooltip_string" default="&quot;&quot;">
+		</member>
+		<member name="tooltip_substitution_dict" type="Dictionary" setter="set_tooltip_substitution_dict" getter="get_tooltip_substitution_dict" default="{}">
+		</member>
+	</members>
+	<signals>
+		<signal name="value_changed">
+			<param index="0" name="value" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

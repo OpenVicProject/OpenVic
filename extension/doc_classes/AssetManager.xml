@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AssetManager" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_font">
+			<return type="FontFile" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_image">
+			<return type="Image" />
+			<param index="0" name="path" type="StringName" />
+			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" default="1" />
+			<description>
+			</description>
+		</method>
+		<method name="get_texture">
+			<return type="ImageTexture" />
+			<param index="0" name="path" type="StringName" />
+			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" default="2" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="LOAD_FLAG_NONE" value="0" enum="LoadFlags">
+		</constant>
+		<constant name="LOAD_FLAG_CACHE_IMAGE" value="1" enum="LoadFlags">
+		</constant>
+		<constant name="LOAD_FLAG_CACHE_TEXTURE" value="2" enum="LoadFlags">
+		</constant>
+		<constant name="LOAD_FLAG_FLIP_Y" value="4" enum="LoadFlags">
+		</constant>
+	</constants>
+</class>

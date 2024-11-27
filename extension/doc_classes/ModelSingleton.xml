@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ModelSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_buildings">
+			<return type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cultural_gun_model">
+			<return type="Dictionary" />
+			<param index="0" name="culture" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cultural_helmet_model">
+			<return type="Dictionary" />
+			<param index="0" name="culture" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_flag_model">
+			<return type="Dictionary" />
+			<param index="0" name="floating" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_units">
+			<return type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

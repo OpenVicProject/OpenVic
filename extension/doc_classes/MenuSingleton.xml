@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MenuSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="can_decrease_speed" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="can_increase_speed" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="decrease_speed">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="expand_selected_province_building">
+			<return type="int" enum="Error" />
+			<param index="0" name="building_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="generate_search_cache">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="get_administrative_pop_icon_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_country_adjective_from_identifier" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="country_identifier" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_country_name_from_identifier" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="country_identifier" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_longform_date" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_distribution_info" qualifiers="const">
+			<return type="Array[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_distribution_setup_info" qualifiers="const">
+			<return type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_pop_filter_info" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_pop_filter_setup_info">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_pop_row_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_pop_rows" qualifiers="const">
+			<return type="Dictionary[]" />
+			<param index="0" name="start" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_province_list_row_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_population_menu_province_list_rows" qualifiers="const">
+			<return type="Dictionary[]" />
+			<param index="0" name="start" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_building_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_building_identifier" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="building_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_info_from_index" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_rgo_owner_pop_icon_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_search_result_position" qualifiers="const">
+			<return type="Vector2" />
+			<param index="0" name="result_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_search_result_row_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_search_result_rows" qualifiers="const">
+			<return type="PackedStringArray" />
+			<param index="0" name="start" type="int" />
+			<param index="1" name="count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_slave_pop_icon_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_speed" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_tooltip_separator" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_topbar_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_tooltip">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="increase_speed">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="is_paused" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_deselect_all_pop_filters">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_select_all_pop_filters">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_select_province">
+			<return type="int" enum="Error" />
+			<param index="0" name="province_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_select_province_list_entry">
+			<return type="int" enum="Error" />
+			<param index="0" name="select_index" type="int" />
+			<param index="1" name="set_scroll_index" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_select_sort_key">
+			<return type="int" enum="Error" />
+			<param index="0" name="sort_key" type="int" enum="population_menu_t.PopSortKey" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_toggle_expanded">
+			<return type="int" enum="Error" />
+			<param index="0" name="toggle_index" type="int" />
+			<param index="1" name="emit_selected_changed" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_toggle_pop_filter">
+			<return type="int" enum="Error" />
+			<param index="0" name="filter_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="population_menu_update_locale_sort_cache">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="set_paused">
+			<return type="void" />
+			<param index="0" name="paused" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="show_control_tooltip">
+			<return type="void" />
+			<param index="0" name="text" type="String" />
+			<param index="1" name="substitution_dict" type="Dictionary" />
+			<param index="2" name="control" type="Control" />
+			<description>
+			</description>
+		</method>
+		<method name="show_tooltip">
+			<return type="void" />
+			<param index="0" name="text" type="String" />
+			<param index="1" name="substitution_dict" type="Dictionary" />
+			<param index="2" name="position" type="Vector2" />
+			<description>
+			</description>
+		</method>
+		<method name="toggle_paused">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_search_results">
+			<return type="void" />
+			<param index="0" name="text" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="population_menu_pops_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="population_menu_province_list_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="population_menu_province_list_selected_changed">
+			<param index="0" name="scroll_index" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="search_cache_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="update_tooltip">
+			<param index="0" name="text" type="String" />
+			<param index="1" name="substitution_dict" type="Dictionary" />
+			<param index="2" name="position" type="Vector2" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="LIST_ENTRY_NONE" value="0" enum="ProvinceListEntry">
+		</constant>
+		<constant name="LIST_ENTRY_COUNTRY" value="1" enum="ProvinceListEntry">
+		</constant>
+		<constant name="LIST_ENTRY_STATE" value="2" enum="ProvinceListEntry">
+		</constant>
+		<constant name="LIST_ENTRY_PROVINCE" value="3" enum="ProvinceListEntry">
+		</constant>
+		<constant name="NONE" value="0" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_SIZE" value="1" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_TYPE" value="2" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_CULTURE" value="3" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_RELIGION" value="4" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_LOCATION" value="5" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_MILITANCY" value="6" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_CONSCIOUSNESS" value="7" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_IDEOLOGY" value="8" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_ISSUES" value="9" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_UNEMPLOYMENT" value="10" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_CASH" value="11" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_LIFE_NEEDS" value="12" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_EVERYDAY_NEEDS" value="13" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_LUXURY_NEEDS" value="14" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_REBEL_FACTION" value="15" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_SIZE_CHANGE" value="16" enum="PopSortKey">
+		</constant>
+		<constant name="SORT_LITERACY" value="17" enum="PopSortKey">
+		</constant>
+	</constants>
+</class>

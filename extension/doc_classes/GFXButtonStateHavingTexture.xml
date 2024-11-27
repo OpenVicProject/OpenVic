@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GFXButtonStateHavingTexture" inherits="GFXCorneredTileSupportingTexture" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_button_state_texture">
+			<return type="GFXButtonStateTexture" />
+			<param index="0" name="button_state" type="int" enum="GFXButtonStateTexture.ButtonState" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

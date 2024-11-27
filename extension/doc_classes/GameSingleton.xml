@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_current_mapmode_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_flag_dims" qualifiers="const">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_flag_sheet_texture" qualifiers="const">
+			<return type="ImageTexture" />
+			<description>
+			</description>
+		</method>
+		<method name="get_map_aspect_ratio" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_map_dims" qualifiers="const">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_map_height" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_map_width" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mapmode_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mapmode_identifier" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="_unnamed_arg0" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mapmode_localisation_key" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="_unnamed_arg0" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_colour_texture" qualifiers="const">
+			<return type="ImageTexture" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_index_from_uv_coords" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="coords" type="Vector2" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_names" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_shape_image_subdivisions" qualifiers="const">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_province_shape_texture" qualifiers="const">
+			<return type="Texture2DArray" />
+			<description>
+			</description>
+		</method>
+		<method name="get_selected_province_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_terrain_texture" qualifiers="const">
+			<return type="Texture2DArray" />
+			<description>
+			</description>
+		</method>
+		<method name="is_parchment_mapmode_allowed" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load_defines_compatibility_mode">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="lookup_file_path" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="search_for_game_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="hint_path" type="String" default="&quot;&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="set_compatibility_mode_roots">
+			<return type="int" enum="Error" />
+			<param index="0" name="file_paths" type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+		<method name="set_mapmode">
+			<return type="int" enum="Error" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_selected_province">
+			<return type="void" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_viewed_country_by_province_index">
+			<return type="void" />
+			<param index="0" name="province_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="setup_game">
+			<return type="int" enum="Error" />
+			<param index="0" name="bookmark_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="setup_logger" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="start_game_session">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="unset_selected_province">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_clock">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="clock_state_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="gamestate_updated">
+			<description>
+			</description>
+		</signal>
+		<signal name="mapmode_changed">
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="province_selected">
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

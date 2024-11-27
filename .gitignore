@@ -84,3 +84,6 @@ compile_commands.json
 
 # ccls
 .ccls-cache
+
+# Generated source files
+extension/src/gen/*

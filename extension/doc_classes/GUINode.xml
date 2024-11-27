@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUINode" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_gui_element">
+			<return type="int" enum="Error" />
+			<param index="0" name="gui_scene" type="String" />
+			<param index="1" name="gui_element" type="String" />
+			<param index="2" name="name" type="String" default="&quot;&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="float_to_string_dp" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="val" type="float" />
+			<param index="1" name="decimal_places" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="float_to_string_dp_dynamic" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="float_to_string_suffixed" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="format_province_name" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="province_identifier" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="generate_gui_element" qualifiers="static">
+			<return type="Control" />
+			<param index="0" name="gui_scene" type="String" />
+			<param index="1" name="gui_element" type="String" />
+			<param index="2" name="name" type="String" default="&quot;&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_icon_button_from_node" qualifiers="static">
+			<return type="GUIIconButton" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_icon_button_from_nodepath" qualifiers="const">
+			<return type="GUIIconButton" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_icon_from_node" qualifiers="static">
+			<return type="GUIIcon" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_icon_from_nodepath" qualifiers="const">
+			<return type="GUIIcon" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_label_from_node" qualifiers="static">
+			<return type="GUILabel" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_label_from_nodepath" qualifiers="const">
+			<return type="GUILabel" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_listbox_from_node" qualifiers="static">
+			<return type="GUIListBox" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_listbox_from_nodepath" qualifiers="const">
+			<return type="GUIListBox" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_masked_flag_button_from_node" qualifiers="static">
+			<return type="GUIMaskedFlagButton" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_masked_flag_button_from_nodepath" qualifiers="const">
+			<return type="GUIMaskedFlagButton" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_masked_flag_from_node" qualifiers="static">
+			<return type="GUIMaskedFlag" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_masked_flag_from_nodepath" qualifiers="const">
+			<return type="GUIMaskedFlag" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_overlapping_elements_box_from_node" qualifiers="static">
+			<return type="GUIOverlappingElementsBox" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_overlapping_elements_box_from_nodepath" qualifiers="const">
+			<return type="GUIOverlappingElementsBox" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_pie_chart_from_node" qualifiers="static">
+			<return type="GUIPieChart" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_pie_chart_from_nodepath" qualifiers="const">
+			<return type="GUIPieChart" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_position" qualifiers="static">
+			<return type="Vector2" />
+			<param index="0" name="gui_scene" type="String" />
+			<param index="1" name="gui_position" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_progress_bar_from_node" qualifiers="static">
+			<return type="GUIProgressBar" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_progress_bar_from_nodepath" qualifiers="const">
+			<return type="GUIProgressBar" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_scrollbar_from_node" qualifiers="static">
+			<return type="GUIScrollbar" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_scrollbar_from_nodepath" qualifiers="const">
+			<return type="GUIScrollbar" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_line_edit_from_node" qualifiers="static">
+			<return type="LineEdit" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_line_edit_from_nodepath" qualifiers="const">
+			<return type="LineEdit" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_panel_from_node" qualifiers="static">
+			<return type="Panel" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_panel_from_nodepath" qualifiers="const">
+			<return type="Panel" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="get_texture_from_node" qualifiers="static">
+			<return type="Texture2D" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_texture_from_nodepath" qualifiers="const">
+			<return type="Texture2D" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_node" qualifiers="const">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_nodes" qualifiers="const">
+			<return type="int" enum="Error" />
+			<param index="0" name="paths" type="NodePath[]" />
+			<description>
+			</description>
+		</method>
+		<method name="int_to_string_suffixed" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="val" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_node" qualifiers="const">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_nodes" qualifiers="const">
+			<return type="int" enum="Error" />
+			<param index="0" name="paths" type="NodePath[]" />
+			<description>
+			</description>
+		</method>
+		<method name="set_click_mask_from_nodepaths">
+			<return type="void" />
+			<param index="0" name="paths" type="NodePath[]" />
+			<description>
+			</description>
+		</method>
+		<method name="update_click_mask">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="anchor_bottom" type="float" setter="_set_anchor" getter="get_anchor" overrides="Control" default="1.0" />
+		<member name="anchor_right" type="float" setter="_set_anchor" getter="get_anchor" overrides="Control" default="1.0" />
+		<member name="click_mask" type="BitMap" setter="set_click_mask" getter="get_click_mask">
+		</member>
+		<member name="grow_horizontal" type="int" setter="set_h_grow_direction" getter="get_h_grow_direction" overrides="Control" enum="Control.GrowDirection" default="2" />
+		<member name="grow_vertical" type="int" setter="set_v_grow_direction" getter="get_v_grow_direction" overrides="Control" enum="Control.GrowDirection" default="2" />
+	</members>
+</class>

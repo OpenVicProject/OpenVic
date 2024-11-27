@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GFXButtonStateTexture" inherits="GFXCorneredTileSupportingTexture" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="button_state_to_name" qualifiers="static">
+			<return type="StringName" />
+			<param index="0" name="button_state" type="int" enum="GFXButtonStateTexture.ButtonState" />
+			<description>
+			</description>
+		</method>
+		<method name="generate_state_image">
+			<return type="int" enum="Error" />
+			<param index="0" name="source_image" type="Image" />
+			<param index="1" name="_unnamed_arg1" type="Rect2i" />
+			<param index="2" name="_unnamed_arg2" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_button_state" qualifiers="const">
+			<return type="int" enum="GFXButtonStateTexture.ButtonState" />
+			<description>
+			</description>
+		</method>
+		<method name="get_button_state_name" qualifiers="const">
+			<return type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="set_button_state">
+			<return type="void" />
+			<param index="0" name="new_button_state" type="int" enum="GFXButtonStateTexture.ButtonState" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="HOVER" value="0" enum="ButtonState">
+		</constant>
+		<constant name="PRESSED" value="1" enum="ButtonState">
+		</constant>
+		<constant name="DISABLED" value="2" enum="ButtonState">
+		</constant>
+		<constant name="SELECTED" value="3" enum="ButtonState">
+		</constant>
+	</constants>
+</class>

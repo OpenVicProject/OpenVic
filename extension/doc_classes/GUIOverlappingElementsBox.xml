@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUIOverlappingElementsBox" inherits="Container" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_children">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_child_element_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_overlapping_elements_box_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_child_count">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gui_child_element_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="gui_child_element_file" type="String" />
+			<param index="1" name="gui_child_element_name" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>
