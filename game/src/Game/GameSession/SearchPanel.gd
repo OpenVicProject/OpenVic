@@ -19,6 +19,8 @@ func _ready() -> void:
 
 	_search_panel = get_panel_from_nodepath(^"./goto_box")
 
+	set_click_mask_from_nodepaths([^"./goto_box/goto_box"])
+
 	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./goto_box/cancel")
 	if close_button:
 		close_button.pressed.connect(hide)
