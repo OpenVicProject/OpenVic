@@ -67,6 +67,8 @@ func _ready() -> void:
 
 	add_gui_element(_scene_name, "country_pop")
 
+	set_click_mask_from_nodepaths([^"./country_pop/main_bg"])
+
 	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_pop/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))

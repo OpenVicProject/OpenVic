@@ -46,6 +46,8 @@ func _ready():
 
 	add_gui_element("v2ledger", "ledger")
 
+	set_click_mask_from_nodepaths([^"./ledger/ledger_bg"])
+
 	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/close")
 	if close_button:
 		close_button.pressed.connect(hide)

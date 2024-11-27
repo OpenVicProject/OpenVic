@@ -55,6 +55,8 @@ func _ready() -> void:
 
 	add_gui_element("country_budget", "country_budget")
 
+	set_click_mask_from_nodepaths([^"./country_budget/main_bg"])
+
 	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))

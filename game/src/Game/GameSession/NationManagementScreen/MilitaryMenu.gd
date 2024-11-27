@@ -11,6 +11,8 @@ func _ready() -> void:
 
 	add_gui_element("country_military", "country_military")
 
+	set_click_mask_from_nodepaths([^"./country_military/main_bg"])
+
 	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_military/close_button")
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))

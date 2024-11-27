@@ -46,15 +46,10 @@ func _ready() -> void:
 		^"./menubar/chat_window", # TODO: Multiplayer
 	])
 
-	var menubar : Panel = get_panel_from_nodepath(^"./menubar")
-	if menubar:
-		menubar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var minimap_bg : GUIIcon = get_gui_icon_from_nodepath(^"./menubar/minimap_bg")
-	if minimap_bg:
-		minimap_bg.mouse_filter = Control.MOUSE_FILTER_PASS
-	var menubar_bg : GUIIcon = get_gui_icon_from_nodepath(^"./menubar/menubar_bg")
-	if menubar_bg:
-		menubar_bg.mouse_filter = Control.MOUSE_FILTER_PASS
+	set_click_mask_from_nodepaths([
+		^"./menubar/minimap_bg",
+		^"./menubar/menubar_bg"
+	])
 
 	# TODO: add keyboard shortcuts (and shortcut tooltips) where vanilla does by default + use key bindings in settings
 

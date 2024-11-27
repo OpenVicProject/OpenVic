@@ -504,6 +504,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 		UtilityFunctions::push_error("Failed to create empty style box for background of GUI window ", window_name);
 		ret = false;
 	}
+	godot_panel->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
 	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;

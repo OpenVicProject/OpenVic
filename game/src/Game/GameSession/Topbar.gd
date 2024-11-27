@@ -85,10 +85,6 @@ func _ready() -> void:
 		^"./topbar/topbar_outlinerbutton"
 	])
 
-	# Disables all consuming invisible panel
-	var topbar : Panel = get_panel_from_nodepath(^"./topbar")
-	if topbar:
-		topbar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_click_mask_from_nodepaths([^"./topbar/topbar_bg", ^"./topbar/topbar_paper"])
 
 	# Country info
