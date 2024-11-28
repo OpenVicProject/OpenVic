@@ -438,6 +438,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_rgo_icon_key = "rgo_icon";
 	static const StringName province_info_rgo_total_employees_key = "rgo_total_employees";
 	static const StringName province_info_rgo_employment_percentage_key = "rgo_employment_percentage";
+	static const StringName province_info_rgo_employment_tooltip_key = "rgo_employment_tooltip";
 	static const StringName province_info_rgo_output_quantity_yesterday_key = "rgo_output_quantity_yesterday";
 	static const StringName province_info_rgo_revenue_yesterday_key = "rgo_revenue_yesterday";
 	static const StringName province_info_crime_name_key = "crime_name";
@@ -486,7 +487,44 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	if (max_employee_count == 0) {
 		ret[province_info_rgo_employment_percentage_key] = 100.0f;
 	} else {
-		ret[province_info_rgo_employment_percentage_key] = (rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float_rounded();
+		ret[province_info_rgo_employment_percentage_key] =
+			(rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float_rounded();
+	}
+
+	if (rgo.is_valid()) {
+		String amount_of_employees_by_pop_type;
+		for (auto const& [pop_type, employees_of_type] : rgo.get_employee_count_per_type_cache()) {
+			if (employees_of_type > 0) {
+				amount_of_employees_by_pop_type +=
+					"  -" + GUILabel::get_colour_marker() + "Y" +
+					tr(Utilities::std_to_godot_string(pop_type.get_identifier())) + GUILabel::get_colour_marker() + "!:" +
+					String::num_int64(employees_of_type) + "\n";
+			}
+		}
+
+		ProductionType const& production_type = *rgo.get_production_type_nullable();
+
+		String contributing_modifier_effects;
+		// TODO - generate list of contributing modifier effects (including combined "From Technology" effeects)
+
+		static const StringName employment_localisation_key = "PROVINCEVIEW_EMPLOYMENT";
+		static const String value_replace_key = "$VALUE$";
+		static const StringName employee_count_localisation_key = "PRODUCTION_FACTORY_EMPLOYEECOUNT_TOOLTIP2";
+		static const String employee_replace_key = "$EMPLOYEES$";
+		static const String employee_max_replace_key = "$EMPLOYEE_MAX$";
+		static const StringName rgo_workforce_localisation_key = "BASE_RGO_SIZE";
+		static const StringName province_size_localisation_key = "FROM_PROV_SIZE";
+
+		ret[province_info_rgo_employment_tooltip_key] =
+			tr(employment_localisation_key).replace(value_replace_key, {}) + get_tooltip_separator() +
+			tr(employee_count_localisation_key).replace(
+				employee_replace_key, String::num_int64(rgo.get_total_employees_count_cache())
+			).replace(
+				employee_max_replace_key, String::num_int64(rgo.get_max_employee_count_cache())
+			) + "\n" + amount_of_employees_by_pop_type + tr(rgo_workforce_localisation_key) +
+			String::num_int64(production_type.get_base_workforce_size()) + "\n" +
+			contributing_modifier_effects + "\n" + tr(province_size_localisation_key) + GUILabel::get_colour_marker() + "G" +
+			String::num_int64(static_cast<int32_t>(rgo.get_size_multiplier())); // TODO - remove cast once variable is an int32_t
 	}
 
 	GoodDefinition const* const rgo_good = province->get_rgo_good();
