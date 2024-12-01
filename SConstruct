@@ -41,12 +41,13 @@ SConscript("extension/deps/SCsub", "env")
 
 # tweak this if you want to use different folders, or more folders, to store your source code in.
 paths = ["extension/src"]
+doc_gen_file = os.path.join(paths[0], "gen/doc_data.gen.cpp")
 env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
-sources = env.GlobRecursive("*.cpp", paths)
+sources = env.GlobRecursive("*.cpp", paths, doc_gen_file)
 env.extension_sources = sources
 
 if env["target"] in ["editor", "template_debug"]:
-    doc_data = godot_env.GodotCPPDocData("extension/src/gen/doc_data.gen.cpp", source=Glob("extension/doc_classes/*.xml"))
+    doc_data = godot_env.GodotCPPDocData(doc_gen_file, source=Glob("extension/doc_classes/*.xml"))
     sources.append(doc_data)
 
 # Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
