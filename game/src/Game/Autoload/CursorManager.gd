@@ -73,6 +73,7 @@ class compat_Cursor:
 	func set_hardware_cursor(frame:int=0) -> void:
 		var texture = frames[sequence[frame]]
 		var hotspot = hotspots[sequence[frame]]
+		print("name: %s shape: %s" % [cursor_name,shape])
 		Input.set_custom_mouse_cursor(texture,shape,hotspot)
 
 
@@ -108,7 +109,7 @@ func load_cursors() -> void:
 	CursorSingleton.load_cursors()
 	for cursor_name in CursorSingleton.cursor_names:
 		var shape:Input.CursorShape = Input.CURSOR_ARROW
-		if cursor_name == "busy":
+		if cursor_name == &"busy":
 			shape = Input.CURSOR_BUSY
 		var cursor = compat_Cursor.new(cursor_name,shape)
 		cursor.set_resolution(preferred_res)
@@ -138,8 +139,8 @@ func _process(delta) -> void:
 		if activeCursor != null and mouseShape != activeCursor.shape:
 			#Current mouse type changed, need to make sure that if the cursor of this new type
 			# is animated, we are providing its frames instead of the frames of the previous active cursor
-			activeCursor.reset() # reset the frame in the sequence to use
-			activeCursor.set_hardware_cursor()
+			#activeCursor.reset() # reset the frame in the sequence to use
+			#activeCursor.set_hardware_cursor()
 			
 			if mouseShape in currentCursors and currentCursors[mouseShape] != null:
 				activeCursor = currentCursors[mouseShape]

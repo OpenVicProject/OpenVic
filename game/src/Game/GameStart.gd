@@ -117,11 +117,10 @@ func _load_compatibility_mode() -> void:
 	#  Mouse > Default Cursor Shape 
 	# set_cursor_shape associates a shape with a cursor loaded
 	# from vic2 (name matches the vic2 file name w/o the extension)
+	# though load_cursors should handle that for you...
 	# set_compat_cursor makes the named vic2 cursor the presently active
 	# one for the shape it is currently associated with
 	CursorManager.set_compat_cursor(&"normal")
-	
-	CursorManager.set_cursor_shape(&"busy",Input.CURSOR_BUSY)
 	CursorManager.set_compat_cursor(&"busy")
 	
 	setup_title_theme()
