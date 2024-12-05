@@ -587,8 +587,8 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 	unwrapped_lines.emplace_back();
 
 	for (int64_t idx = 0; idx < display_text.length(); ++idx) {
-		if (colour_it != colour_instructions.end() && idx == colour_it->first) {
-			Color new_colour = current_colour;
+		Color new_colour = current_colour;
+		while (colour_it != colour_instructions.end() && idx == colour_it->first) {
 			if (colour_it->second == RESET_COLOUR_CODE) {
 				new_colour = default_colour;
 			} else {
@@ -598,16 +598,16 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 				}
 			}
 			++colour_it;
+		}
 
-			if (current_colour != new_colour) {
-				if (section_start < idx) {
-					separate_lines(
-						display_text.substr(section_start, idx - section_start), current_colour, unwrapped_lines
-					);
-					section_start = idx;
-				}
-				current_colour = new_colour;
+		if (current_colour != new_colour) {
+			if (section_start < idx) {
+				separate_lines(
+					display_text.substr(section_start, idx - section_start), current_colour, unwrapped_lines
+				);
+				section_start = idx;
 			}
+			current_colour = new_colour;
 		}
 	}
 
