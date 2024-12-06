@@ -323,7 +323,7 @@ void GUINode::update_click_mask() {
 	ERR_FAIL_COND(highest_position == max_point);
 	_texture_region = Rect2(Point2(), img->get_size());
 	_position_rect = Rect2(highest_position, _texture_region.get_size());
-	_click_mask->create_from_image_alpha(img);
+	_click_mask->create_from_image_alpha(img, 0.9);
 	queue_redraw();
 	update_minimum_size();
 }
