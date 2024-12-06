@@ -199,7 +199,7 @@
 		</method>
 		<method name="population_menu_select_sort_key">
 			<return type="int" enum="Error" />
-			<param index="0" name="sort_key" type="int" enum="population_menu_t.PopSortKey" />
+			<param index="0" name="sort_key" type="int" enum="MenuSingleton.PopSortKey" />
 			<description>
 			</description>
 		</method>
@@ -290,7 +290,7 @@
 		</constant>
 		<constant name="LIST_ENTRY_PROVINCE" value="3" enum="ProvinceListEntry">
 		</constant>
-		<constant name="NONE" value="0" enum="PopSortKey">
+		<constant name="SORT_NONE" value="0" enum="PopSortKey">
 		</constant>
 		<constant name="SORT_SIZE" value="1" enum="PopSortKey">
 		</constant>

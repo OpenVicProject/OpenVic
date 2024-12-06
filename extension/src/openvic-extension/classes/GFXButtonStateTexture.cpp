@@ -42,7 +42,7 @@ void GFXButtonStateTexture::_bind_methods() {
 	OV_BIND_SMETHOD(button_state_to_name, { "button_state" });
 	OV_BIND_METHOD(GFXButtonStateTexture::get_button_state_name);
 
-	OV_BIND_METHOD(GFXButtonStateTexture::generate_state_image, { "source_image" });
+	OV_BIND_METHOD(GFXButtonStateTexture::generate_state_image, { "source_image", "region", "new_cornered_tile_border_size" });
 
 	BIND_ENUM_CONSTANT(HOVER);
 	BIND_ENUM_CONSTANT(PRESSED);

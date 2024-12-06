@@ -21,7 +21,7 @@ void MapMesh::_bind_methods() {
 	OV_BIND_METHOD(MapMesh::get_subdivide_depth);
 
 	OV_BIND_METHOD(MapMesh::get_core_aabb);
-	OV_BIND_METHOD(MapMesh::is_valid_uv_coord);
+	OV_BIND_METHOD(MapMesh::is_valid_uv_coord, { "uv" });
 
 	ADD_PROPERTY(
 		PropertyInfo(Variant::FLOAT, "aspect_ratio", PROPERTY_HINT_NONE, "suffix:m"), "set_aspect_ratio", "get_aspect_ratio"

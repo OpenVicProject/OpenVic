@@ -51,7 +51,7 @@ Error MenuSingleton::_population_menu_update_provinces() {
 		}
 	}
 
-	population_menu.sort_key = population_menu_t::NONE;
+	population_menu.sort_key = SORT_NONE;
 
 	emit_signal(_signal_population_menu_province_list_changed());
 
@@ -107,7 +107,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (start_counter-- <= 0) {
 				Dictionary country_dict;
 
-				country_dict[type_key] = population_menu_t::LIST_ENTRY_COUNTRY;
+				country_dict[type_key] = LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
 				country_dict[name_key] = menu_singleton.get_country_name(country_entry.country);
 				country_dict[size_key] = country_entry.country.get_total_population();
@@ -128,7 +128,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (start_counter-- <= 0) {
 				Dictionary state_dict;
 
-				state_dict[type_key] = population_menu_t::LIST_ENTRY_STATE;
+				state_dict[type_key] = LIST_ENTRY_STATE;
 				state_dict[index_key] = index;
 				state_dict[name_key] = menu_singleton.get_state_name(state_entry.state);
 				state_dict[size_key] = state_entry.state.get_total_population();
@@ -149,7 +149,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (is_expanded && start_counter-- <= 0) {
 				Dictionary province_dict;
 
-				province_dict[type_key] = population_menu_t::LIST_ENTRY_PROVINCE;
+				province_dict[type_key] = LIST_ENTRY_PROVINCE;
 				province_dict[index_key] = index;
 				province_dict[name_key] = Utilities::std_to_godot_string(province_entry.province.get_identifier());
 				province_dict[size_key] = province_entry.province.get_total_population();
@@ -185,8 +185,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 
 		int32_t selected_visible_index = -1;
 
-		using enum population_menu_t::ProvinceListEntry;
-		population_menu_t::ProvinceListEntry select_level = LIST_ENTRY_NONE;
+		ProvinceListEntry select_level = LIST_ENTRY_NONE;
 
 		void operator()(population_menu_t::country_entry_t& country_entry) {
 			if (index == _select_index) {
@@ -424,8 +423,7 @@ static constexpr bool indexed_map_lookup_less_than(IndexedMap<T, size_t> const& 
 	return lhs != nullptr && rhs != nullptr && map[*lhs] < map[*rhs];
 }
 
-MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(population_menu_t::PopSortKey sort_key) const {
-	using enum population_menu_t::PopSortKey;
+MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSortKey sort_key) const {
 	switch (sort_key) {
 	case SORT_SIZE:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -506,7 +504,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(populat
 }
 
 Error MenuSingleton::_population_menu_sort_pops() {
-	if (population_menu.sort_key != population_menu_t::NONE) {
+	if (population_menu.sort_key != SORT_NONE) {
 		if (
 			!population_menu.pop_type_sort_cache.has_keys() || !population_menu.culture_sort_cache.has_keys() ||
 			!population_menu.religion_sort_cache.has_keys() || !population_menu.province_sort_cache.has_keys() ||
@@ -589,8 +587,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	return OK;
 }
 
-Error MenuSingleton::population_menu_select_sort_key(population_menu_t::PopSortKey sort_key) {
-	using enum population_menu_t::PopSortKey;
+Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 	/* sort_key must be cast here to avoid causing clang to segfault during compilation. */
 	ERR_FAIL_INDEX_V_MSG(
 		static_cast<int32_t>(sort_key), static_cast<int32_t>(MAX_SORT_KEY), FAILED,

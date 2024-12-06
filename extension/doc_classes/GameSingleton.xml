@@ -49,13 +49,13 @@
 		</method>
 		<method name="get_mapmode_identifier" qualifiers="const">
 			<return type="String" />
-			<param index="0" name="_unnamed_arg0" type="int" />
+			<param index="0" name="index" type="int" />
 			<description>
 			</description>
 		</method>
 		<method name="get_mapmode_localisation_key" qualifiers="const">
 			<return type="String" />
-			<param index="0" name="_unnamed_arg0" type="int" />
+			<param index="0" name="index" type="int" />
 			<description>
 			</description>
 		</method>
