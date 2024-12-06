@@ -54,3 +54,12 @@ See [Run, Build, and Export](docs/contribution/run-build-and-export.md).
 4. Start the debugger.
 
 See [Debugging](docs/contribution/debugging.md).
+
+## Extension Class Reference Documentation
+Every time you add something to the GDExtension you need to add to the class reference documentation, to do such:
+1. Build with `scons`.
+2. Run your Godot 4 binary with `--doctool --headless ../extension --gdextension-docs` in the `game` directory.
+3. Write documentation in the style of Godot, see [Godot's Writing Documentation: Class Reference Guides](https://docs.godotengine.org/en/stable/contributing/documentation/index.html#class-reference-guides).
+4. Build with `scons`.
+
+If you change anything that causes new behavior in the GDExtension you should also change the corresponding class reference documentation.

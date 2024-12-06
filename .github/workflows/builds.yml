@@ -3,7 +3,6 @@ name: Builds
 on:
   push:
     paths-ignore:
-      - '.github/**'
       - '.vscode/**'
       - 'docs/**'
       - 'LICENSE-EXCEPTIONS.md'
@@ -11,7 +10,6 @@ on:
       - 'README.md'
   pull_request:
     paths-ignore:
-      - '.github/**'
       - '.vscode/**'
       - 'docs/**'
       - 'LICENSE-EXCEPTIONS.md'
@@ -170,6 +168,15 @@ jobs:
           relative_export_path: ./game/export
 
       - run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
+
+      - name: Check for class reference updates
+        run: |
+          echo "Running --doctool to see if this changes the public API without updating the documentation."
+          echo -e "If a diff is shown, it means that your code/doc changes are incomplete and you should update the class reference with --doctool.\n\n"
+          cd game
+          ${{ steps.export_game.outputs.executable_path }} --doctool --headless ../extension --gdextension-docs 2>&1 > /dev/null || true
+          cd ..
+          git diff --color --exit-code && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
 
       - name: Upload pack artifact
         uses: actions/upload-artifact@v4.3.0
