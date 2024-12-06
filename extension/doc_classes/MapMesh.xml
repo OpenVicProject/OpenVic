@@ -14,7 +14,7 @@
 		</method>
 		<method name="is_valid_uv_coord" qualifiers="const">
 			<return type="bool" />
-			<param index="0" name="_unnamed_arg0" type="Vector2" />
+			<param index="0" name="uv" type="Vector2" />
 			<description>
 			</description>
 		</method>

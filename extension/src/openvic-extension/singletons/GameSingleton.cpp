@@ -66,8 +66,8 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_province_names);
 
 	OV_BIND_METHOD(GameSingleton::get_mapmode_count);
-	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier);
-	OV_BIND_METHOD(GameSingleton::get_mapmode_localisation_key);
+	OV_BIND_METHOD(GameSingleton::get_mapmode_identifier, { "index" });
+	OV_BIND_METHOD(GameSingleton::get_mapmode_localisation_key, { "index" });
 	OV_BIND_METHOD(GameSingleton::get_current_mapmode_index);
 	OV_BIND_METHOD(GameSingleton::set_mapmode, { "index" });
 	OV_BIND_METHOD(GameSingleton::is_parchment_mapmode_allowed);

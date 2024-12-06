@@ -262,14 +262,12 @@ void MenuSingleton::_bind_methods() {
 	);
 	ADD_SIGNAL(MethodInfo(_signal_population_menu_pops_changed()));
 
-	using enum population_menu_t::ProvinceListEntry;
 	BIND_ENUM_CONSTANT(LIST_ENTRY_NONE);
 	BIND_ENUM_CONSTANT(LIST_ENTRY_COUNTRY);
 	BIND_ENUM_CONSTANT(LIST_ENTRY_STATE);
 	BIND_ENUM_CONSTANT(LIST_ENTRY_PROVINCE);
 
-	using enum population_menu_t::PopSortKey;
-	BIND_ENUM_CONSTANT(NONE);
+	BIND_ENUM_CONSTANT(SORT_NONE);
 	BIND_ENUM_CONSTANT(SORT_SIZE);
 	BIND_ENUM_CONSTANT(SORT_TYPE);
 	BIND_ENUM_CONSTANT(SORT_CULTURE);

@@ -30,11 +30,17 @@ namespace OpenVic {
 		static inline MenuSingleton* singleton = nullptr;
 
 	public:
-		struct population_menu_t {
-			enum ProvinceListEntry {
-				LIST_ENTRY_NONE, LIST_ENTRY_COUNTRY, LIST_ENTRY_STATE, LIST_ENTRY_PROVINCE
-			};
+		enum ProvinceListEntry {
+			LIST_ENTRY_NONE, LIST_ENTRY_COUNTRY, LIST_ENTRY_STATE, LIST_ENTRY_PROVINCE
+		};
 
+		enum PopSortKey {
+			SORT_NONE, SORT_SIZE, SORT_TYPE, SORT_CULTURE, SORT_RELIGION, SORT_LOCATION, SORT_MILITANCY, SORT_CONSCIOUSNESS,
+			SORT_IDEOLOGY, SORT_ISSUES, SORT_UNEMPLOYMENT, SORT_CASH, SORT_LIFE_NEEDS, SORT_EVERYDAY_NEEDS,
+			SORT_LUXURY_NEEDS, SORT_REBEL_FACTION, SORT_SIZE_CHANGE, SORT_LITERACY, MAX_SORT_KEY
+		};
+
+		struct population_menu_t {
 			struct country_entry_t {
 				CountryInstance const& country;
 				bool selected = true;
@@ -76,11 +82,7 @@ namespace OpenVic {
 			fixed_point_map_t<Issue const*> issue_distribution;
 			fixed_point_map_t<CountryParty const*> vote_distribution;
 
-			enum PopSortKey {
-				NONE, SORT_SIZE, SORT_TYPE, SORT_CULTURE, SORT_RELIGION, SORT_LOCATION, SORT_MILITANCY, SORT_CONSCIOUSNESS,
-				SORT_IDEOLOGY, SORT_ISSUES, SORT_UNEMPLOYMENT, SORT_CASH, SORT_LIFE_NEEDS, SORT_EVERYDAY_NEEDS,
-				SORT_LUXURY_NEEDS, SORT_REBEL_FACTION, SORT_SIZE_CHANGE, SORT_LITERACY, MAX_SORT_KEY
-			} sort_key = NONE;
+			PopSortKey sort_key = SORT_NONE;
 			bool sort_descending = true;
 			IndexedMap<PopType, size_t> pop_type_sort_cache;
 			IndexedMap<Culture, size_t> culture_sort_cache;
@@ -183,10 +185,10 @@ namespace OpenVic {
 		godot::Error _population_menu_update_pops();
 		godot::Error _population_menu_update_filtered_pops();
 		using sort_func_t = std::function<bool(Pop const*, Pop const*)>;
-		sort_func_t _get_population_menu_sort_func(population_menu_t::PopSortKey sort_key) const;
+		sort_func_t _get_population_menu_sort_func(PopSortKey sort_key) const;
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();
-		godot::Error population_menu_select_sort_key(population_menu_t::PopSortKey sort_key);
+		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 
@@ -212,5 +214,5 @@ namespace OpenVic {
 	};
 }
 
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::population_menu_t::ProvinceListEntry);
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::population_menu_t::PopSortKey);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
