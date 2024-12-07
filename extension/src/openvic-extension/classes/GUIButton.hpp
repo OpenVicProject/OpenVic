@@ -4,8 +4,8 @@
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
-#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
-#include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include <openvic-extension/classes/GFXButtonStateTexture.hpp>
+#include <openvic-extension/classes/GUIHasTooltip.hpp>
 
 namespace OpenVic {
 	class GUIButton : public godot::Button {

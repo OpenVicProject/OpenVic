@@ -1,15 +1,15 @@
-#include "MenuSingleton.hpp"
-
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
-#include "openvic-extension/classes/GFXPieChartTexture.hpp"
-#include "openvic-extension/classes/GUINode.hpp"
-#include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/classes/GFXPieChartTexture.hpp>
+#include <openvic-extension/classes/GUINode.hpp>
+#include <openvic-extension/singletons/GameSingleton.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
+
+#include "MenuSingleton.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -30,9 +30,9 @@ Error MenuSingleton::_population_menu_update_provinces() {
 	ERR_FAIL_COND_V(!map_instance.province_instances_are_locked(), FAILED);
 
 	for (CountryInstance const* country : {
-		// Example country
-		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG")
-	}) {
+			 // Example country
+			 instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG") //
+		 }) {
 		ERR_CONTINUE(country == nullptr);
 
 		population_menu.province_list_entries.emplace_back(population_menu_t::country_entry_t { *country });
@@ -40,7 +40,6 @@ Error MenuSingleton::_population_menu_update_provinces() {
 
 		for (StateSet const& state_set : map_instance.get_state_manager().get_state_sets()) {
 			for (State const& state : state_set.get_states()) {
-
 				population_menu.province_list_entries.emplace_back(population_menu_t::state_entry_t { state });
 				population_menu.visible_province_list_entries++;
 
@@ -87,7 +86,6 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 	// TODO - national focus
 
 	struct entry_visitor_t {
-
 		MenuSingleton const& menu_singleton;
 
 		int32_t& start_counter;
@@ -98,7 +96,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 		bool is_expanded = true;
 
-		TypedArray<Dictionary> array {};
+		TypedArray<Dictionary> array;
 
 		/* Overloads return false if count_counter reaches 0 and the function should return,
 		 * otherwise true indicating the province list loop should continue. */
@@ -165,8 +163,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 		}
 	} entry_visitor { *this, start, count };
 
-	while (entry_visitor.index < population_menu.province_list_entries.size()
-		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
+	while (entry_visitor.index < population_menu.province_list_entries.size() &&
+	       std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
 		entry_visitor.index++;
 	}
 
@@ -177,7 +175,6 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 	ERR_FAIL_INDEX_V(select_index, population_menu.province_list_entries.size(), FAILED);
 
 	struct entry_visitor_t {
-
 		const int32_t _select_index;
 
 		int32_t index = 0, visible_index = 0;
@@ -186,6 +183,8 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 		int32_t selected_visible_index = -1;
 
 		ProvinceListEntry select_level = LIST_ENTRY_NONE;
+
+		entry_visitor_t(int32_t select_index) : _select_index(select_index) {}
 
 		void operator()(population_menu_t::country_entry_t& country_entry) {
 			if (index == _select_index) {
@@ -246,8 +245,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 	}
 
 	emit_signal(
-		_signal_population_menu_province_list_selected_changed(),
-		set_scroll_index ? entry_visitor.selected_visible_index : -1
+		_signal_population_menu_province_list_selected_changed(), set_scroll_index ? entry_visitor.selected_visible_index : -1
 	);
 
 	return _population_menu_update_pops();
@@ -264,7 +262,6 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 	);
 
 	struct entry_visitor_t {
-
 		MenuSingleton& menu_singleton;
 
 		const int32_t _province_index;
@@ -274,6 +271,9 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 		int32_t state_entry_to_expand = -1;
 
 		bool ret = true;
+
+		entry_visitor_t(MenuSingleton& singleton, int32_t province_index)
+			: menu_singleton { singleton }, _province_index(province_index) {}
 
 		/* Overloads return false if the province entry is found and the loop can stop, true otherwise. */
 
@@ -292,7 +292,6 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 
 		bool operator()(population_menu_t::province_entry_t& province_entry) {
 			if (province_entry.province.get_province_definition().get_index() == _province_index) {
-
 				if (state_entry_to_expand >= 0) {
 					ret &= menu_singleton.population_menu_toggle_expanded(state_entry_to_expand, false) == OK;
 				}
@@ -306,8 +305,8 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 
 	} entry_visitor { *this, province_index };
 
-	while (entry_visitor.index < population_menu.province_list_entries.size()
-		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
+	while (entry_visitor.index < population_menu.province_list_entries.size() &&
+	       std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
 		entry_visitor.index++;
 	}
 
@@ -329,8 +328,8 @@ Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool 
 
 	int32_t provinces = 0;
 
-	while (++toggle_index < population_menu.province_list_entries.size()
-		&& std::holds_alternative<population_menu_t::province_entry_t>(population_menu.province_list_entries[toggle_index])) {
+	while (++toggle_index < population_menu.province_list_entries.size() &&
+	       std::holds_alternative<population_menu_t::province_entry_t>(population_menu.province_list_entries[toggle_index])) {
 		provinces++;
 	}
 
@@ -485,9 +484,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		return [this](Pop const* a, Pop const* b) -> bool {
 			// TODO - include country adjective for [pan-]nationalist rebels
 			// TODO - handle social/political reform movements
-			return indexed_map_lookup_less_than(
-				population_menu.rebel_type_sort_cache, a->get_rebel_type(), b->get_rebel_type()
-			);
+			return indexed_map_lookup_less_than(population_menu.rebel_type_sort_cache, a->get_rebel_type(), b->get_rebel_type());
 		};
 	case SORT_SIZE_CHANGE:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -499,25 +496,26 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	default:
 		UtilityFunctions::push_error("Invalid population menu sort key: ", sort_key);
-		return [](Pop const* a, Pop const* b) -> bool { return false; };
+		return [](Pop const* a, Pop const* b) -> bool {
+			return false;
+		};
 	}
 }
 
 Error MenuSingleton::_population_menu_sort_pops() {
 	if (population_menu.sort_key != SORT_NONE) {
-		if (
-			!population_menu.pop_type_sort_cache.has_keys() || !population_menu.culture_sort_cache.has_keys() ||
-			!population_menu.religion_sort_cache.has_keys() || !population_menu.province_sort_cache.has_keys() ||
-			!population_menu.rebel_type_sort_cache.has_keys()
-		) {
+		if (!population_menu.pop_type_sort_cache.has_keys() || !population_menu.culture_sort_cache.has_keys() ||
+		    !population_menu.religion_sort_cache.has_keys() || !population_menu.province_sort_cache.has_keys() ||
+		    !population_menu.rebel_type_sort_cache.has_keys()) {
 			ERR_FAIL_COND_V(population_menu_update_locale_sort_cache() != OK, FAILED);
 		}
 
 		const sort_func_t base_sort_func = _get_population_menu_sort_func(population_menu.sort_key);
 
-		const sort_func_t sort_func = population_menu.sort_descending
-			? base_sort_func
-			: [base_sort_func](Pop const* a, Pop const* b) { return base_sort_func(b, a); };
+		const sort_func_t sort_func =
+			population_menu.sort_descending ? base_sort_func : [base_sort_func](Pop const* a, Pop const* b) {
+				return base_sort_func(b, a);
+			};
 
 		std::sort(population_menu.filtered_pops.begin(), population_menu.filtered_pops.end(), sort_func);
 	}
@@ -536,36 +534,32 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<String> localised_items;
 	std::vector<size_t> sorted_items;
 
-	const auto generate_sort_cache = [this, &localised_items, &sorted_items]<HasGetIdentifier T>(
-		IndexedMap<T, size_t>& cache, std::vector<T> const& items
-	) {
-		localised_items.resize(items.size());
-		sorted_items.resize(items.size());
+	const auto generate_sort_cache =
+		[this, &localised_items, &sorted_items]<HasGetIdentifier T>(IndexedMap<T, size_t>& cache, std::vector<T> const& items) {
+			localised_items.resize(items.size());
+			sorted_items.resize(items.size());
 
-		for (size_t idx = 0; idx < items.size(); ++idx) {
-			String identifier = Utilities::std_to_godot_string(items[idx].get_identifier());
-			if constexpr (std::is_same_v<T, ProvinceInstance>) {
-				identifier = GUINode::format_province_name(identifier);
+			for (size_t idx = 0; idx < items.size(); ++idx) {
+				String identifier = Utilities::std_to_godot_string(items[idx].get_identifier());
+				if constexpr (std::is_same_v<T, ProvinceInstance>) {
+					identifier = GUINode::format_province_name(identifier);
+				}
+				localised_items[idx] = tr(identifier).to_lower();
+				sorted_items[idx] = idx;
 			}
-			localised_items[idx] = tr(identifier).to_lower();
-			sorted_items[idx] = idx;
-		}
 
-		std::sort(
-			sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
+			std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
 				return localised_items[a] < localised_items[b];
-			}
-		);
+			});
 
-		cache.set_keys(&items);
-		for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
-			cache[sorted_items[idx]] = idx;
-		}
-	};
+			cache.set_keys(&items);
+			for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
+				cache[sorted_items[idx]] = idx;
+			}
+		};
 
 	generate_sort_cache(
-		population_menu.pop_type_sort_cache,
-		game_singleton->get_definition_manager().get_pop_manager().get_pop_types()
+		population_menu.pop_type_sort_cache, game_singleton->get_definition_manager().get_pop_manager().get_pop_types()
 	);
 	generate_sort_cache(
 		population_menu.culture_sort_cache,
@@ -575,10 +569,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 		population_menu.religion_sort_cache,
 		game_singleton->get_definition_manager().get_pop_manager().get_religion_manager().get_religions()
 	);
-	generate_sort_cache(
-		population_menu.province_sort_cache,
-		instance_manager->get_map_instance().get_province_instances()
-	);
+	generate_sort_cache(population_menu.province_sort_cache, instance_manager->get_map_instance().get_province_instances());
 	generate_sort_cache(
 		population_menu.rebel_type_sort_cache,
 		game_singleton->get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types()
@@ -624,7 +615,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	// TODO - pop type name
 	// TODO - promotions (target pop type and count)
 	// TODO - demotions (target pop type and count)
-	// TODO - good being produced (artisans, farmers, labourers, slaves)
+	// TODO - good being produced (artisans, farmers, labourers, slaves) // codespell:ignore labourers
 	// TODO - military unit and army (soldiers)
 
 	static const StringName pop_culture_key = "culture";
@@ -805,12 +796,12 @@ Error MenuSingleton::population_menu_deselect_all_pop_filters() {
 PackedStringArray MenuSingleton::get_population_menu_distribution_setup_info() const {
 	static const PackedStringArray distribution_names = []() -> PackedStringArray {
 		constexpr std::array<char const*, population_menu_t::DISTRIBUTION_COUNT> NAMES {
-			/* Workforce (PopType)   */       "WORKFORCE_DISTTITLE",
-			/* Religion              */        "RELIGION_DISTTITLE",
-			/* Ideology              */        "IDEOLOGY_DISTTITLE",
-			/* Nationality (Culture) */     "NATIONALITY_DISTTITLE",
+			/* Workforce (PopType)   */ "WORKFORCE_DISTTITLE",
+			/* Religion              */ "RELIGION_DISTTITLE",
+			/* Ideology              */ "IDEOLOGY_DISTTITLE",
+			/* Nationality (Culture) */ "NATIONALITY_DISTTITLE",
 			/* Issues                */ "DOMINANT_ISSUES_DISTTITLE",
-			/* Vote                  */      "ELECTORATE_DISTTITLE"
+			/* Vote                  */ "ELECTORATE_DISTTITLE"
 		};
 
 		PackedStringArray array;

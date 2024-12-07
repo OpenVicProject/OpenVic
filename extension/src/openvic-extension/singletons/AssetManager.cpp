@@ -2,10 +2,10 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/UITools.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/singletons/GameSingleton.hpp>
+#include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/UITools.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -46,8 +46,7 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 
 	const Ref<Image> image = Utilities::load_godot_image(lookedup_path);
 	ERR_FAIL_COND_V_MSG(
-		image.is_null() || image->is_empty(), nullptr,
-		vformat("Failed to load image: %s (looked up: %s)", path, lookedup_path)
+		image.is_null() || image->is_empty(), nullptr, vformat("Failed to load image: %s (looked up: %s)", path, lookedup_path)
 	);
 
 	if (flip_y) {

@@ -3,16 +3,16 @@
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/UITools.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/utility/ClassBindings.hpp>
+#include <openvic-extension/utility/UITools.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use wrapper functions to delay their initialisation. */
+ * so we must use wrapper functions to delay their initialization. */
 StringName const& GUIListBox::_signal_scroll_index_changed() {
 	static const StringName signal_scroll_index_changed = "scroll_index_changed";
 	return signal_scroll_index_changed;
@@ -129,8 +129,14 @@ void GUIListBox::_notification(int what) {
 }
 
 GUIListBox::GUIListBox()
-  : gui_listbox { nullptr }, scrollbar { nullptr }, scroll_index { 0 }, max_scroll_index { 0 },
-	fixed { false }, fixed_item_count { 0 }, fixed_visible_items { 0 }, fixed_item_height { 0.0_real } {}
+	: gui_listbox { nullptr },   //
+	  scrollbar { nullptr },     //
+	  scroll_index { 0 },        //
+	  max_scroll_index { 0 },    //
+	  fixed { false },           //
+	  fixed_item_count { 0 },    //
+	  fixed_visible_items { 0 }, //
+	  fixed_item_height { 0.0_real } {}
 
 Vector2 GUIListBox::_get_minimum_size() const {
 	if (gui_listbox != nullptr) {

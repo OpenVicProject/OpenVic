@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/texture_rect.hpp>
 
-#include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include <openvic-extension/classes/GUIHasTooltip.hpp>
 
 namespace OpenVic {
 	class GUITextureRect : public godot::TextureRect {

@@ -74,6 +74,8 @@ namespace OpenVic::Utilities {
 	);
 
 	namespace literals {
-		constexpr real_t operator""_real(long double val) { return to_real_t(val); }
+		constexpr real_t operator""_real(long double val) {
+			return to_real_t(val);
+		}
 	}
 }

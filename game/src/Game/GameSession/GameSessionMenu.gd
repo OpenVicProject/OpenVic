@@ -18,7 +18,7 @@ func _ready() -> void:
 	_main_menu_save_button = _main_menu_dialog.add_button("DIALOG_SAVE_AND_RESIGN", true, &"save_and_main_menu")
 	_quit_save_button = _quit_dialog.add_button("DIALOG_SAVE_AND_QUIT", true, &"save_and_quit")
 
-	# Neccessary to center the save buttons and preserve the reference to the separator elements
+	# Necessary to center the save buttons and preserve the reference to the separator elements
 	var dialog_hbox : HBoxContainer = _main_menu_dialog.get_child(2, true)
 	var index := _main_menu_save_button.get_index(true)
 	dialog_hbox.move_child(_main_menu_save_button, _main_menu_dialog.get_ok_button().get_index(true))

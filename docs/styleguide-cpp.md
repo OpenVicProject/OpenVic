@@ -17,12 +17,12 @@
 >“Programs are meant to be read by humans and only incidentally for computers to execute.”
 > - H. Abelson and G. Sussman in [*Structure and Interpretation of Computer Programs*](https://en.wikipedia.org/wiki/Structure_and_Interpretation_of_Computer_Programs)
 
-The purpose of this styleguide is to give a clear framework for other contributors, to minimize ambiguity, and to have a consistant way to convey the intent of code.
+The purpose of this styleguide is to give a clear framework for other contributors, to minimize ambiguity, and to have a consistent way to convey the intent of code.
 
 ### 1.1. General Principles
 - Prefer clarity over brevity
 - [Don’t optimize prematurely](https://youtu.be/tKbV6BpH-C8)
-- In cases of ambiguity, use your best judgement
+- In cases of ambiguity, use your best judgment
 
 ### 1.2. File Formatting
 Source code files should adhere to the following:
@@ -91,7 +91,7 @@ Source code files should adhere to the following:
 	```
 - The content of classes should appear in the following order:
 	- Type Aliases
-	- Static (class-wide) atributes
+	- Static (class-wide) attributes
 	- Attributes
 	- Constructors and Destructors
 	- Static (class-wide) methods
@@ -272,7 +272,7 @@ Source code files should adhere to the following:
 		return num % 2 == 0;
 	}
 	```
-- When a function parameter is being passed by const referance, put one space between the type and `const&`. If a parameter is passed by mutable reference do not put a space between the type and the `&`
+- When a function parameter is being passed by const reference, put one space between the type and `const&`. If a parameter is passed by mutable reference do not put a space between the type and the `&`
 	```c++
 	//Correct for a const reference
 	bool hasLargeNumber(std::vector<int> const& numbers) {

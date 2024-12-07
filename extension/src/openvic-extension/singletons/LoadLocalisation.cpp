@@ -5,7 +5,7 @@
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -38,8 +38,8 @@ Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> con
 	);
 	int line_number = 0;
 	while (!file->eof_reached()) {
-		static const String delimeter = ";";
-		const PackedStringArray line = file->get_csv_line(delimeter);
+		static const String delimiter = ";";
+		const PackedStringArray line = file->get_csv_line(delimiter);
 		line_number++;
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
 			if (!line[0].is_empty()) {
@@ -86,7 +86,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 
 	/* This will add the locale to the list of loaded locales even if it has no
 	 * localisation files - this is useful for testing other aspects of localisation
-	 * such as number formatting and text direction. To disable this behaviour and
+	 * such as number formatting and text direction. To disable this behavior and
 	 * only show non-empty localisations, move the `_get_translation` call to after
 	 * the `files.size()` check.
 	 */
@@ -142,8 +142,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
 			UtilityFunctions::push_warning(
-				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
-				old_localisation, "\" to \"", godot_localisation, "\""
+				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"", old_localisation,
+				"\" to \"", godot_localisation, "\""
 			);
 		}
 	}

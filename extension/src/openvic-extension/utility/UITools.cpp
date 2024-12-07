@@ -8,20 +8,20 @@
 #include <godot_cpp/classes/theme.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/classes/GUIButton.hpp"
-#include "openvic-extension/classes/GUIIcon.hpp"
-#include "openvic-extension/classes/GUIIconButton.hpp"
-#include "openvic-extension/classes/GUILabel.hpp"
-#include "openvic-extension/classes/GUIListBox.hpp"
-#include "openvic-extension/classes/GUIMaskedFlag.hpp"
-#include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
-#include "openvic-extension/classes/GUIOverlappingElementsBox.hpp"
-#include "openvic-extension/classes/GUIPieChart.hpp"
-#include "openvic-extension/classes/GUIProgressBar.hpp"
-#include "openvic-extension/classes/GUIScrollbar.hpp"
-#include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include <openvic-extension/classes/GUIButton.hpp>
+#include <openvic-extension/classes/GUIIcon.hpp>
+#include <openvic-extension/classes/GUIIconButton.hpp>
+#include <openvic-extension/classes/GUILabel.hpp>
+#include <openvic-extension/classes/GUIListBox.hpp>
+#include <openvic-extension/classes/GUIMaskedFlag.hpp>
+#include <openvic-extension/classes/GUIMaskedFlagButton.hpp>
+#include <openvic-extension/classes/GUIOverlappingElementsBox.hpp>
+#include <openvic-extension/classes/GUIPieChart.hpp>
+#include <openvic-extension/classes/GUIProgressBar.hpp>
+#include <openvic-extension/classes/GUIScrollbar.hpp>
+#include <openvic-extension/singletons/AssetManager.hpp>
+#include <openvic-extension/singletons/GameSingleton.hpp>
+#include <openvic-extension/utility/Utilities.hpp>
 
 using namespace godot;
 using namespace OpenVic;
@@ -71,7 +71,8 @@ namespace OpenVic {
 
 		constexpr generate_gui_args_t(
 			GUI::Element const& new_element, String const& new_name, AssetManager& new_asset_manager, Control*& new_result
-		) : element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
+		)
+			: element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
 	};
 }
 
@@ -83,8 +84,10 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	using enum GUI::Element::orientation_t;
 	using enum Control::LayoutPreset;
 	static const ordered_map<GUI::Element::orientation_t, Control::LayoutPreset> orientation_map {
-		{ UPPER_LEFT, PRESET_TOP_LEFT }, { LOWER_LEFT, PRESET_BOTTOM_LEFT },
-		{ LOWER_RIGHT, PRESET_BOTTOM_RIGHT }, { UPPER_RIGHT, PRESET_TOP_RIGHT },
+		{ UPPER_LEFT, PRESET_TOP_LEFT },
+		{ LOWER_LEFT, PRESET_BOTTOM_LEFT },
+		{ LOWER_RIGHT, PRESET_BOTTOM_RIGHT },
+		{ UPPER_RIGHT, PRESET_TOP_RIGHT },
 		{ CENTER, PRESET_CENTER }
 	};
 
@@ -99,9 +102,7 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	if (it != orientation_map.end()) {
 		node->set_anchors_and_offsets_preset(it->second);
 	} else {
-		UtilityFunctions::push_error(
-			"Invalid orientation for GUI element ", Utilities::std_to_godot_string(element.get_name())
-		);
+		UtilityFunctions::push_error("Invalid orientation for GUI element ", Utilities::std_to_godot_string(element.get_name()));
 		ret = false;
 	}
 
@@ -126,9 +127,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		if (GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>()) {
 			GUIIcon* gui_icon = nullptr;
 			ret &= new_control(gui_icon, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(
-				gui_icon, false, vformat("Failed to create GUIIcon for GUI icon %s", icon_name)
-			);
+			ERR_FAIL_NULL_V_MSG(gui_icon, false, vformat("Failed to create GUIIcon for GUI icon %s", icon_name));
 
 			gui_icon->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
@@ -144,9 +143,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		} else if (GFX::MaskedFlag const* masked_flag = icon.get_sprite()->cast_to<GFX::MaskedFlag>()) {
 			GUIMaskedFlag* gui_masked_flag = nullptr;
 			ret &= new_control(gui_masked_flag, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(
-				gui_masked_flag, false, vformat("Failed to create GUIMaskedFlag for GUI icon %s", icon_name)
-			);
+			ERR_FAIL_NULL_V_MSG(gui_masked_flag, false, vformat("Failed to create GUIMaskedFlag for GUI icon %s", icon_name));
 
 			if (gui_masked_flag->set_gfx_masked_flag(masked_flag) != OK) {
 				UtilityFunctions::push_error("Error setting up GUIMaskedFlag for GUI icon ", icon_name);
@@ -157,9 +154,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		} else if (GFX::ProgressBar const* progress_bar = icon.get_sprite()->cast_to<GFX::ProgressBar>()) {
 			GUIProgressBar* gui_progress_bar = nullptr;
 			ret &= new_control(gui_progress_bar, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(
-				gui_progress_bar, false, vformat("Failed to create GUIProgressBar for GUI icon %s", icon_name)
-			);
+			ERR_FAIL_NULL_V_MSG(gui_progress_bar, false, vformat("Failed to create GUIProgressBar for GUI icon %s", icon_name));
 
 			if (gui_progress_bar->set_gfx_progress_bar(progress_bar) != OK) {
 				UtilityFunctions::push_error("Error setting up GUIProgressBar for GUI icon ", icon_name);
@@ -170,9 +165,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		} else if (GFX::PieChart const* pie_chart = icon.get_sprite()->cast_to<GFX::PieChart>()) {
 			GUIPieChart* gui_pie_chart = nullptr;
 			ret &= new_control(gui_pie_chart, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(
-				gui_pie_chart, false, vformat("Failed to create GUIPieChart for GUI icon %s", icon_name)
-			);
+			ERR_FAIL_NULL_V_MSG(gui_pie_chart, false, vformat("Failed to create GUIPieChart for GUI icon %s", icon_name));
 
 			if (gui_pie_chart->set_gfx_pie_chart(pie_chart) == OK) {
 				// For some reason pie charts are defined by their top-centre position, so we need to subtract
@@ -190,8 +183,8 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			// TODO - generate line chart
 		} else {
 			UtilityFunctions::push_error(
-				"Invalid sprite type ", Utilities::std_to_godot_string(icon.get_sprite()->get_type()),
-				" for GUI icon ", icon_name
+				"Invalid sprite type ", Utilities::std_to_godot_string(icon.get_sprite()->get_type()), " for GUI icon ",
+				icon_name
 			);
 			ret = false;
 		}
@@ -200,9 +193,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			const real_t rotation = icon.get_rotation();
 			if (rotation != 0.0_real) {
 				args.result->set_position(
-					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 {
-						Math::sin(rotation), Math::cos(rotation) - 1.0_real
-					}
+					args.result->get_position() -
+					args.result->get_custom_minimum_size().height *
+						Vector2 { Math::sin(rotation), Math::cos(rotation) - 1.0_real }
 				);
 				args.result->set_rotation(-rotation);
 			}
@@ -251,7 +244,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 		gui_button = gui_masked_flag_button;
 	} else {
 		ERR_FAIL_V_MSG(
-			false, vformat(
+			false,
+			vformat(
 				"Invalid sprite type %s for GUI button %s", Utilities::std_to_godot_string(button.get_sprite()->get_type()),
 				button_name
 			)
@@ -281,7 +275,8 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
 
 	ERR_FAIL_NULL_V_MSG(
-		texture_sprite, false, vformat(
+		texture_sprite, false,
+		vformat(
 			"Invalid sprite type %s for GUI checkbox %s", Utilities::std_to_godot_string(checkbox.get_sprite()->get_type()),
 			checkbox_name
 		)
@@ -289,9 +284,7 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 
 	GUIIconButton* gui_icon_button = nullptr;
 	bool ret = new_control(gui_icon_button, checkbox, args.name);
-	ERR_FAIL_NULL_V_MSG(
-		gui_icon_button, false, vformat("Failed to create GUIIconButton for GUI checkbox %s", checkbox_name)
-	);
+	ERR_FAIL_NULL_V_MSG(gui_icon_button, false, vformat("Failed to create GUIIconButton for GUI checkbox %s", checkbox_name));
 
 	gui_icon_button->set_toggle_mode(true);
 
@@ -323,10 +316,11 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	GFX::Font::colour_codes_t const* override_colour_codes = game_singleton != nullptr
-		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes() : nullptr;
+		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes()
+		: nullptr;
 
 	if (gui_label->set_gui_text(&text, override_colour_codes) != OK) {
-		UtilityFunctions::push_error("Error initialising GUILabel for GUI text ", text_name);
+		UtilityFunctions::push_error("Error initializing GUILabel for GUI text ", text_name);
 		ret = false;
 	}
 
@@ -349,7 +343,7 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 
 	if (box->set_gui_overlapping_elements_box(&overlapping_elements) != OK) {
 		UtilityFunctions::push_error(
-			"Error initialising GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
+			"Error initializing GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
 		);
 		ret = false;
 	}
@@ -368,7 +362,7 @@ static bool generate_listbox(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(gui_listbox, false, vformat("Failed to create GUIListBox for GUI listbox %s", listbox_name));
 
 	if (gui_listbox->set_gui_listbox(&listbox) != OK) {
-		UtilityFunctions::push_error("Error initialising GUIListBox for GUI listbox ", listbox_name);
+		UtilityFunctions::push_error("Error initializing GUIListBox for GUI listbox ", listbox_name);
 		ret = false;
 	}
 
@@ -466,7 +460,7 @@ static bool generate_scrollbar(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(gui_scrollbar, false, vformat("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name));
 
 	if (gui_scrollbar->set_gui_scrollbar(&scrollbar) != OK) {
-		UtilityFunctions::push_error("Error initialising GUIScrollbar for GUI scrollbar ", scrollbar_name);
+		UtilityFunctions::push_error("Error initializing GUIScrollbar for GUI scrollbar ", scrollbar_name);
 		ret = false;
 	}
 
@@ -513,9 +507,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 			godot_panel->add_child(node);
 		}
 		if (!element_ret) {
-			UtilityFunctions::push_error(
-				"Errors generating GUI element ", Utilities::std_to_godot_string(element->get_name())
-			);
+			UtilityFunctions::push_error("Errors generating GUI element ", Utilities::std_to_godot_string(element->get_name()));
 			ret = false;
 		}
 	}
@@ -545,17 +537,13 @@ static bool generate_element(GUI::Element const* element, String const& name, As
 	return it->second({ *element, name, asset_manager, result });
 }
 
-bool UITools::generate_gui_element(
-	GUI::Element const* element, String const& name, Control*& result
-) {
+bool UITools::generate_gui_element(GUI::Element const* element, String const& name, Control*& result) {
 	result = nullptr;
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, false);
 	return generate_element(element, name, *asset_manager, result);
 }
 
-bool UITools::generate_gui_element(
-	String const& gui_scene, String const& gui_element, String const& name, Control*& result
-) {
+bool UITools::generate_gui_element(String const& gui_scene, String const& gui_element, String const& name, Control*& result) {
 	return generate_gui_element(get_gui_element(gui_scene, gui_element), name, result);
 }

@@ -1,6 +1,6 @@
 #include "GUIMaskedFlag.hpp"
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include <openvic-extension/utility/ClassBindings.hpp>
 
 using namespace godot;
 using namespace OpenVic;

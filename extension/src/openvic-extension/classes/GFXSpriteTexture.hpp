@@ -4,7 +4,7 @@
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
 
-#include "openvic-extension/classes/GFXButtonStateTexture.hpp"
+#include <openvic-extension/classes/GFXButtonStateTexture.hpp>
 
 namespace OpenVic {
 	class GFXSpriteTexture : public GFXButtonStateHavingTexture {
@@ -39,7 +39,7 @@ namespace OpenVic {
 			GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
-		/* Search for a GFX::TextureSprite with the specfied name and,
+		/* Search for a GFX::TextureSprite with the specified name and,
 		 * if successful, call set_gfx_texture_sprite to set it and its icon. */
 		godot::Error set_gfx_texture_sprite_name(
 			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
