@@ -1,11 +1,13 @@
-[gd_scene load_steps=22 format=3 uid="uid://bgnupcshe1m7r"]
+[gd_scene load_steps=27 format=3 uid="uid://bgnupcshe1m7r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/Game/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
 [ext_resource type="Script" path="res://src/Game/GameSession/ModelManager.gd" id="3_qwk4j"]
 [ext_resource type="Script" path="res://src/Game/GameSession/Topbar.gd" id="4_2kbih"]
+[ext_resource type="Script" path="res://src/Game/GameSession/BillboardManager.gd" id="4_b3l7b"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_xkg5j"]
+[ext_resource type="Shader" path="res://src/Game/GameSession/billboard.gdshader" id="5_7yrtq"]
 [ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/ProductionMenu.gd" id="5_16755"]
 [ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel.gd" id="5_lfv8l"]
 [ext_resource type="Script" path="res://src/Game/GameSession/SearchPanel.gd" id="5_t260f"]
@@ -21,6 +23,21 @@
 [ext_resource type="Script" path="res://src/Game/GameSession/Ledger.gd" id="15_vhb1p"]
 [ext_resource type="Script" path="res://src/Game/GameSession/Tooltip.gd" id="20_3306e"]
 [ext_resource type="Script" path="res://src/Game/GameSession/Menubar.gd" id="20_s1i71"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ghmi8"]
+render_priority = 0
+shader = ExtResource("5_7yrtq")
+shader_parameter/numframes = null
+shader_parameter/sizes = null
+shader_parameter/billboards = null
+
+[sub_resource type="QuadMesh" id="QuadMesh_fm6ks"]
+material = SubResource("ShaderMaterial_ghmi8")
+
+[sub_resource type="MultiMesh" id="MultiMesh_c56es"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("QuadMesh_fm6ks")
 
 [node name="GameSession" type="Control" node_paths=PackedStringArray("_model_manager", "_game_session_menu")]
 editor_description = "SS-102, UI-546"
@@ -39,6 +56,13 @@ _game_session_menu = NodePath("UICanvasLayer/UI/GameSessionMenu")
 
 [node name="ModelManager" type="Node3D" parent="." node_paths=PackedStringArray("_map_view")]
 script = ExtResource("3_qwk4j")
+_map_view = NodePath("../MapView")
+
+[node name="BillboardManager" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("_map_view")]
+sorting_offset = 10.0
+cast_shadow = 0
+multimesh = SubResource("MultiMesh_c56es")
+script = ExtResource("4_b3l7b")
 _map_view = NodePath("../MapView")
 
 [node name="UICanvasLayer" type="CanvasLayer" parent="."]
@@ -164,7 +188,9 @@ anchors_preset = 15
 script = ExtResource("20_3306e")
 
 [connection signal="detailed_view_changed" from="MapView" to="ModelManager" method="set_visible"]
+[connection signal="detailed_view_changed" from="MapView" to="BillboardManager" method="detailed_map"]
 [connection signal="map_view_camera_changed" from="MapView" to="UICanvasLayer/UI/Menubar" method="_on_map_view_camera_changed"]
+[connection signal="parchment_view_changed" from="MapView" to="BillboardManager" method="parchment_view"]
 [connection signal="game_session_menu_button_pressed" from="UICanvasLayer/UI/Menubar" to="." method="_on_game_session_menu_button_pressed"]
 [connection signal="ledger_button_pressed" from="UICanvasLayer/UI/Menubar" to="UICanvasLayer/UI/Ledger" method="toggle_visibility"]
 [connection signal="minimap_clicked" from="UICanvasLayer/UI/Menubar" to="MapView" method="_on_minimap_clicked"]
