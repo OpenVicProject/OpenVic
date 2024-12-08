@@ -7,6 +7,7 @@
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/types/TextFormat.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -241,8 +242,8 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	set_text(Utilities::std_to_godot_string(gui_text->get_text()));
 
-	using enum GUI::AlignedElement::format_t;
-	static const ordered_map<GUI::AlignedElement::format_t, HorizontalAlignment> format_map {
+	using enum text_format_t;
+	static const ordered_map<text_format_t, HorizontalAlignment> format_map {
 		{ left, HORIZONTAL_ALIGNMENT_LEFT },
 		{ centre, HORIZONTAL_ALIGNMENT_CENTER },
 		{ right, HORIZONTAL_ALIGNMENT_RIGHT }

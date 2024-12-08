@@ -30,7 +30,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 
 	float starting_x = 0.0f;
 	Error err = OK;
-	using enum GUI::AlignedElement::format_t;
+	using enum text_format_t;
 	switch (gui_overlapping_elements_box->get_format()) {
 		case left:
 			break;
