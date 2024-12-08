@@ -4,11 +4,13 @@ shader_type spatial;
 //3d space.
 render_mode unshaded, depth_test_disabled;
 
-//vic2 only ever loads a max of 12 BillboardType
-//Of these, only 4 are actually used
-uniform sampler2D billboards[12] : source_color;
-uniform uint numframes[12];
-uniform float sizes[12];
+// Vic2 only ever loads a max of 12 BillboardType
+// Of these, only 4 are actually used
+const uint BILLBOARD_COUNT = 4u;
+
+uniform sampler2D billboards[BILLBOARD_COUNT] : source_color;
+uniform uint numframes[BILLBOARD_COUNT];
+uniform vec2 sizes[BILLBOARD_COUNT];
 
 //COLOR/INSTANCE_CUSTOM is our custom data, used as follows:
 // x=image index
@@ -17,8 +19,8 @@ uniform float sizes[12];
 
 void vertex() {
 	COLOR = INSTANCE_CUSTOM; //send instance_custom info to fragment
-	float size = sizes[uint(COLOR.x + 0.5)];
-	VERTEX = (vec4(VERTEX * size, 1.0) * VIEW_MATRIX).xyz;
+	VERTEX.xy *= sizes[uint(COLOR.x + 0.5)];
+	VERTEX = (vec4(VERTEX, 1.0) * VIEW_MATRIX).xyz;
 }
 
 void fragment() {

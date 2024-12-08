@@ -12,11 +12,6 @@
 			<description>
 			</description>
 		</method>
-		<method name="get_capital_count" qualifiers="const">
-			<return type="int" />
-			<description>
-			</description>
-		</method>
 		<method name="get_capital_positions" qualifiers="const">
 			<return type="PackedVector2Array" />
 			<description>
@@ -24,6 +19,11 @@
 		</method>
 		<method name="get_crime_icons" qualifiers="const">
 			<return type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+		<method name="get_max_capital_count" qualifiers="const">
+			<return type="int" />
 			<description>
 			</description>
 		</method>
