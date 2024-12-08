@@ -111,13 +111,25 @@ func _ready() -> void:
 	if _speed_up_button:
 		_speed_up_button.pressed.connect(_on_increase_speed_button_pressed)
 		_speed_up_button.set_tooltip_string("TOPBAR_INC_SPEED")
+		var speed_up_action := InputEventAction.new()
+		speed_up_action.action = "time_speed_increase"
+		_speed_up_button.shortcut = Shortcut.new()
+		_speed_up_button.shortcut.events.append(speed_up_action)
 	_speed_down_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speeddown")
 	if _speed_down_button:
 		_speed_down_button.pressed.connect(_on_decrease_speed_button_pressed)
 		_speed_down_button.set_tooltip_string("TOPBAR_DEC_SPEED")
+		var speed_down_action := InputEventAction.new()
+		speed_down_action.action = "time_speed_decrease"
+		_speed_down_button.shortcut = Shortcut.new()
+		_speed_down_button.shortcut.events.append(speed_down_action)
 	_pause_bg_button = get_gui_icon_button_from_nodepath(^"./topbar/pause_bg")
 	if _pause_bg_button:
 		_pause_bg_button.pressed.connect(_on_play_pause_button_pressed)
+		var time_pause_action := InputEventAction.new()
+		time_pause_action.action = "time_pause"
+		_pause_bg_button.shortcut = Shortcut.new()
+		_pause_bg_button.shortcut.events.append(time_pause_action)
 	_speed_indicator_button = get_gui_icon_button_from_nodepath(^"./topbar/speed_indicator")
 	if _speed_indicator_button:
 		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)

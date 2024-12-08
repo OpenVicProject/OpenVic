@@ -7,6 +7,8 @@ signal zoom_in_button_pressed
 signal zoom_out_button_pressed
 signal minimap_clicked(pos_clicked : Vector2)
 
+var _menu_button : GUIIconButton
+
 var _mapmode_button_group : ButtonGroup
 # We use this instead of the ButtonGroup's get_buttons() as we can add null
 # entries for any missing buttons, ensuring each button is at the right index.
@@ -53,10 +55,10 @@ func _ready() -> void:
 
 	# TODO: add keyboard shortcuts (and shortcut tooltips) where vanilla does by default + use key bindings in settings
 
-	var menu_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./menubar/menu_button")
-	if menu_button:
-		menu_button.tooltip_string = "M_MENU_BUTTON"
-		menu_button.pressed.connect(_on_game_session_menu_button_pressed)
+	_menu_button = get_gui_icon_button_from_nodepath(^"./menubar/menu_button")
+	if _menu_button:
+		_menu_button.tooltip_string = "M_MENU_BUTTON"
+		_menu_button.pressed.connect(_on_game_session_menu_button_pressed)
 
 	# TODO: implement ledger
 	var ledger_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./menubar/ledger_button")
@@ -92,6 +94,10 @@ func _ready() -> void:
 
 	# This will set the mapmode in GameSingleton which in turn updates the buttons so that the right one is pressed
 	_mapmode_pressed(0)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("menu_pause"):
+		_menu_button.pressed.emit()
 
 # REQUIREMENTS:
 # * UIFUN-10
