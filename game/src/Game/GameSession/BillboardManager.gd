@@ -1,23 +1,31 @@
 extends MultiMeshInstance3D
 
-#given a name: get the index for the texture in the shader
-# this is to reduce the number of magic indeces in the code
-# to get the proper billboard image
-var billboard_names : Dictionary = {}
-
 @export var _map_view : MapView
 
-const SCALE_FACTOR : float = 1.0/96.0
+const SCALE_FACTOR : float = 1.0 / 96.0
+const ICON_DIMS : Vector2 = Vector2(1.0, 0.75)
+const CAPITAL_DIMS : Vector2 = Vector2(1.0, 1.0)
 
-enum ProvinceBillboards { NONE, INVISIBLE, RGO, CRIME, NATIONAL_FOCUS }
+enum ProvinceBillboards { NONE, INVISIBLE, RGO, CRIME, NATIONAL_FOCUS, CAPITAL }
+const BILLBOARD_NAMES : Dictionary = {
+	ProvinceBillboards.RGO: &"tradegoods",
+	ProvinceBillboards.CRIME: &"crimes",
+	ProvinceBillboards.NATIONAL_FOCUS: &"national_focus",
+	ProvinceBillboards.CAPITAL: &"capital"
+}
 enum MapModes { REVOLT_RISK = 2, INFRASTRUCTURE = 5, COLONIAL = 6, NATIONAL_FOCUS = 9, RGO_OUTPUT = 10 }
 
 var provinces_size : int = 0
 var total_capitals_size : int = 0
 
+# Given a ProvinceBillboards: get the index for the texture in the shader
+# this is to reduce the number of magic indeces in the code
+# to get the proper billboard image
+var billboard_type_to_index : Dictionary = {}
+
 var textures : Array[Texture2D] = []
 var frames : Array[int] = []
-var scales : Array[float] = []
+var scales : Array[Vector2] = []
 
 var current_province_billboard : ProvinceBillboards = ProvinceBillboards.NONE
 
@@ -26,7 +34,7 @@ var current_province_billboard : ProvinceBillboards = ProvinceBillboards.NONE
 #  with positions set to every province and every nation capital.
 # A shader controls which billboard and frame from icon strips are displayed
 #  at each province. It also makes billboards "look at" the camera
-# To ensure billboards are displayed ontop of the map and units, it is contained in 
+# To ensure billboards are displayed ontop of the map and units, it is contained in
 #  a subviewport which renders above the main viewport, with a camera set to follow the primary camera
 
 # multimesh only lets us send custom data to the shader as a single float vec4/Color variable
@@ -38,7 +46,7 @@ var current_province_billboard : ProvinceBillboards = ProvinceBillboards.NONE
 # w: unused
 
 # "Province billboards" refer to billboards positioned on every province
-#  for map modes such as RGO output, while "Capital billboards" refers to the 
+#  for map modes such as RGO output, while "Capital billboards" refers to the
 #  to country capitals.
 
 func _ready() -> void:
@@ -46,41 +54,58 @@ func _ready() -> void:
 	const texture_key : StringName = &"texture"
 	const scale_key : StringName = &"scale"
 	const noOfFrames_key : StringName = &"noFrames"
-	
+
 	var billboards : Array[Dictionary] = MapItemSingleton.get_billboards()
 	for j : int in billboards.size():
 		var billboard : Dictionary = billboards[j]
-		
-		var billboard_name : String = billboard[name_key]
-		var texture_name : String = billboard[texture_key]
+
+		var billboard_name : StringName = billboard[name_key]
+
+		var billboard_type : ProvinceBillboards = ProvinceBillboards.NONE
+		for key : ProvinceBillboards in BILLBOARD_NAMES:
+			if billboard_name == BILLBOARD_NAMES[key]:
+				billboard_type = key
+				break
+
+		if billboard_type == ProvinceBillboards.NONE:
+			continue
+
+		var texture_name : StringName = billboard[texture_key]
 		var billboard_scale : float = billboard[scale_key]
 		var noFrames : int = billboard[noOfFrames_key]
-		
+
 		#fix the alpha edges of the billboard textures
 		var texture : Texture2D = AssetManager.get_texture(texture_name)
 		var image : Image = texture.get_image()
 		image.fix_alpha_edges()
 		texture.set_image(image)
-		
+
+		# We use the texture array size (which will be the same as frames and scales' sizes)
+		# rather than j as the former only counts billboards we're actually using, while the latter
+		# counts all billboards defined in the game's GFX files
+		billboard_type_to_index[billboard_type] = textures.size()
+
 		textures.push_back(texture)
 		frames.push_back(noFrames)
-		scales.push_back(billboard_scale*SCALE_FACTOR)
-		billboard_names[billboard_name] = j
-	
+		scales.push_back(
+			(CAPITAL_DIMS if billboard_type == ProvinceBillboards.CAPITAL else ICON_DIMS)
+			* billboard_scale * SCALE_FACTOR
+		)
+
 	var material : ShaderMaterial = multimesh.mesh.surface_get_material(0)
 	if material == null:
 		push_error("ShaderMaterial for billboards was null")
 		return
-	
-	material.set_shader_parameter("billboards",textures)
-	material.set_shader_parameter("numframes",frames)
-	material.set_shader_parameter("sizes",scales)
-	multimesh.mesh.surface_set_material(0,material)
-	
+
+	material.set_shader_parameter(&"billboards", textures)
+	material.set_shader_parameter(&"numframes", frames)
+	material.set_shader_parameter(&"sizes", scales)
+	multimesh.mesh.surface_set_material(0, material)
+
 	var positions : PackedVector2Array = MapItemSingleton.get_province_positions()
 	provinces_size = positions.size()
 	total_capitals_size = MapItemSingleton.get_capital_count()
-	
+
 	# 1) setting instance_count clears and resizes the buffer
 	# so we want to find the max size once and leave it
 	# 2) resize must occur after setting the transform format
@@ -92,7 +117,7 @@ func _ready() -> void:
 	var map_positions : PackedVector3Array = to_map_coords(positions)
 
 	for i : int in positions.size():
-		multimesh.set_instance_transform(i + total_capitals_size, Transform3D(Basis(), 
+		multimesh.set_instance_transform(i + total_capitals_size, Transform3D(Basis(),
 			map_positions[i]
 		))
 
@@ -105,25 +130,25 @@ func _ready() -> void:
 func set_capitals() -> void:
 	var positions : PackedVector2Array = MapItemSingleton.get_capital_positions()
 	var capital_positions : PackedVector3Array = to_map_coords(positions)
-	var image_index : int = billboard_names["capital"]
-	
+	var image_index : int = billboard_type_to_index[ProvinceBillboards.CAPITAL]
+
 	#multimesh.visible_instance_count = capitals_begin_index + capital_positions.size()
 	for i : int in capital_positions.size():
-		multimesh.set_instance_transform(i,Transform3D(Basis(),
+		multimesh.set_instance_transform(i, Transform3D(Basis(),
 			capital_positions[i]
 		))
-		
-		#capital image, frame=1 ,2x unused
+
+		#capital image, frame=1, 2x unused
 		#frame=1 because frame=0 would cause capitals not to show
 		#and as an index its fine, since the shader UVs will wrap around
 		# 1.0 to 2.0 --> 0.0 to 1.0 so the capital image is preserved
-		multimesh.set_instance_custom_data(i,Color(#capital_index,Color(
-			image_index,1.0,0,0
+		multimesh.set_instance_custom_data(i, Color(
+			image_index, 1.0, 0.0, 0.0
 		))
 	# For every country that doesn't exist, make the capital invisible
 	for i : int in total_capitals_size - capital_positions.size():
 		multimesh.set_instance_custom_data(capital_positions.size() + i, Color(
-			image_index,0.0,0,0
+			image_index, 0.0, 0.0, 0.0
 		))
 
 # should provinces display RGO, crime, ..., or no billboard
@@ -134,15 +159,15 @@ func set_province_billboards(display : ProvinceBillboards = ProvinceBillboards.I
 	icons.fill(0) #by default, display nothing (invisible)
 	match display:
 		ProvinceBillboards.RGO:
-			image_index = billboard_names["tradegoods"]
+			image_index = billboard_type_to_index[ProvinceBillboards.RGO]
 			icons = MapItemSingleton.get_rgo_icons()
 			current_province_billboard = display
 		ProvinceBillboards.CRIME:
-			image_index = billboard_names["crimes"]
+			image_index = billboard_type_to_index[ProvinceBillboards.CRIME]
 			icons = MapItemSingleton.get_crime_icons()
 			current_province_billboard = display
 		ProvinceBillboards.NATIONAL_FOCUS:
-			image_index = billboard_names["national_focus"]
+			image_index = billboard_type_to_index[ProvinceBillboards.NATIONAL_FOCUS]
 			icons = MapItemSingleton.get_national_focus_icons()
 			current_province_billboard = display
 		ProvinceBillboards.NONE:
@@ -151,8 +176,8 @@ func set_province_billboards(display : ProvinceBillboards = ProvinceBillboards.I
 			pass
 	# capitals are first in the array, so start iterating after them
 	for i : int in provinces_size:
-		multimesh.set_instance_custom_data(i + total_capitals_size,Color(
-			image_index,icons[i],0,0
+		multimesh.set_instance_custom_data(i + total_capitals_size, Color(
+			image_index, icons[i], 0.0, 0.0
 		))
 
 func _on_game_state_changed() -> void:
