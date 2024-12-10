@@ -1,7 +1,9 @@
 #include "UITools.hpp"
+#include <cctype>
 
 #include <godot_cpp/classes/color_rect.hpp>
 #include <godot_cpp/classes/line_edit.hpp>
+#include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/panel.hpp>
 #include <godot_cpp/classes/style_box_empty.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
@@ -22,6 +24,10 @@
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "godot_cpp/classes/global_constants.hpp"
+#include "godot_cpp/classes/input_event_key.hpp"
+#include "godot_cpp/classes/shortcut.hpp"
+#include "godot_cpp/core/error_macros.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -58,6 +64,63 @@ GUI::Position const* UITools::get_gui_position(String const& gui_scene, String c
 	GUI::Position const* position = scene->get_scene_position_by_identifier(Utilities::godot_to_std_string(gui_position));
 	ERR_FAIL_NULL_V_MSG(position, nullptr, vformat("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene));
 	return position;
+}
+
+static Array get_events_from_shortcut_key(String const& key) {
+	Array events;
+	if (key.length() == 0) {
+		return events;
+	}
+
+	Key key_value = OS::get_singleton()->find_keycode_from_string(key);
+	if (key_value == Key::KEY_UNKNOWN) {
+		if (key.nocasecmp_to("DEL") == 0) {
+			key_value = Key::KEY_DELETE;
+		} else if (key.nocasecmp_to("PAGE_UP") == 0) {
+			key_value = Key::KEY_PAGEUP;
+		} else if (key.nocasecmp_to("PAGE_DOWN") == 0) {
+			key_value = Key::KEY_PAGEDOWN;
+		} else if (key == "+") {
+			// on most keyboards + and = are on the same key, Godot does not see them as different
+			key_value = Key::KEY_EQUAL;
+		} else if (key == "-") {
+			key_value = Key::KEY_MINUS;
+		} else if (key == ">") {
+			// on many keyboards > and . are on the same key, Godot does not see them as different
+			key_value = Key::KEY_PERIOD;
+		} else if (key == "<") {
+			// on many keyboards < and , are on the same key, Godot does not see them as different
+			key_value = Key::KEY_COMMA;
+		}
+	}
+
+	if (key_value == Key::KEY_UNKNOWN) {
+		return events;
+	}
+
+	Ref<InputEventKey> event;
+	event.instantiate();
+	event->set_pressed(true);
+	events.append(event);
+
+	if (key.length() == 1) {
+		if (key_value >= Key::KEY_A && key_value <= Key::KEY_Z) {
+			event->set_shift_pressed(std::isupper(key[0]));
+		} else if (key == "+") {
+			event->set_shift_pressed(true);
+
+			Ref<InputEventKey> second_event;
+			second_event.instantiate();
+			second_event->set_pressed(true);
+			second_event->set_key_label(godot::KEY_KP_ADD);
+			events.append(second_event);
+		} else if (key == ">") {
+			event->set_shift_pressed(true);
+		}
+	}
+
+	event->set_key_label(key_value);
+	return events;
 }
 
 /* GUI::Element tree -> godot::Control tree conversion code below: */
@@ -217,9 +280,15 @@ static bool generate_icon(generate_gui_args_t&& args) {
 static bool generate_button(generate_gui_args_t&& args) {
 	GUI::Button const& button = static_cast<GUI::Button const&>(args.element);
 
-	// TODO - shortcut, clicksound, rotation (?)
+	// TODO - clicksound, rotation (?)
 	const String button_name = Utilities::std_to_godot_string(button.get_name());
+	const String shortcut_key_name = Utilities::std_to_godot_string(button.get_shortcut());
+	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
 
+	ERR_FAIL_COND_V_MSG(
+		shortcut_key_name.length() != 0 && event_array.size() == 0, false,
+		vformat("Unknown shortcut key '%s' for GUI button %s", shortcut_key_name, button_name)
+	);
 	ERR_FAIL_NULL_V_MSG(button.get_sprite(), false, vformat("Null sprite for GUI button %s", button_name));
 
 	GUIButton* gui_button = nullptr;
@@ -266,6 +335,16 @@ static bool generate_button(generate_gui_args_t&& args) {
 		ret &= gui_button->set_gfx_font(button.get_font()) == OK;
 	}
 
+	if (shortcut_key_name.length() != 0) { 
+		Ref<Shortcut> shortcut;
+		shortcut.instantiate();
+		shortcut->set_events(event_array);
+		gui_button->set_shortcut(shortcut);
+	}
+
+	gui_button->set_shortcut_feedback(false);
+	gui_button->set_shortcut_in_tooltip(false);
+
 	args.result = gui_button;
 	return ret;
 }
@@ -273,9 +352,14 @@ static bool generate_button(generate_gui_args_t&& args) {
 static bool generate_checkbox(generate_gui_args_t&& args) {
 	GUI::Checkbox const& checkbox = static_cast<GUI::Checkbox const&>(args.element);
 
-	// TODO - shortcut
 	const String checkbox_name = Utilities::std_to_godot_string(checkbox.get_name());
+	const String shortcut_key_name = Utilities::std_to_godot_string(checkbox.get_shortcut());
+	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
 
+	ERR_FAIL_COND_V_MSG(
+		shortcut_key_name.length() != 0 && event_array.size() == 0, false,
+		vformat("Unknown shortcut key '%s' for GUI checkbox %s", shortcut_key_name, checkbox_name)
+	);
 	ERR_FAIL_NULL_V_MSG(checkbox.get_sprite(), false, vformat("Null sprite for GUI checkbox %s", checkbox_name));
 
 	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
@@ -305,6 +389,16 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	if (checkbox.get_font() != nullptr) {
 		ret &= gui_icon_button->set_gfx_font(checkbox.get_font()) == OK;
 	}
+
+	if (shortcut_key_name.length() != 0) { 
+		Ref<Shortcut> shortcut;
+		shortcut.instantiate();
+		shortcut->set_events(event_array);
+		gui_icon_button->set_shortcut(shortcut);
+	}
+
+	gui_icon_button->set_shortcut_feedback(false);
+	gui_icon_button->set_shortcut_in_tooltip(false);
 
 	args.result = gui_icon_button;
 	return ret;
