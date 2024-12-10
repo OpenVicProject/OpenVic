@@ -107,7 +107,22 @@ func _setup_compatibility_mode_paths() -> void:
 func _load_compatibility_mode() -> void:
 	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
 		push_error("Errors setting game roots!")
-
+	
+	CursorManager.set_prefered_res(Vector2i(48,48))
+	CursorManager.load_cursors()
+	
+	#NOTE: Each cursor hasa corresponding "shape"
+	# to indicate when window is busy, normal, doing a drag
+	# select, etc. You can set this per Control Node under 
+	#  Mouse > Default Cursor Shape 
+	# set_cursor_shape associates a shape with a cursor loaded
+	# from vic2 (name matches the vic2 file name w/o the extension)
+	# though load_cursors should handle that for you...
+	# set_compat_cursor makes the named vic2 cursor the presently active
+	# one for the shape it is currently associated with
+	CursorManager.set_compat_cursor(&"normal")
+	CursorManager.set_compat_cursor(&"busy")
+	
 	setup_title_theme()
 
 	if GameSingleton.load_defines_compatibility_mode() != OK:
