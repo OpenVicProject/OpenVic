@@ -28,13 +28,11 @@ namespace OpenVic {
 		bool add_billboard_dict(std::string_view name, godot::TypedArray<godot::Dictionary>& billboard_dict_array) const;
 		godot::TypedArray<godot::Dictionary> get_billboards() const;
 		godot::PackedVector2Array get_province_positions() const;
-		int32_t get_capital_count() const;
+		int32_t get_max_capital_count() const;
 		godot::PackedVector2Array get_capital_positions() const;
 
 		godot::PackedByteArray get_crime_icons() const;
 		godot::PackedByteArray get_rgo_icons() const;
 		godot::PackedByteArray get_national_focus_icons() const;
-
 	};
-
 }
