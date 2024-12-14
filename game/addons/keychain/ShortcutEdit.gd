@@ -10,8 +10,8 @@ const MOUSE_BUTTON_NAMES: PackedStringArray = [
 	"Wheel Down Button",
 	"Wheel Left Button",
 	"Wheel Right Button",
-	"X Button 1",
-	"X Button 2",
+	"Mouse Thumb Button 1",
+	"Mouse Thumb Button 2",
 ]
 
 const JOY_BUTTON_NAMES: PackedStringArray = [
@@ -110,6 +110,10 @@ func _ready() -> void:
 	if OS.get_name() == "Web":
 		$VBoxContainer/HBoxContainer/OpenProfileFolder.queue_free()
 
+	Keychain.reload_keychain.connect(_on_reload_keychain)
+
+func _on_reload_keychain() -> void:
+	_on_ProfileOptionButton_item_selected(Keychain.profile_index)
 
 func _construct_tree() -> void:
 	var buttons_disabled := false if Keychain.selected_profile.customizable else true
@@ -271,7 +275,7 @@ func _on_shortcut_tree_button_clicked(item: TreeItem, _column: int, id: int, _mb
 			rect.position.y += 42 - tree.get_scroll().y
 			rect.position += global_position
 			rect.size = Vector2(110, 23 * shortcut_type_menu.get_item_count())
-			shortcut_type_menu.popup(rect)
+			shortcut_type_menu.popup_on_parent(rect)
 		elif id == 1:  # Delete
 			Keychain.action_erase_events(action)
 			Keychain.selected_profile.change_action(action)

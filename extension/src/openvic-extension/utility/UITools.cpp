@@ -1,14 +1,23 @@
 #include "UITools.hpp"
+
 #include <cctype>
 
+#include <godot_cpp/classes/base_button.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
+#include <godot_cpp/classes/global_constants.hpp>
+#include <godot_cpp/classes/input_event_action.hpp>
+#include <godot_cpp/classes/input_event_key.hpp>
+#include <godot_cpp/classes/input_map.hpp>
 #include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/panel.hpp>
+#include <godot_cpp/classes/shortcut.hpp>
 #include <godot_cpp/classes/style_box_empty.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/classes/theme.hpp>
+#include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <godot_cpp/variant/variant.hpp>
 
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"
@@ -24,10 +33,6 @@
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "godot_cpp/classes/global_constants.hpp"
-#include "godot_cpp/classes/input_event_key.hpp"
-#include "godot_cpp/classes/shortcut.hpp"
-#include "godot_cpp/core/error_macros.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -68,7 +73,7 @@ GUI::Position const* UITools::get_gui_position(String const& gui_scene, String c
 
 static Array get_events_from_shortcut_key(String const& key) {
 	Array events;
-	if (key.length() == 0) {
+	if (key.is_empty()) {
 		return events;
 	}
 
@@ -121,6 +126,69 @@ static Array get_events_from_shortcut_key(String const& key) {
 
 	event->set_key_label(key_value);
 	return events;
+}
+
+static Error try_create_shortcut_action_for_button(
+	GUIButton* gui_button, String const& shortcut_key_name, String const& shortcut_hotkey_name = ""
+) {
+	if (shortcut_key_name.is_empty()) {
+		return OK;
+	}
+
+	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
+
+	ERR_FAIL_COND_V_MSG(
+		event_array.is_empty(), ERR_INVALID_PARAMETER,
+		vformat("Unknown shortcut key '%s' for GUI button %s", shortcut_key_name, gui_button->get_name())
+	);
+
+	InputMap* const im = InputMap::get_singleton();
+	String action_name;
+	if (shortcut_hotkey_name.is_empty()) {
+		action_name = //
+			vformat("button_%s_hotkey", gui_button->get_name().to_lower().replace("button", "").replace("hotkey", ""))
+				.replace("__", "_");
+	} else {
+		action_name = vformat("button_%s_hotkey", shortcut_hotkey_name);
+	}
+	Ref<InputEventAction> action_event;
+	action_event.instantiate();
+	action_event->set_action(action_name);
+	action_event->set_pressed(true);
+
+	if (im->has_action(action_name)) {
+		TypedArray<InputEvent> events = im->action_get_events(action_name);
+		bool should_warn = events.size() != event_array.size();
+		if (!should_warn) {
+			for (std::size_t index = 0; index < events.size(); index++) {
+				if (!event_array.has(events[index])) {
+					should_warn = true;
+					break;
+				}
+			}
+		}
+
+		if (should_warn) {
+			WARN_PRINT(vformat("'%s' already found in InputMap with different values, reusing hotkey", action_name));
+		}
+	} else {
+		im->add_action(action_name);
+		for (std::size_t index = 0; index < event_array.size(); index++) {
+			Ref<InputEvent> event = event_array[index];
+			ERR_CONTINUE(event.is_null());
+			im->action_add_event(action_name, event);
+		}
+	}
+
+	Array shortcut_array;
+	shortcut_array.push_back(action_event);
+
+	Ref<Shortcut> shortcut;
+	shortcut.instantiate();
+	shortcut->set_events(shortcut_array);
+	gui_button->set_shortcut(shortcut);
+
+	return OK;
 }
 
 /* GUI::Element tree -> godot::Control tree conversion code below: */
@@ -283,12 +351,7 @@ static bool generate_button(generate_gui_args_t&& args) {
 	// TODO - clicksound, rotation (?)
 	const String button_name = Utilities::std_to_godot_string(button.get_name());
 	const String shortcut_key_name = Utilities::std_to_godot_string(button.get_shortcut());
-	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
 
-	ERR_FAIL_COND_V_MSG(
-		shortcut_key_name.length() != 0 && event_array.size() == 0, false,
-		vformat("Unknown shortcut key '%s' for GUI button %s", shortcut_key_name, button_name)
-	);
 	ERR_FAIL_NULL_V_MSG(button.get_sprite(), false, vformat("Null sprite for GUI button %s", button_name));
 
 	GUIButton* gui_button = nullptr;
@@ -335,11 +398,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 		ret &= gui_button->set_gfx_font(button.get_font()) == OK;
 	}
 
-	if (shortcut_key_name.length() != 0) { 
-		Ref<Shortcut> shortcut;
-		shortcut.instantiate();
-		shortcut->set_events(event_array);
-		gui_button->set_shortcut(shortcut);
+	if (try_create_shortcut_action_for_button(gui_button, shortcut_key_name) != OK) {
+		WARN_PRINT(vformat("Failed to create shortcut for GUI button '%s'", button_name));
 	}
 
 	gui_button->set_shortcut_feedback(false);
@@ -354,12 +414,7 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 
 	const String checkbox_name = Utilities::std_to_godot_string(checkbox.get_name());
 	const String shortcut_key_name = Utilities::std_to_godot_string(checkbox.get_shortcut());
-	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
 
-	ERR_FAIL_COND_V_MSG(
-		shortcut_key_name.length() != 0 && event_array.size() == 0, false,
-		vformat("Unknown shortcut key '%s' for GUI checkbox %s", shortcut_key_name, checkbox_name)
-	);
 	ERR_FAIL_NULL_V_MSG(checkbox.get_sprite(), false, vformat("Null sprite for GUI checkbox %s", checkbox_name));
 
 	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
@@ -390,11 +445,8 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 		ret &= gui_icon_button->set_gfx_font(checkbox.get_font()) == OK;
 	}
 
-	if (shortcut_key_name.length() != 0) { 
-		Ref<Shortcut> shortcut;
-		shortcut.instantiate();
-		shortcut->set_events(event_array);
-		gui_icon_button->set_shortcut(shortcut);
+	if (try_create_shortcut_action_for_button(gui_icon_button, shortcut_key_name) != OK) {
+		WARN_PRINT(vformat("Failed to create shortcut hotkey for GUI checkbox '%s'", checkbox_name));
 	}
 
 	gui_icon_button->set_shortcut_feedback(false);
