@@ -79,14 +79,10 @@ func _ready() -> void:
 		var billboard_scale : float = billboard[scale_key]
 		var no_of_frames : int = billboard[no_of_frames_key]
 
-		#fix the alpha edges of the billboard textures
 		var texture : ImageTexture = AssetManager.get_texture(texture_name)
 		if texture == null:
 			push_error("Texture for billboard \"", billboard_name, "\" was null!")
 			continue
-		var image : Image = texture.get_image()
-		image.fix_alpha_edges()
-		texture.set_image(image)
 
 		# We use the texture array size (which will be the same as frames and scales' sizes)
 		# rather than billboard_index as the former only counts billboards we're actually using,
