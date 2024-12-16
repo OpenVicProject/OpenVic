@@ -1,17 +1,18 @@
 #include "MapItemSingleton.hpp"
 #include <string_view>
 
+#include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/packed_int32_array.hpp"
 #include "godot_cpp/variant/packed_vector2_array.hpp"
 #include "godot_cpp/variant/typed_array.hpp"
-#include "godot_cpp/variant/utility_functions.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "openvic-simulation/DefinitionManager.hpp"
 #include "openvic-simulation/country/CountryDefinition.hpp"
 #include "openvic-simulation/country/CountryInstance.hpp"
+#include "openvic-simulation/DefinitionManager.hpp"
+#include "openvic-simulation/economy/BuildingType.hpp"
 #include "openvic-simulation/interface/GFXObject.hpp"
 #include "openvic-simulation/map/ProvinceDefinition.hpp"
 #include "openvic-simulation/map/ProvinceInstance.hpp"
@@ -29,6 +30,11 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_crime_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_rgo_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_national_focus_icons);
+	OV_BIND_METHOD(MapItemSingleton::get_projections);
+	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_index,{"index"});
+	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_index,{"index"});
+	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_index, {"position"});
+	
 }
 
 MapItemSingleton* MapItemSingleton::get_singleton() {
@@ -63,27 +69,21 @@ GFX::Billboard const* MapItemSingleton::get_billboard(std::string_view name, boo
 }
 
 // repackage the billboard object into a godot dictionnary for the Billboard manager to work with
-bool MapItemSingleton::add_billboard_dict(std::string_view name, TypedArray<Dictionary>& billboard_dict_array) const {
+void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, TypedArray<Dictionary>& billboard_dict_array) const {
 
 	static const StringName name_key = "name";
 	static const StringName texture_key = "texture";
 	static const StringName scale_key = "scale";
 	static const StringName noOfFrames_key = "noFrames";
 
-	GFX::Billboard const* billboard = get_billboard(name, false);
-
-	ERR_FAIL_NULL_V_MSG(billboard, false, vformat("Failed to find billboard \"%s\"", Utilities::std_to_godot_string(name)));
-
 	Dictionary dict;
 
-	dict[name_key] = Utilities::std_to_godot_string(billboard->get_name());
-	dict[texture_key] = Utilities::std_to_godot_string(billboard->get_texture_file());
-	dict[scale_key] = billboard->get_scale().to_float();
-	dict[noOfFrames_key] = billboard->get_no_of_frames();
+	dict[name_key] = Utilities::std_to_godot_string(billboard.get_name());
+	dict[texture_key] = Utilities::std_to_godot_string(billboard.get_texture_file());
+	dict[scale_key] = billboard.get_scale().to_float();
+	dict[noOfFrames_key] = billboard.get_no_of_frames();
 
 	billboard_dict_array.push_back(dict);
-
-	return true;
 }
 
 //get an array of all the billboard dictionnaries
@@ -94,8 +94,64 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	TypedArray<Dictionary> ret;
 
 	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
-		if (obj->is_type<GFX::Billboard>()) {
-			add_billboard_dict(obj->get_name(), ret);
+		GFX::Billboard const* billboard = obj->cast_to<GFX::Billboard>();
+		if (billboard != nullptr) {
+			add_billboard_dict(*billboard, ret);
+		}
+	}
+
+	return ret;
+}
+
+
+GFX::Projection const* MapItemSingleton::get_projection(std::string_view name, bool error_on_fail) const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, nullptr);
+
+	GFX::Projection const* projection = 
+		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Projection>(name);
+
+	if (error_on_fail) {
+		ERR_FAIL_NULL_V_MSG(
+			projection, nullptr, vformat("Failed to find projection \"%s\"", Utilities::std_to_godot_string(name))
+		);
+	}
+
+	return projection;
+}
+
+void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array) const {
+	static const StringName name_key = "name";
+	static const StringName texture_key = "texture";
+	static const StringName size_key = "size";
+	static const StringName spin_key = "spin";
+	static const StringName expanding_key = "expanding";
+	static const StringName duration_key = "duration";
+	static const StringName additative_key = "additative";
+
+	Dictionary dict;
+
+	dict[name_key] = Utilities::std_to_godot_string(projection.get_name());
+	dict[texture_key] = Utilities::std_to_godot_string(projection.get_texture_file());
+	dict[size_key] = projection.get_size().to_float();
+	dict[spin_key] = projection.get_spin().to_float();
+	dict[expanding_key] = projection.get_expanding().to_float();
+	dict[duration_key] = projection.get_duration().to_float();
+	dict[additative_key] = projection.get_additative();
+
+	projection_dict_array.push_back(dict);
+}
+
+TypedArray<Dictionary> MapItemSingleton::get_projections() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	TypedArray<Dictionary> ret;
+
+	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+		GFX::Projection const* projection = obj->cast_to<GFX::Projection>();
+		if (projection != nullptr) {
+			add_projection_dict(*projection, ret);
 		}
 	}
 
@@ -259,4 +315,68 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 	}
 
 	return icons;
+}
+
+
+Vector2 MapItemSingleton::get_unit_position_by_province_index(int32_t province_index) const { 
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
+		.get_province_definition_by_index(province_index);
+	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get unit position - invalid province index: %d", province_index));
+
+	return Utilities::to_godot_fvec2(province->get_unit_position()) 
+		/ GameSingleton::get_singleton()->get_map_dims();
+}
+
+Vector2 MapItemSingleton::get_port_position_by_province_index(int32_t province_index) const { 
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
+		.get_province_definition_by_index(province_index);
+	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get port position - invalid province index: %d", province_index));
+	ERR_FAIL_COND_V_MSG(!province->has_port(), {},vformat("Cannot get port position - invalid province index: %d", province_index) ); 
+
+	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+	fvec2_t const* port_position = province->get_building_position(port_building_type);
+
+	return Utilities::to_godot_fvec2(*port_position) / GameSingleton::get_singleton()->get_map_dims();
+}
+
+const static float port_radius = 0.0006; //how close we have to click for a detection
+
+//Searches provinces near the one clicked and finds 
+int32_t MapItemSingleton::get_clicked_port_province_index(Vector2 click_position) const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	int32_t initial_province_index = game_singleton->get_province_index_from_uv_coords(click_position);
+
+	//now get all the provinces around this one
+	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
+		.get_province_definition_by_index(initial_province_index);
+	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get port position - invalid province index: %d", initial_province_index));
+
+	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+	
+	if(province->has_port()){
+		Vector2 port_position = Utilities::to_godot_fvec2(*province->get_building_position(port_building_type)) / GameSingleton::get_singleton()->get_map_dims();
+		if(click_position.distance_to(port_position) <= port_radius){
+			return province->get_index();
+		}
+	}
+	else if(province->is_water()){
+		for(ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
+			ProvinceDefinition const* adjacent_province = adjacency.get_to();
+			if(!adjacent_province->has_port()) continue; // skip provinces without ports (ie. other water provinces)
+			Vector2 port_position = Utilities::to_godot_fvec2(*adjacent_province->get_building_position(port_building_type)) / GameSingleton::get_singleton()->get_map_dims();
+			if(click_position.distance_to(port_position) <= port_radius){
+				return adjacent_province->get_index();
+			}
+		}
+	}
+
+	return 0;
 }
