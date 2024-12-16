@@ -142,13 +142,6 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 			push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\"")
 			continue
 
-		# polySurface97 corresponds to the "arab_infantry_helmet", and needs to be removed often
-		# but only in cases where it isn't an attachment
-		const INVALID_IF_NOT_ONLY_MESH : PackedStringArray = ["polySurface97"]
-		if mesh_chunks.size() != 1 and mesh_chunk_name in INVALID_IF_NOT_ONLY_MESH:
-			push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\" because it was not the only mesh chunk in its file")
-			break
-
 		var mesh : ArrayMesh = null
 		var verts : PackedVector3Array
 		var normals : PackedVector3Array
@@ -199,6 +192,16 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 		if skinning_chunk_ind >= len(skinningChunks):
 			skinning_chunk_ind = 1
 			applyVertexWeights = false
+
+		# polySurface97 corresponds to the "arab_infantry_helmet", and needs to be removed often
+		# but only in cases where it isn't an attachment
+		# problem, this is also the body of the S-P infantry
+		# so this should only be valid if inside an attachment or makes use of bone weights
+		const INVALID_IF_NOT_ONLY_MESH : PackedStringArray = ["polySurface97"]
+		if influenceRangeInd.is_empty() or skinningChunks.is_empty() or not applyVertexWeights:
+			if mesh_chunks.size() != 1 and mesh_chunk_name in INVALID_IF_NOT_ONLY_MESH:
+				push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\" because it was not the only mesh chunk in its file")
+				break
 
 		var meshInstance : MeshInstance3D = MeshInstance3D.new()
 		node.add_child(meshInstance)
