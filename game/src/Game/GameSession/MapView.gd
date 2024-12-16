@@ -60,6 +60,11 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 
 @export var _map_text : MapText
 
+@export var validMoveMarkers : ValidMoveMarkers
+@export var selectionMarkers : SelectionMarkers
+var land_units_selected : Array = []
+var naval_units_selected : Array = []
+
 # ??? Strange Godot/GDExtension Bug ???
 # Upon first opening a clone of this repo with the Godot Editor,
 # if GameSingleton.get_province_index_image is called before MapMesh
@@ -201,6 +206,7 @@ func _input(event : InputEvent) -> void:
 # * SS-31
 # * SS-75
 var _cardinal_movement_vector := Vector2.ZERO
+var temp_id : int = 0
 func _unhandled_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_mouse_over_viewport = true
@@ -220,14 +226,21 @@ func _unhandled_input(event : InputEvent) -> void:
 			# Check if the mouse is outside of bounds
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
 				GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				var province_index : int = GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+				var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_index(province_index)
+				selectionMarkers.add_selection_marker(temp_id,_map_to_world_coords(unit_position))
+				temp_id += 1
 			else:
 				print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_right_click):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
+				var province_index : int = GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+				var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_index(province_index)
+				validMoveMarkers.add_move_marker(_map_to_world_coords(unit_position), randi_range(0,1))
 				# TODO - open diplomacy screen on province owner or viewed country if province has no owner
 				#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-				GameSingleton.set_viewed_country_by_province_index(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				GameSingleton.set_viewed_country_by_province_index(province_index)
 			else:
 				print("Right-clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):

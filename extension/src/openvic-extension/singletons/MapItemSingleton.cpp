@@ -4,7 +4,7 @@
 #include "godot_cpp/variant/packed_int32_array.hpp"
 #include "godot_cpp/variant/packed_vector2_array.hpp"
 #include "godot_cpp/variant/typed_array.hpp"
-#include "godot_cpp/variant/utility_functions.hpp"
+//#include "godot_cpp/variant/utility_functions.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -16,7 +16,7 @@
 #include "openvic-simulation/map/ProvinceDefinition.hpp"
 #include "openvic-simulation/map/ProvinceInstance.hpp"
 #include "openvic-simulation/map/State.hpp"
-#include "openvic-simulation/types/Vector.hpp"
+//#include "openvic-simulation/types/Vector.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -29,6 +29,8 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_crime_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_rgo_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_national_focus_icons);
+	OV_BIND_METHOD(MapItemSingleton::get_projections);
+	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_index,{"index"});
 }
 
 MapItemSingleton* MapItemSingleton::get_singleton() {
@@ -96,6 +98,67 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
 		if (obj->is_type<GFX::Billboard>()) {
 			add_billboard_dict(obj->get_name(), ret);
+		}
+	}
+
+	return ret;
+}
+
+
+GFX::Projection const* MapItemSingleton::get_projection(std::string_view name, bool error_on_fail) const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, nullptr);
+
+	GFX::Projection const* projection = 
+		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Projection>(name);
+
+	if (error_on_fail) {
+		ERR_FAIL_NULL_V_MSG(
+			projection, nullptr, vformat("Failed to find projection \"%s\"", Utilities::std_to_godot_string(name))
+		);
+	}
+
+	return projection;
+}
+
+bool MapItemSingleton::add_projection_dict(std::string_view name, TypedArray<Dictionary>& projection_dict_array) const {
+	
+	static const StringName name_key = "name";
+	static const StringName texture_key = "texture";
+	static const StringName size_key = "size";
+	static const StringName spin_key = "spin";
+	static const StringName expanding_key = "expanding";
+	static const StringName duration_key = "duration";
+	static const StringName additative_key = "additative";
+
+	GFX::Projection const* projection = get_projection(name, false);
+
+	ERR_FAIL_NULL_V_MSG(projection, false, vformat("Failed to find projection \"%s\"", Utilities::std_to_godot_string(name)));
+
+	Dictionary dict;
+
+	dict[name_key] = Utilities::std_to_godot_string(projection->get_name());
+	dict[texture_key] = Utilities::std_to_godot_string(projection->get_texture_file());
+	dict[size_key] = projection->get_size().to_float();
+	dict[spin_key] = projection->get_spin().to_float();
+	dict[expanding_key] = projection->get_expanding().to_float();
+	dict[duration_key] = projection->get_duration().to_float();
+	dict[additative_key] = projection->get_additative();
+
+	projection_dict_array.push_back(dict);
+
+	return true;
+}
+
+TypedArray<Dictionary> MapItemSingleton::get_projections() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	TypedArray<Dictionary> ret;
+
+	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+		if (obj->is_type<GFX::Projection>()) {
+			add_projection_dict(obj->get_name(), ret);
 		}
 	}
 
@@ -259,4 +322,15 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 	}
 
 	return icons;
+}
+
+
+Vector2 MapItemSingleton::get_unit_position_by_province_index(int32_t province_index) const { 
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	return Utilities::to_godot_fvec2(
+		game_singleton->get_definition_manager().get_map_definition()
+		.get_province_definition_by_index(province_index)->get_unit_position()
+	)  / GameSingleton::get_singleton()->get_map_dims();
 }
