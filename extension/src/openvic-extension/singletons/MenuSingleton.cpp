@@ -437,6 +437,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_rgo_total_employees_key = "rgo_total_employees";
 	static const StringName province_info_rgo_employment_percentage_key = "rgo_employment_percentage";
 	static const StringName province_info_rgo_employment_tooltip_key = "rgo_employment_tooltip";
+	static const StringName province_info_rgo_income_tooltip_key = "rgo_income_tooltip";
 	static const StringName province_info_rgo_output_quantity_yesterday_key = "rgo_output_quantity_yesterday";
 	static const StringName province_info_rgo_revenue_yesterday_key = "rgo_revenue_yesterday";
 	static const StringName province_info_crime_name_key = "crime_name";
@@ -491,12 +492,18 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	if (rgo.is_valid()) {
 		String amount_of_employees_by_pop_type;
+		String base_output_workers;
+		String throughput_workers;
 		for (auto const& [pop_type, employees_of_type] : rgo.get_employee_count_per_type_cache()) {
 			if (employees_of_type > 0) {
 				amount_of_employees_by_pop_type +=
 					"  -" + GUILabel::get_colour_marker() + "Y" +
 					tr(Utilities::std_to_godot_string(pop_type.get_identifier())) + GUILabel::get_colour_marker() + "!:" +
 					String::num_int64(employees_of_type) + "\n";
+				throughput_workers =  tr(Utilities::std_to_godot_string(pop_type.get_identifier()));
+				if (pop_type.get_identifier() == "Slaves") {
+					throughput_workers = Utilities::std_to_godot_string("TEST");
+				}
 			}
 		}
 
@@ -514,7 +521,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		static const StringName province_size_localisation_key = "FROM_PROV_SIZE";
 
 		ret[province_info_rgo_employment_tooltip_key] =
-			tr(employment_localisation_key).replace(value_replace_key, {}) + get_tooltip_separator() +
+			tr(employment_localisation_key) + get_tooltip_separator() +
 			tr(employee_count_localisation_key).replace(
 				employee_replace_key, String::num_int64(rgo.get_total_employees_count_cache())
 			).replace(
@@ -523,6 +530,43 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			String::num_int64(production_type.get_base_workforce_size()) + "\n" +
 			contributing_modifier_effects + "\n" + tr(province_size_localisation_key) + GUILabel::get_colour_marker() + "G" +
 			String::num_int64(static_cast<int32_t>(rgo.get_size_multiplier())); // TODO - remove cast once variable is an int32_t
+
+		static const StringName good_income_localisation_key = "PROVINCEVIEW_GOODSINCOME";
+		static const StringName good_replace_key = "$GOODS$";
+		static const StringName max_production_localisation_key = "PRODUCTION_OUTPUT_GOODS_TOOLTIP2";
+		static const StringName curr_replace_key = "$CURR$";
+		static const StringName production_output_explanation_localisation_key = "PRODUCTION_OUTPUT_EXPLANATION";
+		static const StringName production_output_key = "PRODUCTION_BASE_OUTPUT";
+		static const StringName production_base_output_key = "PRODUCTION_BASE_OUTPUT_GOODS_TOOLTIP";
+		static const StringName base_replace_key = "$BASE$";
+		static const StringName production_output_efficiency_key = "PRODUCTION_OUTPUT_EFFICIENCY_TOOLTIP";
+		static const StringName production_owner_key = "PRODUCTION_FACTOR_OWNER";
+		static const StringName rgo_output_tech_key = "RGO_OUTPUT_TECH";
+		static const StringName production_throughput_tooltip_key = "PRODUCTION_THROUGHPUT_EFFICIENCY_TOOLTIP";
+		static const StringName rgo_worker_key = "PRODUCTION_FACTOR_WORKER";
+		static const StringName rgo_input_tech_key = "RGO_INPUT_TECH";
+		static const StringName rgo_owner_pop_name = "Aristocrats";
+
+
+		ret[province_info_rgo_income_tooltip_key] =
+			tr(good_income_localisation_key).replace(
+					good_replace_key, Utilities::std_to_godot_string(province->get_rgo_good()->get_identifier())
+				).replace(
+					value_replace_key, Utilities::std_to_godot_string(rgo.get_revenue_yesterday().to_string(3))
+				) + "\n" +
+				tr(max_production_localisation_key).replace(
+					curr_replace_key,  Utilities::std_to_godot_string(rgo.get_output_quantity_yesterday().to_string(3))) +
+			tr(production_output_explanation_localisation_key) + get_tooltip_separator() +
+			tr(production_base_output_key).replace(base_replace_key, "TEMP VALUE") + tr(production_output_efficiency_key) +
+			GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
+			"\n" + tr(production_output_key) +  GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
+			"\n" + "  -" + tr(production_owner_key) + ": " + GUILabel::get_colour_marker() + "Y" + tr(rgo_owner_pop_name) +
+			GUILabel::get_colour_marker() + "!:" + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
+			"\n" + "  -" + tr(rgo_output_tech_key) + ":" + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!"+ "\n" +
+			tr(production_throughput_tooltip_key) + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +"\n"
+			+ "  -" + tr(rgo_worker_key) + ":" + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
+			"\n" + "  -" + tr(rgo_input_tech_key) + ":" + GUILabel::get_colour_marker() + "G" + GUILabel::get_colour_marker() +
+			throughput_workers;
 	}
 
 	GoodDefinition const* const rgo_good = province->get_rgo_good();

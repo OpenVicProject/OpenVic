@@ -243,6 +243,7 @@ func _update_info() -> void:
 	const _province_info_rgo_total_employees_key : StringName = &"rgo_total_employees"
 	const _province_info_rgo_employment_percentage_key : StringName = &"rgo_employment_percentage"
 	const _province_info_rgo_employment_tooltip_key : StringName = &"rgo_employment_tooltip"
+	const _province_info_rgo_income_tooltip_key : StringName = &"rgo_income_tooltip"
 	const _province_info_rgo_output_quantity_yesterday_key : StringName = &"rgo_output_quantity_yesterday"
 	const _province_info_rgo_revenue_yesterday_key : StringName = &"rgo_revenue_yesterday"
 	const _province_info_crime_name_key       : StringName = &"crime_name"
@@ -306,15 +307,18 @@ func _update_info() -> void:
 			_controller_flag.set_flag_country_name(_province_info.get(_province_info_controller_key, ""))
 
 		# Statistics
+		var rgo_income_tooltip : String = _province_info.get(_province_info_rgo_income_tooltip_key, "")
 		if _rgo_icon:
 			_rgo_icon.set_icon_index(_province_info.get(_province_info_rgo_icon_key, -1) + 2)
-
+			_rgo_icon.set_tooltip_string(rgo_income_tooltip)
+			
 		if _rgo_produced_label:
 			_rgo_produced_label.text = GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_output_quantity_yesterday_key, 0), 3)
+			_rgo_produced_label.set_tooltip_string(rgo_income_tooltip)
 
 		if _rgo_income_label:
 			_rgo_income_label.text = "%s¤" % GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_revenue_yesterday_key, 0), 3)
-
+			_rgo_income_label.set_tooltip_string(rgo_income_tooltip)
 		var rgo_employment_tooltip : String = _province_info.get(_province_info_rgo_employment_tooltip_key, "")
 
 		if _rgo_employment_percentage_icon:
