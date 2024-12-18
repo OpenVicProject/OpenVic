@@ -15,6 +15,10 @@ const GameMenuScene := preload("res://src/Game/GameMenu.tscn")
 var _settings_base_path : String = ""
 var _compatibility_path_list : PackedStringArray = []
 
+func _enter_tree() -> void:
+	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
+		return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
+
 func _ready() -> void:
 	Keychain.actions = {
 		# Map Group
