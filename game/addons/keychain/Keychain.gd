@@ -29,7 +29,7 @@ var config_path := "user://config.ini"
 var config_file: ConfigFile
 ## Used to check if unused binding check should be ignored for action
 var keep_binding_check : Callable = func(action_name : StringName) -> bool:
-	return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
+	return false
 
 
 class InputAction:

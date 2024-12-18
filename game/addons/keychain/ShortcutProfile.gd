@@ -17,7 +17,7 @@ func fill_bindings() -> void:
 			bindings[action] = InputMap.action_get_events(action)
 		unnecessary_actions.erase(action)
 	for action in unnecessary_actions:
-		if Keychain.keep_binding_check.call(action):
+		if Keychain.keep_binding_check.is_valid() and Keychain.keep_binding_check.call(action):
 			unnecessary_actions.erase(action)
 			continue
 		bindings.erase(action)
