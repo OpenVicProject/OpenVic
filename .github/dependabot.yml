@@ -4,3 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-name: "extension/deps/openvic-simulation"
+      - dependency-name: "scripts"
