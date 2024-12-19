@@ -295,9 +295,9 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 	sound.instantiate();
 
 	//RIFF file header
-	String riff_id = read_riff_str(file); //RIFF
+	String riff_id = Utilities::read_riff_str(file); //RIFF
 	int riff_size = std::min(static_cast<uint64_t>(file->get_32()), file->get_length());
-	String form_type = read_riff_str(file); //WAVE
+	String form_type = Utilities::read_riff_str(file); //WAVE
 
 	//ie. 16, 24, 32 bit audio
 	int bits_per_sample = 0;
@@ -306,10 +306,10 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 
 	//RIFF reader
 	while(file->get_position() < riff_size){
-		String id = read_riff_str(file);
+		String id = Utilities::read_riff_str(file);
 		int size = file->get_32();
 		if(id=="LIST"){
-			String list_type = read_riff_str(file);
+			String list_type = Utilities::read_riff_str(file);
 		}
 		else if(id=="JUNK"){
 			const PackedByteArray junk = file->get_buffer(size);
@@ -341,7 +341,7 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 
 				//16 byte subformat
 				int subFormat = file->get_16();
-				String subFormatString = read_riff_str(file,14);
+				String subFormatString = Utilities::read_riff_str(file,14);
 			}
 
 			//set godot properties
@@ -399,9 +399,4 @@ Ref<AudioStreamWAV> SoundSingleton::_load_godot_wav(String const& path) const {
 
 	sound->set_loop_end(file->get_length()/4);
 	return sound;
-}
-
-//set size if its an info string, otherwise leaving
-String SoundSingleton::read_riff_str(Ref<FileAccess> const& file, int size) const {
-	return file->get_buffer(size).get_string_from_ascii();
 }

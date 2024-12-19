@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CursorSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_resolution">
+			<return type="void" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="base_resolution_index" type="int" default="0" />
+			<param index="2" name="target_resolution" type="Vector2" default="Vector2(64, 64)" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animationLength" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="get_displayRates" qualifiers="const">
+			<return type="PackedFloat32Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="get_frames" qualifiers="const">
+			<return type="ImageTexture[]" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="resolution_index" type="int" default="0" />
+			<description>
+			</description>
+		</method>
+		<method name="get_hotspots" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<param index="1" name="resolution_index" type="int" default="0" />
+			<description>
+			</description>
+		</method>
+		<method name="get_resolutions" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="get_sequence" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="cursor_name" type="StringName" default="&quot;normal&quot;" />
+			<description>
+			</description>
+		</method>
+		<method name="load_cursors">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cursor_names" type="StringName[]" setter="" getter="get_cursor_names" default="[]">
+		</member>
+	</members>
+</class>
