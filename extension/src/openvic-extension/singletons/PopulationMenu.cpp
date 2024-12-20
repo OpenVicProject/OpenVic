@@ -397,10 +397,10 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
 		population_menu.religion_distribution[&pop->get_religion()] += pop_size;
-		population_menu.ideology_distribution += pop->get_ideologies() * pop_size;
+		population_menu.ideology_distribution += pop->get_ideology_distribution() * pop_size;
 		population_menu.culture_distribution[&pop->get_culture()] += pop_size;
-		population_menu.issue_distribution += pop->get_issues() * pop_size;
-		population_menu.vote_distribution += pop->get_votes() * pop_size;
+		population_menu.issue_distribution += pop->get_issue_distribution() * pop_size;
+		population_menu.vote_distribution += pop->get_vote_distribution() * pop_size;
 	}
 
 	normalise_fixed_point_map(population_menu.workforce_distribution);
@@ -455,11 +455,11 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	case SORT_IDEOLOGY:
 		return [](Pop const* a, Pop const* b) -> bool {
-			return sorted_indexed_map_less_than(a->get_ideologies(), b->get_ideologies());
+			return sorted_indexed_map_less_than(a->get_ideology_distribution(), b->get_ideology_distribution());
 		};
 	case SORT_ISSUES:
 		return [](Pop const* a, Pop const* b) -> bool {
-			return sorted_fixed_map_less_than(a->get_issues(), b->get_issues());
+			return sorted_fixed_map_less_than(a->get_issue_distribution(), b->get_issue_distribution());
 		};
 	case SORT_UNEMPLOYMENT:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -684,8 +684,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		}
 		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
-		pop_dict[pop_ideology_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_ideologies());
-		pop_dict[pop_issues_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_issues());
+		pop_dict[pop_ideology_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_ideology_distribution());
+		pop_dict[pop_issues_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_issue_distribution());
 		pop_dict[pop_unemployment_key] = pop->get_unemployment().to_float();
 		pop_dict[pop_cash_key] = pop->get_cash().to_float();
 		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
