@@ -137,7 +137,8 @@ func _setup_compatibility_mode_paths() -> void:
 func _load_compatibility_mode() -> void:
 	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
 		push_error("Errors setting game roots!")
-
+	
+	CursorManager.initial_cursor_setup()
 	setup_title_theme()
 
 	if GameSingleton.load_defines_compatibility_mode() != OK:
