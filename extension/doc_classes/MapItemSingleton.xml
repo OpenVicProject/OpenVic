@@ -32,6 +32,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_projections" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+			</description>
+		</method>
 		<method name="get_province_positions" qualifiers="const">
 			<return type="PackedVector2Array" />
 			<description>
@@ -39,6 +44,12 @@
 		</method>
 		<method name="get_rgo_icons" qualifiers="const">
 			<return type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+		<method name="get_unit_position_by_province_index" qualifiers="const">
+			<return type="Vector2" />
+			<param index="0" name="index" type="int" />
 			<description>
 			</description>
 		</method>

@@ -1,8 +1,37 @@
-[gd_scene load_steps=8 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene load_steps=16 format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
 [ext_resource type="Script" path="res://src/Game/GameSession/MapText.gd" id="2_13bgq"]
+[ext_resource type="Script" path="res://src/Game/GameSession/MarkerManager.gd" id="2_xnmdg"]
+[ext_resource type="Script" path="res://src/Game/GameSession/SelectionMarkers.gd" id="3_fi78k"]
+[ext_resource type="Shader" path="res://src/Game/GameSession/Projection.gdshader" id="4_2f4io"]
+[ext_resource type="Script" path="res://src/Game/GameSession/ValidMoveMarkers.gd" id="5_h3t3v"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blhuf"]
+render_priority = 0
+shader = ExtResource("4_2f4io")
+shader_parameter/sizes = null
+shader_parameter/spin = null
+shader_parameter/expanding = null
+shader_parameter/duration = null
+shader_parameter/additative = null
+shader_parameter/time = 0.0
+shader_parameter/projections = null
+
+[sub_resource type="QuadMesh" id="QuadMesh_72iss"]
+material = SubResource("ShaderMaterial_blhuf")
+orientation = 1
+
+[sub_resource type="MultiMesh" id="MultiMesh_rytvv"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("QuadMesh_72iss")
+
+[sub_resource type="MultiMesh" id="MultiMesh_cq0pk"]
+transform_format = 1
+use_custom_data = true
+mesh = SubResource("QuadMesh_72iss")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
@@ -24,17 +53,38 @@ albedo_color = Color(0, 0, 0, 1)
 material = SubResource("StandardMaterial3D_irk50")
 size = Vector2(6, 2)
 
-[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance", "_map_text")]
+[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance", "_map_text", "validMoveMarkers", "selectionMarkers")]
 editor_description = "SS-73"
 script = ExtResource("1_exccw")
 _camera = NodePath("MapCamera")
 _map_mesh_instance = NodePath("MapMeshInstance")
 _map_background_instance = NodePath("MapBackgroundInstance")
 _map_text = NodePath("MapText")
+validMoveMarkers = NodePath("ProjectionManager/ValidMoveMarkers")
+selectionMarkers = NodePath("ProjectionManager/SelectionMarkers")
 
 [node name="MapCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.25, 1.5, -2.75)
 near = 0.01
+
+[node name="ProjectionManager" type="Node3D" parent="." node_paths=PackedStringArray("selectionMarkers", "moveMarkers")]
+script = ExtResource("2_xnmdg")
+selectionMarkers = NodePath("SelectionMarkers")
+moveMarkers = NodePath("ValidMoveMarkers")
+
+[node name="SelectionMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" node_paths=PackedStringArray("manager")]
+cast_shadow = 0
+gi_mode = 0
+multimesh = SubResource("MultiMesh_rytvv")
+script = ExtResource("3_fi78k")
+manager = NodePath("..")
+
+[node name="ValidMoveMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" node_paths=PackedStringArray("manager")]
+cast_shadow = 0
+gi_mode = 0
+multimesh = SubResource("MultiMesh_cq0pk")
+script = ExtResource("5_h3t3v")
+manager = NodePath("..")
 
 [node name="MapText" type="Node3D" parent="." node_paths=PackedStringArray("_map_view")]
 script = ExtResource("2_13bgq")
@@ -56,4 +106,6 @@ light_energy = 1.5
 light_bake_mode = 0
 sky_mode = 1
 
+[connection signal="detailed_view_changed" from="." to="ProjectionManager/SelectionMarkers" method="set_visible"]
+[connection signal="detailed_view_changed" from="." to="ProjectionManager/ValidMoveMarkers" method="set_visible"]
 [connection signal="detailed_view_changed" from="." to="MapText" method="set_visible"]
