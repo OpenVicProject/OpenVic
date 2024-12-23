@@ -1,7 +1,8 @@
 extends Control
 
-@export var _model_manager : ModelManager
-@export var _game_session_menu : Control
+@export var _model_manager: ModelManager
+@export var _game_session_menu: Control
+
 
 func _ready() -> void:
 	Events.Options.load_settings_from_file()
@@ -15,8 +16,10 @@ func _ready() -> void:
 
 	Keychain.initialize_profiles()
 
-func _process(_delta : float) -> void:
+
+func _process(_delta: float) -> void:
 	GameSingleton.update_clock()
+
 
 # REQUIREMENTS:
 # * SS-42

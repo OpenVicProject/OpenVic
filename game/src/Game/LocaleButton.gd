@@ -1,19 +1,22 @@
 extends OptionButton
 
-const section_name : String = "localisation"
-const setting_name : String = "locale"
+const section_name: String = "localisation"
+const setting_name: String = "locale"
 
-var _default_locale_index : int
+var _default_locale_index: int
+
 
 func _ready() -> void:
-	var locales_country_rename : Dictionary = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
+	var locales_country_rename: Dictionary = ProjectSettings.get_setting(
+		"internationalization/locale/country_short_name", {}
+	)
 
 	var locales_list := TranslationServer.get_loaded_locales()
 	var default_locale := Localisation.get_default_locale()
 	if default_locale not in locales_list:
 		locales_list.push_back(default_locale)
 
-	for locale : String in locales_list:
+	for locale: String in locales_list:
 		# locale_name consists of a compulsory language name and optional script
 		# and country names, in the format: "<language>[ (script)][, country]"
 		var locale_name := TranslationServer.get_locale_name(locale)
@@ -33,46 +36,59 @@ func _ready() -> void:
 	Events.Options.load_settings.connect(load_setting)
 	Events.Options.save_settings.connect(save_setting)
 
-func _notification(what : int) -> void:
+
+func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_select_locale_by_string(TranslationServer.get_locale())
 
-func _valid_index(index : int) -> bool:
+
+func _valid_index(index: int) -> bool:
 	return 0 <= index and index < item_count
 
-func load_setting(file : ConfigFile) -> void:
-	if file == null: return
-	var load_value : Variant = file.get_value(section_name, setting_name, Localisation.get_default_locale())
+
+func load_setting(file: ConfigFile) -> void:
+	if file == null:
+		return
+	var load_value: Variant = file.get_value(
+		section_name, setting_name, Localisation.get_default_locale()
+	)
 	match typeof(load_value):
 		TYPE_STRING, TYPE_STRING_NAME:
 			if _select_locale_by_string(load_value as String):
 				item_selected.emit(selected)
 				return
-	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
+	push_error(
+		"Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name]
+	)
 	reset_setting()
 
-func _select_locale_by_string(locale : String) -> bool:
-	for idx : int in item_count:
+
+func _select_locale_by_string(locale: String) -> bool:
+	for idx: int in item_count:
 		if get_item_metadata(idx) == locale:
 			selected = idx
 			return true
 	selected = _default_locale_index
 	return false
 
+
 # REQUIREMENTS:
 # * UIFUN-74
-func save_setting(file : ConfigFile) -> void:
-	if file == null: return
+func save_setting(file: ConfigFile) -> void:
+	if file == null:
+		return
 	file.set_value(section_name, setting_name, get_item_metadata(selected))
+
 
 func reset_setting() -> void:
 	_select_locale_by_string(TranslationServer.get_locale())
 
+
 # REQUIREMENTS:
 # * SS-58
 # * UIFUN-323
-func _on_item_selected(index : int) -> void:
+func _on_item_selected(index: int) -> void:
 	if _valid_index(index):
 		TranslationServer.set_locale(get_item_metadata(index))
 		Events.Options.save_settings_to_file.call_deferred()
