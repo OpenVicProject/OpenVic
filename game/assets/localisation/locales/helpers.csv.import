@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dfro7ae4a6gkc"
+
+[deps]
+
+files=["res://assets/localisation/locales/helpers.en.translation", "res://assets/localisation/locales/helpers.fr.translation", "res://assets/localisation/locales/helpers.de.translation", "res://assets/localisation/locales/helpers.es.translation"]
+
+source_file="res://assets/localisation/locales/helpers.csv"
+dest_files=["res://assets/localisation/locales/helpers.en.translation", "res://assets/localisation/locales/helpers.fr.translation", "res://assets/localisation/locales/helpers.de.translation", "res://assets/localisation/locales/helpers.es.translation"]
+
+[params]
+
+compress=false
+delimiter=1

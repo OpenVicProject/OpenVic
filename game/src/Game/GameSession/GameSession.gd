@@ -13,6 +13,8 @@ func _ready() -> void:
 	MusicConductor.generate_playlist()
 	MusicConductor.select_next_song()
 
+	Keychain.initialize_profiles()
+
 func _process(_delta : float) -> void:
 	GameSingleton.update_clock()
 

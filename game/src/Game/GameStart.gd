@@ -15,7 +15,37 @@ const GameMenuScene := preload("res://src/Game/GameMenu.tscn")
 var _settings_base_path : String = ""
 var _compatibility_path_list : PackedStringArray = []
 
+func _enter_tree() -> void:
+	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
+		return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
+
 func _ready() -> void:
+	Keychain.actions = {
+		# Map Group
+		&"map_north": Keychain.InputAction.new("Move North", "Map", true),
+		&"map_east": Keychain.InputAction.new("Move East", "Map", true),
+		&"map_south": Keychain.InputAction.new("Move South", "Map", true),
+		&"map_west": Keychain.InputAction.new("Move West", "Map", true),
+		&"map_zoom_in": Keychain.InputAction.new("Zoom In", "Map", true),
+		&"map_zoom_out": Keychain.InputAction.new("Zoom Out", "Map", true),
+		&"map_drag": Keychain.InputAction.new("Mouse Drag", "Map", true),
+		&"map_click": Keychain.InputAction.new("Mouse Click", "Map", true),
+		&"map_right_click": Keychain.InputAction.new("Mouse Right Click", "Map", true),
+		# Time Group
+		&"time_pause": Keychain.InputAction.new("Pause", "Time", true),
+		&"time_speed_increase": Keychain.InputAction.new("Speed Increase", "Time", true),
+		&"time_speed_decrease": Keychain.InputAction.new("Speed Decrease", "Time", true),
+		# UI Group
+		&"menu_pause": Keychain.InputAction.new("Open Pause Menu", "UI", true),
+	}
+
+	Keychain.groups = {
+		"Map": Keychain.InputGroup.new("", false),
+		"Time": Keychain.InputGroup.new("", false),
+		"UI": Keychain.InputGroup.new("", false),
+		"Hotkeys": Keychain.InputGroup.new("UI")
+	}
+
 	Localisation.initialize()
 	if ArgumentParser.get_argument(&"help"):
 		ArgumentParser._print_help()

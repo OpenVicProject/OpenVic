@@ -2,6 +2,8 @@ extends Node
 
 const PROFILES_PATH := "user://shortcut_profiles"
 
+signal reload_keychain()
+
 ## [Array] of [ShortcutProfile]s.
 var profiles: Array[ShortcutProfile] = [preload("profiles/default.tres")]
 var selected_profile := profiles[0]  ## The currently selected [ShortcutProfile].
@@ -22,9 +24,12 @@ var ignore_ui_actions := true
 ## and the fourth for [InputEventJoypadMotion]s.
 var changeable_types: PackedByteArray = [true, true, true, true]
 ## The file path of the [code]config_file[/code].
-var config_path := "user://cache.ini"
+var config_path := "user://config.ini"
 ## Used to store the settings to the filesystem.
 var config_file: ConfigFile
+## Used to check if unused binding check should be ignored for action
+var keep_binding_check : Callable = func(action_name : StringName) -> bool:
+	return false
 
 
 class InputAction:
@@ -48,6 +53,10 @@ class InputGroup:
 		folded = _folded
 
 
+func _init() -> void:
+	for locale in TranslationServer.get_loaded_locales():
+		load_translation(locale)
+
 func _ready() -> void:
 	if !config_file:
 		config_file = ConfigFile.new()
@@ -58,11 +67,11 @@ func _ready() -> void:
 	DirAccess.make_dir_recursive_absolute(PROFILES_PATH)
 	var profile_dir := DirAccess.open(PROFILES_PATH)
 	profile_dir.list_dir_begin()
-	var file_name = profile_dir.get_next()
+	var file_name := profile_dir.get_next()
 	while file_name != "":
 		if !profile_dir.current_is_dir():
 			if file_name.get_extension() == "tres":
-				var file = load(PROFILES_PATH.path_join(file_name))
+				var file := load(PROFILES_PATH.path_join(file_name))
 				if file is ShortcutProfile:
 					profiles.append(file)
 		file_name = profile_dir.get_next()
@@ -76,12 +85,15 @@ func _ready() -> void:
 		if saved:
 			profiles.append(profile)
 
+	initialize_profiles()
+
+func initialize_profiles() -> void:
 	for profile in profiles:
 		profile.fill_bindings()
 
 	profile_index = config_file.get_value("shortcuts", "shortcuts_profile", 0)
 	change_profile(profile_index)
-
+	Keychain.reload_keychain.emit()
 
 func change_profile(index: int) -> void:
 	if index >= profiles.size():
@@ -89,6 +101,7 @@ func change_profile(index: int) -> void:
 	profile_index = index
 	selected_profile = profiles[index]
 	for action in selected_profile.bindings:
+		if not InputMap.has_action(action): continue
 		action_erase_events(action)
 		for event in selected_profile.bindings[action]:
 			action_add_event(action, event)
@@ -107,7 +120,10 @@ func action_erase_events(action: StringName) -> void:
 
 
 func load_translation(locale: String) -> void:
-	var translation = load("res://addons/keychain/translations".path_join(locale + ".po"))
+	var translation_file_path := "res://addons/keychain/translations".path_join(locale + ".po")
+	if not ResourceLoader.exists(translation_file_path, "Translation"):
+		return
+	var translation := load(translation_file_path)
 	if is_instance_valid(translation) and translation is Translation:
 		TranslationServer.add_translation(translation)
 
