@@ -157,7 +157,9 @@ bool SoundSingleton::load_title_theme(){
 
 	}
 
-	if(!ret) Logger::error("Failed to load title theme!");
+	if (!ret) {
+		Logger::error("Failed to load title theme!");
+	}
 
 	return ret;
 }
@@ -181,7 +183,9 @@ bool SoundSingleton::load_music() {
 	for(std::filesystem::path const& file_name : music_files) {
 		String file = std_to_godot_string(file_name.string());
 		String name = to_define_file_name(file,music_folder);
-		if(name == title_theme_name.data()) continue;
+		if (name == title_theme_name.data()) {
+			continue;
+		}
 
 		if(!get_song(file).is_valid()){
 			Logger::error("failed to load song at path ",file_name);

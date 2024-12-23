@@ -37,7 +37,7 @@ First, let's look at the function's arguments:
 - `CountryManager const& country_manager` - an object which loads and stores countries, in the same way as `CultureManager` loads and stores cultures and culture groups; here, this is used to parse the culture group's `union` country.
 - `size_t& total_expected_cultures` - a reference to an unsigned integer, used to count the number of cultures in this culture group.
 - `GraphicalCultureType const* default_unit_graphical_culture_type` - a pointer to a graphical culture type, representing the default `Generic` graphical culture.
-- `std::string_view culture_group_key` - a string (or rather an object referencing a string, but not holding the memory itself), representing the idenfifier of the culture group being loaded (for example `"north_german"`).
+- `std::string_view culture_group_key` - a string (or rather an object referencing a string, but not holding the memory itself), representing the identifier of the culture group being loaded (for example `"north_german"`).
 - `ast::NodeCPtr culture_group_node` - a node representing the culture group's text defines, which is used as input to data parsing functions.
 
 ```

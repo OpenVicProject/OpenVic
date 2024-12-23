@@ -19,7 +19,7 @@
 		<method name="get_bookmark_start_position" qualifiers="const">
 			<return type="Vector2" />
 			<description>
-				Returns the current bookmark's starting map position as a normalised [Vector2] (so each component should be in the range [code]0.0[/code] to [code]1.0[/code]).
+				Returns the current bookmark's starting map position as a normalized [Vector2] (so each component should be in the range [code]0.0[/code] to [code]1.0[/code]).
 			</description>
 		</method>
 		<method name="get_current_mapmode_index" qualifiers="const">
@@ -81,20 +81,20 @@
 			<return type="String" />
 			<param index="0" name="index" type="int" />
 			<description>
-				Returns the localisation key [String] of the mapmode with the specified [param index].
+				Returns the localization key [String] of the mapmode with the specified [param index].
 			</description>
 		</method>
 		<method name="get_province_colour_texture" qualifiers="const">
 			<return type="ImageTexture" />
 			<description>
-				Returns an [ImageTexture] containing the current province colour data, that is each province's base and stripe colours.
+				Returns an [ImageTexture] containing the current province color data, that is each province's base and stripe colors.
 			</description>
 		</method>
 		<method name="get_province_index_from_uv_coords" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="coords" type="Vector2" />
 			<description>
-				Returns the index [int] of the province at the specified position on the map. The [param coords] are expected to be normalised with repsect to the map's dimensions, and they'll be modulo'd to ensure they lie in the [code]0.0[/code] to [code]1.0[/code] range (meaning they can wrap around the map).
+				Returns the index [int] of the province at the specified position on the map. The [param coords] are expected to be normalised with respect to the map's dimensions, and they'll be modulo'd to ensure they lie in the [code]0.0[/code] to [code]1.0[/code] range (meaning they can wrap around the map).
 			</description>
 		</method>
 		<method name="get_province_names" qualifiers="const">
@@ -110,7 +110,7 @@
 		<method name="get_province_shape_image_subdivisions" qualifiers="const">
 			<return type="Vector2i" />
 			<description>
-				Returns the number of textures the province shape image is split into horizontally and vertically (it is split to allow higher resolution maps as most GPUs limit indivudal textures' dimensions to at most 16,384 pixels).
+				Returns the number of textures the province shape image is split into horizontally and vertically (it is split to allow higher resolution maps as most GPUs limit individual textures' dimensions to at most 16,384 pixels).
 			</description>
 		</method>
 		<method name="get_province_shape_texture" qualifiers="const">
@@ -134,7 +134,7 @@
 		<method name="get_viewed_country_capital_position" qualifiers="const">
 			<return type="Vector2" />
 			<description>
-				Returns the viewed country's capital position as a normalised [Vector2], or [code](0.0, 0.0)[/code] if no country is being viewed.
+				Returns the viewed country's capital position as a normalized [Vector2], or [code](0.0, 0.0)[/code] if no country is being viewed.
 			</description>
 		</method>
 		<method name="is_parchment_mapmode_allowed" qualifiers="const">
@@ -146,7 +146,7 @@
 		<method name="load_defines_compatibility_mode">
 			<return type="int" enum="Error" />
 			<description>
-				Load compatibility mode text defines, localisation string and map and flag images. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
+				Load compatibility mode text defines, localization string and map and flag images. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="lookup_file_path" qualifiers="const">
@@ -195,7 +195,7 @@
 			<return type="int" enum="Error" />
 			<param index="0" name="bookmark_index" type="int" />
 			<description>
-				Creates and initialises the game instance, using the bookmark identified by [param bookmark_index] to determine which history entries are applied to it. Returns [code]FAILED[/code] if [param bookmark_index] is invalid or there are problems when setting up the game instance, otherwise returns [code]OK[/code].
+				Creates and initializes the game instance, using the bookmark identified by [param bookmark_index] to determine which history entries are applied to it. Returns [code]FAILED[/code] if [param bookmark_index] is invalid or there are problems when setting up the game instance, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="setup_logger" qualifiers="static">
@@ -207,7 +207,7 @@
 		<method name="start_game_session">
 			<return type="int" enum="Error" />
 			<description>
-				Sets up the simulation's clock and timestamps so that it can be unpaused, marking the move from the initialised but static game state used for the lobby to the dynamic game session that is ready to tick, update and simulate.
+				Sets up the simulation's clock and timestamps so that it can be unpaused, marking the move from the initialized but static game state used for the lobby to the dynamic game session that is ready to tick, update and simulate.
 			</description>
 		</method>
 		<method name="unset_selected_province">

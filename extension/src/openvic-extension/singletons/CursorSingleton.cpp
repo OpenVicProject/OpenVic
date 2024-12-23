@@ -210,7 +210,9 @@ static constexpr int32_t _rotate_right(int32_t byte, int32_t size=8) {
 
 static int32_t _load_int_256(Ref<FileAccess> const& file) {
 	int32_t value = file->get_8();
-	if (value == 0) value = 256;
+	if (value == 0) {
+		value = 256;
+	}
 	return value;
 }
 
@@ -337,7 +339,7 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 		Ref<Image> image = Ref<Image>();
 		image.instantiate();
 	
-		//PNGs are stored in their entirety, so use Godot's internal loader
+		// PNGs are stored in their entirety, so use Godot's internal loader
 		if (image_data.slice(1,4).get_string_from_ascii() == "PNG") {
 			image->load_png_from_buffer(image_data);
 		}

@@ -53,7 +53,7 @@ void GUIScrollbar::_bind_methods() {
 	ADD_SIGNAL(MethodInfo(signal_value_changed(), PropertyInfo(Variant::INT, "value")));
 }
 
-GUIScrollbar::GUIScrollbar() : tooltip_active { false } {
+GUIScrollbar::GUIScrollbar() {
 	/* Anything which the constructor might not have default initialised will be set by clear(). */
 	clear();
 }

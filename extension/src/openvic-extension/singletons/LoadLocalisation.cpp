@@ -38,8 +38,8 @@ Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> con
 	);
 	int line_number = 0;
 	while (!file->eof_reached()) {
-		static const String delimeter = ";";
-		const PackedStringArray line = file->get_csv_line(delimeter);
+		static const String delimiter = ";";
+		const PackedStringArray line = file->get_csv_line(delimiter);
 		line_number++;
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
 			if (!line[0].is_empty()) {
@@ -138,7 +138,7 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	}
 	const StringName godot_key = Utilities::std_to_godot_string(key);
 	const StringName godot_localisation = Utilities::std_to_godot_string(localisation);
-	if (0) {
+	if (false) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
 			UtilityFunctions::push_warning(

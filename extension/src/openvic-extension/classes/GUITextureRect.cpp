@@ -13,4 +13,4 @@ void GUITextureRect::_notification(int what) {
 	_tooltip_notification(what);
 }
 
-GUITextureRect::GUITextureRect() : tooltip_active { false } {}
+GUITextureRect::GUITextureRect() {}

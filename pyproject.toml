@@ -1,0 +1,44 @@
+[tool.mypy]
+ignore_missing_imports = true
+disallow_any_generics = true
+no_implicit_optional = true
+pretty = true
+show_column_numbers = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+namespace_packages = true
+explicit_package_bases = true
+
+[tool.ruff]
+extend-include = ["SConstruct", "SCsub"]
+line-length = 120
+target-version = "py37"
+
+[tool.ruff.lint]
+extend-select = [
+	"I", # isort
+]
+
+[tool.ruff.lint.per-file-ignores]
+"{SConstruct,SCsub}" = [
+	"E402", # Module level import not at top of file
+	"F821", # Undefined name
+]
+
+[tool.typos]
+files.extend-exclude = [".mailmap", "*.gitignore", "*.po", "*.pot", "*.rc"]
+default.extend-ignore-re = [
+	"(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",                      # Single line check disable
+	"(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on", # Multiline check disable with // spellchecker:off // spellchecker:on (can also use #)
+	"(?s)(/\\*)\\s*spellchecker:off.*?\\s*spellchecker:on\\s*(\\*/)",    # Multiline check disable with /* spellchecker:off ... spellchecker:on */
+	"uid://\\S+",                                                        # Ignore engine uids
+]
+type.xml.locale = "en-us"
+type.xml.check-filename = false
+type.xml.extend-ignore-re = [
+	"<.* name=\".+\" .+>",
+	"\\[(param|member|method)?.+\\]",
+]
+[tool.typos.default.extend-identifiers]
+PNGs = "PNGs"

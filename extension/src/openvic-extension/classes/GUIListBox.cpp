@@ -128,9 +128,7 @@ void GUIListBox::_notification(int what) {
 	}
 }
 
-GUIListBox::GUIListBox()
-  : gui_listbox { nullptr }, scrollbar { nullptr }, scroll_index { 0 }, max_scroll_index { 0 },
-	fixed { false }, fixed_item_count { 0 }, fixed_visible_items { 0 }, fixed_item_height { 0.0_real } {}
+GUIListBox::GUIListBox() : fixed_item_height { 0.0_real } {}
 
 Vector2 GUIListBox::_get_minimum_size() const {
 	if (gui_listbox != nullptr) {

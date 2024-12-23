@@ -10,18 +10,18 @@ namespace OpenVic {
 	class GUIListBox : public godot::Container {
 		GDCLASS(GUIListBox, godot::Container)
 
-		GUI::ListBox const* PROPERTY(gui_listbox);
+		GUI::ListBox const* PROPERTY(gui_listbox, nullptr);
 
-		GUIScrollbar* scrollbar;
+		GUIScrollbar* scrollbar = nullptr;
 
 		/* The children_data index of the topmost visible child element. */
-		int32_t PROPERTY(scroll_index);
-		int32_t PROPERTY(max_scroll_index);
+		int32_t PROPERTY(scroll_index, 0);
+		int32_t PROPERTY(max_scroll_index, 0);
 
-		bool PROPERTY_CUSTOM_PREFIX(fixed, is);
-		int32_t PROPERTY(fixed_item_count);
-		int32_t PROPERTY(fixed_visible_items);
-		real_t PROPERTY(fixed_item_height);
+		bool PROPERTY_CUSTOM_PREFIX(fixed, is, false);
+		int32_t PROPERTY(fixed_item_count, 0);
+		int32_t PROPERTY(fixed_visible_items, 0);
+		real_t PROPERTY(fixed_item_height, 0.0);
 
 		static godot::StringName const& _signal_scroll_index_changed();
 
