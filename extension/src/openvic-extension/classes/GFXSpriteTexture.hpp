@@ -14,9 +14,9 @@ namespace OpenVic {
 		 * - get_gfx_texture_sprite
 		 * - get_icon_index
 		 * - get_icon_count */
-		GFX::TextureSprite const* PROPERTY(gfx_texture_sprite);
-		GFX::frame_t PROPERTY(icon_index);
-		GFX::frame_t PROPERTY(icon_count);
+		GFX::TextureSprite const* PROPERTY(gfx_texture_sprite, nullptr);
+		GFX::frame_t PROPERTY(icon_index, 0);
+		GFX::frame_t PROPERTY(icon_count, 0);
 
 	protected:
 		static void _bind_methods();
@@ -39,7 +39,7 @@ namespace OpenVic {
 			GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
-		/* Search for a GFX::TextureSprite with the specfied name and,
+		/* Search for a GFX::TextureSprite with the specified name and,
 		 * if successful, call set_gfx_texture_sprite to set it and its icon. */
 		godot::Error set_gfx_texture_sprite_name(
 			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES

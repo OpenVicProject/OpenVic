@@ -495,7 +495,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		ProductionType const& production_type = *rgo.get_production_type_nullable();
 
 		String contributing_modifier_effects;
-		// TODO - generate list of contributing modifier effects (including combined "From Technology" effeects)
+		// TODO - generate list of contributing modifier effects (including combined "From Technology" effects)
 
 		static const StringName employment_localisation_key = "PROVINCEVIEW_EMPLOYMENT";
 		static const String value_replace_key = "$VALUE$";

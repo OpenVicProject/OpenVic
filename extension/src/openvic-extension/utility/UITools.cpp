@@ -472,7 +472,7 @@ static bool generate_text(generate_gui_args_t&& args) {
 		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes() : nullptr;
 
 	if (gui_label->set_gui_text(&text, override_colour_codes) != OK) {
-		UtilityFunctions::push_error("Error initialising GUILabel for GUI text ", text_name);
+		UtilityFunctions::push_error("Error initializing GUILabel for GUI text ", text_name);
 		ret = false;
 	}
 
@@ -495,7 +495,7 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 
 	if (box->set_gui_overlapping_elements_box(&overlapping_elements) != OK) {
 		UtilityFunctions::push_error(
-			"Error initialising GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
+			"Error initializing GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
 		);
 		ret = false;
 	}
@@ -514,7 +514,7 @@ static bool generate_listbox(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(gui_listbox, false, vformat("Failed to create GUIListBox for GUI listbox %s", listbox_name));
 
 	if (gui_listbox->set_gui_listbox(&listbox) != OK) {
-		UtilityFunctions::push_error("Error initialising GUIListBox for GUI listbox ", listbox_name);
+		UtilityFunctions::push_error("Error initializing GUIListBox for GUI listbox ", listbox_name);
 		ret = false;
 	}
 
@@ -612,7 +612,7 @@ static bool generate_scrollbar(generate_gui_args_t&& args) {
 	ERR_FAIL_NULL_V_MSG(gui_scrollbar, false, vformat("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name));
 
 	if (gui_scrollbar->set_gui_scrollbar(&scrollbar) != OK) {
-		UtilityFunctions::push_error("Error initialising GUIScrollbar for GUI scrollbar ", scrollbar_name);
+		UtilityFunctions::push_error("Error initializing GUIScrollbar for GUI scrollbar ", scrollbar_name);
 		ret = false;
 	}
 

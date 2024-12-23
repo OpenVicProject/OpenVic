@@ -12,7 +12,7 @@ namespace OpenVic {
 
 		godot::Ref<GFXPieChartTexture> gfx_pie_chart_texture;
 
-		bool tooltip_active;
+		bool tooltip_active = false;
 		godot::Vector2 tooltip_position;
 
 		void _update_tooltip();

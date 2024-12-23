@@ -1,5 +1,5 @@
 diff --git a/extension/doc_tools/make_rst.py b/extension/doc_tools/make_rst.py
-index efd902f..2466a73 100644
+index efd902f..f6e7fa2 100644
 --- a/extension/doc_tools/make_rst.py
 +++ b/extension/doc_tools/make_rst.py
 @@ -9,11 +9,11 @@ import sys
@@ -45,7 +45,7 @@ index efd902f..2466a73 100644
 +
 +    engine_release = get_engine_release()
 +    if subprocess.call(f"git pull --depth=1 origin {engine_release}", cwd=doc_cache_path, shell=True) != 0:
-+        print_error(f'Git pull for "{engine_url}" v{engine_release} failed. Type references will fail.')
++        print_error(f'Git pull for "{engine_url}" v{engine_release} failed. Type references will fail.', State())
 +
 +    engine_doc_paths = [
 +        os.path.join(doc_cache_path, "doc/classes"),

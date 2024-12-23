@@ -11,8 +11,8 @@ namespace OpenVic {
 	class GFXMaskedFlagTexture : public GFXButtonStateHavingTexture {
 		GDCLASS(GFXMaskedFlagTexture, GFXButtonStateHavingTexture)
 
-		GFX::MaskedFlag const* PROPERTY(gfx_masked_flag);
-		CountryDefinition const* PROPERTY(flag_country);
+		GFX::MaskedFlag const* PROPERTY(gfx_masked_flag, nullptr);
+		CountryDefinition const* PROPERTY(flag_country, nullptr);
 		godot::StringName PROPERTY(flag_type);
 
 		godot::Ref<godot::Image> overlay_image, mask_image, flag_image;
@@ -37,7 +37,7 @@ namespace OpenVic {
 		/* Set the GFX::MaskedFlag, load its overlay and mask textures, and regenerate the combined image. */
 		godot::Error set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_masked_flag);
 
-		/* Search for a GFX::MaskedFlag with the specfied name and, if successful, set it using set_gfx_masked_flag. */
+		/* Search for a GFX::MaskedFlag with the specified name and, if successful, set it using set_gfx_masked_flag. */
 		godot::Error set_gfx_masked_flag_name(godot::String const& gfx_masked_flag_name);
 
 		/* Return the name of the GFX::MaskedFlag, or an empty String if it's null. */

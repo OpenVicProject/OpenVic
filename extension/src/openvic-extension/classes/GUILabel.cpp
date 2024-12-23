@@ -85,7 +85,7 @@ void GUILabel::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "substitution_dict"), "set_substitution_dict", "get_substitution_dict");
 	ADD_PROPERTY(
-		PropertyInfo(Variant::INT, "horizontal_alignment", PROPERTY_HINT_ENUM, "Left,Centre,Right,Fill"),
+		PropertyInfo(Variant::INT, "horizontal_alignment", PROPERTY_HINT_ENUM, "Left,Center,Right,Fill"),
 		"set_horizontal_alignment", "get_horizontal_alignment"
 	);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "max_size", PROPERTY_HINT_NONE, "suffix:px"), "set_max_size", "get_max_size");
@@ -180,24 +180,7 @@ void GUILabel::_notification(int what) {
 	}
 }
 
-GUILabel::GUILabel()
-  : tooltip_active { false },
-	gui_text { nullptr },
-	text {},
-	substitution_dict {},
-	horizontal_alignment { HORIZONTAL_ALIGNMENT_LEFT },
-	max_size {},
-	border_size {},
-	adjusted_rect {},
-	auto_adjust_to_content_size { false },
-	font {},
-	font_size { DEFAULT_FONT_SIZE },
-	default_colour {},
-	colour_codes { nullptr },
-	currency_texture {},
-	background {},
-	lines {},
-	line_update_queued { false } {}
+GUILabel::GUILabel() : font_size { DEFAULT_FONT_SIZE } {}
 
 void GUILabel::clear() {
 	gui_text = nullptr;
@@ -689,11 +672,11 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 				const real_t segment_width = get_segment_width(segment);
 
 				if (current_line->width + segment_width <= max_content_size.width) {
-					// Segement on current line
+					// Segment on current line
 					current_line->segments.emplace_back(std::move(segment));
 					current_line->width += segment_width;
 				} else if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
-					// String segement wrapped onto new line
+					// String segment wrapped onto new line
 					static const String SPACE_MARKER = " ";
 
 					String const& string = string_segment->text;
@@ -746,7 +729,7 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 					}
 
 				} else {
-					// Currency segement on new line
+					// Currency segment on new line
 					line_t* current_line = &wrapped_lines.emplace_back();
 					current_line->segments.push_back(std::move(segment));
 					current_line->width = segment_width;

@@ -20,7 +20,7 @@ void GUIButton::_notification(int what) {
 	_tooltip_notification(what);
 }
 
-GUIButton::GUIButton() : tooltip_active { false } {}
+GUIButton::GUIButton() {}
 
 Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTexture> const& texture) {
 	ERR_FAIL_NULL_V(texture, FAILED);

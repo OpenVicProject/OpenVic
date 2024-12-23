@@ -27,8 +27,7 @@ void GFXSpriteTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "icon_index"), "set_icon_index", "get_icon_index");
 }
 
-GFXSpriteTexture::GFXSpriteTexture()
-  : gfx_texture_sprite { nullptr }, icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
+GFXSpriteTexture::GFXSpriteTexture() : icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
 Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(
 	GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon

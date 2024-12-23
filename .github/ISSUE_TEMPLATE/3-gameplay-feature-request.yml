@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        - If this feature was in Victoria II, please report a [Victoria II Discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
+        - If this feature was in Victoria II, please report a [Victoria II Discrepancy](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
         - If this feature only applies to mods and contains no mechanical additions to the vanilla experience, please report it as a [mod feature request](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=4-mod-feature-request.yml).
         - Write a descriptive proposal title above.
 
@@ -22,6 +22,6 @@ body:
     attributes:
       label: Feature Description
       description: An in-depth description of what feature you want added to OpenVic, and **why** its important to have.
-      placeholder: Example - "Add a macro builder - a menu that allows you to contruct armies or navies from templates. Think of the macro builder menu from EUIV perhaps. This will improve the game experience by allowing people to build whole armies at once rather than counting out brigades in the army build menu."
+      placeholder: Example - "Add a macro builder - a menu that allows you to construct armies or navies from templates. Think of the macro builder menu from EUIV perhaps. This will improve the game experience by allowing people to build whole armies at once rather than counting out brigades in the army build menu."
     validations:
       required: true

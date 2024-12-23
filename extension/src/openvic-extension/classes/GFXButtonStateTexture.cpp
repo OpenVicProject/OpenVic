@@ -14,7 +14,7 @@ void GFXCorneredTileSupportingTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXCorneredTileSupportingTexture::draw_rect_cornered, { "to_canvas_item", "rect" });
 }
 
-GFXCorneredTileSupportingTexture::GFXCorneredTileSupportingTexture() : cornered_tile_border_size {} {}
+GFXCorneredTileSupportingTexture::GFXCorneredTileSupportingTexture() {}
 
 bool GFXCorneredTileSupportingTexture::is_cornered_tile_texture() const {
 	return cornered_tile_border_size != Vector2i {};
@@ -50,7 +50,7 @@ void GFXButtonStateTexture::_bind_methods() {
 	BIND_ENUM_CONSTANT(SELECTED);
 }
 
-GFXButtonStateTexture::GFXButtonStateTexture() : button_state { HOVER }, state_image {}, state_texture {} {}
+GFXButtonStateTexture::GFXButtonStateTexture() {}
 
 Ref<GFXButtonStateTexture> GFXButtonStateTexture::make_gfx_button_state_texture(
 	ButtonState button_state, Ref<Image> const& source_image, Rect2i const& region, Vector2i const& cornered_tile_border_size
@@ -179,7 +179,7 @@ void GFXButtonStateHavingTexture::_clear_button_states() {
 	}
 }
 
-GFXButtonStateHavingTexture::GFXButtonStateHavingTexture() : button_image {}, button_state_textures {} {}
+GFXButtonStateHavingTexture::GFXButtonStateHavingTexture() : button_state_textures {} {}
 
 Ref<GFXButtonStateTexture> GFXButtonStateHavingTexture::get_button_state_texture(
 	GFXButtonStateTexture::ButtonState button_state

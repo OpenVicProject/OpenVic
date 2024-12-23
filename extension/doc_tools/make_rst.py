@@ -5,11 +5,11 @@
 import argparse
 import os
 import re
+import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
-import subprocess
 
 # Import hardcoded version information from version.py
 root_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
@@ -763,7 +763,7 @@ def main() -> None:
 
     engine_release = get_engine_release()
     if subprocess.call(f"git pull --depth=1 origin {engine_release}", cwd=doc_cache_path, shell=True) != 0:
-        print_error(f'Git pull for "{engine_url}" v{engine_release} failed. Type references will fail.')
+        print_error(f'Git pull for "{engine_url}" v{engine_release} failed. Type references will fail.', State())
 
     engine_doc_paths = [
         os.path.join(doc_cache_path, "doc/classes"),

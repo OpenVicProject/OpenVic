@@ -15,7 +15,7 @@ namespace OpenVic {
 
 		GameManager game_manager;
 
-		CountryInstance const* PROPERTY(viewed_country);
+		CountryInstance const* PROPERTY(viewed_country, nullptr);
 
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
@@ -24,7 +24,7 @@ namespace OpenVic {
 		Mapmode const* mapmode; // This should never be null, if no mapmode is set then it'll point to Mapmode::ERROR_MAPMODE
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
-		static const godot::Vector2i PROPERTY(flag_dims); /* The size in pixels of an individual flag. */
+		inline static const godot::Vector2i PROPERTY(flag_dims, { 128, 64 }); /* The size in pixels of an individual flag. */
 		int32_t flag_sheet_count = 0; /* The number of flags in the flag sheet. */
 		godot::Vector2i flag_sheet_dims; /* The size of the flag sheet in flags, rather than pixels. */
 		godot::Ref<godot::Image> flag_sheet_image;
@@ -72,7 +72,7 @@ namespace OpenVic {
 			return game_manager.get_instance_manager();
 		}
 
-		/* Load the game's defines in compatiblity mode from the filepath
+		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
 		godot::Error set_compatibility_mode_roots(godot::PackedStringArray const& file_paths);
 		godot::Error load_defines_compatibility_mode();

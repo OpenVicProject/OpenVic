@@ -90,7 +90,7 @@ void GFXMaskedFlagTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXMaskedFlagTexture::get_flag_type);
 }
 
-GFXMaskedFlagTexture::GFXMaskedFlagTexture() : gfx_masked_flag { nullptr }, flag_country { nullptr } {}
+GFXMaskedFlagTexture::GFXMaskedFlagTexture() {}
 
 Ref<GFXMaskedFlagTexture> GFXMaskedFlagTexture::make_gfx_masked_flag_texture(GFX::MaskedFlag const* gfx_masked_flag) {
 	Ref<GFXMaskedFlagTexture> masked_flag_texture;

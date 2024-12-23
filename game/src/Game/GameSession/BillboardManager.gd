@@ -26,7 +26,7 @@ var provinces_size : int = 0
 var total_capitals_size : int = 0
 
 # Given a BillboardType, get the index for the texture in the shader.
-# This is to reduce the number of magic indeces in the code
+# This is to reduce the number of magic indices in the code
 # to get the proper billboard image
 var billboard_type_to_index : Dictionary
 
@@ -117,7 +117,7 @@ func _ready() -> void:
 	multimesh.instance_count = provinces_size + total_capitals_size
 
 	if _map_view == null:
-		push_error("MapView export varible for BillboardManager must be set!")
+		push_error("MapView export variable for BillboardManager must be set!")
 		return
 
 	for province_index : int in provinces_size:

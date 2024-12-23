@@ -14,7 +14,7 @@ namespace OpenVic {
 
 		GUI_TOOLTIP_DEFINITIONS
 
-		GUI::Scrollbar const* PROPERTY(gui_scrollbar);
+		GUI::Scrollbar const* PROPERTY(gui_scrollbar, nullptr);
 
 		godot::Ref<GFXSpriteTexture> slider_texture;
 		godot::Ref<GFXSpriteTexture> track_texture;
@@ -22,7 +22,7 @@ namespace OpenVic {
 		godot::Ref<GFXSpriteTexture> more_texture;
 
 		godot::Rect2 slider_rect;
-		real_t slider_start, slider_distance;
+		real_t slider_start = 0.0F, slider_distance = 0.0F;
 		godot::Rect2 track_rect;
 		godot::Rect2 less_rect;
 		godot::Rect2 more_rect;
@@ -33,19 +33,19 @@ namespace OpenVic {
 		godot::Rect2 range_limit_min_rect;
 		godot::Rect2 range_limit_max_rect;
 
-		godot::Orientation PROPERTY(orientation);
-		real_t PROPERTY(length_override);
+		godot::Orientation PROPERTY(orientation, godot::HORIZONTAL);
+		real_t PROPERTY(length_override, 0.0);
 
-		int32_t PROPERTY(value);
-		int32_t PROPERTY(min_value);
-		int32_t PROPERTY(max_value);
+		int32_t PROPERTY(value, 0);
+		int32_t PROPERTY(min_value, 0);
+		int32_t PROPERTY(max_value, 0);
 
 		bool PROPERTY_CUSTOM_PREFIX(range_limited, is);
-		int32_t PROPERTY(range_limit_min);
-		int32_t PROPERTY(range_limit_max);
+		int32_t PROPERTY(range_limit_min, 0);
+		int32_t PROPERTY(range_limit_max, 0);
 
-		bool hover_slider, hover_track, hover_less, hover_more;
-		bool pressed_slider, pressed_track, pressed_less, pressed_more;
+		bool hover_slider = false, hover_track = false, hover_less = false, hover_more = false;
+		bool pressed_slider = false, pressed_track = false, pressed_less = false, pressed_more = false;
 
 		/* The time between value changes while the less/more button is held down (in seconds). */
 		static constexpr double BUTTON_CHANGE_DELAY = 1.0 / 60.0;
@@ -57,14 +57,14 @@ namespace OpenVic {
 		 * increases by button_change_value_base, and every BUTTON_CHANGE_DELAY seconds value changes by button_change_value.
 		 * If button_change_value is still 0 when the button is released, then value will be increased by
 		 * button_change_value_base so that short clicks still have an effect.*/
-		int32_t button_change_value_base, button_change_value;
-		double button_change_accelerate_timer, button_change_timer;
+		int32_t button_change_value_base = 0, button_change_value = 0;
+		double button_change_accelerate_timer = 0.0, button_change_timer = 0.0;
 
 		void _start_button_change(bool shift_pressed, bool control_pressed);
 		void _stop_button_change();
 
 		/* Changes value by button_change_value with the direction determined by orientation and pressed_less or pressed_more.
-		 * Returns true if a change occured, otherwise false. */
+		 * Returns true if a change occurred, otherwise false. */
 		bool _update_button_change();
 
 		float _value_to_ratio(int32_t val) const;

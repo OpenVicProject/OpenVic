@@ -137,7 +137,7 @@ void GFXPieChartTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXPieChartTexture::set_slices_array, { "new_slices" });
 }
 
-GFXPieChartTexture::GFXPieChartTexture() : gfx_pie_chart { nullptr }, total_weight { 0.0f } {}
+GFXPieChartTexture::GFXPieChartTexture() {}
 
 Ref<GFXPieChartTexture> GFXPieChartTexture::make_gfx_pie_chart_texture(GFX::PieChart const* gfx_pie_chart) {
 	Ref<GFXPieChartTexture> pie_chart_texture;
