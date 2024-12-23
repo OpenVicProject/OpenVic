@@ -14,38 +14,35 @@ signal back_button_pressed
 # ...
 ###############
 
-@export_file("*.csv")
-var core_credits_path : String
+@export_file("*.csv") var core_credits_path: String
 
-@export
-var godot_engine_scene : PackedScene
+@export var godot_engine_scene: PackedScene
 
 @export_group("Label Variants", "label_variants_")
-@export
-var label_variants_project : StringName
+@export var label_variants_project: StringName
 
-@export
-var label_variants_role : StringName
+@export var label_variants_role: StringName
 
-@export
-var label_variants_person : StringName
+@export var label_variants_person: StringName
 
-@export
-var credits_list: VBoxContainer
+@export var credits_list: VBoxContainer
 
-const title_key : String = "TITLE"
+const title_key: String = "TITLE"
 
 # REQUIREMENTS:
 # * 1.5 Credits Menu
 # * SS-17
 
+
 # REQUIREMENTS
 # * FS-4
-func _load_credit_file(path : String) -> Dictionary:
+func _load_credit_file(path: String) -> Dictionary:
 	var roles := {}
 	var core_credits := FileAccess.open(path, FileAccess.READ)
 	if core_credits == null:
-		push_error("Failed to open credits file %s (error code %d)" % [path, FileAccess.get_open_error()])
+		push_error(
+			"Failed to open credits file %s (error code %d)" % [path, FileAccess.get_open_error()]
+		)
 		return roles
 
 	while not core_credits.eof_reached():
@@ -79,36 +76,40 @@ func _load_credit_file(path : String) -> Dictionary:
 			roles[title_key] = [roles[title_key][0]]
 	else:
 		push_warning("Credits file %s missing %s" % [path, title_key])
-	for role_list : Array in roles.values():
-		role_list.sort_custom(func(a : String, b : String) -> bool: return a.naturalnocasecmp_to(b) < 0)
+	for role_list: Array in roles.values():
+		role_list.sort_custom(
+			func(a: String, b: String) -> bool: return a.naturalnocasecmp_to(b) < 0
+		)
 	return roles
 
-func _add_label(node : Node, text : String, type_variation : StringName) -> void:
+
+func _add_label(node: Node, text: String, type_variation: StringName) -> void:
 	var label := Label.new()
-	label.name = 'Label' + text
+	label.name = "Label" + text
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.theme_type_variation = type_variation
 	node.add_child(label)
 
+
 # REQUIREMENTS:
 # * UI-34, UI-35
-func _add_project_credits(project : Dictionary) -> void:
+func _add_project_credits(project: Dictionary) -> void:
 	var project_credits_list := VBoxContainer.new()
-	project_credits_list.name = 'Credits'
+	project_credits_list.name = "Credits"
 	if title_key in project:
-		var title : String = project[title_key][0]
+		var title: String = project[title_key][0]
 		project_credits_list.name += title
 		_add_label(project_credits_list, title, label_variants_project)
 		project_credits_list.add_child(HSeparator.new())
 
-	for role : String in project:
+	for role: String in project:
 		if role == title_key:
 			continue
 
 		var role_parent := VBoxContainer.new()
 
-		for person : String in project[role]:
+		for person: String in project[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(project_credits_list, role, label_variants_role)
@@ -117,9 +118,10 @@ func _add_project_credits(project : Dictionary) -> void:
 
 	credits_list.add_child(project_credits_list)
 
+
 func _add_godot_credits() -> void:
 	var godot_credits_list := VBoxContainer.new()
-	godot_credits_list.name = 'CreditsGodot'
+	godot_credits_list.name = "CreditsGodot"
 	var godot_engine := godot_engine_scene.instantiate()
 	godot_credits_list.add_child(godot_engine)
 	godot_credits_list.add_child(HSeparator.new())
@@ -127,10 +129,10 @@ func _add_godot_credits() -> void:
 	var author_dict := Engine.get_author_info()
 	_add_label(godot_credits_list, "Contributors", label_variants_role)
 
-	for role : String in author_dict:
+	for role: String in author_dict:
 		var role_parent := VBoxContainer.new()
 
-		for person : String in author_dict[role]:
+		for person: String in author_dict[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
@@ -140,11 +142,12 @@ func _add_godot_credits() -> void:
 	var donor_dict := Engine.get_donor_info()
 	_add_label(godot_credits_list, "Donors", label_variants_role)
 
-	for role : String in donor_dict:
-		if donor_dict[role].size() == 0 or donor_dict[role][0].begins_with("None"): continue
+	for role: String in donor_dict:
+		if donor_dict[role].size() == 0 or donor_dict[role][0].begins_with("None"):
+			continue
 		var role_parent := VBoxContainer.new()
 
-		for person : String in donor_dict[role]:
+		for person: String in donor_dict[role]:
 			_add_label(role_parent, person, label_variants_person)
 
 		_add_label(godot_credits_list, role.replace("_", " ").capitalize(), label_variants_role)
@@ -153,34 +156,42 @@ func _add_godot_credits() -> void:
 
 	credits_list.add_child(godot_credits_list)
 
-func _add_link_button(node : Node, text : String, url: String, type_variation : StringName) -> void:
+
+func _add_link_button(node: Node, text: String, url: String, type_variation: StringName) -> void:
 	var button := LinkButton.new()
-	button.name = 'LinkButton' + text
+	button.name = "LinkButton" + text
 	button.text = text
 	button.uri = url
 	button.size_flags_horizontal = SIZE_SHRINK_CENTER
 	button.theme_type_variation = type_variation
 	node.add_child(button)
 
+
 func _add_licenses() -> void:
 	var license_list := VBoxContainer.new()
-	license_list.name = 'Licenses'
+	license_list.name = "Licenses"
 	_add_label(license_list, "Third-Party Licenses", label_variants_project)
 	license_list.add_child(HSeparator.new())
 
 	var license_info := {
 		"OpenVic": ["GPLv3", "https://github.com/OpenVicProject/OpenVic/blob/main/LICENSE.md"],
 		"Godot": ["MIT", "https://github.com/godotengine/godot/blob/master/LICENSE.txt"],
-		"FreeType": ["FreeType License", "https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT"],
+		"FreeType":
+		[
+			"FreeType License",
+			"https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/docs/FTL.TXT"
+		],
 		"ENet": ["MIT", "http://enet.bespin.org/License.html"],
 		"mbed TLS": ["APLv2", "https://github.com/Mbed-TLS/mbedtls/blob/development/LICENSE"]
 	}
 	# Add additional licenses required for attribution here
 	# These licenses should also either be displayed or exported alongside this project
 
-	for project : String in license_info:
+	for project: String in license_info:
 		_add_label(license_list, project, label_variants_role)
-		_add_link_button(license_list, license_info[project][0], license_info[project][1], label_variants_person)
+		_add_link_button(
+			license_list, license_info[project][0], license_info[project][1], label_variants_person
+		)
 		license_list.add_child(HSeparator.new())
 
 	credits_list.add_child(license_list)
@@ -193,10 +204,12 @@ func _ready() -> void:
 	_add_godot_credits()
 	_add_licenses()
 
-func _input(event : InputEvent) -> void:
+
+func _input(event: InputEvent) -> void:
 	if self.is_visible_in_tree():
 		if event.is_action_pressed("ui_cancel"):
 			_on_back_button_pressed()
+
 
 # REQUIREMENTS:
 # * UI-38

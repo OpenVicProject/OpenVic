@@ -1,18 +1,21 @@
 extends Control
 
-@export var _main_menu : Control
-@export var _options_menu : Control
-@export var _lobby_menu : Control
-@export var _credits_menu : Control
+@export var _main_menu: Control
+@export var _options_menu: Control
+@export var _lobby_menu: Control
+@export var _credits_menu: Control
+
 
 # REQUIREMENTS
 # * SS-10
 func _ready() -> void:
 	Events.Options.load_settings_from_file()
 
+
 func _on_main_menu_new_game_button_pressed() -> void:
 	_lobby_menu.show()
 	_main_menu.hide()
+
 
 # REQUIREMENTS
 # * SS-6

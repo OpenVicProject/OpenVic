@@ -14,7 +14,7 @@ enum Page {
 	PRICE_HISTORY,
 	NUMBER_OF_PAGES
 }
-const _page_titles : PackedStringArray = [
+const _page_titles: PackedStringArray = [
 	"LEDGER_HEADER_RANK",
 	"LEDGER_HEADER_COUNTRYCOMPARE",
 	"LEDGER_HEADER_COUNTRYPARTY",
@@ -28,8 +28,9 @@ const _page_titles : PackedStringArray = [
 	"LEDGER_HEADER_GOODS_PRICEHISTORY"
 ]
 
-var _current_page : Page = Page.NATION_RANKING:
-	get: return _current_page
+var _current_page: Page = Page.NATION_RANKING:
+	get:
+		return _current_page
 	set(new_page):
 		_current_page = new_page
 		while _current_page < 0:
@@ -37,9 +38,10 @@ var _current_page : Page = Page.NATION_RANKING:
 		_current_page %= Page.NUMBER_OF_PAGES
 		_update_info()
 
-var _page_title_label : GUILabel
-var _page_number_label : GUILabel
+var _page_title_label: GUILabel
+var _page_number_label: GUILabel
 # TODO - add variables to store any nodes you'll need to refer in more than one function call
+
 
 func _ready():
 	MenuSingleton.search_cache_changed.connect(_update_info)
@@ -48,15 +50,15 @@ func _ready():
 
 	set_click_mask_from_nodepaths([^"./ledger/ledger_bg"])
 
-	var close_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/close")
+	var close_button: GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/close")
 	if close_button:
 		close_button.pressed.connect(hide)
 
-	var previous_page_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/prev")
+	var previous_page_button: GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/prev")
 	if previous_page_button:
 		previous_page_button.pressed.connect(func() -> void: _current_page -= 1)
 
-	var next_page_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/next")
+	var next_page_button: GUIIconButton = get_gui_icon_button_from_nodepath(^"./ledger/next")
 	if next_page_button:
 		next_page_button.pressed.connect(func() -> void: _current_page += 1)
 
@@ -67,12 +69,14 @@ func _ready():
 
 	hide()
 
+
 func toggle_visibility() -> void:
 	if is_visible():
 		hide()
 	else:
 		show()
 		_update_info()
+
 
 func _update_info() -> void:
 	if is_visible():

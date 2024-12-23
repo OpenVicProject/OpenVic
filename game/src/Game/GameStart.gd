@@ -5,19 +5,21 @@ const SoundTabScene := preload("res://src/Game/Menu/OptionMenu/SoundTab.tscn")
 const GameMenuScene := preload("res://src/Game/GameMenu.tscn")
 
 @export_subgroup("Nodes")
-@export var loading_screen : LoadingScreen
-@export var vic2_dir_dialog : FileDialog
+@export var loading_screen: LoadingScreen
+@export var vic2_dir_dialog: FileDialog
 
 @export_subgroup("")
-@export var section_name : String = "general"
-@export var setting_name : String = "base_defines_path"
+@export var section_name: String = "general"
+@export var setting_name: String = "base_defines_path"
 
-var _settings_base_path : String = ""
-var _compatibility_path_list : PackedStringArray = []
+var _settings_base_path: String = ""
+var _compatibility_path_list: PackedStringArray = []
+
 
 func _enter_tree() -> void:
-	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
+	Keychain.keep_binding_check = func(action_name: StringName) -> bool:
 		return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
+
 
 func _ready() -> void:
 	Keychain.actions = {
@@ -68,25 +70,35 @@ func _ready() -> void:
 	await _setup_compatibility_mode_paths()
 	await loading_screen.start_loading_screen(_initialize_game)
 
-func _load_setting(file : ConfigFile) -> void:
-	if file == null: return
+
+func _load_setting(file: ConfigFile) -> void:
+	if file == null:
+		return
 	_settings_base_path = file.get_value(section_name, setting_name, "")
 
-func _save_setting(file : ConfigFile) -> void:
-	if file == null: return
+
+func _save_setting(file: ConfigFile) -> void:
+	if file == null:
+		return
 	file.set_value(section_name, setting_name, _settings_base_path)
+
 
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
 
-	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
-	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
+	var arg_base_path: String = ArgumentParser.get_argument(&"base-path", "")
+	var arg_search_path: String = ArgumentParser.get_argument(&"search-path", "")
 
-	var actual_base_path : String = ""
+	var actual_base_path: String = ""
 
 	if arg_base_path:
 		if arg_search_path:
-			push_warning("Exact base path and search base path arguments both used:\nBase: ", arg_base_path, "\nSearch: ", arg_search_path)
+			push_warning(
+				"Exact base path and search base path arguments both used:\nBase: ",
+				arg_base_path,
+				"\nSearch: ",
+				arg_search_path
+			)
 		actual_base_path = arg_base_path
 	elif arg_search_path:
 		# This will also search for a Steam install if the hint doesn't help
@@ -130,9 +142,10 @@ func _setup_compatibility_mode_paths() -> void:
 	_compatibility_path_list = [actual_base_path]
 
 	# Add mod paths
-	var settings_mod_names : PackedStringArray = ArgumentParser.get_argument(&"mod", "")
-	for mod_name : String in settings_mod_names:
+	var settings_mod_names: PackedStringArray = ArgumentParser.get_argument(&"mod", "")
+	for mod_name: String in settings_mod_names:
 		_compatibility_path_list.push_back(actual_base_path + "/mod/" + mod_name)
+
 
 func _load_compatibility_mode() -> void:
 	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
@@ -147,6 +160,7 @@ func _load_compatibility_mode() -> void:
 	SoundSingleton.load_music()
 	MusicConductor.add_compat_songs()
 
+
 func setup_title_theme() -> void:
 	SoundSingleton.load_title_theme()
 
@@ -155,11 +169,12 @@ func setup_title_theme() -> void:
 	var song_paths = MusicConductor.get_all_song_paths()
 	var title_index = song_paths.find(SoundSingleton.title_theme)
 	if title_index != -1:
-		MusicConductor.call_deferred("start_song_by_index",title_index)
+		MusicConductor.call_deferred("start_song_by_index", title_index)
 	if len(MusicConductor._available_songs) <= 0:
 		push_error("No song available to play")
 	else:
 		MusicConductor.call_deferred("start_current_song")
+
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
@@ -180,6 +195,7 @@ func _initialize_game() -> void:
 
 	# change scene in a thread-safe way
 	get_tree().change_scene_to_packed.call_deferred(GameMenuScene)
+
 
 func _on_splash_container_splash_end() -> void:
 	loading_screen.show()

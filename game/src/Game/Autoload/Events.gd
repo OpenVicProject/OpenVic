@@ -3,8 +3,9 @@
 ## It does such by providing a global interface of signals that are connected to and emitted by that are guaranteed to exist.
 extends Node
 
-var Options : OptionsEventsObject
-var NationManagementScreens : NationManagementScreensEventsObject
+var Options: OptionsEventsObject
+var NationManagementScreens: NationManagementScreensEventsObject
+
 
 func _init() -> void:
 	Options = OptionsEventsObject.new()
