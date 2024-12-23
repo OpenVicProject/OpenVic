@@ -1,0 +1,67 @@
+[tool.mypy]
+ignore_missing_imports = true
+disallow_any_generics = true
+no_implicit_optional = true
+pretty = true
+show_column_numbers = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+namespace_packages = true
+explicit_package_bases = true
+
+[tool.ruff]
+extend-include = ["SConstruct", "SCsub"]
+line-length = 120
+target-version = "py37"
+
+[tool.ruff.lint]
+extend-select = [
+	"I", # isort
+]
+
+[tool.ruff.lint.per-file-ignores]
+"{SConstruct,SCsub}" = [
+	"E402", # Module level import not at top of file
+	"F821", # Undefined name
+]
+
+[tool.codespell]
+enable-colors = ""
+write-changes = ""
+check-hidden = ""
+quiet-level = 3
+builtin = "clear,rare,en-GB_to_en-US"
+skip = """\
+	.mailmap,
+	*.desktop,
+	*.gitignore,
+	*.po,
+	*.pot,
+	*.rc,
+"""
+ignore-words-list = """\
+	breaked,
+	cancelled,
+	checkin,
+	colour,
+	colours,
+	curvelinear,
+	doubleclick,
+	expct,
+	findn,
+	gird,
+	hel,
+	inout,
+	labelin,
+	lod,
+	mis,
+	nd,
+	numer,
+	ot,
+	outin,
+	requestor,
+	te,
+	textin,
+	vai,
+"""

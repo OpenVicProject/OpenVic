@@ -59,7 +59,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 
 		const StringName texture_file = Utilities::std_to_godot_string(new_gfx_texture_sprite->get_texture_file());
 
-		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will re-use this image from its internal cache. */
+		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will reuse this image from its internal cache. */
 		const Ref<Image> image = asset_manager->get_image(texture_file);
 		ERR_FAIL_NULL_V_MSG(image, FAILED, vformat("Failed to load image: %s", texture_file));
 

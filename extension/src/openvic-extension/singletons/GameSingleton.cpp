@@ -20,7 +20,7 @@ using namespace OpenVic;
 static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use these wrapper functions to delay their initialisation. */
+ * so we must use these wrapper functions to delay their initialization. */
 StringName const& GameSingleton::_signal_gamestate_updated() {
 	static const StringName signal_gamestate_updated = "gamestate_updated";
 	return signal_gamestate_updated;

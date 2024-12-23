@@ -43,7 +43,7 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 
 				const Color overlay_image_colour = overlay_image->get_pixelv(combined_image_point);
 
-				// Translate to mask_image coordinates, keeping the centres of each image aligned.
+				// Translate to mask_image coordinates, keeping the centers of each image aligned.
 				const Vector2i mask_image_point = combined_image_point + centre_translation;
 
 				if (

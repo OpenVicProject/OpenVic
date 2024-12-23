@@ -14,7 +14,7 @@
  *  - add GUI_TOOLTIP_IMPLEMENTATIONS(CLASS) to the class' source file.
  *  - add GUI_TOOLTIP_BIND_METHODS(CLASS) to the class' _bind_methods implementation.
  *  - call _tooltip_notification from the class' _notification method.
- *  - initialise tooltip_active to false in the class' constructor. */
+ *  - initialize tooltip_active to false in the class' constructor. */
 
 #define GUI_TOOLTIP_DEFINITIONS \
 	public: \
