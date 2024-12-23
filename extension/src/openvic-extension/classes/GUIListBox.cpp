@@ -12,7 +12,7 @@ using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use wrapper functions to delay their initialisation. */
+ * so we must use wrapper functions to delay their initialization. */
 StringName const& GUIListBox::_signal_scroll_index_changed() {
 	static const StringName signal_scroll_index_changed = "scroll_index_changed";
 	return signal_scroll_index_changed;

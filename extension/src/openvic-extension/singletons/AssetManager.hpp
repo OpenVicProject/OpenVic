@@ -56,7 +56,7 @@ namespace OpenVic {
 		 * image cache in case it has already been loaded, and returning nullptr if image loading fails. If the cache image
 		 * load flag is set then the loaded image will be stored in the AssetManager's image cache for future access; if the
 		 * flip y load flag is set then the image will be flipped vertically before being returned (if the image is already
-		 * in the cache then no flipping will occur, regardless of whether it was orginally flipped or not). */
+		 * in the cache then no flipping will occur, regardless of whether it was originally flipped or not). */
 		godot::Ref<godot::Image> get_image(godot::StringName const& path, LoadFlags load_flags = LOAD_FLAG_CACHE_IMAGE);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking the
@@ -65,7 +65,7 @@ namespace OpenVic {
 		 * image cache for future access; if the cache texture load flag is set then the created texture will be stored in the
 		 * AssetManager's texture cache for future access; if the flip y load flag is set then the image will be flipped
 		 * vertically before being used to create the texture (if the image is already in the cache then no flipping will
-		 * occur, regardless of whether it was orginally flipped or not). */
+		 * occur, regardless of whether it was originally flipped or not). */
 		godot::Ref<godot::ImageTexture> get_texture(
 			godot::StringName const& path, LoadFlags load_flags = LOAD_FLAG_CACHE_TEXTURE
 		);

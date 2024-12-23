@@ -72,7 +72,7 @@ namespace OpenVic {
 			return game_manager.get_instance_manager();
 		}
 
-		/* Load the game's defines in compatiblity mode from the filepath
+		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
 		godot::Error set_compatibility_mode_roots(godot::PackedStringArray const& file_paths);
 		godot::Error load_defines_compatibility_mode();

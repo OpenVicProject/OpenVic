@@ -35,7 +35,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 	switch (gui_overlapping_elements_box->get_format()) {
 		case left:
 			break;
-		case centre:
+		case centre: // codespell:ignore centre
 			starting_x = (box_width - total_width) / 2;
 			break;
 		case right:
@@ -126,7 +126,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 			static const StringName mouse_entered_signal_name = "mouse_entered";
 			static const StringName mouse_exited_signal_name = "mouse_exited";
 
-			/* Move the child element in front of its neighbours when moused-over. */
+			/* Move the child element in front of its neighbors when moused-over. */
 			child->connect(mouse_entered_signal_name, Callable { child, set_z_index_func_name }.bind(1), CONNECT_PERSIST);
 			child->connect(mouse_exited_signal_name, Callable { child, set_z_index_func_name }.bind(0), CONNECT_PERSIST);
 

@@ -12,7 +12,7 @@ using namespace OpenVic;
 using namespace godot;
 
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use wrapper functions to delay their initialisation. */
+ * so we must use wrapper functions to delay their initialization. */
 StringName const& GUIScrollbar::signal_value_changed() {
 	static const StringName signal_value_changed = "value_changed";
 	return signal_value_changed;
@@ -54,7 +54,7 @@ void GUIScrollbar::_bind_methods() {
 }
 
 GUIScrollbar::GUIScrollbar() : tooltip_active { false } {
-	/* Anything which the constructor might not have default initialised will be set by clear(). */
+	/* Anything which the constructor might not have default initialized will be set by clear(). */
 	clear();
 }
 

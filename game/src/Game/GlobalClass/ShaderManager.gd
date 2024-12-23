@@ -29,7 +29,7 @@ func _set_shader_texture(
 		err = FAILED
 	if tile_factor_param:
 		# Set to 1.0 / pixels_per_tile as the shader can multiply faster than it can divide, and it will not automatically
-		# optimise to multiplication by a reciprocal for fear of losing precision. As pixels_per_tile is often a power of two,
+		# optimize to multiplication by a reciprocal for fear of losing precision. As pixels_per_tile is often a power of two,
 		# this doesn't actually lose any precision, and even if it did it would be insignificant.
 		shader_material.set_shader_parameter(tile_factor_param, 1.0 / pixels_per_tile)
 	return err

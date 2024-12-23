@@ -133,7 +133,7 @@ namespace OpenVic {
 	public:
 		static MenuSingleton* get_singleton();
 
-		/* This should only be called AFTER GameSingleton has been initialised! */
+		/* This should only be called AFTER GameSingleton has been initialized! */
 		MenuSingleton();
 		~MenuSingleton();
 

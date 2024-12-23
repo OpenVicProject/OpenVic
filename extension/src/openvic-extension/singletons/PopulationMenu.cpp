@@ -624,7 +624,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	// TODO - pop type name
 	// TODO - promotions (target pop type and count)
 	// TODO - demotions (target pop type and count)
-	// TODO - good being produced (artisans, farmers, labourers, slaves)
+	// TODO - good being produced (artisans, farmers, laborers, slaves)
 	// TODO - military unit and army (soldiers)
 
 	static const StringName pop_culture_key = "culture";

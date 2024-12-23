@@ -27,9 +27,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  static-checks:
+    name: Code style, file formatting, and docs
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 2
+
+      - name: Install APT dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libxml2-utils
+
+      - name: Get changed files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            files=$(git diff-tree --no-commit-id --name-only -r HEAD^1..HEAD 2> /dev/null || true)
+          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.forced }}" == "false" -a "${{ github.event.created }}" == "false" ]; then
+            files=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }}..${{ github.event.after }} 2> /dev/null || true)
+          fi
+          echo "$files" >> changed.txt
+          cat changed.txt
+          files=$(echo "$files" | xargs -I {} sh -c 'echo "\"./{}\""' | tr '\n' ' ')
+          echo "CHANGED_FILES=$files" >> $GITHUB_ENV
+
+      - name: Style checks via pre-commit
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --files ${{ env.CHANGED_FILES }}
+
+      - name: Class reference schema checks
+        run: |
+          xmllint --noout --schema extension/doc_tools/class.xsd extension/doc_classes/*.xml
+
   build:
     runs-on: ${{matrix.os}}
     name: ${{matrix.name}}
+    needs: static-checks
     permissions: write-all
     strategy:
       fail-fast: false
@@ -140,7 +178,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
 
-    name: Peform Godot Debug Checks
+    name: Perform Godot Debug Checks
     steps:
       - name: Checkout project
         uses: actions/checkout@v4.1.1

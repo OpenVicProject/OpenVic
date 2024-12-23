@@ -29,7 +29,7 @@ GFXPieChartTexture::slice_t const* GFXPieChartTexture::get_slice(Vector2 const& 
 
 	static constexpr float TWO_PI = 2.0f * std::numbers::pi_v<float>;
 
-	/* Calculate the anti-clockwise angle between the point and the centre of the image.
+	/* Calculate the anti-clockwise angle between the point and the center of the image.
 	 * The y coordinate is negated as the image coordinate system's y increases downwards. */
 	float theta = atan2(-position.y, position.x);
 	if (theta < 0.0f) {
@@ -80,9 +80,9 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 			for (point.x = 0; point.x < pie_chart_diameter; ++point.x) {
 
 				Vector2 offset = point;
-				// Move to the centre of the pixel
+				// Move to the center of the pixel
 				offset += Vector2 { 0.5_real, 0.5_real };
-				// Normalise to [0, 2]
+				// Normalize to [0, 2]
 				offset /= pie_chart_radius;
 				// Translate to [-1, 1]
 				offset -= Vector2 { 1.0_real, 1.0_real };
