@@ -5,8 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://bq3awxxjn1tuw" path="res://src/Game/Menu/OptionMenu/VideoTab.tscn" id="2_ji8xr"]
 [ext_resource type="PackedScene" uid="uid://cbtgwpx2wxi33" path="res://src/Game/Menu/OptionMenu/SoundTab.tscn" id="3_4w35t"]
 [ext_resource type="PackedScene" uid="uid://duwjal7sd7p6w" path="res://src/Game/Menu/OptionMenu/GeneralTab.tscn" id="3_6gvf6"]
-[ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="4_vdhjp"]
 [ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/Game/Menu/OptionMenu/OtherTab.tscn" id="5_ahefp"]
+[ext_resource type="PackedScene" uid="uid://cka0tjqrek13" path="res://src/Game/Menu/OptionMenu/KeychainShortcutEdit.tscn" id="6_f7qfn"]
 
 [node name="OptionsMenu" type="PanelContainer" node_paths=PackedStringArray("_tab_container")]
 editor_description = "UI-25"
@@ -28,26 +28,31 @@ theme_type_variation = &"TabMargin"
 editor_description = "UI-45"
 layout_mode = 2
 tab_alignment = 1
+current_tab = 0
 use_hidden_tabs_for_min_size = true
 
 [node name="General" parent="Margin/Tab" instance=ExtResource("3_6gvf6")]
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="Video" parent="Margin/Tab" instance=ExtResource("2_ji8xr")]
 editor_description = "UI-46, UIFUN-43"
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="Sound" parent="Margin/Tab" instance=ExtResource("3_4w35t")]
 editor_description = "UI-47, UIFUN-44"
 visible = false
 layout_mode = 2
+metadata/_tab_index = 2
 
-[node name="Controls" parent="Margin/Tab" instance=ExtResource("4_vdhjp")]
+[node name="Controls" parent="Margin/Tab" instance=ExtResource("6_f7qfn")]
 editor_description = "SS-27, UI-49, UIFUN-46"
 visible = false
 layout_mode = 2
-alignment = 1
+metadata/_tab_index = 3
 
 [node name="Other" parent="Margin/Tab" instance=ExtResource("5_ahefp")]
 layout_mode = 2
+metadata/_tab_index = 4

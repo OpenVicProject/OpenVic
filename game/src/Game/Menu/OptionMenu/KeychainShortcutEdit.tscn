@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://cka0tjqrek13"]
+
+[ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="1_47eix"]
+[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/KeychainShortcutEdit.gd" id="2_gr2m0"]
+
+[node name="ShortcutEdit" instance=ExtResource("1_47eix")]
+script = ExtResource("2_gr2m0")
