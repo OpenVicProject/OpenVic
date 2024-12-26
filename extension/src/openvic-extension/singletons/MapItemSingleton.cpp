@@ -62,7 +62,7 @@ GFX::Billboard const* MapItemSingleton::get_billboard(std::string_view name, boo
 	return billboard;
 }
 
-// repackage the billboard object into a godot dictionnary for the Billboard manager to work with
+// repackage the billboard object into a godot dictionary for the Billboard manager to work with
 bool MapItemSingleton::add_billboard_dict(std::string_view name, TypedArray<Dictionary>& billboard_dict_array) const {
 
 	static const StringName name_key = "name";
@@ -86,7 +86,7 @@ bool MapItemSingleton::add_billboard_dict(std::string_view name, TypedArray<Dict
 	return true;
 }
 
-//get an array of all the billboard dictionnaries
+//get an array of all the billboard dictionaries
 TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});

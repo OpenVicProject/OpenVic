@@ -11,7 +11,7 @@ After cloning you must initialize and update the submodules:
 cd OpenVic
 git submodule update --init --recursive
 ```
-Updating the submodules is neccessary every time the dependencies are updated, if you're unsure, on every `git pull` you should also call `git submodule update --init --recursive`
+Updating the submodules is necessary every time the dependencies are updated, if you're unsure, on every `git pull` you should also call `git submodule update --init --recursive`
 
 To update the repo you must pull the repo:
 ```sh

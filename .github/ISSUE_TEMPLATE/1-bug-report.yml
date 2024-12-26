@@ -8,7 +8,7 @@ body:
         Thank you for filling out this bug report!
 
         When reporting a bug, please follow the guidelines in this template. This helps us quickly identify the problem you're having.
-        - If this report is about a feature or behavior in Victoria II that is missing or working incorrectly in OpenVic, please report a [Victoria II discrepency](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepency.yml) instead.
+        - If this report is about a feature or behavior in Victoria II that is missing or working incorrectly in OpenVic, please report a [Victoria II discrepancy](https://github.com/OpenVicProject/OpenVic/issues/new?assignees=&labels=&projects=&template=2-victoria-2-discrepancy.yml) instead.
         - Write a descriptive issue title above.
         - **Always open *one* issue for *one* bug**. If you notice several bugs, make sure to create one new issue for each of them.
         - Verify that you are using either the latest release or the latest commit. It is preferred that you check if your issue is reproducible in the latest commit - it may already have been fixed!
