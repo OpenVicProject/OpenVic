@@ -282,6 +282,7 @@ func _setup_pop_list() -> void:
 	var pop_list_panel : Panel = get_panel_from_nodepath(^"./country_pop/pop_list")
 	if not pop_list_panel:
 		return
+	pop_list_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	if _pop_list_scrollbar:
 		_pop_list_scrollbar.value_changed.connect(
