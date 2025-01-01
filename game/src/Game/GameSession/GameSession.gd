@@ -12,6 +12,8 @@ func _ready() -> void:
 	_model_manager.generate_buildings()
 	MusicConductor.generate_playlist()
 	MusicConductor.select_next_song()
+	# In game, the province selector uses the normal glove cursor.
+	CursorManager.set_compat_cursor(&"normal", Input.CURSOR_IBEAM)
 
 func _process(_delta : float) -> void:
 	GameSingleton.update_clock()
