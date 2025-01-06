@@ -439,6 +439,11 @@ MenuSingleton::~MenuSingleton() {
 	singleton = nullptr;
 }
 
+String MenuSingleton::get_issue_identifier_suffix() {
+	static const String issue_identifier_suffix = "_l";
+	return issue_identifier_suffix;
+}
+
 String MenuSingleton::get_tooltip_separator() {
 	static const String tooltip_separator = "\n" + String { "-" }.repeat(14) + "\n";
 	return tooltip_separator;
@@ -986,13 +991,13 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	ret[province_info_total_population_key] = province->get_total_population();
 
 	const auto make_pie_chart_tooltip = [this](
-		HasGetIdentifierAndGetColour auto const* key, float weight, float total_weight
+		HasGetIdentifierAndGetColour auto const* key, String const& identifier, float weight, float total_weight
 	) -> String {
 		static const String format_key = "%d%% %s";
-		return  vformat(
+		return vformat(
 			format_key,
 			static_cast<int32_t>(100.0f * weight / total_weight),
-			tr(Utilities::std_to_godot_string(key->get_identifier()))
+			tr(identifier)
 		);
 	};
 
@@ -1291,7 +1296,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				value_replace_key, Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100() * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
@@ -1395,7 +1400,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				value_replace_key, Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100() * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
