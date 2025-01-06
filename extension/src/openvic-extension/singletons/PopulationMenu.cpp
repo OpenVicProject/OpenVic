@@ -397,10 +397,10 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
 		population_menu.religion_distribution[&pop->get_religion()] += pop_size;
-		population_menu.ideology_distribution += pop->get_ideology_distribution() * pop_size;
+		population_menu.ideology_distribution += pop->get_ideology_distribution();
 		population_menu.culture_distribution[&pop->get_culture()] += pop_size;
-		population_menu.issue_distribution += pop->get_issue_distribution() * pop_size;
-		population_menu.vote_distribution += pop->get_vote_distribution() * pop_size;
+		population_menu.issue_distribution += pop->get_issue_distribution();
+		population_menu.vote_distribution += pop->get_vote_distribution();
 	}
 
 	normalise_fixed_point_map(population_menu.workforce_distribution);
@@ -453,6 +453,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		return [](Pop const* a, Pop const* b) -> bool {
 			return a->get_consciousness() < b->get_consciousness();
 		};
+	// TODO - scale by pop size when sorting by ideology, issues and votes!!!
 	case SORT_IDEOLOGY:
 		return [](Pop const* a, Pop const* b) -> bool {
 			return sorted_indexed_map_less_than(a->get_ideology_distribution(), b->get_ideology_distribution());
