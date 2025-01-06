@@ -453,6 +453,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		return [](Pop const* a, Pop const* b) -> bool {
 			return a->get_consciousness() < b->get_consciousness();
 		};
+	// TODO - scale by pop size when sorting by ideology, issues and votes!!!
 	case SORT_IDEOLOGY:
 		return [](Pop const* a, Pop const* b) -> bool {
 			return sorted_indexed_map_less_than(a->get_ideology_distribution(), b->get_ideology_distribution());

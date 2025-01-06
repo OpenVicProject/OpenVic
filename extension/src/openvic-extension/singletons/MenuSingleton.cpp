@@ -1291,7 +1291,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				value_replace_key, Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100() * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
@@ -1395,7 +1395,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				value_replace_key, Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100() * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
