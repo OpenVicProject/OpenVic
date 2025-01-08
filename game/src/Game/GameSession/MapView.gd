@@ -167,7 +167,8 @@ func zoom_out() -> void:
 	_zoom_position = Vector2()
 
 func set_hovered_province_index(hover_index : int) -> void:
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
+	if _map_shader_material:
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
 
 func set_hovered_province_at(pos : Vector2) -> void:
 	var hover_index := GameSingleton.get_province_index_from_uv_coords(pos)
@@ -188,8 +189,9 @@ func _update_province_hover() -> void:
 		set_hovered_province_at(_viewport_to_map_coords(_mouse_pos_viewport))
 
 func _on_province_selected(index : int) -> void:
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
-	print("Province selected with index: ", index)
+	if _map_shader_material:
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
+		print("Province selected with index: ", index)
 
 func _input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -324,7 +326,8 @@ func _zoom_process(delta : float) -> void:
 	# TODO - smooth transition similar to smooth zoom
 	_update_view_states(false)
 	var parchment_mapmode : bool = GameSingleton.is_parchment_mapmode_allowed() and _is_parchment_view
-	_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_parchment_mix, float(parchment_mapmode))
+	if _map_shader_material:
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_parchment_mix, float(parchment_mapmode))
 
 func _update_orientation() -> void:
 	const up := Vector3(0, 0, -1)
