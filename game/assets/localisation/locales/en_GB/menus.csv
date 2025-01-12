@@ -81,6 +81,48 @@ OPTIONS_SOUND_EXPLODE_EARS;Explode Eardrums on Startup?
 OPTIONS_CONTROLS;Controls
 OPTIONS_OTHER;Other
 
+;; Multiplayer Menu
+MP_BACK;X
+MP_SERVERBROWSER;Online
+MP_LANBROWSER;LAN
+MP_DIRECT_CONNECTION;Direct Connection
+MP_HOST;Host
+
+;; Server Browser Tab
+
+;; LAN Tab
+
+;; Direct Connection Tab
+MP_USERNAME_ENTRY;Username
+
+MP_DIRECT_NAME_ENTRY;Connection Name
+MP_DIRECT_IP_ENTRY;Connection IP
+MP_DIRECT_ADD_IP;Add IP
+MP_DIRECT_SAVE_IPS;Save IPs
+MP_DIRECT_REVERT_IPS; Revert IPs
+
+MP_DIRECT_SAVED_IPS;Saved IPs
+MP_DIRECT_CONNECT;Connect
+MP_DIRECT_EDIT;Edit
+MP_DIRECT_DELETE;X
+
+;; Connection
+MP_CONNECT_PASSWORD_ENTRY;Password
+MP_CONNECT_PASSWORD_CANCEL; Cancel
+MP_CONNECT_PASSWORD_OK;Connect
+
+MP_CONNECT_FAIL;Connection Failed
+MP_CONNECT_FAIL_OK; Ok
+MP_CONNECT_FAIL_REASON;Reason:
+MP_CONNECT_FAIL_PASSWORD;Incorrect Password
+MP_CONNECT_FAIL_NO_SERVER;Could not Find the specified Server
+MP_CONNECT_FAIL_BAD_IP; Invalid IP
+
+;; Host Tab
+MP_HOST_GAME_NAME_ENTRY;Game Name
+MP_HOST_HOST;Host
+MP_HOST_IS_LAN_ONLY;LAN Connections only
+
 ;; Credits Menu
 CREDITS_BACK;Back to Main Menu
 
