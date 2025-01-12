@@ -27,7 +27,7 @@ func _ready() -> void:
 
 func filter_for_tag(tag : StringName) -> void:
 	for child : Control in game_select_save_list.get_children():
-		if tag == &"":
+		if tag.is_empty():
 			child.show()
 		else:
 			if tag == child.resource.session_tag:
