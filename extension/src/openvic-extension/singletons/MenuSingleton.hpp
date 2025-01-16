@@ -5,6 +5,8 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
+#include <openvic-simulation/military/UnitInstanceGroup.hpp>
+#include <openvic-simulation/modifier/ModifierSum.hpp>
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
@@ -22,7 +24,17 @@ namespace OpenVic {
 	struct CountryParty;
 	struct RebelType;
 	struct ModifierValue;
+	struct ModifierSum;
 	struct RuleSet;
+	struct LeaderBase;
+
+	template<typename T>
+	concept ModifierEntryCallback = NodeTools::Callback<T, ModifierSum::modifier_entry_t const&>;
+
+	// ModifierEntryCallbacks are used to filter out entries that should not be included in tooltips, and maybe also collect
+	// them together to be displayed in a different way. If the callback returns true for an entry then that entry will be
+	// included in the tooltip normally, otherwise it will be ignored and left to the caller who provided the callback.
+	static constexpr bool _allow_all_modifier_entries(ModifierSum::modifier_entry_t const&) { return true; }
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -93,6 +105,12 @@ namespace OpenVic {
 			std::vector<Pop const*> pops, filtered_pops;
 		};
 
+		enum LeaderSortKey {
+			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
+			MAX_LEADER_SORT_KEY
+		};
+		ordered_map<LeaderBase const*, godot::Dictionary> cached_leader_dicts;
+
 		struct search_panel_t {
 			struct entry_t {
 				std::variant<ProvinceInstance const*, State const*, CountryInstance const*> target;
@@ -120,14 +138,33 @@ namespace OpenVic {
 		 * the given position. */
 		static godot::StringName const& _signal_update_tooltip();
 
-		godot::String get_state_name(State const& state) const;
-		godot::String get_country_name(CountryInstance const& country) const;
-		godot::String get_country_adjective(CountryInstance const& country) const;
+		godot::String _get_state_name(State const& state) const;
+		godot::String _get_country_name(CountryInstance const& country) const;
+		godot::String _get_country_adjective(CountryInstance const& country) const;
 
 		// Modifier effect and rule tooltips begin with a newline character (unless they're empty), as they're always
 		// added after a starting/title section.
-		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
-		godot::String make_rules_tooltip(RuleSet const& rules) const;
+		godot::String _make_modifier_line(
+			std::string_view identifier, ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+		) const;
+
+		godot::String _make_modifier_effects_tooltip(ModifierValue const& modifier) const;
+
+		template<ModifierEntryCallback ENTRY_CHECK_CALLBACK = decltype(_allow_all_modifier_entries)>
+		godot::String _make_modifier_effect_contributions_tooltip(
+			ModifierSum const& sum, ModifierEffect const& effect,
+			ENTRY_CHECK_CALLBACK check_entry_callback = _allow_all_modifier_entries
+		) const;
+
+		template<ModifierEntryCallback ENTRY_CHECK_CALLBACK = decltype(_allow_all_modifier_entries)>
+		godot::String _make_modifier_effect_contributions_tooltip_nullcheck(
+			ModifierSum const& sum, ModifierEffect const* effect,
+			ENTRY_CHECK_CALLBACK check_entry_callback = _allow_all_modifier_entries
+		) const;
+
+		godot::String _make_rules_tooltip(RuleSet const& rules) const;
+
+		godot::String _make_mobilisation_impact_tooltip() const;
 
 	protected:
 		static void _bind_methods();
@@ -205,6 +242,12 @@ namespace OpenVic {
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
 
+		/* MILITARY MENU */
+		godot::Dictionary make_leader_dict(LeaderBase const& leader);
+		godot::Dictionary make_army_dict(ArmyInstance const& army);
+		godot::Dictionary make_navy_dict(NavyInstance const& navy);
+		godot::Dictionary get_military_menu_info(LeaderSortKey leader_sort_key);
+
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
 		// (which automatically includes country creation/destruction)
@@ -218,3 +261,4 @@ namespace OpenVic {
 
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::LeaderSortKey);

@@ -9,6 +9,7 @@
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -38,7 +39,7 @@ StringName const& MenuSingleton::_signal_update_tooltip() {
 	return signal_update_tooltip;
 }
 
-String MenuSingleton::get_state_name(State const& state) const {
+String MenuSingleton::_get_state_name(State const& state) const {
 	StateSet const& state_set = state.get_state_set();
 
 	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
@@ -69,14 +70,14 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 	if (owned && split) {
 		// COUNTRY STATE/CAPITAL
-		return get_country_adjective(*state.get_owner()) + " " + name;
+		return _get_country_adjective(*state.get_owner()) + " " + name;
 	}
 
 	// STATE/CAPITAL
 	return name;
 }
 
-String MenuSingleton::get_country_name(CountryInstance const& country) const {
+String MenuSingleton::_get_country_name(CountryInstance const& country) const {
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
 		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", country.get_government_type()->get_identifier()
@@ -92,7 +93,7 @@ String MenuSingleton::get_country_name(CountryInstance const& country) const {
 	return tr(Utilities::std_to_godot_string(country.get_identifier()));
 }
 
-String MenuSingleton::get_country_adjective(CountryInstance const& country) const {
+String MenuSingleton::_get_country_adjective(CountryInstance const& country) const {
 	static constexpr std::string_view adjective = "_ADJ";
 
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
@@ -110,58 +111,123 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
-String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifier) const {
-	if (modifier.empty()) {
-		return {};
-	}
-
+static String _make_modifier_effect_value(
+	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+) {
 	String result;
 
-	for (auto const& [effect, value] : modifier.get_values()) {
-		static const String post_name_text = ": " + GUILabel::get_colour_marker();
+	if (plus_for_non_negative && value >= 0) {
+		result = "+";
+	}
 
-		result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + post_name_text;
+	static constexpr int32_t DECIMAL_PLACES = 2;
 
-		if (value == 0) {
-			result += "Y";
-		} else if (effect->is_positive_good() == (value > 0)) {
-			result += "G";
-		} else {
-			result += "R";
+	using enum ModifierEffect::format_t;
+
+	switch (format_effect.get_format()) {
+	case PROPORTION_DECIMAL:
+		value *= 100;
+		[[fallthrough]];
+	case PERCENTAGE_DECIMAL:
+		result += Utilities::std_to_godot_string(value.to_string(DECIMAL_PLACES) + "%");
+		break;
+	case INT:
+
+		// TODO - remove test code?!?!
+
+		if (!value.is_integer() || value - fixed_point_t::parse(value.to_int64_t()) != fixed_point_t::_0()) {
+			Logger::error(
+				"Error formatting value for ModifierEffect \"", format_effect.get_identifier(), "\": ", value,
+				" is not an integer! Replacing with ", value.to_int64_t()
+			);
 		}
 
-		if (value >= 0) {
-			result += "+";
-		}
-
-		static constexpr int32_t DECIMAL_PLACES = 2;
-
-		using enum ModifierEffect::format_t;
-
-		switch (effect->get_format()) {
-		case PROPORTION_DECIMAL:
-			result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case PERCENTAGE_DECIMAL:
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case INT:
-			result += String::num_int64(value.to_int64_t());
-			break;
-		case RAW_DECIMAL: [[fallthrough]];
-		default: // Use raw decimal as fallback format
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
-			break;
-		}
-
-		static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-		result += end_text;
+		result += String::num_int64(value.to_int64_t());
+		break;
+	case RAW_DECIMAL: [[fallthrough]];
+	default: // Use raw decimal as fallback format
+		result += Utilities::std_to_godot_string(value.to_string(DECIMAL_PLACES));
+		break;
 	}
 
 	return result;
 }
 
-String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
+static String _make_modifier_effect_value_coloured(
+	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+) {
+	String result = GUILabel::get_colour_marker();
+
+	if (value == 0) {
+		result += "Y";
+	} else if (format_effect.is_positive_good() == (value > 0)) {
+		result += "G";
+	} else {
+		result += "R";
+	}
+
+	result += _make_modifier_effect_value(format_effect, value, plus_for_non_negative);
+
+	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+	result += end_text;
+
+	return result;
+}
+
+String MenuSingleton::_make_modifier_line(
+	std::string_view identifier, ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+) const {
+	return tr(Utilities::std_to_godot_string(identifier)) + ": " +
+		_make_modifier_effect_value_coloured(format_effect, value, plus_for_non_negative);
+}
+
+String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifier) const {
+	String result;
+
+	for (auto const& [effect, value] : modifier.get_values()) {
+		result += "\n" + _make_modifier_line(effect->get_identifier(), *effect, value, true);
+	}
+
+	return result;
+}
+
+template<ModifierEntryCallback ENTRY_CHECK_CALLBACK>
+String MenuSingleton::_make_modifier_effect_contributions_tooltip(
+	ModifierSum const& sum, ModifierEffect const& effect, ENTRY_CHECK_CALLBACK check_entry_callback
+) const {
+	String result;
+
+	sum.for_each_contributing_modifier(
+		effect,
+		[this, &effect, &check_entry_callback, &result](
+			ModifierSum::modifier_entry_t const& modifier_entry
+		) -> void {
+			if (check_entry_callback(modifier_entry)) {
+				if (!result.is_empty()) {
+					result += "\n";
+				}
+
+				result += _make_modifier_line(
+					modifier_entry.modifier.get_identifier(),
+					effect,
+					modifier_entry.get_modifier_effect_value(effect),
+					true
+				);
+			}
+		}
+	);
+
+	return result;
+}
+
+template<ModifierEntryCallback ENTRY_CHECK_CALLBACK>
+String MenuSingleton::_make_modifier_effect_contributions_tooltip_nullcheck(
+	ModifierSum const& sum, ModifierEffect const* effect, ENTRY_CHECK_CALLBACK check_entry_callback
+) const {
+	return effect != nullptr ? _make_modifier_effect_contributions_tooltip(sum, *effect, check_entry_callback) : String {};
+}
+
+String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 	if (rules.empty()) {
 		return {};
 	}
@@ -185,6 +251,57 @@ String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
 	}
 
 	return result;
+}
+
+String MenuSingleton::_make_mobilisation_impact_tooltip() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	CountryInstance const* country = game_singleton->get_viewed_country();
+
+	if (country == nullptr) {
+		return {};
+	}
+
+	IssueManager const& issue_manager = game_singleton->get_definition_manager().get_politics_manager().get_issue_manager();
+
+	static const StringName mobilisation_impact_tooltip_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC";
+	static const String mobilisation_impact_tooltip_replace_impact_key = "$IMPACT$";
+	static const String mobilisation_impact_tooltip_replace_policy_key = "$POLICY$";
+	static const String mobilisation_impact_tooltip_replace_units_key = "$UNITS$";
+
+	static const StringName mobilisation_impact_tooltip2_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC2";
+	static const String mobilisation_impact_tooltip2_replace_curr_key = "$CURR$";
+	static const String mobilisation_impact_tooltip2_replace_impact_key = "$IMPACT$";
+
+	static const StringName no_issue = "noIssue";
+
+	IssueGroup const* war_policy_issue_group = issue_manager.get_issue_group_by_identifier("war_policy");
+	Issue const* war_policy_issue =
+		war_policy_issue_group != nullptr ? country->get_ruling_party()->get_policies()[*war_policy_issue_group] : nullptr;
+
+	const String impact_string = Utilities::std_to_godot_string((country->get_mobilisation_impact() * 100).to_string(1) + "%");
+
+	return tr(
+		mobilisation_impact_tooltip_localisation_key
+	).replace(
+		mobilisation_impact_tooltip_replace_impact_key, impact_string
+	).replace(
+		mobilisation_impact_tooltip_replace_policy_key, tr(
+			war_policy_issue != nullptr
+				? StringName { Utilities::std_to_godot_string(war_policy_issue->get_identifier()) }
+				: no_issue
+		)
+	).replace(
+		mobilisation_impact_tooltip_replace_units_key,
+		String::num_uint64(country->get_mobilisation_max_regiment_count())
+	) + "\n" + tr(
+		mobilisation_impact_tooltip2_localisation_key
+	).replace(
+		mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country->get_regiment_count())
+	).replace(
+		mobilisation_impact_tooltip2_replace_impact_key, impact_string
+	);
 }
 
 void MenuSingleton::_bind_methods() {
@@ -278,6 +395,16 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(SORT_SIZE_CHANGE);
 	BIND_ENUM_CONSTANT(SORT_LITERACY);
 
+	/* MILITARY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_military_menu_info, { "leader_sort_key" });
+
+	BIND_ENUM_CONSTANT(LEADER_SORT_NONE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_PRESTIGE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_TYPE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_NAME);
+	BIND_ENUM_CONSTANT(LEADER_SORT_ASSIGNMENT);
+	BIND_ENUM_CONSTANT(MAX_LEADER_SORT_KEY);
+
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
 	OV_BIND_METHOD(MenuSingleton::update_search_results, { "text" });
@@ -326,7 +453,7 @@ String MenuSingleton::get_country_name_from_identifier(String const& country_ide
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return get_country_name(*country);
+	return _get_country_name(*country);
 }
 
 String MenuSingleton::get_country_adjective_from_identifier(String const& country_identifier) const {
@@ -345,7 +472,7 @@ String MenuSingleton::get_country_adjective_from_identifier(String const& countr
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return get_country_adjective(*country);
+	return _get_country_adjective(*country);
 }
 
 /* TOOLTIP */
@@ -450,7 +577,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
-		ret[province_info_state_key] = get_state_name(*state);
+		ret[province_info_state_key] = _get_state_name(*state);
 	}
 
 	ret[province_info_slave_status_key] = province->get_slave();
@@ -495,7 +622,55 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		ProductionType const& production_type = *rgo.get_production_type_nullable();
 
 		String contributing_modifier_effects;
-		// TODO - generate list of contributing modifier effects (including combined "From Technology" effeects)
+
+		{
+			ModifierEffectCache const& modifier_effect_cache =
+				game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
+
+			ModifierEffect const* rgo_size_local;
+			ModifierEffect const* rgo_size_global;
+
+			if (production_type.is_farm()) {
+				rgo_size_local = modifier_effect_cache.get_farm_rgo_size_local();
+				rgo_size_global = modifier_effect_cache.get_farm_rgo_size_global();
+			} else {
+				rgo_size_local = modifier_effect_cache.get_mine_rgo_size_local();
+				rgo_size_global = modifier_effect_cache.get_mine_rgo_size_global();
+			}
+
+			if (rgo_size_local != nullptr) {
+				if (province->get_terrain_type() != nullptr) {
+					const fixed_point_t from_terrain = province->get_terrain_type()->get_effect(*rgo_size_local);
+
+					if (from_terrain != fixed_point_t::_0()) {
+						contributing_modifier_effects = tr(
+							Utilities::std_to_godot_string(province->get_terrain_type()->get_identifier())
+						) + ": " + _make_modifier_effect_value_coloured(*rgo_size_local, from_terrain, false) + "\n";
+					}
+				}
+
+				const fixed_point_t from_province = province->get_modifier_effect_value(*rgo_size_local);
+
+				if (from_province != fixed_point_t::_0()) {
+					static const StringName rgo_size_localisation_key = "RGO_SIZE";
+
+					contributing_modifier_effects += tr(rgo_size_localisation_key) + ": " +
+						_make_modifier_effect_value_coloured(*rgo_size_local, from_province, false) + "\n";
+				}
+			}
+
+			const fixed_point_t from_technology = province->get_modifier_effect_value_nullcheck(rgo_size_global) +
+				province->get_modifier_effect_value_nullcheck(
+					modifier_effect_cache.get_good_effects()[production_type.get_output_good()].get_rgo_size()
+				);
+
+			if (from_technology != fixed_point_t::_0()) {
+				static const StringName from_technology_localisation_key = "employ_from_tech";
+
+				contributing_modifier_effects += tr(from_technology_localisation_key) +
+					_make_modifier_effect_value_coloured(*rgo_size_global, from_technology, false);
+			}
+		}
 
 		static const StringName employment_localisation_key = "PROVINCEVIEW_EMPLOYMENT";
 		static const String value_replace_key = "$VALUE$";
@@ -676,7 +851,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Pair: State name / Power
 		std::vector<std::pair<String, fixed_point_t>> industrial_power_states;
 		for (auto const& [state, power] : country->get_industrial_power_from_states()) {
-			industrial_power_states.emplace_back(get_state_name(*state), power);
+			industrial_power_states.emplace_back(_get_state_name(*state), power);
 		}
 		std::sort(
 			industrial_power_states.begin(), industrial_power_states.end(),
@@ -694,7 +869,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		std::vector<std::tuple<String, String, fixed_point_t>> industrial_power_from_investments;
 		for (auto const& [country, power] : country->get_industrial_power_from_investments()) {
 			industrial_power_from_investments.emplace_back(
-				Utilities::std_to_godot_string(country->get_identifier()), get_country_name(*country), power
+				Utilities::std_to_godot_string(country->get_identifier()), _get_country_name(*country), power
 			);
 		}
 		std::sort(
@@ -770,20 +945,15 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	ret[regiment_count_key] = static_cast<uint64_t>(country->get_regiment_count());
 	ret[max_supported_regiments_key] = static_cast<uint64_t>(country->get_max_supported_regiment_count());
 
-	static const StringName mobilised_key = "mobilised";
+	static const StringName is_mobilised_key = "is_mobilised";
 	static const StringName mobilisation_regiments_key = "mobilisation_regiments";
-	static const StringName mobilisation_impact_key = "mobilisation_impact";
-	static const StringName war_policy_key = "war_policy";
-	static const StringName mobilisation_max_regiments_key = "mobilisation_max_regiments";
+	static const StringName mobilisation_impact_tooltip_key = "mobilisation_impact_tooltip";
 
 	if (country->is_mobilised()) {
-		ret[mobilised_key] = true;
+		ret[is_mobilised_key] = true;
 	} else {
-		ret[mobilised_key] = false;
 		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
-		ret[mobilisation_impact_key] = country->get_mobilisation_impact().to_float();
-		ret[war_policy_key] = String {}; // TODO - get ruling party's war policy
-		ret[mobilisation_max_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_max_regiment_count());
+		ret[mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
 	}
 
 	return ret;
@@ -872,6 +1042,602 @@ String MenuSingleton::get_longform_date() const {
 	return Utilities::date_to_formatted_string(instance_manager->get_today(), true);
 }
 
+/* MILITARY MENU */
+
+static Ref<Texture2D> _get_leader_picture(LeaderBase const& leader) {
+	AssetManager* asset_manager = AssetManager::get_singleton();
+	ERR_FAIL_NULL_V(asset_manager, {});
+
+	if (!leader.get_picture().empty()) {
+		const Ref<ImageTexture> texture = asset_manager->get_leader_texture_std(leader.get_picture());
+
+		if (texture.is_valid()) {
+			return texture;
+		}
+	}
+
+	return asset_manager->get_missing_leader_texture();
+}
+
+Dictionary MenuSingleton::make_leader_dict(LeaderBase const& leader) {
+	const decltype(cached_leader_dicts)::const_iterator it = cached_leader_dicts.find(&leader);
+
+	if (it != cached_leader_dicts.end()) {
+		return it->second;
+	}
+
+	static const StringName military_info_leader_name_key = "leader_name";
+	static const StringName military_info_leader_picture_key = "leader_picture";
+	static const StringName military_info_leader_prestige_key = "leader_prestige";
+	static const StringName military_info_leader_prestige_tooltip_key = "leader_prestige_tooltip";
+	static const StringName military_info_leader_background_key = "leader_background";
+	static const StringName military_info_leader_personality_key = "leader_personality";
+	static const StringName military_info_leader_can_be_used_key = "leader_can_be_used";
+	static const StringName military_info_leader_assignment_key = "leader_assignment";
+	static const StringName military_info_leader_location_key = "leader_location";
+	static const StringName military_info_leader_tooltip_key = "leader_tooltip";
+
+	Dictionary leader_dict;
+	String tooltip;
+	ModifierValue modifier_value;
+
+	// Picture
+	leader_dict[military_info_leader_picture_key] = _get_leader_picture(leader);
+
+	{
+		// Branched (can be used, assignment, location, title)
+		static const auto branched_section = []<UnitType::branch_t Branch>(
+			LeaderBranched<Branch> const& leader, Dictionary& leader_dict
+		) -> void {
+			leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
+
+			UnitInstanceGroupBranched<Branch> const* group = leader.get_unit_instance_group();
+			if (group != nullptr) {
+				leader_dict[military_info_leader_assignment_key] = Utilities::std_to_godot_string(group->get_name());
+
+				ProvinceInstance const* location = group->get_position();
+				if (location != nullptr) {
+					leader_dict[military_info_leader_location_key] =
+						Utilities::std_to_godot_string(location->get_identifier());
+				}
+			}
+		};
+
+		using enum UnitType::branch_t;
+
+		switch (leader.get_branch()) {
+		case LAND: {
+			static const StringName general_localisation_key = "MILITARY_GENERAL_TOOLTIP";
+			tooltip = tr(general_localisation_key) + " ";
+
+			branched_section(static_cast<General const&>(leader), leader_dict);
+		} break;
+
+		case NAVAL: {
+			static const StringName admiral_localisation_key = "MILITARY_ADMIRAL_TOOLTIP";
+			tooltip = tr(admiral_localisation_key) + " ";
+
+			branched_section(static_cast<Admiral const&>(leader), leader_dict);
+		} break;
+
+		default:
+			UtilityFunctions::push_error(
+				"Invalid branch type \"", static_cast<int64_t>(leader.get_branch()), "\" for leader \"",
+				Utilities::std_to_godot_string(leader.get_name()), "\""
+			);
+		}
+	}
+
+	{
+		// Name
+		String leader_name = Utilities::std_to_godot_string(leader.get_name());
+
+		// Make yellow then revert back to default (white)
+		static const String leader_name_prefix = GUILabel::get_colour_marker() + String { "Y" };
+		static const String leader_name_suffix = GUILabel::get_colour_marker() + String { "!" };
+
+		tooltip += leader_name_prefix + leader_name + leader_name_suffix;
+
+		leader_dict[military_info_leader_name_key] = std::move(leader_name);
+	}
+
+	{
+		// Prestige
+		const fixed_point_t prestige = leader.get_prestige();
+		fixed_point_t morale_bonus, organisation_bonus;
+
+		GameSingleton const* game_singleton = GameSingleton::get_singleton();
+		if (game_singleton != nullptr) {
+			DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+			modifier_value =
+				definition_manager.get_military_manager().get_leader_trait_manager().get_leader_prestige_modifier() * prestige;
+
+			ModifierEffectCache const& modifier_effect_cache =
+				definition_manager.get_modifier_manager().get_modifier_effect_cache();
+
+			morale_bonus = modifier_value.get_effect_nullcheck(modifier_effect_cache.get_morale_leader());
+			organisation_bonus = modifier_value.get_effect_nullcheck(modifier_effect_cache.get_organisation());
+		}
+
+		static const StringName prestige_localisation_key = "PRESTIGE_SCORE";
+		static const String value_replace_key = "$VAL$";
+
+		String prestige_tooltip = tr(prestige_localisation_key).replace(
+			value_replace_key, Utilities::float_to_string_dp(prestige * 100, 2) + "%"
+		);
+
+		tooltip += "\n" + prestige_tooltip;
+
+		static const StringName morale_localisation_key = "PRESTIGE_MORALE_BONUS";
+		static const StringName organisation_localisation_key = "PRESTIGE_MAX_ORG_BONUS";
+
+		// Morale and organisation bonuses are always green with a + sign, matching the base game's behaviour
+		static const String value_prefix = GUILabel::get_colour_marker() + String { "G+" };
+
+		prestige_tooltip += "\n" + tr(morale_localisation_key).replace(
+			value_replace_key, value_prefix + Utilities::float_to_string_dp(morale_bonus * 100, 2) + "%"
+		) + "\n" + tr(organisation_localisation_key).replace(
+			value_replace_key, value_prefix + Utilities::float_to_string_dp(organisation_bonus * 100, 2) + "%"
+		);
+
+		leader_dict[military_info_leader_prestige_key] = prestige.to_float();
+		leader_dict[military_info_leader_prestige_tooltip_key] = std::move(prestige_tooltip);
+	}
+
+	{
+		// Background
+		String background;
+
+		if (leader.get_background() != nullptr) {
+			background = tr(Utilities::std_to_godot_string(leader.get_background()->get_identifier()));
+			modifier_value += *leader.get_background();
+		} else {
+			static const StringName missing_background = "no_background";
+			background = tr(missing_background);
+		}
+
+		static const StringName background_localisation_key = "MILITARY_BACKGROUND";
+		static const String background_replace_key = "$NAME$";
+
+		tooltip += "\n" + tr(background_localisation_key).replace(
+			background_replace_key, background
+		);
+
+		leader_dict[military_info_leader_background_key] = std::move(background);
+	}
+
+	{
+		// Personality
+		String personality;
+
+		if (leader.get_personality() != nullptr) {
+			personality = tr(Utilities::std_to_godot_string(leader.get_personality()->get_identifier()));
+			modifier_value += *leader.get_personality();
+		} else {
+			static const StringName missing_personality = "no_personality";
+			personality = tr(missing_personality);
+		}
+
+		static const StringName personality_localisation_key = "MILITARY_PERSONALITY";
+		static const String personality_replace_key = "$NAME$";
+
+		tooltip += "\n" + tr(personality_localisation_key).replace(
+			personality_replace_key, personality
+		);
+
+		leader_dict[military_info_leader_personality_key] = std::move(personality);
+	}
+
+	tooltip += _make_modifier_effects_tooltip(modifier_value);
+
+	leader_dict[military_info_leader_tooltip_key] = std::move(tooltip);
+
+	cached_leader_dicts.emplace(&leader, leader_dict);
+
+	return leader_dict;
+}
+
+Dictionary MenuSingleton::make_army_dict(ArmyInstance const& army) {
+	static const StringName military_info_army_leader_picture_key = "army_leader_picture";
+	static const StringName military_info_army_leader_tooltip_key = "army_leader_tooltip";
+	static const StringName military_info_army_name_key = "army_name";
+	static const StringName military_info_army_location_key = "army_location";
+	static const StringName military_info_army_regiment_count_key = "army_regiment_count";
+	static const StringName military_info_army_men_count_key = "army_men_count";
+	static const StringName military_info_army_max_men_count_key = "army_max_men_count";
+	static const StringName military_info_army_morale_key = "army_morale";
+	static const StringName military_info_army_moving_tooltip_key = "army_moving_tooltip";
+	static const StringName military_info_army_digin_tooltip_key = "army_digin_tooltip";
+	static const StringName military_info_army_combat_key = "army_combat";
+
+	Dictionary army_dict;
+
+	if (army.get_leader() != nullptr) {
+		static const StringName military_info_leader_picture_key = "leader_picture";
+		static const StringName military_info_leader_tooltip_key = "leader_tooltip";
+
+		const Dictionary leader_dict = make_leader_dict(*army.get_leader());
+
+		army_dict[military_info_army_leader_picture_key] = leader_dict.get(
+			military_info_leader_picture_key, Ref<Texture2D> {}
+		);
+		army_dict[military_info_army_leader_tooltip_key] = leader_dict.get(military_info_leader_tooltip_key, String {});
+	}
+
+	army_dict[military_info_army_name_key] = Utilities::std_to_godot_string(army.get_name());
+	if (army.get_position() != nullptr) {
+		army_dict[military_info_army_location_key] = Utilities::std_to_godot_string(army.get_position()->get_identifier());
+	}
+	army_dict[military_info_army_regiment_count_key] = static_cast<uint64_t>(army.get_unit_count());
+
+	// TODO - calculate (max) men and morale properly in ArmyInstance and RegimentInstances and set here
+	army_dict[military_info_army_men_count_key] = static_cast<uint64_t>(army.get_unit_count() * 3000);
+	army_dict[military_info_army_max_men_count_key] = static_cast<uint64_t>(army.get_unit_count() * 3000);
+	army_dict[military_info_army_morale_key] = 1.0f;
+
+	if (true /* army.is_moving() */) {
+		static const StringName moving_localisation_key = "MILITARY_MOVING_TOOLTIP";
+		static const String moving_location_replace_key = "$LOCATION$";
+		static const String moving_date_replace_key = "$DATE$";
+
+		ProvinceInstance const* destination = nullptr;
+		Date arrival_date {};
+
+		army_dict[military_info_army_moving_tooltip_key] = tr(moving_localisation_key).replace(
+			moving_location_replace_key,
+			tr(GUINode::format_province_name(
+				destination != nullptr ? Utilities::std_to_godot_string(destination->get_identifier()) : String {}, false
+			))
+		).replace(moving_date_replace_key, Utilities::std_to_godot_string(arrival_date.to_string()));
+	}
+
+	if (true /* army.is_digging_in() */) {
+		static const StringName digin_localisation_key = "MILITARY_DIGIN_TOOLTIP";
+		static const String moving_days_replace_key = "$DAYS$";
+
+		// TODO - get days spent digging in
+		int64_t days_spent_digging_in = 4;
+
+		army_dict[military_info_army_digin_tooltip_key] = tr(digin_localisation_key).replace(
+			moving_days_replace_key, String::num_int64(days_spent_digging_in)
+		);
+	}
+
+	if (true /* army.is_in_combat() */) {
+		army_dict[military_info_army_combat_key] = true;
+	}
+
+	return army_dict;
+}
+
+Dictionary MenuSingleton::make_navy_dict(NavyInstance const& navy) {
+	static const StringName military_info_navy_leader_picture_key = "navy_leader_picture";
+	static const StringName military_info_navy_leader_tooltip_key = "navy_leader_tooltip";
+	static const StringName military_info_navy_name_key = "navy_name";
+	static const StringName military_info_navy_location_key = "navy_location";
+	static const StringName military_info_navy_ship_count_key = "navy_ship_count";
+	static const StringName military_info_navy_morale_key = "navy_morale";
+	static const StringName military_info_navy_strength_key = "navy_strength";
+	static const StringName military_info_navy_moving_tooltip_key = "navy_moving_tooltip";
+	static const StringName military_info_navy_combat_key = "navy_combat";
+
+	Dictionary navy_dict;
+
+	if (navy.get_leader() != nullptr) {
+		static const StringName military_info_leader_picture_key = "leader_picture";
+		static const StringName military_info_leader_tooltip_key = "leader_tooltip";
+
+		const Dictionary leader_dict = make_leader_dict(*navy.get_leader());
+
+		navy_dict[military_info_navy_leader_picture_key] = leader_dict.get(
+			military_info_leader_picture_key, Ref<Texture2D> {}
+		);
+		navy_dict[military_info_navy_leader_tooltip_key] = leader_dict.get(military_info_leader_tooltip_key, String {});
+	}
+
+	navy_dict[military_info_navy_name_key] = Utilities::std_to_godot_string(navy.get_name());
+	if (navy.get_position() != nullptr) {
+		navy_dict[military_info_navy_location_key] = Utilities::std_to_godot_string(navy.get_position()->get_identifier());
+	}
+	navy_dict[military_info_navy_ship_count_key] = static_cast<uint64_t>(navy.get_unit_count());
+
+	// TODO - calculate strength and morale properly in NavyInstance from ShipInstances and set here
+	navy_dict[military_info_navy_morale_key] = 1.0f;
+	navy_dict[military_info_navy_strength_key] = 1.0f;
+
+	if (true /* navy.is_moving() */) {
+		static const StringName moving_localisation_key = "MILITARY_MOVING_TOOLTIP";
+		static const String moving_location_replace_key = "$LOCATION$";
+		static const String moving_date_replace_key = "$DATE$";
+
+		ProvinceInstance const* destination = nullptr;
+		Date arrival_date {};
+
+		navy_dict[military_info_navy_moving_tooltip_key] = tr(moving_localisation_key).replace(
+			moving_location_replace_key,
+			tr(GUINode::format_province_name(
+				destination != nullptr ? Utilities::std_to_godot_string(destination->get_identifier()) : String {}, false
+			))
+		).replace(moving_date_replace_key, Utilities::std_to_godot_string(arrival_date.to_string()));
+	}
+
+	if (true /* navy.is_in_combat() */) {
+		navy_dict[military_info_navy_combat_key] = true;
+	}
+
+	return navy_dict;
+}
+
+Dictionary MenuSingleton::get_military_menu_info(LeaderSortKey leader_sort_key) {
+	cached_leader_dicts.clear();
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+	ModifierEffectCache const& modifier_effect_cache = definition_manager.get_modifier_manager().get_modifier_effect_cache();
+	IssueManager const& issue_manager = definition_manager.get_politics_manager().get_issue_manager();
+
+	CountryInstance const* country = game_singleton->get_viewed_country();
+	if (country == nullptr) {
+		return {};
+	}
+
+	Dictionary ret;
+
+	// Military stats
+	static const StringName military_info_war_exhaustion_key = "war_exhaustion";
+	static const StringName military_info_war_exhaustion_max_key = "war_exhaustion_max";
+	static const StringName military_info_supply_consumption_key = "supply_consumption";
+	static const StringName military_info_organisation_regain_key = "organisation_regain";
+	static const StringName military_info_land_organisation_key = "land_organisation";
+	static const StringName military_info_naval_organisation_key = "naval_organisation";
+	static const StringName military_info_land_unit_start_experience_key = "land_unit_start_experience";
+	static const StringName military_info_naval_unit_start_experience_key = "naval_unit_start_experience";
+	static const StringName military_info_recruit_time_key = "recruit_time";
+	static const StringName military_info_combat_width_key = "combat_width";
+	static const StringName military_info_digin_cap_key = "digin_cap";
+	static const StringName military_info_military_tactics_key = "military_tactics";
+
+	ret[military_info_war_exhaustion_key] = country->get_war_exhaustion().to_float();
+	ret[military_info_war_exhaustion_max_key] = country->get_war_exhaustion_max().to_float();
+	ret[military_info_supply_consumption_key] = country->get_supply_consumption().to_float();
+	ret[military_info_organisation_regain_key] = country->get_organisation_regain().to_float();
+	ret[military_info_land_organisation_key] = country->get_land_organisation().to_float();
+	ret[military_info_naval_organisation_key] = country->get_naval_organisation().to_float();
+	ret[military_info_land_unit_start_experience_key] = country->get_land_unit_start_experience().to_float();
+	ret[military_info_naval_unit_start_experience_key] = country->get_naval_unit_start_experience().to_float();
+	ret[military_info_recruit_time_key] = country->get_recruit_time().to_float();
+	ret[military_info_combat_width_key] = country->get_combat_width();
+	ret[military_info_digin_cap_key] = country->get_digin_cap();
+	ret[military_info_military_tactics_key] = country->get_military_tactics().to_float();
+
+	// Mobilisation
+	static const StringName military_info_is_mobilised_key = "is_mobilised";
+	static const StringName military_info_mobilisation_progress_key = "mobilisation_progress";
+	static const StringName military_info_mobilisation_size_key = "mobilisation_size";
+	static const StringName military_info_mobilisation_size_tooltip_key = "mobilisation_size_tooltip";
+	static const StringName military_info_mobilisation_impact_tooltip_key = "mobilisation_impact_tooltip";
+	static const StringName military_info_mobilisation_economy_impact_key = "mobilisation_economy_impact";
+	static const StringName military_info_mobilisation_economy_impact_tooltip_key = "mobilisation_economy_impact_tooltip";
+
+	ret[military_info_is_mobilised_key] = country->is_mobilised();
+	// ret[military_info_mobilisation_progress_key] = country->get_mobilisation_progress().to_float();
+	ret[military_info_mobilisation_size_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
+
+	static const StringName mobilisation_size_tooltip_localisation_key = "MOB_SIZE_IRO";
+	static const String mobilisation_size_tooltip_replace_value_key = "$VALUE$";
+
+	ret[military_info_mobilisation_size_tooltip_key] = tr(mobilisation_size_tooltip_localisation_key).replace(
+		mobilisation_size_tooltip_replace_value_key, Utilities::std_to_godot_string(
+			(country->get_modifier_effect_value_nullcheck(modifier_effect_cache.get_mobilisation_size()) * 100).to_string(2)
+		)
+	) + "\n" + _make_modifier_effect_contributions_tooltip_nullcheck(
+		country->get_modifier_sum(), modifier_effect_cache.get_mobilisation_size()
+	);
+
+	ret[military_info_mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
+
+	ret[military_info_mobilisation_economy_impact_key] = country->get_mobilisation_economy_impact().to_float();
+
+	{
+		ModifierEffect const* mobilisation_economy_impact = modifier_effect_cache.get_mobilisation_economy_impact();
+		fixed_point_t research_contribution;
+
+		String mobilisation_economy_impact_tooltip = _make_modifier_effect_contributions_tooltip_nullcheck(
+			country->get_modifier_sum(),
+			mobilisation_economy_impact,
+			[mobilisation_economy_impact, &research_contribution](
+				ModifierSum::modifier_entry_t const& modifier_entry
+			) -> bool {
+				using enum Modifier::modifier_type_t;
+
+				switch (modifier_entry.modifier.get_type()) {
+				case TECHNOLOGY:
+					[[fallthrough]];
+				case INVENTION:
+					research_contribution += modifier_entry.get_modifier_effect_value(*mobilisation_economy_impact);
+					return false;
+
+				default:
+					return true;
+				}
+			}
+		);
+
+		if (research_contribution != fixed_point_t::_0()) {
+			if (!mobilisation_economy_impact_tooltip.is_empty()) {
+				mobilisation_economy_impact_tooltip = "\n" + mobilisation_economy_impact_tooltip;
+			}
+
+			static const StringName research_contribution_negative_key = "MOB_ECO_IMPACT";
+			static const StringName research_contribution_positive_key = "MOB_ECO_PENALTY";
+			static const String replace_value_key = "$VALUE$";
+
+			mobilisation_economy_impact_tooltip = tr(
+				research_contribution < fixed_point_t::_0()
+					? research_contribution_negative_key
+					: research_contribution_positive_key
+			).replace(
+				replace_value_key,
+				_make_modifier_effect_value(*mobilisation_economy_impact, research_contribution.abs(), false)
+			) + mobilisation_economy_impact_tooltip;
+		}
+
+		ret[military_info_mobilisation_economy_impact_tooltip_key] = mobilisation_economy_impact_tooltip;
+	}
+
+	// Leaders
+	static const StringName military_info_general_count_key = "general_count";
+	static const StringName military_info_admiral_count_key = "admiral_count";
+	static const StringName military_info_create_leader_count_key = "create_leader_count";
+	static const StringName military_info_auto_create_leaders_key = "auto_create_leaders";
+	static const StringName military_info_auto_assign_leaders_key = "auto_assign_leaders";
+	static const StringName military_info_leaders_list_key = "leaders_list";
+
+	ret[military_info_general_count_key] = static_cast<uint64_t>(country->get_general_count());
+	ret[military_info_admiral_count_key] = static_cast<uint64_t>(country->get_admiral_count());
+	ret[military_info_create_leader_count_key] = static_cast<uint64_t>(country->get_create_leader_count());
+	ret[military_info_auto_create_leaders_key] = country->get_auto_create_leaders();
+	ret[military_info_auto_assign_leaders_key] = country->get_auto_assign_leaders();
+
+	if (country->has_leaders()) {
+		std::vector<LeaderBase const*> sorted_leaders;
+		sorted_leaders.reserve(country->get_leader_count());
+		for (General const& general : country->get_generals()) {
+			sorted_leaders.push_back(&general);
+		}
+		for (Admiral const& admiral : country->get_admirals()) {
+			sorted_leaders.push_back(&admiral);
+		}
+
+		switch (leader_sort_key) {
+		case LEADER_SORT_PRESTIGE:
+			std::sort(
+				sorted_leaders.begin(), sorted_leaders.end(),
+				[](LeaderBase const* a, LeaderBase const* b) -> bool {
+					return a->get_prestige() > b->get_prestige();
+				}
+			);
+			break;
+		case LEADER_SORT_TYPE:
+			std::sort(
+				sorted_leaders.begin(), sorted_leaders.end(),
+				[](LeaderBase const* a, LeaderBase const* b) -> bool {
+					return a->get_branch() > b->get_branch();
+				}
+			);
+			break;
+		case LEADER_SORT_NAME:
+			std::sort(
+				sorted_leaders.begin(), sorted_leaders.end(),
+				[](LeaderBase const* a, LeaderBase const* b) -> bool {
+					return a->get_name() > b->get_name();
+				}
+			);
+			break;
+		case LEADER_SORT_ASSIGNMENT:
+			//std::sort(
+			//	sorted_leaders.begin(), sorted_leaders.end(),
+			//	[](LeaderBase const* a, LeaderBase const* b) -> bool {
+			//		// Do we have to convert to provinces or armies?
+			//		return a->get_prestige() > b->get_prestige();
+			//	}
+			//);
+			break;
+		default: break;
+		}
+
+		TypedArray<Dictionary> leaders;
+		if (leaders.resize(sorted_leaders.size()) == OK) {
+
+			for (size_t index = 0; index < sorted_leaders.size(); ++index) {
+				leaders[index] = make_leader_dict(*sorted_leaders[index]);
+			}
+
+			ret[military_info_leaders_list_key] = std::move(leaders);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to resize military menu leaders array to the correct size (",
+				static_cast<int64_t>(sorted_leaders.size()), ") for country \"",
+				Utilities::std_to_godot_string(country->get_identifier()), "\""
+			);
+		}
+	}
+
+	// Armies and Navies
+	static const StringName military_info_is_disarmed_key = "is_disarmed";
+	static const StringName military_info_armies_key = "armies";
+	static const StringName military_info_in_progress_brigades_key = "in_progress_brigades";
+	static const StringName military_info_navies_key = "navies";
+	static const StringName military_info_in_progress_ships_key = "in_progress_ships";
+
+	ret[military_info_is_disarmed_key] = country->is_disarmed();
+
+	if (country->has_armies()) {
+		std::vector<ArmyInstance const*> sorted_armies;
+		sorted_armies.reserve(country->get_army_count());
+		for (ArmyInstance const* army : country->get_armies()) {
+			sorted_armies.push_back(army);
+		}
+
+		// TODO - sort armies...
+
+		TypedArray<Dictionary> armies;
+		if (armies.resize(sorted_armies.size()) == OK) {
+
+			for (size_t index = 0; index < sorted_armies.size(); ++index) {
+				armies[index] = make_army_dict(*sorted_armies[index]);
+			}
+
+			ret[military_info_armies_key] = std::move(armies);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to resize military menu armies array to the correct size (",
+				static_cast<int64_t>(sorted_armies.size()), ") for country \"",
+				Utilities::std_to_godot_string(country->get_identifier()), "\""
+			);
+		}
+	}
+
+	// ret[military_info_in_progress_brigades_key] = TypedArray<Dictionary> {};
+
+	if (country->has_navies()) {
+		std::vector<NavyInstance const*> sorted_navies;
+		sorted_navies.reserve(country->get_navy_count());
+		for (NavyInstance const* navy : country->get_navies()) {
+			sorted_navies.push_back(navy);
+		}
+
+		// TODO - sort navies...
+
+		TypedArray<Dictionary> navies;
+		if (navies.resize(sorted_navies.size()) == OK) {
+
+			for (size_t index = 0; index < sorted_navies.size(); ++index) {
+				navies[index] = make_navy_dict(*sorted_navies[index]);
+			}
+
+			ret[military_info_navies_key] = std::move(navies);
+		} else {
+			UtilityFunctions::push_error(
+				"Failed to resize military menu navies array to the correct size (",
+				static_cast<int64_t>(sorted_navies.size()), ") for country \"",
+				Utilities::std_to_godot_string(country->get_identifier()), "\""
+			);
+		}
+	}
+
+	// ret[military_info_in_progress_ships_key] = TypedArray<Dictionary> {};
+
+	/*
+	Each army/navy needs: leader icon, name, location, regiments, men (only for land), morale, strength, moving, digin, combat
+	Each regiment/ship needs: build progress, unit_eta, name & icon of unit type, location
+	*/
+
+	return ret;
+}
+
 /* Find/Search Panel */
 
 Error MenuSingleton::generate_search_cache() {
@@ -901,7 +1667,7 @@ Error MenuSingleton::generate_search_cache() {
 
 	for (StateSet const& state_set : state_sets) {
 		for (State const& state : state_set.get_states()) {
-			String display_name = get_state_name(state);
+			String display_name = _get_state_name(state);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({
@@ -914,7 +1680,7 @@ Error MenuSingleton::generate_search_cache() {
 	for (CountryInstance const& country : countries) {
 		// TODO - replace with a proper "exists" check
 		if (country.get_capital() != nullptr) {
-			String display_name = get_country_name(country);
+			String display_name = _get_country_name(country);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({

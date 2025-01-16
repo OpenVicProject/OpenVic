@@ -28,6 +28,8 @@ namespace OpenVic::Utilities {
 
 	godot::String int_to_string_suffixed(int64_t val);
 
+	godot::String int_to_string_commas(int64_t val);
+
 	godot::String float_to_string_suffixed(float val);
 
 	godot::String float_to_string_dp(float val, int32_t decimal_places);
