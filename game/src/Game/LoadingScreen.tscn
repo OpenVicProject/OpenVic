@@ -66,6 +66,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 5
 script = ExtResource("1_b0p3w")
 progress_bar = NodePath("PanelContainer/MarginContainer/ProgressBar")
 quote_label = NodePath("PanelContainer/MarginContainer/PanelContainer/QuoteLabel")
@@ -78,10 +79,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 5
 theme = SubResource("Theme_f5c3e")
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
 layout_mode = 2
+mouse_default_cursor_shape = 5
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -90,6 +93,7 @@ theme_override_constants/margin_bottom = 16
 [node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 8
+mouse_default_cursor_shape = 5
 step = 1.0
 rounded = true
 
@@ -97,6 +101,7 @@ rounded = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
+mouse_default_cursor_shape = 5
 theme_override_styles/panel = SubResource("StyleBoxFlat_yaf7e")
 
 [node name="QuoteLabel" type="Label" parent="PanelContainer/MarginContainer/PanelContainer"]
@@ -104,6 +109,7 @@ custom_minimum_size = Vector2(700, 80)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
+mouse_default_cursor_shape = 5
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
@@ -125,6 +131,7 @@ grow_vertical = 2
 pivot_offset = Vector2(128, 128)
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_default_cursor_shape = 5
 texture = ExtResource("3_avohi")
 expand_mode = 1
 
@@ -141,6 +148,7 @@ offset_right = 86.0
 offset_bottom = 86.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 5
 texture = ExtResource("4_eyeeb")
 expand_mode = 1
 

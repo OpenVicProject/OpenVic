@@ -39,6 +39,7 @@ MusicConductor="*res://src/Game/MusicConductor/MusicConductor.tscn"
 Keychain="*res://addons/keychain/Keychain.gd"
 GuiScale="*res://src/Game/Autoload/GuiScale.gd"
 SaveManager="*res://src/Game/Autoload/SaveManager.gd"
+CursorManager="*res://src/Game/Autoload/CursorManager.gd"
 
 [display]
 

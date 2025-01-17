@@ -49,6 +49,7 @@ func show_save_dialog_button() -> void:
 func _on_main_menu_confirmed() -> void:
 	SaveManager.current_session_tag = ""
 	SaveManager.current_save = null
+	CursorManager.set_compat_cursor(&"", Input.CURSOR_IBEAM)
 	get_tree().change_scene_to_packed(_main_menu_scene)
 
 # REQUIREMENTS:
