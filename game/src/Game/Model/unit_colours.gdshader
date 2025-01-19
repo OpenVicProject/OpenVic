@@ -1,7 +1,7 @@
 
 shader_type spatial;
 
-render_mode cull_disabled;
+render_mode cull_disabled, depth_prepass_alpha;
 
 //hold all the textures for the units that need this shader to mix in their
 //nation colours (mostly generic infantry units)
@@ -28,4 +28,5 @@ void fragment() {
 	vec3 tertiary_col = mix(vec3(1.0, 1.0, 1.0), colour_tertiary, nation_colours_tex.r);
 
 	ALBEDO = diffuse_tex.rgb * primary_col * secondary_col * tertiary_col;
+	ALPHA = diffuse_tex.a;
 }

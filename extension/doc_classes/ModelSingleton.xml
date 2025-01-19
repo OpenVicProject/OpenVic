@@ -35,5 +35,19 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_xac_model">
+			<return type="Node3D" />
+			<param index="0" name="model_name" type="String" />
+			<description>
+				Gets the animation from an internal cache or file system using the provided file path.
+			</description>
+		</method>
+		<method name="get_xsm_animation">
+			<return type="Animation" />
+			<param index="0" name="animation_name" type="String" />
+			<description>
+				Gets the animation from an internal cache or file system using the provided file path.
+			</description>
+		</method>
 	</methods>
 </class>

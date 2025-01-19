@@ -6,7 +6,7 @@ extends Node3D
 const MODEL_SCALE : float = 1.0 / 256.0
 
 func generate_units() -> void:
-	XACLoader.setup_flag_shader()
+	XACLoader.setup_flag_shader() #TODO: replace with C++ call
 
 	for unit : Dictionary in ModelSingleton.get_units():
 		_generate_unit(unit)
@@ -104,26 +104,35 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		or attachments_key in model_dict
 	)
 
-	var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+	var model : Node3D
+	if !is_unit:
+		model = ModelSingleton.get_xac_model(model_dict[file_key])
+		#model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+	#	print(file_key)
+		#ModelSingleton.get_xac_model(model_dict[file_key])
+	else:
+		model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+	#var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
 	if not model:
 		return null
 	model.scale *= model_dict[scale_key]
-
+	#print("GENERATE MODEL")
 	if model is UnitModel:
 		# Animations
 		var idle_dict : Dictionary = model_dict.get(idle_key, {})
+		var move_dict : Dictionary = model_dict.get(move_key, {})
+		var attack_dict : Dictionary = model_dict.get(attack_key, {})
+
 		if idle_dict:
-			model.idle_anim = XSMLoader.get_xsm_animation(idle_dict[animation_file_key])
+			model.idle_anim = ModelSingleton.get_xsm_animation(idle_dict[animation_file_key])
 			model.scroll_speed_idle = idle_dict[animation_time_key]
 
-		var move_dict : Dictionary = model_dict.get(move_key, {})
 		if move_dict:
-			model.move_anim = XSMLoader.get_xsm_animation(move_dict[animation_file_key])
+			model.move_anim = ModelSingleton.get_xsm_animation(move_dict[animation_file_key])
 			model.scroll_speed_move = move_dict[animation_time_key]
 
-		var attack_dict : Dictionary = model_dict.get(attack_key, {})
 		if attack_dict:
-			model.attack_anim = XSMLoader.get_xsm_animation(attack_dict[animation_file_key])
+			model.attack_anim = ModelSingleton.get_xsm_animation(attack_dict[animation_file_key])
 			model.scroll_speed_attack = attack_dict[animation_time_key]
 
 		# Attachments
@@ -133,7 +142,7 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 				attachment_model.free()
 
 		if culture:
-			const gun_bone_name : String = "GunNode"
+			const gun_bone_name : StringName = &"GunNode"
 			if model.has_bone(gun_bone_name):
 				var gun_dict : Dictionary = ModelSingleton.get_cultural_gun_model(culture)
 				if gun_dict:
@@ -141,7 +150,7 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 					if gun_model and model.attach_model(gun_bone_name, gun_model) != OK:
 						gun_model.free()
 
-			const helmet_bone_name : String = "HelmetNode"
+			const helmet_bone_name : StringName = &"HelmetNode"
 			if model.has_bone(helmet_bone_name):
 				var helmet_dict : Dictionary = ModelSingleton.get_cultural_helmet_model(culture)
 				if helmet_dict:
