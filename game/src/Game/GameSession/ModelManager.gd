@@ -106,12 +106,15 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 	if not model:
 		return null
 	model.scale *= model_dict[scale_key]
-
+	#print("GENERATE MODEL")
 	if model is UnitModel:
 		# Animations
 		var idle_dict : Dictionary = model_dict.get(idle_key, {})
 		if idle_dict:
-			model.idle_anim = XSMLoader.get_xsm_animation(idle_dict[animation_file_key])
+			#print(idle_dict[animation_file_key])
+			model.idle_anim = ModelSingleton.get_xsm_animation(idle_dict[animation_file_key])
+			#ModelSingleton.get_xsm_animation(idle_dict[animation_file_key])
+			#model.idle_anim = XSMLoader.get_xsm_animation(idle_dict[animation_file_key])
 			model.scroll_speed_idle = idle_dict[animation_time_key]
 
 		var move_dict : Dictionary = model_dict.get(move_key, {})

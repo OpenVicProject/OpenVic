@@ -1,5 +1,6 @@
 #include "ModelSingleton.hpp"
 
+#include <cstddef>
 #include <numbers>
 
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -9,6 +10,8 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+//#include "openvic-simulation/utility/Logger.hpp"
+//#include "godot_cpp/classes/file_access.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -19,6 +22,7 @@ void ModelSingleton::_bind_methods() {
 	OV_BIND_METHOD(ModelSingleton::get_cultural_helmet_model, { "culture" });
 	OV_BIND_METHOD(ModelSingleton::get_flag_model, { "floating" });
 	OV_BIND_METHOD(ModelSingleton::get_buildings);
+	OV_BIND_METHOD(ModelSingleton::get_xsm_animation,{"animation_name"});
 }
 
 ModelSingleton* ModelSingleton::get_singleton() {
@@ -480,4 +484,21 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() {
 	}
 
 	return ret;
+}
+
+Ref<Animation> ModelSingleton::get_xsm_animation(String source_file) {
+	const xsm_map_t::const_iterator it = xsm_cache.find(source_file);
+	if(it != xsm_cache.end()) {
+		//Logger::info("Load XSM Animation from cache: ",Utilities::godot_to_std_string(source_file));
+		return it->second;
+	}
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	String path = game_singleton->lookup_file_path(source_file);
+
+	//Logger::info("Load XSM Animation from file: ",Utilities::godot_to_std_string(source_file));
+
+	Ref<Animation> anim = _load_xsm_animation(FileAccess::open(path, FileAccess::READ));
+	xsm_cache.emplace(source_file,anim);
+	return anim;
 }
