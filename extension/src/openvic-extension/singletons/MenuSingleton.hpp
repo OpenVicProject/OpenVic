@@ -124,6 +124,8 @@ namespace OpenVic {
 		godot::String get_country_name(CountryInstance const& country) const;
 		godot::String get_country_adjective(CountryInstance const& country) const;
 
+		// Modifier effect and rule tooltips begin with a newline character (unless they're empty), as they're always
+		// added after a starting/title section.
 		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
 		godot::String make_rules_tooltip(RuleSet const& rules) const;
 

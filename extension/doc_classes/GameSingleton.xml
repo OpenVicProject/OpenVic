@@ -3,188 +3,247 @@
 	<brief_description>
 	</brief_description>
 	<description>
+		This is the GameSingleton
 	</description>
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="get_bookmark_info" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+				Returns an [Array] of [Dictionary] bookmark information entries, with each [Dictionary] containing values for the following [StringName] keys:
+				- [code]&amp;"bookmark_name"[/code] - the bookmark's unlocalised identifier [String]
+				- [code]&amp;"bookmark_date"[/code] - the bookmark's start date as a [code]"DD Month, YYYY"[/code] formatted [String]
+			</description>
+		</method>
+		<method name="get_bookmark_start_position" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+				Returns the current bookmark's starting map position as a normalised [Vector2] (so each component should be in the range [code]0.0[/code] to [code]1.0[/code]).
+			</description>
+		</method>
 		<method name="get_current_mapmode_index" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the currently selected mapmode's [int] index.
 			</description>
 		</method>
 		<method name="get_flag_dims" qualifiers="const">
 			<return type="Vector2i" />
 			<description>
+				Returns the fixed [Vector2] size used by all flag images ([code](128, 64)[/code] by default).
 			</description>
 		</method>
 		<method name="get_flag_sheet_texture" qualifiers="const">
 			<return type="ImageTexture" />
 			<description>
+				Return an [ImageTexture] made up of all the loaded flag images for each country and flag variant combined together into a single spritesheet.
 			</description>
 		</method>
 		<method name="get_map_aspect_ratio" qualifiers="const">
 			<return type="float" />
 			<description>
+				Return the aspect ratio of the map's dimensions ([code]width / height[/code]).
 			</description>
 		</method>
 		<method name="get_map_dims" qualifiers="const">
 			<return type="Vector2i" />
 			<description>
+				Returns the map's dimensions as a [Vector2i] ([code](width, height)[/code]).
 			</description>
 		</method>
 		<method name="get_map_height" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the map's height in pixels.
 			</description>
 		</method>
 		<method name="get_map_width" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the map's width in pixels.
 			</description>
 		</method>
 		<method name="get_mapmode_count" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the number of loaded mapmodes.
 			</description>
 		</method>
 		<method name="get_mapmode_identifier" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="index" type="int" />
 			<description>
+				Returns the identifier [String] of the mapmode with the specified [param index].
 			</description>
 		</method>
 		<method name="get_mapmode_localisation_key" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="index" type="int" />
 			<description>
+				Returns the localisation key [String] of the mapmode with the specified [param index].
 			</description>
 		</method>
 		<method name="get_province_colour_texture" qualifiers="const">
 			<return type="ImageTexture" />
 			<description>
+				Returns an [ImageTexture] containing the current province colour data, that is each province's base and stripe colours.
 			</description>
 		</method>
 		<method name="get_province_index_from_uv_coords" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="coords" type="Vector2" />
 			<description>
+				Returns the index [int] of the province at the specified position on the map. The [param coords] are expected to be normalised with repsect to the map's dimensions, and they'll be modulo'd to ensure they lie in the [code]0.0[/code] to [code]1.0[/code] range (meaning they can wrap around the map).
 			</description>
 		</method>
 		<method name="get_province_names" qualifiers="const">
 			<return type="Dictionary[]" />
 			<description>
+				Returns an [Array] of [Dictionary] province name label information entries, with each [Dictionary] containing values for the following [StringName] keys:
+				- [code]&amp;"identifier"[/code] - the province's unlocalised identifier [String]
+				- [code]&amp;"position"[/code] - the province label's normalised [Vector2] position on the map
+				- [code]&amp;"rotation"[/code] - the province label's [float] rotation in radians ([code]0.0[/code] if not explicitly given)
+				- [code]&amp;"scale"[/code] - the province label's [float] scale factor ([code]1.0[/code] if not explicitly given)
 			</description>
 		</method>
 		<method name="get_province_shape_image_subdivisions" qualifiers="const">
 			<return type="Vector2i" />
 			<description>
+				Returns the number of textures the province shape image is split into horizontally and vertically (it is split to allow higher resolution maps as most GPUs limit indivudal textures' dimensions to at most 16,384 pixels).
 			</description>
 		</method>
 		<method name="get_province_shape_texture" qualifiers="const">
 			<return type="Texture2DArray" />
 			<description>
+				Return a [Texture2DArray] containing all the textures that the province shape image was split into.
 			</description>
 		</method>
 		<method name="get_selected_province_index" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the [int] index of the currently selected province, or [code]0[/code] if there is no selected province.
 			</description>
 		</method>
 		<method name="get_terrain_texture" qualifiers="const">
 			<return type="Texture2DArray" />
 			<description>
+				Return a [Texture2DArray] containing all terrain textures, both the solid blue generated water texture and the loaded land terrain textures.
+			</description>
+		</method>
+		<method name="get_viewed_country_capital_position" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+				Returns the viewed country's capital position as a normalised [Vector2], or [code](0.0, 0.0)[/code] if no country is being viewed.
 			</description>
 		</method>
 		<method name="is_parchment_mapmode_allowed" qualifiers="const">
 			<return type="bool" />
 			<description>
+				Returns a [bool] indicating whether or not the current mapmode uses the parchment style map when zoomed out.
 			</description>
 		</method>
 		<method name="load_defines_compatibility_mode">
 			<return type="int" enum="Error" />
 			<description>
+				Load compatibility mode text defines, localisation string and map and flag images. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="lookup_file_path" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="path" type="String" />
 			<description>
+				Converts [param path], given relative to the base game install, into a full filepath [String] by combining it with each registered dataloading root and seeing if a file exists at that location, returning the first valid path found when searching from the last added mod through to the first added mod and then the base game install itself. If none of the dataloading roots contain the file then this function returns an empty [String].
 			</description>
 		</method>
 		<method name="search_for_game_path" qualifiers="static">
 			<return type="String" />
 			<param index="0" name="hint_path" type="String" default="&quot;&quot;" />
 			<description>
+				Searches for the base game's install path, checking the [param hint_path] if it's provided as well as the Steam install folder as identified by the [code]"libraryfolders.vdf"[/code] file. This function will return an empty [String] should it fail to find the base game's install path.
 			</description>
 		</method>
 		<method name="set_compatibility_mode_roots">
 			<return type="int" enum="Error" />
 			<param index="0" name="file_paths" type="PackedStringArray" />
 			<description>
+				Set the dataloading roots to those provided in [param file_paths], which should contain full filepaths to the base game's installation and to any mods that are to be loaded on top of it. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="set_mapmode">
 			<return type="int" enum="Error" />
 			<param index="0" name="index" type="int" />
 			<description>
+				Sets the active mapmode to that identified by [param index]. Returns [code]FAILED[/code] if the mapmode index is invalid, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="set_selected_province">
 			<return type="void" />
 			<param index="0" name="index" type="int" />
 			<description>
+				Sets the currently selected province to that identified by [param index], or unselects the currently selected province if [param index] is [code]0[/code].
 			</description>
 		</method>
 		<method name="set_viewed_country_by_province_index">
 			<return type="void" />
 			<param index="0" name="province_index" type="int" />
 			<description>
+				Sets the viewed country to that which owns the province identified by [param province_index], or unsets the viewed country if the province has no owner/is uncolonised. Returns [code]FAILED[/code] if the [param province_index] is invalid, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="setup_game">
 			<return type="int" enum="Error" />
 			<param index="0" name="bookmark_index" type="int" />
 			<description>
+				Creates and initialises the game instance, using the bookmark identified by [param bookmark_index] to determine which history entries are applied to it. Returns [code]FAILED[/code] if [param bookmark_index] is invalid or there are problems when setting up the game instance, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="setup_logger" qualifiers="static">
 			<return type="void" />
 			<description>
+				Connects the [code]info[/code], [code]warning[/code] and [code]error[/code] loggers used in the game's simulation code to Godot's equivalents ([code]print[/code], [code]push_warning[/code], [code]push_error[/code]) so that their output can be seen alongside messages from the GDExtension and GDScript parts of the game.
 			</description>
 		</method>
 		<method name="start_game_session">
 			<return type="int" enum="Error" />
 			<description>
+				Sets up the simulation's clock and timestamps so that it can be unpaused, marking the move from the initialised but static game state used for the lobby to the dynamic game session that is ready to tick, update and simulate.
 			</description>
 		</method>
 		<method name="unset_selected_province">
 			<return type="void" />
 			<description>
+				Unselects the currently selected province, should there be one.
 			</description>
 		</method>
 		<method name="update_clock">
 			<return type="int" enum="Error" />
 			<description>
+				Progresses the game's clock, or rather makes it check if it's ready for a tick or gamestate update, both in terms of being allowed logically and enough time having passed since the last one, and executes such an action if it is ready.
 			</description>
 		</method>
 	</methods>
 	<signals>
 		<signal name="clock_state_changed">
 			<description>
+				Signal emitted when the simulation's clock changes state (paused vs unpaused, clock speed, etc.).
 			</description>
 		</signal>
 		<signal name="gamestate_updated">
 			<description>
+				Signal emitted when the simulation's gamestate is updated (this happens after any event that changes the gamestate, e.g. a day tick, a player taking a decision, etc).
 			</description>
 		</signal>
 		<signal name="mapmode_changed">
 			<param index="0" name="index" type="int" />
 			<description>
+				Signal emitted when the active mapmode changes, with the new mapmode's [param index] provided as a parameter.
 			</description>
 		</signal>
 		<signal name="province_selected">
 			<param index="0" name="index" type="int" />
 			<description>
+				Signal emitted when the currently selected province changes, with the new province's [param index] provided as a parameter (or [code]0[/code] if there is no longer a selected province/the change was de-selecting a province).
 			</description>
 		</signal>
 	</signals>

@@ -153,7 +153,7 @@ func _ready() -> void:
 				Events.NationManagementScreens.toggle_nation_management_screen.bind(screen)
 			)
 			# TODO - test tooltip, replace with actual shortcut strings
-			button.set_tooltip_string(tr("SHORTCUT") + "F3")
+			button.set_tooltip_string(tr(&"SHORTCUT") + "F3")
 			_nation_management_buttons[screen] = button
 	Events.NationManagementScreens.update_active_nation_management_screen.connect(
 		_on_update_active_nation_management_screen
@@ -311,7 +311,7 @@ func _update_info() -> void:
 	var country_name : String = MenuSingleton.get_country_name_from_identifier(country_identifier)
 	var country_status : int = topbar_info.get(country_status_key, CountryStatus.UNCIVILISED)
 
-	var country_name_rank_tooltip : String = tr("PLAYER_COUNTRY_TOPBAR_RANK") + MenuSingleton.get_tooltip_separator() + tr("RANK_TOTAL_D")
+	var country_name_rank_tooltip : String = tr(&"PLAYER_COUNTRY_TOPBAR_RANK") + MenuSingleton.get_tooltip_separator() + tr(&"RANK_TOTAL_D")
 	var country_name_rank_dict : Dictionary = {
 		"NAME": country_name,
 		"RANK": COUNTRY_STATUS_NAMES[country_status]
@@ -335,7 +335,7 @@ func _update_info() -> void:
 		_country_rank_label.set_text(str(topbar_info.get(total_rank_key, 0)))
 		_country_rank_label.set_tooltip_string_and_substitution_dict(country_name_rank_tooltip, country_name_rank_dict)
 
-	var prestige_tooltip : String = tr("RANK_PRESTIGE") + topbar_info.get(prestige_tooltip_key, "") + MenuSingleton.get_tooltip_separator() + tr("RANK_PRESTIGE_D")
+	var prestige_tooltip : String = tr(&"RANK_PRESTIGE") + topbar_info.get(prestige_tooltip_key, "") + MenuSingleton.get_tooltip_separator() + tr(&"RANK_PRESTIGE_D")
 
 	if _country_prestige_label:
 		_country_prestige_label.set_text(str(topbar_info.get(prestige_key, 0)))
@@ -345,7 +345,7 @@ func _update_info() -> void:
 		_country_prestige_rank_label.set_text(str(topbar_info.get(prestige_rank_key, 0)))
 		_country_prestige_rank_label.set_tooltip_string(prestige_tooltip)
 
-	var industrial_power_tooltip : String = tr("RANK_INDUSTRY") + MenuSingleton.get_tooltip_separator() + tr("RANK_INDUSTRY_D") + topbar_info.get(industrial_power_tooltip_key, "")
+	var industrial_power_tooltip : String = tr(&"RANK_INDUSTRY") + MenuSingleton.get_tooltip_separator() + tr(&"RANK_INDUSTRY_D") + topbar_info.get(industrial_power_tooltip_key, "")
 
 	if _country_industrial_power_label:
 		_country_industrial_power_label.set_text(str(topbar_info.get(industrial_power_key, 0)))
@@ -355,7 +355,7 @@ func _update_info() -> void:
 		_country_industrial_power_rank_label.set_text(str(topbar_info.get(industrial_rank_key, 0)))
 		_country_industrial_power_rank_label.set_tooltip_string(industrial_power_tooltip)
 
-	var military_power_tooltip : String = tr("RANK_MILITARY") + MenuSingleton.get_tooltip_separator() + tr("RANK_MILITARY_D") + topbar_info.get(military_power_tooltip_key, "")
+	var military_power_tooltip : String = tr(&"RANK_MILITARY") + MenuSingleton.get_tooltip_separator() + tr(&"RANK_MILITARY_D") + topbar_info.get(military_power_tooltip_key, "")
 
 	if _country_military_power_label:
 		_country_military_power_label.set_text(str(topbar_info.get(military_power_key, 0)))
@@ -371,8 +371,8 @@ func _update_info() -> void:
 		_country_colonial_power_label.set_text(
 			"§%s%s§!/%s" % ["W" if available_colonial_power > 0 else "R", available_colonial_power, max_colonial_power]
 		)
-		_country_colonial_power_label.set_tooltip_string(tr("COLONIAL_POINTS") + MenuSingleton.get_tooltip_separator() + (
-			topbar_info.get(colonial_power_tooltip_key, "") if country_status <= CountryStatus.SECONDARY_POWER else tr("NON_COLONIAL_POWER")
+		_country_colonial_power_label.set_tooltip_string(tr(&"COLONIAL_POINTS") + MenuSingleton.get_tooltip_separator() + (
+			topbar_info.get(colonial_power_tooltip_key, "") if country_status <= CountryStatus.SECONDARY_POWER else tr(&"NON_COLONIAL_POWER")
 		))
 
 	## Time control
@@ -536,7 +536,7 @@ func _update_info() -> void:
 
 			_military_mobilisation_size_label.set_text("§Y" + mobilisation_regiments)
 			_military_mobilisation_size_label.set_tooltip_string_and_substitution_dict(
-				tr("TOPBAR_MOBILIZE_TOOLTIP") + "\n\n" + tr("MOBILIZATION_IMPACT_LIMIT_DESC") + "\n" + tr("MOBILIZATION_IMPACT_LIMIT_DESC2").replace("$CURR$", "$CURR2$"),
+				tr(&"TOPBAR_MOBILIZE_TOOLTIP") + "\n\n" + tr(&"MOBILIZATION_IMPACT_LIMIT_DESC") + "\n" + tr(&"MOBILIZATION_IMPACT_LIMIT_DESC2").replace("$CURR$", "$CURR2$"),
 				{
 					"CURR": mobilisation_regiments, "IMPACT": mobilisation_impact, "POLICY": topbar_info.get(war_policy_key, ""),
 					"UNITS": str(topbar_info.get(mobilisation_max_regiments_key, 0)), "CURR2": regiment_count

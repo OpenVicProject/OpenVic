@@ -31,14 +31,15 @@ func filter_for_tag(tag : StringName) -> void:
 				child.hide()
 
 func _build_date_list() -> void:
-	var start_date := lobby_panel_button.instantiate()
-	start_date.set_text(&"1836")
-	start_date.pressed.connect(_on_start_date_panel_button_pressed.bind(start_date))
-	game_select_start_date.add_child(start_date)
-	start_date = lobby_panel_button.instantiate()
-	start_date.set_text(&"1863")
-	start_date.pressed.connect(_on_start_date_panel_button_pressed.bind(start_date))
-	game_select_start_date.add_child(start_date)
+	const bookmark_info_name_key : StringName = &"bookmark_name"
+	const bookmark_info_date_key : StringName = &"bookmark_date"
+
+	for bookmark_dict : Dictionary in GameSingleton.get_bookmark_info():
+		var start_date := lobby_panel_button.instantiate()
+		start_date.set_name_text(bookmark_dict.get(bookmark_info_name_key, "MISSING BOOKMARK NAME"))
+		start_date.set_date_text(bookmark_dict.get(bookmark_info_date_key, "MISSING BOOKMARK DATE"))
+		start_date.pressed.connect(_on_start_date_panel_button_pressed.bind(start_date))
+		game_select_start_date.add_child(start_date)
 
 var _id_to_tag : Array[StringName] = []
 
@@ -116,11 +117,12 @@ func _on_session_tag_edit_text_submitted(new_text : String) -> void:
 	_on_start_button_pressed()
 
 func _on_session_tag_dialog_confirmed() -> void:
-	# TODO - get bookmarks from SIM and generated corresponding buttons,
-	# then use the selected button's bookmark instead of always using 0
+	if _start_date_index < 0:
+		push_error("Cannot setup game, no start date selected!")
+		return
 
 	# Game has to be setup (bookmark loaded) before opening the GameSession scene
-	if GameSingleton.setup_game(0) != OK:
+	if GameSingleton.setup_game(_start_date_index) != OK:
 		push_error("Failed to setup game")
 	get_tree().change_scene_to_file("res://src/Game/GameSession/GameSession.tscn")
 
@@ -131,7 +133,7 @@ func _on_save_node_delete_requested(node : Control) -> void:
 	delete_dialog.title = tr("GAMELOBBY_DELETE_DIALOG_TITLE").format({ "file_name": _requested_node_to_delete.resource.save_name })
 	delete_dialog.popup_centered()
 
-var _start_date_index := -1
+var _start_date_index : int = -1
 func _on_start_date_panel_button_pressed(node : Control) -> void:
 	if node is LobbyPanelButton and node.get_index(true) == _start_date_index:
 		_on_start_button_pressed()

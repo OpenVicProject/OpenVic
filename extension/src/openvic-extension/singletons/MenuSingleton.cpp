@@ -51,6 +51,7 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 	if (!named) {
 		// Capital province name
+		// TODO - confirm capital is never null?
 		name = tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
 
 		if (!owned) {
@@ -117,18 +118,13 @@ String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifie
 	String result;
 
 	for (auto const& [effect, value] : modifier.get_values()) {
-		if (!result.is_empty()) {
-			result += "\n";
-		}
-
-		result += tr(Utilities::std_to_godot_string(effect->get_localisation_key()));
-
 		static const String post_name_text = ": " + GUILabel::get_colour_marker();
-		result += post_name_text;
+
+		result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + post_name_text;
 
 		if (value == 0) {
 			result += "Y";
-		} else if (effect->is_positive_good() == value > 0) {
+		} else if (effect->is_positive_good() == (value > 0)) {
 			result += "G";
 		} else {
 			result += "R";
@@ -183,11 +179,7 @@ String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
 
 	for (auto const& [rule_group, rule_map] : rules.get_rule_groups()) {
 		for (auto const& [rule, enabled] : rule_map) {
-			if (!result.is_empty()) {
-				result += "\n";
-			}
-
-			result += tr(Utilities::std_to_godot_string(rule->get_localisation_key()))
+			result += "\n" + tr(Utilities::std_to_godot_string(rule->get_localisation_key()))
 				+ (enabled ? enabled_text : disabled_text);
 		}
 	}
@@ -730,11 +722,15 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	{
 		String military_power_tooltip;
 
+		static const StringName military_power_from_land_key = "MIL_FROM_TROOPS";
+		static const StringName military_power_from_sea_key = "MIL_FROM_CAP_SHIPS";
+		static const StringName military_power_from_leaders_key = "MIL_FROM_LEADERS";
+
 		for (auto const& [source, power] : {
 			std::pair
-			{ "MIL_FROM_TROOPS", country->get_military_power_from_land() },
-			{ "MIL_FROM_CAP_SHIPS", country->get_military_power_from_sea() },
-			{ "MIL_FROM_LEADERS", country->get_military_power_from_leaders() }
+			{ military_power_from_land_key, country->get_military_power_from_land() },
+			{ military_power_from_sea_key, country->get_military_power_from_sea() },
+			{ military_power_from_leaders_key, country->get_military_power_from_leaders() }
 		}) {
 			if (power != 0) {
 				military_power_tooltip += "\n" + tr(source) + ": " + GUILabel::get_colour_marker() + "Y"
@@ -873,8 +869,10 @@ String MenuSingleton::get_longform_date() const {
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 
-	return Utilities::date_to_formatted_string(instance_manager->get_today());
+	return Utilities::date_to_formatted_string(instance_manager->get_today(), true);
 }
+
+/* Find/Search Panel */
 
 Error MenuSingleton::generate_search_cache() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();

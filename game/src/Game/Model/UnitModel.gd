@@ -138,7 +138,7 @@ func attach_model(bone_name : String, model : Node3D) -> Error:
 
 	var bone_idx : int = skeleton.find_bone(bone_name)
 	if bone_idx < 0 or bone_idx >= skeleton.get_bone_count():
-		push_error("Invalid bone \"", bone_name, "\" (index ", bone_idx, ") for attachment \"", model.get_name(), "\" to UnitModel \"", get_name(), "\"")
+		push_warning("Invalid bone \"", bone_name, "\" (index ", bone_idx, ") for attachment \"", model.get_name(), "\" to UnitModel \"", get_name(), "\"")
 		return FAILED
 
 	var bone_attachment := BoneAttachment3D.new()

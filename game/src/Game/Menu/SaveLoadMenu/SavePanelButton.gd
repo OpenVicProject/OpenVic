@@ -5,7 +5,6 @@ signal request_to_delete
 
 @export_group("Nodes")
 @export var country_flag : TextureRect
-@export var date_label : Label
 @export var delete_button : BaseButton
 
 var resource : SaveResource:

@@ -68,15 +68,22 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 	return float_to_string_dp(val, abs_val < 2.0f ? 3 : abs_val < 10.0f ? 2 : 1);
 }
 
-/* Date formatted like this: "January 1, 1836" (with the month localised, if possible). */
-String Utilities::date_to_formatted_string(Date date) {
-	const String month_name = Utilities::std_to_godot_string(date.get_month_name());
-	const String day_and_year = " " + String::num_int64(date.get_day()) + ", " + String::num_int64(date.get_year());
+/* Date formatted like one of these, with the month localised if possible:
+ *  - "1 January, 1836" (if month_first is false)
+ *  - "January 1, 1836" (if month_first is true) */
+String Utilities::date_to_formatted_string(Date date, bool month_first) {
+	String day = String::num_int64(date.get_day());
+	String month = Utilities::std_to_godot_string(date.get_month_name());
 	TranslationServer const* server = TranslationServer::get_singleton();
 	if (server != nullptr) {
-		return server->translate(month_name) + day_and_year;
+		month = server->translate(month);
+	}
+	String year = String::num_int64(date.get_year());
+
+	if (month_first) {
+		return month + " " + day + ", " + year;
 	} else {
-		return month_name + day_and_year;
+		return day + " " + month + ", " + year;
 	}
 }
 

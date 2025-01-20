@@ -36,6 +36,10 @@ func _ready() -> void:
 	_search_line_edit = get_line_edit_from_nodepath(^"./goto_box/goto_edit")
 	if _search_line_edit:
 		_search_line_edit.text_changed.connect(_search_string_updated)
+		_search_line_edit.text_submitted.connect(
+			func(new_text : String) -> void:
+				_result_selected(0)
+		)
 		# Restrict to desired size (by default it's a bit too tall, probably due to font size)
 		_search_line_edit.set_size(_search_line_edit.get_minimum_size())
 
@@ -135,10 +139,11 @@ func _update_results_scroll(scroll_index : int = -1) -> void:
 		_result_buttons[index].set_text(results[index])
 
 func _result_selected(index : int) -> void:
-	if _map_view:
-		_map_view.look_at_map_position(MenuSingleton.get_search_result_position(index))
-	else:
-		push_error("SearchPanel missing MapView reference!")
+	if not _result_buttons.is_empty():
+		if _map_view:
+			_map_view.look_at_map_position(MenuSingleton.get_search_result_position(index))
+		else:
+			push_error("SearchPanel missing MapView reference!")
 
 	if _search_line_edit:
 		# This triggers a search results update, preventing further get_search_result_position(index) calls
