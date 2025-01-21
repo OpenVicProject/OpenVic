@@ -16,16 +16,27 @@ func _is_start_date() -> bool:
 @export_group("Nodes")
 @export var background_button : BaseButton
 @export var name_label : Label
+@export var date_label : Label
 
-var text : StringName:
-	get = get_text,
-	set = set_text
+var name_text : String:
+	get = get_name_text,
+	set = set_name_text
 
-func get_text() -> StringName:
+var date_text : String:
+	get = get_date_text,
+	set = set_date_text
+
+func get_name_text() -> String:
 	return name_label.text
 
-func set_text(value : StringName) -> void:
+func set_name_text(value : String) -> void:
 	name_label.text = value
+
+func get_date_text() -> String:
+	return date_label.text
+
+func set_date_text(value : String) -> void:
+	date_label.text = value
 
 func _get_minimum_size() -> Vector2:
 	var result := Vector2()
@@ -35,9 +46,7 @@ func _get_minimum_size() -> Vector2:
 		if child.top_level:
 			continue
 
-		var minsize : Vector2 = child.get_combined_minimum_size()
-		result.x = max(result.x, minsize.x)
-		result.y = max(result.y, minsize.y)
+		result = result.max(child.get_combined_minimum_size())
 
 	var draw_style := _get_draw_mode_style()
 	if draw_style != null:

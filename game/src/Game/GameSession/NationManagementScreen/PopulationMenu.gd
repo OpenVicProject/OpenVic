@@ -600,7 +600,7 @@ func _update_pop_list() -> void:
 				var unemployment : float = pop_row[pop_unemployment_key]
 				_pop_list_unemployment_progressbars[index].set_value_no_signal(unemployment)
 				_pop_list_unemployment_progressbars[index].set_tooltip_string("%s: §Y%s%%" % [
-					tr("UNEMPLOYMENT"), GUINode.float_to_string_dp(unemployment * 100.0, 3)
+					tr(&"UNEMPLOYMENT"), GUINode.float_to_string_dp(unemployment * 100.0, 3)
 				])
 			if _pop_list_cash_labels[index]:
 				_pop_list_cash_labels[index].set_text("%s¤" % GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
@@ -645,12 +645,12 @@ func _update_pop_list() -> void:
 				var pop_change : int = pop_row[pop_size_change_key]
 				_pop_list_size_change_icons[index].set_icon_index(get_growth_icon_index(pop_change))
 				_pop_list_size_change_icons[index].set_tooltip_string("%s §%s%s" % [
-					tr("POPULATION_CHANGED_BY"), "G+" if pop_change > 0 else "Y+" if pop_change == 0 else "R", str(pop_change)
+					tr(&"POPULATION_CHANGED_BY"), "G+" if pop_change > 0 else "Y+" if pop_change == 0 else "R", str(pop_change)
 				])
 			if _pop_list_literacy_labels[index]:
 				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key], 2))
 				_pop_list_literacy_labels[index].set_tooltip_string("%s: §G%s%%" % [
-					tr("LIT_CHANGE"), GUINode.float_to_string_dp(pop_row[pop_literacy_key] / 64.0, 2)
+					tr(&"LIT_CHANGE"), GUINode.float_to_string_dp(pop_row[pop_literacy_key] / 64.0, 2)
 				])
 
 			_pop_list_rows[index].show()

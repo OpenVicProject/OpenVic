@@ -102,11 +102,6 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	return ret;
 }
 
-// We assume GameSingleton isn't null when this is being called
-static Vector2 get_billboard_pos(ProvinceDefinition const& province) {
-	return Utilities::to_godot_fvec2(province.get_city_position()) / GameSingleton::get_singleton()->get_map_dims();
-}
-
 PackedVector2Array MapItemSingleton::get_province_positions() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
@@ -125,7 +120,7 @@ PackedVector2Array MapItemSingleton::get_province_positions() const {
 			continue;
 		}
 
-		billboard_pos[index++] = get_billboard_pos(prov);
+		billboard_pos[index++] = game_singleton->get_billboard_pos(prov);
 	}
 
 	return billboard_pos;
@@ -160,7 +155,7 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 			continue;
 		}
 
-		billboard_pos[index++] = get_billboard_pos(country.get_capital()->get_province_definition());
+		billboard_pos[index++] = game_singleton->get_billboard_pos(country.get_capital()->get_province_definition());
 	}
 
 	billboard_pos.resize(index);

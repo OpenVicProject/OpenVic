@@ -47,6 +47,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
 
+	OV_BIND_METHOD(GameSingleton::get_bookmark_info);
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 	OV_BIND_METHOD(GameSingleton::start_game_session);
 
@@ -56,6 +57,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_map_height);
 	OV_BIND_METHOD(GameSingleton::get_map_dims);
 	OV_BIND_METHOD(GameSingleton::get_map_aspect_ratio);
+	OV_BIND_METHOD(GameSingleton::get_bookmark_start_position);
 	OV_BIND_METHOD(GameSingleton::get_terrain_texture);
 	OV_BIND_METHOD(GameSingleton::get_flag_dims);
 	OV_BIND_METHOD(GameSingleton::get_flag_sheet_texture);
@@ -76,6 +78,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::unset_selected_province);
 
 	OV_BIND_METHOD(GameSingleton::set_viewed_country_by_province_index, { "province_index" });
+	OV_BIND_METHOD(GameSingleton::get_viewed_country_capital_position);
 
 	OV_BIND_METHOD(GameSingleton::update_clock);
 
@@ -126,6 +129,27 @@ void GameSingleton::setup_logger() {
 	Logger::set_error_func([](std::string&& str) {
 		UtilityFunctions::push_error(Utilities::std_to_godot_string(str));
 	});
+}
+
+TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
+	static const StringName bookmark_info_name_key = "bookmark_name";
+	static const StringName bookmark_info_date_key = "bookmark_date";
+
+	TypedArray<Dictionary> results;
+
+	BookmarkManager const& bookmark_manager =
+		game_manager.get_definition_manager().get_history_manager().get_bookmark_manager();
+
+	for (Bookmark const& bookmark : bookmark_manager.get_bookmarks()) {
+		Dictionary bookmark_info;
+
+		bookmark_info[bookmark_info_name_key] = Utilities::std_to_godot_string(bookmark.get_name());
+		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.get_date(), false);
+
+		results.push_back(std::move(bookmark_info));
+	}
+
+	return results;
 }
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
@@ -184,6 +208,22 @@ float GameSingleton::get_map_aspect_ratio() const {
 
 Vector2 GameSingleton::normalise_map_position(fvec2_t const& position) const {
 	return Utilities::to_godot_fvec2(position) / get_map_dims();
+}
+
+Vector2 GameSingleton::get_billboard_pos(ProvinceDefinition const& province) const {
+	return normalise_map_position(province.get_city_position());
+}
+
+Vector2 GameSingleton::get_bookmark_start_position() const {
+	InstanceManager const* instance_manager = get_instance_manager();
+	ERR_FAIL_NULL_V(instance_manager, {});
+
+	// TODO - What if game started from save rather than bookmark? Does a save game store which bookmark it originated from?
+
+	Bookmark const* bookmark = instance_manager->get_bookmark();
+	ERR_FAIL_NULL_V(bookmark, {});
+
+	return normalise_map_position(bookmark->get_initial_camera_position());
 }
 
 Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
@@ -297,7 +337,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 		Dictionary province_dict;
 
 		province_dict[identifier_key] = Utilities::std_to_godot_string(province.get_identifier());
-		province_dict[position_key] = Utilities::to_godot_fvec2(province.get_text_position()) / get_map_dims();
+		province_dict[position_key] = normalise_map_position(province.get_text_position());
 
 		const float rotation = province.get_text_rotation().to_float();
 		if (rotation != 0.0f) {
@@ -394,6 +434,18 @@ void GameSingleton::set_viewed_country_by_province_index(int32_t province_index)
 	set_viewed_country(province_instance->get_owner());
 }
 
+Vector2 GameSingleton::get_viewed_country_capital_position() const {
+	if (viewed_country != nullptr) {
+		ProvinceInstance const* capital = viewed_country->get_capital();
+
+		if (capital != nullptr) {
+			return get_billboard_pos(capital->get_province_definition());
+		}
+	}
+
+	return {};
+}
+
 Error GameSingleton::update_clock() {
 	return ERR(game_manager.update_clock());
 }
@@ -403,13 +455,13 @@ Error GameSingleton::_load_map_images() {
 
 	Error err = OK;
 
-	const Vector2i province_dims = get_map_dims();
+	const Vector2i map_dims = get_map_dims();
 
 	// For each dimension of the image, this finds the small number of equal subdivisions
 	// required get the individual texture dims under GPU_DIM_LIMIT
 	for (int i = 0; i < 2; ++i) {
 		image_subdivisions[i] = 1;
-		while (province_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || province_dims[i] % image_subdivisions[i] != 0) {
+		while (map_dims[i] / image_subdivisions[i] > GPU_DIM_LIMIT || map_dims[i] % image_subdivisions[i] != 0) {
 			++image_subdivisions[i];
 		}
 	}
@@ -417,7 +469,7 @@ Error GameSingleton::_load_map_images() {
 	MapDefinition::shape_pixel_t const* province_shape_data =
 		get_definition_manager().get_map_definition().get_province_shape_image().data();
 
-	const Vector2i divided_dims = province_dims / image_subdivisions;
+	const Vector2i divided_dims = map_dims / image_subdivisions;
 	const int64_t subdivision_width = divided_dims.x * sizeof(MapDefinition::shape_pixel_t);
 	const int64_t subdivision_size = subdivision_width * divided_dims.y;
 
@@ -433,7 +485,7 @@ Error GameSingleton::_load_map_images() {
 			for (int32_t y = 0; y < divided_dims.y; ++y) {
 				memcpy(
 					index_data_array.ptrw() + y * subdivision_width,
-					province_shape_data + (v * divided_dims.y + y) * province_dims.x + u * divided_dims.x,
+					province_shape_data + (v * divided_dims.y + y) * map_dims.x + u * divided_dims.x,
 					subdivision_width
 				);
 			}

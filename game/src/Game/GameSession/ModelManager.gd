@@ -32,8 +32,10 @@ func _generate_unit(unit_dict : Dictionary) -> void:
 		# This must be a UnitModel so we can attach the rider to it
 		var mount_model : Node3D = _generate_model(unit_dict[mount_model_key], unit_dict[culture_key], true)
 		if mount_model:
-			mount_model.attach_model(unit_dict[mount_attach_node_key], model)
-			model = mount_model
+			if mount_model.attach_model(unit_dict[mount_attach_node_key], model) == OK:
+				model = mount_model
+			else:
+				mount_model.free()
 
 	var rotation : float = unit_dict.get(rotation_key, 0.0)
 
@@ -127,8 +129,8 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		# Attachments
 		for attachment_dict : Dictionary in model_dict.get(attachments_key, []):
 			var attachment_model : Node3D = _generate_model(attachment_dict[attachment_model_key], culture)
-			if attachment_model:
-				model.attach_model(attachment_dict[attachment_node_key], attachment_model)
+			if attachment_model and model.attach_model(attachment_dict[attachment_node_key], attachment_model) != OK:
+				attachment_model.free()
 
 		if culture:
 			const gun_bone_name : String = "GunNode"
@@ -136,15 +138,15 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 				var gun_dict : Dictionary = ModelSingleton.get_cultural_gun_model(culture)
 				if gun_dict:
 					var gun_model : Node3D = _generate_model(gun_dict, culture)
-					if gun_model:
-						model.attach_model(gun_bone_name, gun_model)
+					if gun_model and model.attach_model(gun_bone_name, gun_model) != OK:
+						gun_model.free()
 
 			const helmet_bone_name : String = "HelmetNode"
 			if model.has_bone(helmet_bone_name):
 				var helmet_dict : Dictionary = ModelSingleton.get_cultural_helmet_model(culture)
 				if helmet_dict:
 					var helmet_model : Node3D = _generate_model(helmet_dict, culture)
-					if helmet_model:
-						model.attach_model(helmet_bone_name, helmet_model)
+					if helmet_model and model.attach_model(helmet_bone_name, helmet_model) != OK:
+						helmet_model.free()
 
 	return model

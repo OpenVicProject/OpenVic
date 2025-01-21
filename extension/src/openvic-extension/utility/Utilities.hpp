@@ -39,7 +39,7 @@ namespace OpenVic::Utilities {
 		return static_cast<real_t>(val);
 	}
 
-	godot::String date_to_formatted_string(Date date);
+	godot::String date_to_formatted_string(Date date, bool month_first);
 
 	_FORCE_INLINE_ godot::Color to_godot_color(IsColour auto colour) {
 		return { colour.redf(), colour.greenf(), colour.bluef(), colour.alphaf() };

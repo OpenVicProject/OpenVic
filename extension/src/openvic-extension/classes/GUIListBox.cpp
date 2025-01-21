@@ -270,7 +270,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 		if (scrollbar_control != nullptr) {
 			scrollbar = Object::cast_to<GUIScrollbar>(scrollbar_control);
 			if (scrollbar != nullptr) {
-				add_child(scrollbar, false, INTERNAL_MODE_FRONT);
+				add_child(scrollbar, false, INTERNAL_MODE_BACK);
 
 				const Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
 				Vector2 position = Utilities::to_godot_fvec2(gui_listbox->get_scrollbar_offset());

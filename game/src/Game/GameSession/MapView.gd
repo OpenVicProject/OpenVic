@@ -34,7 +34,7 @@ var _mouse_over_viewport : bool = true
 # hence why it is not exported and just has _zoom_target_max as a placeholder.
 var _zoom_target : float = _zoom_target_max:
 	get: return _zoom_target
-	set(v): _zoom_target = clamp(v, _zoom_target_min, _zoom_target_max)
+	set(v): _zoom_target = clampf(v, _zoom_target_min, _zoom_target_max)
 const _zoom_position_multiplier = 3.14159 # Horizontal movement coefficient during zoom
 var _zoom_position : Vector2
 
@@ -72,11 +72,6 @@ func _ready() -> void:
 		push_error("MapView's _camera variable hasn't been set!")
 		return
 
-	# Start just under the parchment threshold
-	_camera.position.y = _zoom_parchment_threshold - _zoom_target_step
-	_zoom_target = _camera.position.y
-	_update_view_states(true)
-
 	if not _map_mesh_instance:
 		push_error("MapView's _map_mesh_instance variable hasn't been set!")
 		return
@@ -107,6 +102,20 @@ func _ready() -> void:
 	))
 
 	GameSingleton.province_selected.connect(_on_province_selected)
+
+	# Set the camera's starting position
+	_camera.position = _map_to_world_coords(
+		# Start at the bookmark's start position (used when loading a bookmark in the lobby)
+		# GameSingleton.get_bookmark_start_position()
+
+		# Start at the player country's capital position (when loading a save game in the lobby or entering the actual game)
+		GameSingleton.get_viewed_country_capital_position()
+	)
+
+	# Start zoomed out with the parchment map active
+	_camera.position.y = _zoom_parchment_threshold * 1.5
+	_zoom_target = _camera.position.y
+	_update_view_states(true)
 
 	if not _map_background_instance:
 		push_error("MapView's _map_background_instance variable hasn't been set!")
@@ -293,7 +302,7 @@ func _edge_scrolling_vector() -> Vector2:
 
 func _clamp_over_map() -> void:
 	_camera.position.x = _map_mesh_corner.x + fposmod(_camera.position.x - _map_mesh_corner.x, _map_mesh_dims.x)
-	_camera.position.z = clamp(_camera.position.z, _map_mesh_corner.y, _map_mesh_corner.y + _map_mesh_dims.y)
+	_camera.position.z = clampf(_camera.position.z, _map_mesh_corner.y, _map_mesh_corner.y + _map_mesh_dims.y)
 
 func _update_view_states(force_signal : bool) -> void:
 	var new_is_parchment_view : bool = _camera.position.y >= _zoom_parchment_threshold - _zoom_epsilon

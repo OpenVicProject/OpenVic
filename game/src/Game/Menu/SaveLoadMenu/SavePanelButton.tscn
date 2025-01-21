@@ -2,16 +2,16 @@
 
 [ext_resource type="Script" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.gd" id="1_rtuo6"]
 
-[node name="SavePanelButton" type="Container" node_paths=PackedStringArray("country_flag", "date_label", "delete_button", "background_button", "name_label")]
+[node name="SavePanelButton" type="Container" node_paths=PackedStringArray("country_flag", "delete_button", "background_button", "name_label", "date_label")]
 editor_description = "SS-18, UI-40, UI-84, UI-86, UI-91, UI-93"
 offset_right = 276.0
 offset_bottom = 48.0
 script = ExtResource("1_rtuo6")
 country_flag = NodePath("SaveList/CountryFlag")
-date_label = NodePath("SaveList/DateLabel")
 delete_button = NodePath("SaveList/DeleteButton")
 background_button = NodePath("BackgroundButton")
 name_label = NodePath("SaveList/NameLabel")
+date_label = NodePath("SaveList/DateLabel")
 
 [node name="BackgroundButton" type="Button" parent="."]
 layout_mode = 2
