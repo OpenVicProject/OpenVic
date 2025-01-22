@@ -66,8 +66,8 @@ Economy:
     Resource gathering operation:
       base workforce: defined in common/production_types.txt as workforce
       rgo size:
-        formula: floor(1.5 * ceil(n_workers_in_state / (base workforce * (1 + terrain rgo size modifier)))
-        n_workers_in_state: Total size of POPs in state where POP type is in employees (common/production_types.txt).
+        formula: floor(1.5 * ceil(n_workers_in_province / (base workforce * (1 + terrain rgo size modifier)))
+        n_workers_in_province: Total size of POPs in province where POP type is in employees (common/production_types.txt).
         note: Calculated when starting a new game.
       Output:
         formula: base output * rgo size * (1 + overseas penalty) * throughput from workers * (1 + throughput modifier) * (1 + output from workers) * (1 + output modifier)
