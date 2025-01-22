@@ -27,7 +27,7 @@
 	private: \
 		godot::String PROPERTY(tooltip_string); \
 		godot::Dictionary PROPERTY(tooltip_substitution_dict); \
-		bool PROPERTY_CUSTOM_PREFIX(tooltip_active, is); \
+		bool PROPERTY_CUSTOM_PREFIX(tooltip_active, is, false); \
 		void _tooltip_notification(int what); \
 		void _set_tooltip_active(bool new_tooltip_active); \
 		void _set_tooltip_visibility(bool visible);

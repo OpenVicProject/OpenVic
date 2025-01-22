@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/Game/MusicConductor/MusicPlayer.gd" id="1_gcm4m"]
 
-[node name="MusicPlayer" type="BoxContainer" node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visbility_button")]
+[node name="MusicPlayer" type="BoxContainer" node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visibility_button")]
 editor_description = "UI-104"
 offset_right = 150.0
 offset_bottom = 110.0
@@ -14,7 +14,7 @@ _progress_slider = NodePath("ProgressSlider")
 _previous_song_button = NodePath("ButtonList/PreviousSongButton")
 _play_pause_button = NodePath("ButtonList/PlayPauseButton")
 _next_song_button = NodePath("ButtonList/NextSongButton")
-_visbility_button = NodePath("MusicUIVisibilityButton")
+_visibility_button = NodePath("MusicUIVisibilityButton")
 
 [node name="SongSelectorButton" type="OptionButton" parent="."]
 editor_description = "UI-105, UI-107, UI-110, UIFUN-92"

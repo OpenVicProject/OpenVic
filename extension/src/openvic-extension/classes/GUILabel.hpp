@@ -18,20 +18,20 @@ namespace OpenVic {
 
 		using colour_instructions_t = std::vector<std::pair<int64_t, char>>;
 
-		GUI::Text const* PROPERTY(gui_text);
+		GUI::Text const* PROPERTY(gui_text, nullptr);
 
 		godot::String PROPERTY(text);
 		godot::Dictionary PROPERTY(substitution_dict);
-		godot::HorizontalAlignment PROPERTY(horizontal_alignment);
+		godot::HorizontalAlignment PROPERTY(horizontal_alignment, godot::HORIZONTAL_ALIGNMENT_LEFT);
 		godot::Size2 PROPERTY(max_size); // Actual max size is max_size - 2 * border_size
 		godot::Size2 PROPERTY(border_size); // The padding between the Nodes bounding box and the text within it
 		godot::Rect2 PROPERTY(adjusted_rect); // Offset + size after adjustment to fit content size
-		bool PROPERTY_CUSTOM_PREFIX(auto_adjust_to_content_size, will);
+		bool PROPERTY_CUSTOM_PREFIX(auto_adjust_to_content_size, will, false);
 
 		godot::Ref<godot::Font> font;
 		int32_t PROPERTY(font_size);
 		godot::Color PROPERTY(default_colour);
-		GFX::Font::colour_codes_t const* colour_codes;
+		GFX::Font::colour_codes_t const* colour_codes = nullptr;
 		godot::Ref<GFXSpriteTexture> currency_texture;
 
 		godot::Ref<godot::StyleBoxTexture> background;
@@ -50,7 +50,7 @@ namespace OpenVic {
 
 		std::vector<line_t> lines;
 
-		bool line_update_queued;
+		bool line_update_queued = false;
 
 	protected:
 		static void _bind_methods();

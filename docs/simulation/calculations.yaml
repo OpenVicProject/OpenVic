@@ -49,7 +49,7 @@ Economy:
       /30: Hardcoded value to represent days in a month.
     Gold income daily:
       formula: MGQ * GOLD_TO_CASH_RATE
-      MGQ: Money good quanity = total production of goods with money = yes
+      MGQ: Money good quantity = total production of goods with money = yes
       GOLD_TO_CASH_RATE: defines.country.GOLD_TO_CASH_RATE
     Overseas maintenance:
       See: https://github.com/schombert/Project-Alice/blob/b7889a9c302feed851c039f1a98d73b75be3215a/docs/rules.md#overseas-penalty

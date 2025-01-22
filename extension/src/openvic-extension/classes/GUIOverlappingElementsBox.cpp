@@ -75,8 +75,7 @@ void GUIOverlappingElementsBox::_notification(int what) {
 	}
 }
 
-GUIOverlappingElementsBox::GUIOverlappingElementsBox()
-  : gui_overlapping_elements_box { nullptr }, gui_child_element { nullptr } {}
+GUIOverlappingElementsBox::GUIOverlappingElementsBox() {}
 
 void GUIOverlappingElementsBox::clear() {
 	clear_children();

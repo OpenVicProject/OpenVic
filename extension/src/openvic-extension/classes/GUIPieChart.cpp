@@ -73,7 +73,7 @@ void GUIPieChart::_gui_input(Ref<InputEvent> const& event) {
 	}
 }
 
-GUIPieChart::GUIPieChart() : tooltip_active { false }, tooltip_position { disabled_tooltip_position } {}
+GUIPieChart::GUIPieChart() : tooltip_position { disabled_tooltip_position } {}
 
 Error GUIPieChart::set_gfx_pie_chart(GFX::PieChart const* gfx_pie_chart) {
 	const bool needs_setting = gfx_pie_chart_texture.is_null();

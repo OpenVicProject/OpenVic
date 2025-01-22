@@ -5,7 +5,7 @@ extends Control
 @export var _previous_song_button : Button
 @export var _play_pause_button : Button
 @export var _next_song_button : Button
-@export var _visbility_button : Button
+@export var _visibility_button : Button
 
 var _is_user_dragging_progress_slider : bool = false
 
@@ -56,7 +56,7 @@ func _on_progress_slider_drag_ended(_value_changed : bool) -> void:
 
 func _set_music_player_visible(is_player_visible : bool) -> void:
 	MusicConductor.is_music_player_visible = is_player_visible
-	_visbility_button.text = "⬆️" if is_player_visible else "⬇"
+	_visibility_button.text = "⬆️" if is_player_visible else "⬇"
 	_song_selector_button.visible = is_player_visible
 	_progress_slider.visible = is_player_visible
 	_previous_song_button.visible = is_player_visible

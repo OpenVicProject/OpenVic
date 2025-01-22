@@ -108,7 +108,6 @@ GameSingleton::GameSingleton()
   : game_manager {
 		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
 	},
-	viewed_country { nullptr },
 	mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
@@ -564,8 +563,6 @@ Error GameSingleton::_load_terrain_variants() {
 	);
 	return OK;
 }
-
-const Vector2i GameSingleton::flag_dims { 128, 64 };
 
 Error GameSingleton::_load_flag_sheet() {
 	ERR_FAIL_COND_V_MSG(

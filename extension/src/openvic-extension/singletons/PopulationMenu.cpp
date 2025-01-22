@@ -98,7 +98,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 		bool is_expanded = true;
 
-		TypedArray<Dictionary> array {};
+		TypedArray<Dictionary> array;
 
 		/* Overloads return false if count_counter reaches 0 and the function should return,
 		 * otherwise true indicating the province list loop should continue. */
@@ -178,7 +178,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 
 	struct entry_visitor_t {
 
-		const int32_t _select_index;
+		const int32_t _select_index = 0;
 
 		int32_t index = 0, visible_index = 0;
 		bool is_expanded = true;
@@ -267,7 +267,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 
 		MenuSingleton& menu_singleton;
 
-		const int32_t _province_index;
+		const int32_t _province_index = 0;
 
 		int32_t index = 0;
 

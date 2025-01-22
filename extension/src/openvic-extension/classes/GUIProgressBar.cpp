@@ -18,7 +18,7 @@ void GUIProgressBar::_notification(int what) {
 	_tooltip_notification(what);
 }
 
-GUIProgressBar::GUIProgressBar() : tooltip_active { false } {}
+GUIProgressBar::GUIProgressBar() {}
 
 Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar) {
 	ERR_FAIL_NULL_V(progress_bar, FAILED);

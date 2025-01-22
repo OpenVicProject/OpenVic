@@ -37,7 +37,7 @@ namespace OpenVic {
 		};
 
 	private:
-		ButtonState PROPERTY(button_state);
+		ButtonState PROPERTY(button_state, HOVER);
 		godot::Ref<godot::Image> state_image;
 		godot::Ref<godot::ImageTexture> state_texture;
 
