@@ -67,7 +67,7 @@ func toggle_play_pause() -> void:
 
 func start_current_song() -> void:
 	_audio_stream_player.stream = _available_songs[_selected_track].song_stream
-	_audio_stream_player.play()
+	#_audio_stream_player.play()
 	song_started.emit(_selected_track)
 
 # REQUIREMENTS

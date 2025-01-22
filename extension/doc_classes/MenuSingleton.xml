@@ -55,6 +55,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_military_menu_info">
+			<return type="Dictionary" />
+			<param index="0" name="leader_sort_key" type="int" enum="MenuSingleton.LeaderSortKey" />
+			<description>
+			</description>
+		</method>
 		<method name="get_population_menu_distribution_info" qualifiers="const">
 			<return type="Array[]" />
 			<description>
@@ -325,6 +331,18 @@
 		<constant name="SORT_SIZE_CHANGE" value="16" enum="PopSortKey">
 		</constant>
 		<constant name="SORT_LITERACY" value="17" enum="PopSortKey">
+		</constant>
+		<constant name="LEADER_SORT_NONE" value="0" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_PRESTIGE" value="1" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_TYPE" value="2" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_NAME" value="3" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_ASSIGNMENT" value="4" enum="LeaderSortKey">
+		</constant>
+		<constant name="MAX_LEADER_SORT_KEY" value="5" enum="LeaderSortKey">
 		</constant>
 	</constants>
 </class>

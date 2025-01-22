@@ -36,6 +36,33 @@ String Utilities::int_to_string_suffixed(int64_t val) {
 	return (negative ? "-" : "") + String::num_int64(val);
 }
 
+String Utilities::int_to_string_commas(int64_t val) {
+	const bool negative = val < 0;
+	if (negative) {
+		val = -val;
+	}
+
+	const String string_val = String::num_int64(val);
+
+	String result;
+	int64_t length_remaining = string_val.length();
+
+	static constexpr int64_t digits_per_comma = 3;
+	static const String comma = ",";
+
+	while (length_remaining > digits_per_comma) {
+		result = comma + string_val.substr(length_remaining -= digits_per_comma, digits_per_comma) + result;
+	}
+
+	result = string_val.substr(0, length_remaining) + result;
+
+	if (negative) {
+		result = "-" + result;
+	}
+
+	return result;
+}
+
 String Utilities::float_to_string_suffixed(float val) {
 	const float abs_val = std::abs(val);
 
