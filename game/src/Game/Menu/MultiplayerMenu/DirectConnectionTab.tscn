@@ -1,0 +1,110 @@
+[gd_scene load_steps=3 format=3 uid="uid://28ummh3fgokc"]
+
+[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/DirectConnectionTab.gd" id="1_154ba"]
+[ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/Game/Menu/MultiplayerMenu/SecretEdit.tscn" id="2_xhui1"]
+
+[node name="DirectConnectionTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus", "ip_edit", "player_name_edit", "game_name_edit", "IP_grid")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+alignment = 1
+script = ExtResource("1_154ba")
+initial_focus = NodePath("VBoxContainer/UsernameEntryGrid/PlayerNameEntry")
+ip_edit = NodePath("VBoxContainer/NewIPEntryGrid/IPEdit")
+player_name_edit = NodePath("VBoxContainer/UsernameEntryGrid/PlayerNameEntry")
+game_name_edit = NodePath("VBoxContainer/NewIPEntryGrid/GameNameEdit")
+IP_grid = NodePath("VBoxContainer/ScrollContainer/SavedIPGrid")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UsernameEntryGrid" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="UserName" type="Label" parent="VBoxContainer/UsernameEntryGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_USERNAME_ENTRY"
+
+[node name="PlayerNameEntry" type="LineEdit" parent="VBoxContainer/UsernameEntryGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Player1"
+max_length = 32
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="NewIPEntryGrid" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="UserName" type="Label" parent="VBoxContainer/NewIPEntryGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_DIRECT_NAME_ENTRY"
+
+[node name="GameNameEdit" type="LineEdit" parent="VBoxContainer/NewIPEntryGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Game1"
+max_length = 32
+
+[node name="IP" type="Label" parent="VBoxContainer/NewIPEntryGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_DIRECT_IP_ENTRY"
+
+[node name="IPEdit" parent="VBoxContainer/NewIPEntryGrid" instance=ExtResource("2_xhui1")]
+layout_mode = 2
+
+[node name="Add_ip" type="Button" parent="VBoxContainer/NewIPEntryGrid"]
+layout_mode = 2
+text = "MP_DIRECT_ADD_IP"
+
+[node name="Connect" type="Button" parent="VBoxContainer/NewIPEntryGrid"]
+layout_mode = 2
+text = "MP_DIRECT_CONNECT"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "MP_DIRECT_SAVED_IPS"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SavedIPGrid" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="bottomGrid" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="revert_ips" type="Button" parent="VBoxContainer/bottomGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_DIRECT_REVERT_IPS"
+
+[node name="save_ips" type="Button" parent="VBoxContainer/bottomGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_DIRECT_SAVE_IPS"
+
+[connection signal="text_changed" from="VBoxContainer/UsernameEntryGrid/PlayerNameEntry" to="." method="_on_player_name_changed"]
+[connection signal="pressed" from="VBoxContainer/NewIPEntryGrid/Add_ip" to="." method="new_ip_entry"]
+[connection signal="pressed" from="VBoxContainer/NewIPEntryGrid/Connect" to="." method="_on_connect_pressed"]
+[connection signal="pressed" from="VBoxContainer/bottomGrid/revert_ips" to="." method="_on_revert_ips_pressed"]
+[connection signal="pressed" from="VBoxContainer/bottomGrid/save_ips" to="." method="_on_save_ips_pressed"]
