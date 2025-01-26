@@ -37,6 +37,7 @@
 		<method name="format_province_name" qualifiers="static">
 			<return type="String" />
 			<param index="0" name="province_identifier" type="String" />
+			<param index="1" name="ignore_empty" type="bool" default="false" />
 			<description>
 			</description>
 		</method>
@@ -232,6 +233,12 @@
 		<method name="hide_nodes" qualifiers="const">
 			<return type="int" enum="Error" />
 			<param index="0" name="paths" type="NodePath[]" />
+			<description>
+			</description>
+		</method>
+		<method name="int_to_string_commas" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="val" type="int" />
 			<description>
 			</description>
 		</method>

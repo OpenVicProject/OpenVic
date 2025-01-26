@@ -83,10 +83,11 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::remove_nodes, { "paths" });
 
 	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(int_to_string_commas, { "val" });
 	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
 	OV_BIND_SMETHOD(float_to_string_dp_dynamic, { "val" });
-	OV_BIND_SMETHOD(format_province_name, { "province_identifier" });
+	OV_BIND_SMETHOD(format_province_name, { "province_identifier", "ignore_empty" }, DEFVAL(false));
 }
 
 GUINode::GUINode() {
@@ -234,6 +235,10 @@ String GUINode::int_to_string_suffixed(int64_t val) {
 	return Utilities::int_to_string_suffixed(val);
 }
 
+String GUINode::int_to_string_commas(int64_t val) {
+	return Utilities::int_to_string_commas(val);
+}
+
 String GUINode::float_to_string_suffixed(float val) {
 	return Utilities::float_to_string_suffixed(val);
 }
@@ -246,13 +251,15 @@ String GUINode::float_to_string_dp_dynamic(float val) {
 	return Utilities::float_to_string_dp_dynamic(val);
 }
 
-String GUINode::format_province_name(String const& province_identifier) {
+String GUINode::format_province_name(String const& province_identifier, bool ignore_empty) {
 	if (!province_identifier.is_empty()) {
 		static const String province_prefix = "PROV";
 		return province_prefix + province_identifier;
-	} else {
+	} else if (!ignore_empty) {
 		static const String no_province = "NO PROVINCE";
 		return no_province;
+	} else {
+		return {};
 	}
 }
 

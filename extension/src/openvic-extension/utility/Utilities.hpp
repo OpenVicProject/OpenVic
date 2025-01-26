@@ -28,9 +28,13 @@ namespace OpenVic::Utilities {
 
 	godot::String int_to_string_suffixed(int64_t val);
 
+	godot::String int_to_string_commas(int64_t val);
+
 	godot::String float_to_string_suffixed(float val);
 
 	godot::String float_to_string_dp(float val, int32_t decimal_places);
+
+	godot::String fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_places);
 
 	// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 	godot::String float_to_string_dp_dynamic(float val);
@@ -38,6 +42,8 @@ namespace OpenVic::Utilities {
 	constexpr real_t to_real_t(std::floating_point auto val) {
 		return static_cast<real_t>(val);
 	}
+
+	godot::String date_to_string(Date date);
 
 	godot::String date_to_formatted_string(Date date, bool month_first);
 

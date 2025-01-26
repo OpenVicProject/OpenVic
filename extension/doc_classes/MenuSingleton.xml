@@ -55,6 +55,17 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_military_menu_info">
+			<return type="Dictionary" />
+			<param index="0" name="leader_sort_key" type="int" enum="MenuSingleton.LeaderSortKey" />
+			<param index="1" name="sort_leaders_descending" type="bool" />
+			<param index="2" name="army_sort_key" type="int" enum="MenuSingleton.UnitGroupSortKey" />
+			<param index="3" name="sort_armies_descending" type="bool" />
+			<param index="4" name="navy_sort_key" type="int" enum="MenuSingleton.UnitGroupSortKey" />
+			<param index="5" name="sort_navies_descending" type="bool" />
+			<description>
+			</description>
+		</method>
 		<method name="get_population_menu_distribution_info" qualifiers="const">
 			<return type="Array[]" />
 			<description>
@@ -325,6 +336,26 @@
 		<constant name="SORT_SIZE_CHANGE" value="16" enum="PopSortKey">
 		</constant>
 		<constant name="SORT_LITERACY" value="17" enum="PopSortKey">
+		</constant>
+		<constant name="LEADER_SORT_NONE" value="0" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_PRESTIGE" value="1" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_TYPE" value="2" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_NAME" value="3" enum="LeaderSortKey">
+		</constant>
+		<constant name="LEADER_SORT_ASSIGNMENT" value="4" enum="LeaderSortKey">
+		</constant>
+		<constant name="MAX_LEADER_SORT_KEY" value="5" enum="LeaderSortKey">
+		</constant>
+		<constant name="UNIT_GROUP_SORT_NONE" value="0" enum="UnitGroupSortKey">
+		</constant>
+		<constant name="UNIT_GROUP_SORT_NAME" value="1" enum="UnitGroupSortKey">
+		</constant>
+		<constant name="UNIT_GROUP_SORT_STRENGTH" value="2" enum="UnitGroupSortKey">
+		</constant>
+		<constant name="MAX_UNIT_GROUP_SORT_KEY" value="3" enum="UnitGroupSortKey">
 		</constant>
 	</constants>
 </class>

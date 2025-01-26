@@ -530,27 +530,19 @@ func _update_info() -> void:
 		_military_navy_size_label.set_text("§Y%d/%d" % [0, 0])
 		# TODO - navy size tooltip
 
-	const mobilised_key : StringName = &"mobilised"
+	const is_mobilised_key : StringName = &"is_mobilised"
 	const mobilisation_regiments_key : StringName = &"mobilisation_regiments"
-	const mobilisation_impact_key : StringName = &"mobilisation_impact"
-	const war_policy_key : StringName = &"war_policy"
-	const mobilisation_max_regiments_key : StringName = &"mobilisation_max_regiments"
+	const mobilisation_impact_tooltip_key : StringName = &"mobilisation_impact_tooltip"
 
 	if _military_mobilisation_size_label:
-		if topbar_info.get(mobilised_key, false):
+		if topbar_info.get(is_mobilised_key, false):
 			_military_mobilisation_size_label.set_text("§R-")
 			_military_mobilisation_size_label.set_tooltip_string("TOPBAR_MOBILIZED")
 		else:
 			var mobilisation_regiments : String = str(topbar_info.get(mobilisation_regiments_key, 0))
-			var mobilisation_impact : String = GUINode.float_to_string_dp(topbar_info.get(mobilisation_impact_key, 0), 1) + "%"
-
-			_military_mobilisation_size_label.set_text("§Y" + mobilisation_regiments)
-			_military_mobilisation_size_label.set_tooltip_string_and_substitution_dict(
-				tr(&"TOPBAR_MOBILIZE_TOOLTIP") + "\n\n" + tr(&"MOBILIZATION_IMPACT_LIMIT_DESC") + "\n" + tr(&"MOBILIZATION_IMPACT_LIMIT_DESC2").replace("$CURR$", "$CURR2$"),
-				{
-					"CURR": mobilisation_regiments, "IMPACT": mobilisation_impact, "POLICY": topbar_info.get(war_policy_key, ""),
-					"UNITS": str(topbar_info.get(mobilisation_max_regiments_key, 0)), "CURR2": regiment_count
-				}
+			_military_mobilisation_size_label.set_text("§Y%s" % mobilisation_regiments)
+			_military_mobilisation_size_label.set_tooltip_string(
+				tr(&"TOPBAR_MOBILIZE_TOOLTIP").replace("$CURR$", mobilisation_regiments) + "\n\n" + topbar_info.get(mobilisation_impact_tooltip_key, "")
 			)
 
 	if _military_leadership_points_label:

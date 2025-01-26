@@ -7,6 +7,12 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="get_currency_texture" qualifiers="const">
+			<return type="GFXSpriteTexture" />
+			<param index="0" name="height" type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="get_font">
 			<return type="FontFile" />
 			<param index="0" name="name" type="StringName" />
@@ -17,6 +23,12 @@
 			<return type="Image" />
 			<param index="0" name="path" type="StringName" />
 			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" default="1" />
+			<description>
+			</description>
+		</method>
+		<method name="get_leader_texture">
+			<return type="ImageTexture" />
+			<param index="0" name="name" type="String" />
 			<description>
 			</description>
 		</method>

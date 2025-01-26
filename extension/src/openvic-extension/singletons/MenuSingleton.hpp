@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
+#include <openvic-simulation/military/UnitInstanceGroup.hpp>
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
@@ -22,7 +23,9 @@ namespace OpenVic {
 	struct CountryParty;
 	struct RebelType;
 	struct ModifierValue;
+	struct ModifierSum;
 	struct RuleSet;
+	struct LeaderBase;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -93,6 +96,15 @@ namespace OpenVic {
 			std::vector<Pop const*> pops, filtered_pops;
 		};
 
+		enum LeaderSortKey {
+			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
+			MAX_LEADER_SORT_KEY
+		};
+		ordered_map<LeaderBase const*, godot::Dictionary> cached_leader_dicts;
+		enum UnitGroupSortKey {
+			UNIT_GROUP_SORT_NONE, UNIT_GROUP_SORT_NAME, UNIT_GROUP_SORT_STRENGTH, MAX_UNIT_GROUP_SORT_KEY
+		};
+
 		struct search_panel_t {
 			struct entry_t {
 				std::variant<ProvinceInstance const*, State const*, CountryInstance const*> target;
@@ -120,14 +132,30 @@ namespace OpenVic {
 		 * the given position. */
 		static godot::StringName const& _signal_update_tooltip();
 
-		godot::String get_state_name(State const& state) const;
-		godot::String get_country_name(CountryInstance const& country) const;
-		godot::String get_country_adjective(CountryInstance const& country) const;
+		godot::String _get_state_name(State const& state) const;
+		godot::String _get_country_name(CountryInstance const& country) const;
+		godot::String _get_country_adjective(CountryInstance const& country) const;
 
-		// Modifier effect and rule tooltips begin with a newline character (unless they're empty), as they're always
-		// added after a starting/title section.
-		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
-		godot::String make_rules_tooltip(RuleSet const& rules) const;
+		static godot::String _make_modifier_effect_value(
+			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+		);
+
+		static godot::String _make_modifier_effect_value_coloured(
+			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+		);
+
+		godot::String _make_modifier_effects_tooltip(ModifierValue const& modifier) const;
+
+		template<typename T>
+		requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
+		godot::String _make_modifier_effect_contributions_tooltip(
+			T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions = nullptr,
+			fixed_point_t* other_contributions = nullptr, godot::String const& prefix = "\n"
+		) const;
+
+		godot::String _make_rules_tooltip(RuleSet const& rules) const;
+
+		godot::String _make_mobilisation_impact_tooltip() const;
 
 	protected:
 		static void _bind_methods();
@@ -205,6 +233,17 @@ namespace OpenVic {
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
 
+		/* MILITARY MENU */
+		godot::Dictionary make_leader_dict(LeaderBase const& leader);
+		template<UnitType::branch_t Branch>
+		godot::Dictionary make_unit_group_dict(UnitInstanceGroup<Branch> const& unit_group);
+		godot::Dictionary make_in_progress_unit_dict() const;
+		godot::Dictionary get_military_menu_info(
+			LeaderSortKey leader_sort_key, bool sort_leaders_descending,
+			UnitGroupSortKey army_sort_key, bool sort_armies_descending,
+			UnitGroupSortKey navy_sort_key, bool sort_navies_descending
+		);
+
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
 		// (which automatically includes country creation/destruction)
@@ -218,3 +257,5 @@ namespace OpenVic {
 
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::LeaderSortKey);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::UnitGroupSortKey);

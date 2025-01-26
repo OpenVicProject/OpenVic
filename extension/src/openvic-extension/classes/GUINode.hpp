@@ -91,11 +91,14 @@ namespace OpenVic {
 		godot::Error remove_nodes(godot::TypedArray<godot::NodePath> const& paths) const;
 
 		static godot::String int_to_string_suffixed(int64_t val);
+		static godot::String int_to_string_commas(int64_t val);
 		static godot::String float_to_string_suffixed(float val);
 		static godot::String float_to_string_dp(float val, int32_t decimal_places);
 		// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 		static godot::String float_to_string_dp_dynamic(float val);
-		static godot::String format_province_name(godot::String const& province_identifier);
+		// The "ignore_empty" argument refers to what this function produces when given an empty string - if the argument
+		// is false then empty inputs are replaced with "NO PROVINCE", otherwise they return the empty string unchanged.
+		static godot::String format_province_name(godot::String const& province_identifier, bool ignore_empty = false);
 
 		godot::Ref<godot::BitMap> get_click_mask() const;
 		void set_click_mask(godot::Ref<godot::BitMap> const& mask);
