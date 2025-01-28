@@ -648,7 +648,7 @@ func _update_pop_list() -> void:
 					tr(&"POPULATION_CHANGED_BY"), "G+" if pop_change > 0 else "Y+" if pop_change == 0 else "R", str(pop_change)
 				])
 			if _pop_list_literacy_labels[index]:
-				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key], 2))
+				_pop_list_literacy_labels[index].set_text("%s%%" % GUINode.float_to_string_dp(pop_row[pop_literacy_key] * 100, 2))
 				_pop_list_literacy_labels[index].set_tooltip_string("%s: §G%s%%" % [
 					tr(&"LIT_CHANGE"), GUINode.float_to_string_dp(pop_row[pop_literacy_key] / 64.0, 2)
 				])

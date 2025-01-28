@@ -186,14 +186,20 @@ func _ready() -> void:
 	if _technology_progress_bar and tech_button:
 		_technology_progress_bar.reparent(tech_button)
 	_technology_current_research_label = get_gui_label_from_nodepath(^"./topbar/tech_current_research")
-	if _technology_current_research_label and tech_button:
-		_technology_current_research_label.reparent(tech_button)
+	if _technology_current_research_label:
+		_technology_current_research_label.set_auto_translate(false)
+		if tech_button:
+			_technology_current_research_label.reparent(tech_button)
 	_technology_literacy_label = get_gui_label_from_nodepath(^"./topbar/tech_literacy_value")
-	if _technology_literacy_label and tech_button:
-		_technology_literacy_label.reparent(tech_button)
+	if _technology_literacy_label:
+		_technology_literacy_label.set_auto_translate(false)
+		if tech_button:
+			_technology_literacy_label.reparent(tech_button)
 	_technology_research_points_label = get_gui_label_from_nodepath(^"./topbar/topbar_researchpoints_value")
-	if _technology_research_points_label and tech_button:
-		_technology_research_points_label.reparent(tech_button)
+	if _technology_research_points_label:
+		_technology_research_points_label.set_auto_translate(false)
+		if tech_button:
+			_technology_research_points_label.reparent(tech_button)
 
 	# Politics
 	_politics_party_icon = get_gui_icon_from_nodepath(^"./topbar/politics_party_icon")
@@ -260,11 +266,18 @@ func _ready() -> void:
 	# Military
 	_military_army_size_label = get_gui_label_from_nodepath(^"./topbar/military_army_value")
 	if _military_army_size_label:
+		_military_army_size_label.set_auto_translate(false)
 		_military_army_size_label.set_text("§Y$CURR$/$MAX$")
 		_military_army_size_label.set_tooltip_string("TOPBAR_ARMY_TOOLTIP")
 	_military_navy_size_label = get_gui_label_from_nodepath(^"./topbar/military_navy_value")
+	if _military_navy_size_label:
+		_military_navy_size_label.set_auto_translate(false)
 	_military_mobilisation_size_label = get_gui_label_from_nodepath(^"./topbar/military_manpower_value")
+	if _military_mobilisation_size_label:
+		_military_mobilisation_size_label.set_auto_translate(false)
 	_military_leadership_points_label = get_gui_label_from_nodepath(^"./topbar/military_leadership_value")
+	if _military_leadership_points_label:
+		_military_leadership_points_label.set_auto_translate(false)
 
 	_update_info()
 	_update_speed_controls()
@@ -414,27 +427,33 @@ func _update_info() -> void:
 		])
 
 	## Technology
+	const research_key : StringName = &"research"
+	const research_tooltip_key : StringName = &"research_tooltip"
+	const research_progress_key : StringName = &"research_progress"
+	const literacy_key : StringName = &"literacy"
+	const literacy_change_key : StringName = &"literacy_change"
+	const research_points_key : StringName = &"research_points"
+	const research_points_tooltip_key : StringName = &"research_points_tooltip"
+
 	if _technology_progress_bar:
-		pass # TODO - set tech progress
+		_technology_progress_bar.set_value(topbar_info.get(research_progress_key, 0))
 
 	if _technology_current_research_label:
-		# TODO - set current research or "unciv_nation" (in red) if uncivilised
-		_technology_current_research_label.set_text("TB_TECH_NO_CURRENT")
-		_technology_current_research_label.set_tooltip_string("TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP")
+		_technology_current_research_label.set_text(topbar_info.get(research_key, ""))
+		_technology_current_research_label.set_tooltip_string(topbar_info.get(research_tooltip_key, ""))
 
 	if _technology_literacy_label:
-		var literacy_float : float = 80.0
-		var literacy_string : String = GUINode.float_to_string_dp(80.0, 1)
+		var literacy_float : float = topbar_info.get(literacy_key, 0.0) * 100
+		var literacy_string : String = GUINode.float_to_string_dp(literacy_float, 1)
 		_technology_literacy_label.set_text("§Y%s§W%%" % literacy_string)
-		_technology_literacy_label.set_tooltip_string_and_substitution_dict("TOPBAR_AVG_LITERACY", { "AVG": literacy_string })
+		_technology_literacy_label.set_tooltip_string(
+			tr(&"TOPBAR_AVG_LITERACY").replace("$AVG$", literacy_string) + "\n" + tr(&"TOPBAR_AVG_CHANGE").replace(
+				"$VAL$", GUINode.float_to_string_dp(topbar_info.get(literacy_change_key, 0.0), 4))
+		)
 
 	if _technology_research_points_label:
-		_technology_research_points_label.set_text("§Y%s" % GUINode.float_to_string_dp(10.0, 2))
-		# TODO - test tooltip, replace with actual values from the simulation
-		_technology_research_points_label.set_tooltip_string_and_substitution_dict("TECH_DAILY_RESEARCHPOINTS_TOOLTIP", {
-			"POPTYPE": "Clergymen", "VALUE": GUINode.float_to_string_dp(1.42, 2),
-			"FRACTION": GUINode.float_to_string_dp(0.95, 2), "OPTIMAL": GUINode.float_to_string_dp(2, 2)
-		})
+		_technology_research_points_label.set_text("§Y%s" % GUINode.float_to_string_dp(topbar_info.get(research_points_key, 0), 2))
+		_technology_research_points_label.set_tooltip_string(topbar_info.get(research_points_tooltip_key, ""))
 
 	## Politics
 	if _politics_party_icon:
@@ -545,9 +564,12 @@ func _update_info() -> void:
 				tr(&"TOPBAR_MOBILIZE_TOOLTIP").replace("$CURR$", mobilisation_regiments) + "\n\n" + topbar_info.get(mobilisation_impact_tooltip_key, "")
 			)
 
+	const leadership_key : StringName = &"leadership"
+	const leadership_tooltip_key : StringName = &"leadership_tooltip"
+
 	if _military_leadership_points_label:
-		_military_leadership_points_label.set_text("§Y%d" % 0)
-		# TODO - leadership points tooltip
+		_military_leadership_points_label.set_text("§Y%d" % topbar_info.get(leadership_key, 0))
+		_military_leadership_points_label.set_tooltip_string(topbar_info.get(leadership_tooltip_key, ""))
 
 func _update_speed_controls() -> void:
 	var paused : bool = MenuSingleton.is_paused()

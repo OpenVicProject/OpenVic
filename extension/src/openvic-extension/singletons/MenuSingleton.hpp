@@ -150,7 +150,7 @@ namespace OpenVic {
 		requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 		godot::String _make_modifier_effect_contributions_tooltip(
 			T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions = nullptr,
-			fixed_point_t* other_contributions = nullptr, godot::String const& prefix = "\n"
+			fixed_point_t* other_contributions = nullptr, godot::String const& prefix = "\n", godot::String const& suffix = {}
 		) const;
 
 		godot::String _make_rules_tooltip(RuleSet const& rules) const;

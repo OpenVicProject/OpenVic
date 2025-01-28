@@ -174,8 +174,21 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ret &= menu_singleton->_population_menu_update_provinces() == OK;
 
 	// TODO - replace with actual starting country
-	set_viewed_country(instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG"));
+	CountryInstance* starting_country =
+		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG");
+	set_viewed_country(starting_country);
 	ERR_FAIL_NULL_V(viewed_country, FAILED);
+
+	// TODO - remove this test starting research
+	for (
+		Technology const& technology :
+			get_definition_manager().get_research_manager().get_technology_manager().get_technologies()
+	) {
+		if (starting_country->can_research_tech(technology, instance_manager->get_today())) {
+			starting_country->start_research(technology, *instance_manager);
+			break;
+		}
+	}
 
 	return ERR(ret);
 }
