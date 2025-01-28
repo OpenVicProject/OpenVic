@@ -220,7 +220,8 @@ Error GFXMaskedFlagTexture::set_flag_country(CountryInstance const* new_flag_cou
 	GovernmentType const* government_type = new_flag_country->get_flag_government_type();
 
 	const StringName new_flag_type = government_type != nullptr
-		? Utilities::std_to_godot_string(government_type->get_flag_type()) : String {};
+		? StringName { Utilities::std_to_godot_string(government_type->get_flag_type()) }
+		: StringName {};
 
 	return set_flag_country_and_type(new_flag_country->get_country_definition(), new_flag_type);
 }
