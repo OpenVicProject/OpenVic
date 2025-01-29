@@ -149,6 +149,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_technology_menu_defines" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Returns a [Dictionary] with static defines for the technology menu.
+			</description>
+		</method>
+		<method name="get_technology_menu_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Returns a [Dictionary] with the dynamic state of the technology menu.
+			</description>
+		</method>
 		<method name="get_tooltip_separator" qualifiers="static">
 			<return type="String" />
 			<description>

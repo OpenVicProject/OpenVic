@@ -1,17 +1,24 @@
 #include "MenuSingleton.hpp"
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <string_view>
+
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/economy/GoodDefinition.hpp>
+#include <openvic-simulation/research/Technology.hpp>
 
+#include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -118,45 +125,56 @@ String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifie
 	String result;
 
 	for (auto const& [effect, value] : modifier.get_values()) {
-		static const String post_name_text = ": " + GUILabel::get_colour_marker();
-
-		result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + post_name_text;
-
-		if (value == 0) {
-			result += "Y";
-		} else if (effect->is_positive_good() == (value > 0)) {
-			result += "G";
-		} else {
-			result += "R";
+		if (!result.is_empty()) {
+			result += "\n";
 		}
 
-		if (value >= 0) {
-			result += "+";
-		}
-
-		static constexpr int32_t DECIMAL_PLACES = 2;
-
-		using enum ModifierEffect::format_t;
-
-		switch (effect->get_format()) {
-		case PROPORTION_DECIMAL:
-			result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case PERCENTAGE_DECIMAL:
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case INT:
-			result += String::num_int64(value.to_int64_t());
-			break;
-		case RAW_DECIMAL: [[fallthrough]];
-		default: // Use raw decimal as fallback format
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
-			break;
-		}
-
-		static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-		result += end_text;
+		make_modifier_effect_tooltip(*effect, value);
 	}
+
+	return result;
+}
+
+String MenuSingleton::make_modifier_effect_tooltip(ModifierEffect const& effect, fixed_point_t value) const {
+	String result;
+
+	static const String post_name_text = ": " + GUILabel::get_colour_marker();
+	result += tr(Utilities::std_to_godot_string(effect.get_localisation_key())) + post_name_text;
+
+	if (value == 0) {
+		result += "Y";
+	} else if (effect.is_positive_good() == (value > 0)) {
+		result += "G";
+	} else {
+		result += "R";
+	}
+
+	if (value >= 0) {
+		result += "+";
+	}
+
+	static constexpr int32_t DECIMAL_PLACES = 2;
+
+	using enum ModifierEffect::format_t;
+
+	switch (effect.get_format()) {
+	case PROPORTION_DECIMAL:
+		result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
+		break;
+	case PERCENTAGE_DECIMAL:
+		result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
+		break;
+	case INT:
+		result += String::num_int64(value.to_int64_t());
+		break;
+	case RAW_DECIMAL: [[fallthrough]];
+	default: // Use raw decimal as fallback format
+		result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
+		break;
+	}
+
+	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+	result += end_text;
 
 	return result;
 }
@@ -286,6 +304,10 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_search_result_position, { "result_index" });
 
 	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
+
+	/* TECHNOLOGY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_defines);
+	OV_BIND_METHOD(MenuSingleton::get_technology_menu_info);
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {
@@ -1008,4 +1030,139 @@ Vector2 MenuSingleton::get_search_result_position(int32_t result_index) const {
 	return game_singleton->normalise_map_position(
 		std::visit(entry_visitor, search_panel.entry_cache[search_panel.result_indices[result_index]].target)
 	);
+}
+
+/* TECHNOLOGY MENU */
+godot::Dictionary MenuSingleton::get_technology_menu_defines() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	static const StringName tech_folders_key = "tech_folders";
+	static const StringName tech_areas_key = "tech_areas";
+	static const StringName technologies_key = "technologies";
+	static const StringName folder_tech_count_key = "folder_tech_count";
+
+	Dictionary ret;
+
+	std::vector<OpenVic::TechnologyFolder> const& tech_folders = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folders();
+
+	PackedStringArray tech_folder_identifiers {};
+	Array tech_area_identifiers {};
+	Array tech_identifiers {};
+	PackedInt32Array folder_tech_count {};
+	for (TechnologyFolder const& folder : tech_folders) {
+		tech_folder_identifiers.push_back(Utilities::std_to_godot_string(folder.get_identifier()));
+		int32_t num_in_folder = 0;
+
+		PackedStringArray folder_areas {};
+		Array tech_folder_nested_array {}; // tech_identifiers has three levels of nested arrays :P
+		for (TechnologyArea const* area : folder.get_technology_areas()) {
+			folder_areas.push_back(Utilities::std_to_godot_string(area->get_identifier()));
+
+			PackedStringArray area_technologies {};
+			for (Technology const* tech : area->get_technologies()) {
+				area_technologies.push_back(Utilities::std_to_godot_string(tech->get_identifier()));
+				num_in_folder++;
+			}
+			tech_folder_nested_array.push_back(std::move(area_technologies));
+		}
+		tech_area_identifiers.push_back(std::move(folder_areas));
+		tech_identifiers.push_back(std::move(tech_folder_nested_array));
+		folder_tech_count.push_back(num_in_folder);
+	}
+	ret[tech_folders_key] = std::move(tech_folder_identifiers);
+	ret[tech_areas_key] = std::move(tech_area_identifiers);
+	ret[technologies_key] = std::move(tech_identifiers);
+	ret[folder_tech_count_key] = std::move(folder_tech_count);
+
+	return ret;
+}
+
+godot::Dictionary MenuSingleton::get_technology_menu_info() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	static const StringName tech_school_key = "tech_school";
+	static const StringName tech_school_mod_values = "tech_school_mod_values";
+	static const StringName tech_school_mod_icons = "tech_school_mod_icons";
+	static const StringName tech_school_mod_tt = "tech_school_mod_tt";
+
+	static const StringName current_research_tech = "current_research_tech";
+	static const StringName current_research_cat = "current_research_cat";
+
+	static const StringName researched_technologies_key = "researched_technologies";
+
+	Dictionary ret;
+
+	const CountryInstance* country = game_singleton->get_viewed_country();
+	if (country == nullptr) {
+		ret[tech_school_key] = String("traditional_academic");
+		ret[tech_school_mod_values] = PackedFloat32Array {};
+		ret[tech_school_mod_icons] = PackedInt32Array {};
+		ret[tech_school_mod_tt] = PackedStringArray {};
+		ret[current_research_tech] = "";
+		ret[current_research_cat] = "";
+		ret[researched_technologies_key] = PackedStringArray {};
+		return ret;
+	}
+
+	std::vector<std::string_view> tech_folder_identifiers = game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_identifiers();
+
+	ret[tech_school_key] = Utilities::std_to_godot_string(country->get_tech_school() == nullptr ? "traditional_academic" : country->get_tech_school()->get_identifier());
+
+	static const auto bonus_suffix = "_research_bonus";
+	auto compareFolders = [&tech_folder_identifiers](std::pair<std::string_view, fixed_point_t> a, std::pair<std::string_view, fixed_point_t> b) -> bool {
+		std::string tempA{a.first.substr(0, a.first.find(bonus_suffix))};
+		std::string tempB{b.first.substr(0, b.first.find(bonus_suffix))};
+		return std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempA) < std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), tempB);
+	};
+
+	std::vector<std::pair<std::string_view, fixed_point_t>> school_modifiers {};
+	if (country->get_tech_school() != nullptr) {
+		for (auto effect : country->get_tech_school()->get_values()) {
+			if (!effect.first->get_identifier().starts_with("unciv")) {
+				if (effect.second != 0) {
+					school_modifiers.push_back({effect.first->get_localisation_key(), effect.second});
+				}
+			}
+		}
+		if (country->get_tech_school()->get_effect_count() > 0) {
+			std::sort(school_modifiers.begin(), school_modifiers.end(), compareFolders);
+		}
+	}
+
+	PackedFloat32Array school_modifier_values {};
+	PackedInt32Array school_modifier_icons {};
+	PackedStringArray school_modifier_tt {};
+
+	for (auto modifier : school_modifiers) {
+		int32_t folder_id = std::find(tech_folder_identifiers.begin(), tech_folder_identifiers.end(), modifier.first.substr(0, modifier.first.find(bonus_suffix))) - tech_folder_identifiers.begin();
+
+		school_modifier_values.push_back(modifier.second.to_float());
+		school_modifier_icons.push_back(1 + folder_id);
+		school_modifier_tt.push_back(make_modifier_effect_tooltip(**game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache().get_research_bonus_effects().get_item_by_key(*game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technology_folder_by_index(folder_id)), modifier.second));
+	}
+
+	ret[tech_school_mod_values] = std::move(school_modifier_values);
+	ret[tech_school_mod_icons] = std::move(school_modifier_icons);
+	ret[tech_school_mod_tt] = std::move(school_modifier_tt);
+
+	Technology const* current_research = country->get_current_research();
+	if (current_research != nullptr) {
+		ret[current_research_tech] = Utilities::std_to_godot_string(current_research->get_identifier());
+		ret[current_research_cat] = tr(Utilities::std_to_godot_string(current_research->get_area().get_folder().get_identifier())) + ", " + tr(Utilities::std_to_godot_string(current_research->get_area().get_identifier()));
+	} else {
+		ret[current_research_tech] = String("");
+		ret[current_research_cat] = String("");
+	}
+
+	PackedStringArray researched_technologies {};
+	for (Technology const& tech : game_singleton->get_definition_manager().get_research_manager().get_technology_manager().get_technologies()) {
+		if (country->is_technology_unlocked(tech)) {
+			researched_technologies.push_back(Utilities::std_to_godot_string(tech.get_identifier()));
+		}
+	}
+	ret[researched_technologies_key] = std::move(researched_technologies);
+
+	return ret;
 }

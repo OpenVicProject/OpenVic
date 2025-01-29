@@ -1,13 +1,15 @@
 #pragma once
 
-#include <variant>
-
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/modifier/ModifierEffect.hpp>
+#include <openvic-simulation/pop/Pop.hpp>
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -127,6 +129,7 @@ namespace OpenVic {
 		// Modifier effect and rule tooltips begin with a newline character (unless they're empty), as they're always
 		// added after a starting/title section.
 		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
+		godot::String make_modifier_effect_tooltip(ModifierEffect const& effect, fixed_point_t value) const;
 		godot::String make_rules_tooltip(RuleSet const& rules) const;
 
 	protected:
@@ -204,6 +207,10 @@ namespace OpenVic {
 		godot::PackedStringArray get_population_menu_distribution_setup_info() const;
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
+
+		/* TECHNOLOGY MENU */
+		godot::Dictionary get_technology_menu_defines() const;
+		godot::Dictionary get_technology_menu_info() const;
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
