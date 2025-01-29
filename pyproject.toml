@@ -37,8 +37,8 @@ default.extend-ignore-re = [
 type.xml.locale = "en-us"
 type.xml.check-filename = false
 type.xml.extend-ignore-re = [
-	"<.* name=\".+\" .+>",
-	"\\[(param|member|method)?.+\\]",
+	'<.* name="[^"]+".*>',
+	'\[(param|member|method)?.+\]',
 ]
 [tool.typos.default.extend-identifiers]
 PNGs = "PNGs"
