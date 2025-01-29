@@ -10,6 +10,7 @@
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUILineChart.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIMaskedFlag.hpp"
 #include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
@@ -98,6 +99,7 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<GFXPieChartTexture>();
 	ClassDB::register_class<GUIButton>();
 	ClassDB::register_class<GUILabel>();
+	ClassDB::register_class<GUILineChart>();
 	ClassDB::register_class<GUIListBox>();
 	ClassDB::register_class<GUINode>();
 	ClassDB::register_class<GUIOverlappingElementsBox>();

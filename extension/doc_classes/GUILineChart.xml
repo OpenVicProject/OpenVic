@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUILineChart" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_coloured_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="line_values" type="PackedFloat32Array" />
+			<param index="1" name="line_colour" type="Color" />
+			<description>
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_lines">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gfx_line_chart_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="scale_coloured_lines">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gfx_line_chart_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_gfx_line_chart_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gradient_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="line_values" type="PackedFloat32Array" />
+			<param index="1" name="central_value" type="float" default="0.0" />
+			<param index="2" name="min_value_range" type="float" default="0.0" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="clip_contents" type="bool" setter="set_clip_contents" getter="is_clipping_contents" overrides="Control" default="true" />
+	</members>
+</class>

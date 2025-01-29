@@ -18,6 +18,7 @@
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUILineChart.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIMaskedFlag.hpp"
 #include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
@@ -63,6 +64,7 @@ namespace OpenVic {
 		static GUIScrollbar* get_gui_scrollbar_from_node(godot::Node* node);
 		static GUIListBox* get_gui_listbox_from_node(godot::Node* node);
 		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
+		static GUILineChart* get_gui_line_chart_from_node(godot::Node* node);
 
 		GUIIconButton* get_gui_icon_button_from_nodepath(godot::NodePath const& path) const;
 		GUIMaskedFlagButton* get_gui_masked_flag_button_from_nodepath(godot::NodePath const& path) const;
@@ -76,6 +78,7 @@ namespace OpenVic {
 		GUIScrollbar* get_gui_scrollbar_from_nodepath(godot::NodePath const& path) const;
 		GUIListBox* get_gui_listbox_from_nodepath(godot::NodePath const& path) const;
 		godot::LineEdit* get_line_edit_from_nodepath(godot::NodePath const& path) const;
+		GUILineChart* get_gui_line_chart_from_nodepath(godot::NodePath const& path) const;
 
 		/* Helper functions to get textures from TextureRects and GUIButtons. */
 		static godot::Ref<godot::Texture2D> get_texture_from_node(godot::Node* node);

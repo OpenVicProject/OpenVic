@@ -17,6 +17,22 @@ func _ready() -> void:
 	if close_button:
 		close_button.pressed.connect(Events.NationManagementScreens.close_nation_management_screen.bind(_screen))
 
+	var good_price_line_chart : GUILineChart = get_gui_line_chart_from_nodepath(^"./country_trade/trade_details/price_linechart")
+
+	if good_price_line_chart:
+		# TEST COLOURED LINES
+		var colours : PackedColorArray = [
+			Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA,
+			Color.CYAN, Color.ORANGE, Color.CRIMSON, Color.FOREST_GREEN
+		]
+		for n : int in colours.size():
+			const point_count : int = 36
+			var values : PackedFloat32Array
+			for x : int in point_count:
+				values.push_back(1000 * sin((float(x) / (point_count - 1) + float(n) / (colours.size() * 2)) * 4 * PI) + 4000)
+			good_price_line_chart.add_coloured_line(values, colours[n])
+		good_price_line_chart.scale_coloured_lines()
+
 	_update_info()
 
 func _notification(what : int) -> void:

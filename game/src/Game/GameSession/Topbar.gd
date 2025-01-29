@@ -30,7 +30,7 @@ var _production_alert_closed_icon : GUIIcon
 var _production_alert_unemployment_icon : GUIIcon
 
 # Budget
-# TODO - line chart
+var _budget_line_chart : GUILineChart
 var _budget_funds_label : GUILabel
 
 # Technology
@@ -168,6 +168,16 @@ func _ready() -> void:
 	_production_alert_unemployment_icon = get_gui_icon_from_nodepath(^"./topbar/alert_unemployed_workers")
 
 	# Budget
+	_budget_line_chart = get_gui_line_chart_from_nodepath(^"./topbar/budget_linechart")
+
+	if _budget_line_chart:
+		# TEST GRADIENT LINE
+		const point_count : int = 30
+		var values : PackedFloat32Array
+		for x : int in point_count:
+			values.push_back(1000 * sin(float(x) / (point_count - 1) * 8 * PI))
+		_budget_line_chart.set_gradient_line(values, -500, 3000)
+
 	_budget_funds_label = get_gui_label_from_nodepath(^"./topbar/budget_funds")
 
 	# Technology
