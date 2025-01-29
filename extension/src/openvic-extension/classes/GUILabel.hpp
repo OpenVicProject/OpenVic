@@ -1,5 +1,6 @@
 #pragma once
 
+#include <godot_cpp/classes/atlas_texture.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/classes/font_file.hpp>
@@ -40,9 +41,14 @@ namespace OpenVic {
 			godot::String text;
 			godot::Color colour;
 			real_t width;
+
+			string_segment_t(godot::String&& new_text, godot::Color const& new_colour, real_t new_width);
+			string_segment_t(godot::String const& new_text, godot::Color const& new_colour, real_t new_width);
+			string_segment_t(string_segment_t&&) = default;
 		};
 		using currency_segment_t = std::monostate;
-		using segment_t = std::variant<string_segment_t, currency_segment_t>;
+		using flag_segment_t = godot::Ref<godot::AtlasTexture>;
+		using segment_t = std::variant<string_segment_t, currency_segment_t, flag_segment_t>;
 		struct line_t {
 			std::vector<segment_t> segments;
 			real_t width {};
@@ -119,6 +125,10 @@ namespace OpenVic {
 			godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines
 		) const;
 		void separate_currency_segments(
+			godot::String const& string, godot::Color const& colour, line_t& line
+		) const;
+		static flag_segment_t make_flag_segment(godot::String const& identifier);
+		void separate_flag_segments(
 			godot::String const& string, godot::Color const& colour, line_t& line
 		) const;
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;

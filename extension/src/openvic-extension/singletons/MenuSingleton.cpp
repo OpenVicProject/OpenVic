@@ -705,7 +705,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			}
 		);
 		for (auto const& [country_identifier, country_name, power] : industrial_power_from_investments) {
-			industrial_power_tooltip += "\n" + GUILabel::get_flag_marker() + country_identifier + country_name + ": "
+			industrial_power_tooltip += "\n" + GUILabel::get_flag_marker() + country_identifier + " " + country_name + ": "
 				+ GUILabel::get_colour_marker() + "Y" + GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker()
 				+ "!";
 		}
