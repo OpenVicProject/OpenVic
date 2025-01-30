@@ -23,6 +23,7 @@
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUILineChart.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIMaskedFlag.hpp"
 #include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
@@ -318,7 +319,18 @@ static bool generate_icon(generate_gui_args_t&& args) {
 
 			args.result = gui_pie_chart;
 		} else if (GFX::LineChart const* line_chart = icon.get_sprite()->cast_to<GFX::LineChart>()) {
-			// TODO - generate line chart
+			GUILineChart* gui_line_chart = nullptr;
+			ret &= new_control(gui_line_chart, icon, args.name);
+			ERR_FAIL_NULL_V_MSG(
+				gui_line_chart, false, vformat("Failed to create GUILineChart for GUI icon %s", icon_name)
+			);
+
+			if (gui_line_chart->set_gfx_line_chart(line_chart) != OK) {
+				UtilityFunctions::push_error("Error setting up GUILineChart for GUI icon ", icon_name);
+				ret = false;
+			}
+
+			args.result = gui_line_chart;
 		} else {
 			UtilityFunctions::push_error(
 				"Invalid sprite type ", Utilities::std_to_godot_string(icon.get_sprite()->get_type()),

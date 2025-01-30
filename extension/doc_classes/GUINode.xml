@@ -84,6 +84,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_line_chart_from_node" qualifiers="static">
+			<return type="GUILineChart" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_line_chart_from_nodepath" qualifiers="const">
+			<return type="GUILineChart" />
+			<param index="0" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_listbox_from_node" qualifiers="static">
 			<return type="GUIListBox" />
 			<param index="0" name="node" type="Node" />

@@ -48,7 +48,8 @@ using namespace OpenVic;
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
 	F(GUIScrollbar, gui_scrollbar) \
 	F(GUIListBox, gui_listbox) \
-	F(LineEdit, line_edit)
+	F(LineEdit, line_edit) \
+	F(GUILineChart, gui_line_chart)
 
 void GUINode::_bind_methods() {
 	OV_BIND_SMETHOD(generate_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
