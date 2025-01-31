@@ -14,6 +14,8 @@ void AssetManager::_bind_methods() {
 	OV_BIND_METHOD(AssetManager::get_image, { "path", "load_flags" }, DEFVAL(LOAD_FLAG_CACHE_IMAGE));
 	OV_BIND_METHOD(AssetManager::get_texture, { "path", "load_flags" }, DEFVAL(LOAD_FLAG_CACHE_TEXTURE));
 	OV_BIND_METHOD(AssetManager::get_font, { "name" });
+	OV_BIND_METHOD(AssetManager::get_currency_texture, { "height" });
+	OV_BIND_METHOD(AssetManager::get_leader_texture, { "name" });
 
 	BIND_ENUM_CONSTANT(LOAD_FLAG_NONE);
 	BIND_ENUM_CONSTANT(LOAD_FLAG_CACHE_IMAGE);
@@ -195,6 +197,8 @@ Error AssetManager::preload_textures() {
 	static const String currency_sprite_medium = "GFX_tooltip_money_small";
 	static const String currency_sprite_small = "GFX_tooltip_money";
 
+	static const String missing_leader_sprite = "GFX_leader_generic0";
+
 	constexpr auto load = [](String const& sprite_name, Ref<GFXSpriteTexture>& texture) -> bool {
 		GFX::Sprite const* sprite = UITools::get_gfx_sprite(sprite_name);
 		ERR_FAIL_NULL_V(sprite, false);
@@ -214,6 +218,8 @@ Error AssetManager::preload_textures() {
 	ret &= load(currency_sprite_medium, currency_texture_medium);
 	ret &= load(currency_sprite_small, currency_texture_small);
 
+	ret &= load(missing_leader_sprite, missing_leader_texture);
+
 	return ERR(ret);
 }
 
@@ -227,4 +233,12 @@ Ref<GFXSpriteTexture> AssetManager::get_currency_texture(real_t height) const {
 	} else {
 		return currency_texture_small;
 	}
+}
+
+Ref<ImageTexture> AssetManager::get_leader_texture_std(std::string_view name) {
+	return get_texture(Utilities::std_to_godot_string(CultureManager::make_leader_picture_path(name)));
+}
+
+Ref<ImageTexture> AssetManager::get_leader_texture(String const& name) {
+	return get_leader_texture_std(Utilities::godot_to_std_string(name));
 }

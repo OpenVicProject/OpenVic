@@ -3,7 +3,6 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/economy/GoodDefinition.hpp>
-#include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
@@ -38,7 +37,7 @@ StringName const& MenuSingleton::_signal_update_tooltip() {
 	return signal_update_tooltip;
 }
 
-String MenuSingleton::get_state_name(State const& state) const {
+String MenuSingleton::_get_state_name(State const& state) const {
 	StateSet const& state_set = state.get_state_set();
 
 	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
@@ -69,14 +68,14 @@ String MenuSingleton::get_state_name(State const& state) const {
 
 	if (owned && split) {
 		// COUNTRY STATE/CAPITAL
-		return get_country_adjective(*state.get_owner()) + " " + name;
+		return _get_country_adjective(*state.get_owner()) + " " + name;
 	}
 
 	// STATE/CAPITAL
 	return name;
 }
 
-String MenuSingleton::get_country_name(CountryInstance const& country) const {
+String MenuSingleton::_get_country_name(CountryInstance const& country) const {
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
 		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", country.get_government_type()->get_identifier()
@@ -92,7 +91,7 @@ String MenuSingleton::get_country_name(CountryInstance const& country) const {
 	return tr(Utilities::std_to_godot_string(country.get_identifier()));
 }
 
-String MenuSingleton::get_country_adjective(CountryInstance const& country) const {
+String MenuSingleton::_get_country_adjective(CountryInstance const& country) const {
 	static constexpr std::string_view adjective = "_ADJ";
 
 	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
@@ -110,58 +109,133 @@ String MenuSingleton::get_country_adjective(CountryInstance const& country) cons
 	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
-String MenuSingleton::make_modifier_effects_tooltip(ModifierValue const& modifier) const {
-	if (modifier.empty()) {
-		return {};
-	}
+static constexpr int32_t DECIMAL_PLACES = 2;
 
+String MenuSingleton::_make_modifier_effect_value(
+	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+) {
 	String result;
 
-	for (auto const& [effect, value] : modifier.get_values()) {
-		static const String post_name_text = ": " + GUILabel::get_colour_marker();
+	if (plus_for_non_negative && value >= 0) {
+		result = "+";
+	}
 
-		result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + post_name_text;
+	using enum ModifierEffect::format_t;
 
-		if (value == 0) {
-			result += "Y";
-		} else if (effect->is_positive_good() == (value > 0)) {
-			result += "G";
-		} else {
-			result += "R";
-		}
-
-		if (value >= 0) {
-			result += "+";
-		}
-
-		static constexpr int32_t DECIMAL_PLACES = 2;
-
-		using enum ModifierEffect::format_t;
-
-		switch (effect->get_format()) {
-		case PROPORTION_DECIMAL:
-			result += GUINode::float_to_string_dp((value * 100).to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case PERCENTAGE_DECIMAL:
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES) + "%";
-			break;
-		case INT:
-			result += String::num_int64(value.to_int64_t());
-			break;
-		case RAW_DECIMAL: [[fallthrough]];
-		default: // Use raw decimal as fallback format
-			result += GUINode::float_to_string_dp(value.to_float(), DECIMAL_PLACES);
-			break;
-		}
-
-		static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-		result += end_text;
+	switch (format_effect.get_format()) {
+	case PROPORTION_DECIMAL:
+		value *= 100;
+		[[fallthrough]];
+	case PERCENTAGE_DECIMAL:
+		result += Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES) + "%";
+		break;
+	case INT:
+		// This won't produce a decimal point for actual whole numbers, but if the value has a fractional part it will be
+		// displayed to 2 decimal places. This mirrors the base game, where effects which are meant to have integer values
+		// will still display a fractional part if they are given one in the game defines.
+		result += value.is_integer()
+			? String::num_int64(value.to_int64_t())
+			: Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES);
+		break;
+	case RAW_DECIMAL: [[fallthrough]];
+	default: // Use raw decimal as fallback format
+		result += Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES);
+		break;
 	}
 
 	return result;
 }
 
-String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
+String MenuSingleton::_make_modifier_effect_value_coloured(
+	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+) {
+	String result = GUILabel::get_colour_marker();
+
+	if (value == 0) {
+		result += "Y";
+	} else if (format_effect.is_positive_good() == (value > 0)) {
+		result += "G";
+	} else {
+		result += "R";
+	}
+
+	result += _make_modifier_effect_value(format_effect, value, plus_for_non_negative);
+
+	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
+	result += end_text;
+
+	return result;
+}
+
+String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifier) const {
+	String result;
+
+	for (auto const& [effect, value] : modifier.get_values()) {
+		if (value != fixed_point_t::_0()) {
+			result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + ": " +
+				_make_modifier_effect_value_coloured(*effect, value, true);
+		}
+	}
+
+	return result;
+}
+
+template<typename T>
+requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
+String MenuSingleton::_make_modifier_effect_contributions_tooltip(
+	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions,
+	fixed_point_t* other_contributions, String const& prefix
+) const {
+	String result;
+
+	modifier_sum.for_each_contributing_modifier(
+		effect,
+		[this, &effect, tech_contributions, other_contributions, &prefix, &result](
+			modifier_entry_t const& modifier_entry, fixed_point_t value
+		) -> void {
+			using enum Modifier::modifier_type_t;
+
+			// TODO - make sure we only include invention contributions from inside their "effect = { ... }" blocks,
+			// as contributions from outside the blocks are treated as if they're from normal country modifiers and
+			// displayed as "[invention name]: X.Y%" (both types of contributions can come from the same invention)
+			if (tech_contributions != nullptr && (
+				modifier_entry.modifier.get_type() == TECHNOLOGY || modifier_entry.modifier.get_type() == INVENTION
+			)) {
+				*tech_contributions += value;
+				return;
+			}
+
+			if (other_contributions != nullptr) {
+				*other_contributions += value;
+			}
+
+			result += prefix;
+
+			if (effect.is_global()) {
+				ProvinceInstance const* province = modifier_entry.get_source_province();
+				if (province != nullptr) {
+					result += tr(GUINode::format_province_name(Utilities::std_to_godot_string(province->get_identifier())));
+					result += ": ";
+				}
+			}
+
+			result += tr(Utilities::std_to_godot_string(modifier_entry.modifier.get_identifier()));
+			result += ": ";
+			result += _make_modifier_effect_value_coloured(effect, value, true);
+		}
+	);
+
+	return result;
+}
+
+template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<CountryInstance>(
+	CountryInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&
+) const;
+template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<ProvinceInstance>(
+	ProvinceInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&
+) const;
+
+String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 	if (rules.empty()) {
 		return {};
 	}
@@ -185,6 +259,57 @@ String MenuSingleton::make_rules_tooltip(RuleSet const& rules) const {
 	}
 
 	return result;
+}
+
+String MenuSingleton::_make_mobilisation_impact_tooltip() const {
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	CountryInstance const* country = game_singleton->get_viewed_country();
+
+	if (country == nullptr) {
+		return {};
+	}
+
+	IssueManager const& issue_manager = game_singleton->get_definition_manager().get_politics_manager().get_issue_manager();
+
+	static const StringName mobilisation_impact_tooltip_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC";
+	static const String mobilisation_impact_tooltip_replace_impact_key = "$IMPACT$";
+	static const String mobilisation_impact_tooltip_replace_policy_key = "$POLICY$";
+	static const String mobilisation_impact_tooltip_replace_units_key = "$UNITS$";
+
+	static const StringName mobilisation_impact_tooltip2_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC2";
+	static const String mobilisation_impact_tooltip2_replace_curr_key = "$CURR$";
+	static const String mobilisation_impact_tooltip2_replace_impact_key = "$IMPACT$";
+
+	static const StringName no_issue = "noIssue";
+
+	IssueGroup const* war_policy_issue_group = issue_manager.get_issue_group_by_identifier("war_policy");
+	Issue const* war_policy_issue =
+		war_policy_issue_group != nullptr ? country->get_ruling_party()->get_policies()[*war_policy_issue_group] : nullptr;
+
+	const String impact_string = Utilities::fixed_point_to_string_dp(country->get_mobilisation_impact() * 100, 1) + "%";
+
+	return tr(
+		mobilisation_impact_tooltip_localisation_key
+	).replace(
+		mobilisation_impact_tooltip_replace_impact_key, impact_string
+	).replace(
+		mobilisation_impact_tooltip_replace_policy_key, tr(
+			war_policy_issue != nullptr
+				? StringName { Utilities::std_to_godot_string(war_policy_issue->get_identifier()) }
+				: no_issue
+		)
+	).replace(
+		mobilisation_impact_tooltip_replace_units_key,
+		String::num_uint64(country->get_mobilisation_max_regiment_count())
+	) + "\n" + tr(
+		mobilisation_impact_tooltip2_localisation_key
+	).replace(
+		mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country->get_regiment_count())
+	).replace(
+		mobilisation_impact_tooltip2_replace_impact_key, impact_string
+	);
 }
 
 void MenuSingleton::_bind_methods() {
@@ -278,6 +403,25 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(SORT_SIZE_CHANGE);
 	BIND_ENUM_CONSTANT(SORT_LITERACY);
 
+	/* MILITARY MENU */
+	OV_BIND_METHOD(MenuSingleton::get_military_menu_info, {
+		"leader_sort_key", "sort_leaders_descending",
+		"army_sort_key", "sort_armies_descending",
+		"navy_sort_key", "sort_navies_descending"
+	});
+
+	BIND_ENUM_CONSTANT(LEADER_SORT_NONE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_PRESTIGE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_TYPE);
+	BIND_ENUM_CONSTANT(LEADER_SORT_NAME);
+	BIND_ENUM_CONSTANT(LEADER_SORT_ASSIGNMENT);
+	BIND_ENUM_CONSTANT(MAX_LEADER_SORT_KEY);
+
+	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NONE);
+	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NAME);
+	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_STRENGTH);
+	BIND_ENUM_CONSTANT(MAX_UNIT_GROUP_SORT_KEY);
+
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
 	OV_BIND_METHOD(MenuSingleton::update_search_results, { "text" });
@@ -326,7 +470,7 @@ String MenuSingleton::get_country_name_from_identifier(String const& country_ide
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return get_country_name(*country);
+	return _get_country_name(*country);
 }
 
 String MenuSingleton::get_country_adjective_from_identifier(String const& country_identifier) const {
@@ -345,7 +489,7 @@ String MenuSingleton::get_country_adjective_from_identifier(String const& countr
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return get_country_adjective(*country);
+	return _get_country_adjective(*country);
 }
 
 /* TOOLTIP */
@@ -395,8 +539,8 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 			Dictionary building_dict;
 			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
-			building_dict[building_info_start_date_key] = Utilities::std_to_godot_string(building.get_start_date().to_string());
-			building_dict[building_info_end_date_key] = Utilities::std_to_godot_string(building.get_end_date().to_string());
+			building_dict[building_info_start_date_key] = Utilities::date_to_string(building.get_start_date());
+			building_dict[building_info_end_date_key] = Utilities::date_to_string(building.get_end_date());
 			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
 
 			buildings_array[idx] = std::move(building_dict);
@@ -450,7 +594,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
-		ret[province_info_state_key] = get_state_name(*state);
+		ret[province_info_state_key] = _get_state_name(*state);
 	}
 
 	ret[province_info_slave_status_key] = province->get_slave();
@@ -676,7 +820,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Pair: State name / Power
 		std::vector<std::pair<String, fixed_point_t>> industrial_power_states;
 		for (auto const& [state, power] : country->get_industrial_power_from_states()) {
-			industrial_power_states.emplace_back(get_state_name(*state), power);
+			industrial_power_states.emplace_back(_get_state_name(*state), power);
 		}
 		std::sort(
 			industrial_power_states.begin(), industrial_power_states.end(),
@@ -694,7 +838,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		std::vector<std::tuple<String, String, fixed_point_t>> industrial_power_from_investments;
 		for (auto const& [country, power] : country->get_industrial_power_from_investments()) {
 			industrial_power_from_investments.emplace_back(
-				Utilities::std_to_godot_string(country->get_identifier()), get_country_name(*country), power
+				Utilities::std_to_godot_string(country->get_identifier()), _get_country_name(*country), power
 			);
 		}
 		std::sort(
@@ -770,20 +914,15 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	ret[regiment_count_key] = static_cast<uint64_t>(country->get_regiment_count());
 	ret[max_supported_regiments_key] = static_cast<uint64_t>(country->get_max_supported_regiment_count());
 
-	static const StringName mobilised_key = "mobilised";
+	static const StringName is_mobilised_key = "is_mobilised";
 	static const StringName mobilisation_regiments_key = "mobilisation_regiments";
-	static const StringName mobilisation_impact_key = "mobilisation_impact";
-	static const StringName war_policy_key = "war_policy";
-	static const StringName mobilisation_max_regiments_key = "mobilisation_max_regiments";
+	static const StringName mobilisation_impact_tooltip_key = "mobilisation_impact_tooltip";
 
 	if (country->is_mobilised()) {
-		ret[mobilised_key] = true;
+		ret[is_mobilised_key] = true;
 	} else {
-		ret[mobilised_key] = false;
 		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
-		ret[mobilisation_impact_key] = country->get_mobilisation_impact().to_float();
-		ret[war_policy_key] = String {}; // TODO - get ruling party's war policy
-		ret[mobilisation_max_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_max_regiment_count());
+		ret[mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
 	}
 
 	return ret;
@@ -901,7 +1040,7 @@ Error MenuSingleton::generate_search_cache() {
 
 	for (StateSet const& state_set : state_sets) {
 		for (State const& state : state_set.get_states()) {
-			String display_name = get_state_name(state);
+			String display_name = _get_state_name(state);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({
@@ -914,7 +1053,7 @@ Error MenuSingleton::generate_search_cache() {
 	for (CountryInstance const& country : countries) {
 		// TODO - replace with a proper "exists" check
 		if (country.get_capital() != nullptr) {
-			String display_name = get_country_name(country);
+			String display_name = _get_country_name(country);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({

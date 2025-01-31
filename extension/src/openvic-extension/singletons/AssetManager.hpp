@@ -83,11 +83,16 @@ namespace OpenVic {
 		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_medium); // 24x24
 		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_small);  // 16x16
 
+		godot::Ref<GFXSpriteTexture> PROPERTY(missing_leader_texture);
+
 	public:
 		godot::Error preload_textures();
 
 		/* Get the largest currency texture with height less than the specified font height. */
 		godot::Ref<GFXSpriteTexture> get_currency_texture(real_t height) const;
+
+		godot::Ref<godot::ImageTexture> get_leader_texture_std(std::string_view name);
+		godot::Ref<godot::ImageTexture> get_leader_texture(godot::String const& name);
 	};
 }
 

@@ -36,6 +36,33 @@ String Utilities::int_to_string_suffixed(int64_t val) {
 	return (negative ? "-" : "") + String::num_int64(val);
 }
 
+String Utilities::int_to_string_commas(int64_t val) {
+	const bool negative = val < 0;
+	if (negative) {
+		val = -val;
+	}
+
+	const String string_val = String::num_int64(val);
+
+	String result;
+	int64_t length_remaining = string_val.length();
+
+	static constexpr int64_t digits_per_comma = 3;
+	static const String comma = ",";
+
+	while (length_remaining > digits_per_comma) {
+		result = comma + string_val.substr(length_remaining -= digits_per_comma, digits_per_comma) + result;
+	}
+
+	result = string_val.substr(0, length_remaining) + result;
+
+	if (negative) {
+		result = "-" + result;
+	}
+
+	return result;
+}
+
 String Utilities::float_to_string_suffixed(float val) {
 	const float abs_val = std::abs(val);
 
@@ -60,12 +87,30 @@ String Utilities::float_to_string_suffixed(float val) {
 
 /* Float to string formatted with the specified number of decimal places. */
 String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
-	return String::num(val, decimal_places).pad_decimals(decimal_places);
+	String result = String::num(val, decimal_places);
+	if (decimal_places >= 0) {
+		return result.pad_decimals(decimal_places);
+	} else {
+		return result;
+	}
+}
+
+String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_places) {
+	// We could use fixed point's own to_string method, but that allocates an intermediate string so better to go via float
+	// return Utilities::std_to_godot_string(val.to_string(decimal_places));
+	return Utilities::float_to_string_dp(val.to_float(), decimal_places);
 }
 
 String Utilities::float_to_string_dp_dynamic(float val) {
 	const float abs_val = std::abs(val);
 	return float_to_string_dp(val, abs_val < 2.0f ? 3 : abs_val < 10.0f ? 2 : 1);
+}
+
+String Utilities::date_to_string(Date date) {
+	static const String date_template_string = String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" +
+		Date::SEPARATOR_CHARACTER + "%d";
+
+	return vformat(date_template_string, date.get_year(), date.get_month(), date.get_day());
 }
 
 /* Date formatted like one of these, with the month localised if possible:

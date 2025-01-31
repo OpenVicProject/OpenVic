@@ -429,7 +429,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	fixed_point_t step_size = gui_scrollbar->get_step_size();
 	if (step_size <= 0) {
 		UtilityFunctions::push_error(
-			"Invalid step size ", Utilities::std_to_godot_string(step_size.to_string()), " for GUIScrollbar ",
+			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
 			gui_scrollbar_name, " - not positive! Defaulting to 1."
 		);
 		step_size = 1;
