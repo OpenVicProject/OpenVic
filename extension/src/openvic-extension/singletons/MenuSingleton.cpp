@@ -567,10 +567,12 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_slave_status_key = "slave_status";
 	static const StringName province_info_colony_status_key = "colony_status";
 	static const StringName province_info_terrain_type_key = "terrain_type";
+	static const StringName province_info_terrain_type_tooltip_key = "terrain_type_tooltip";
 	static const StringName province_info_life_rating_key = "life_rating";
 	static const StringName province_info_controller_key = "controller";
-	static const StringName province_info_rgo_name_key = "rgo_name";
+	static const StringName province_info_controller_tooltip_key = "controller_tooltip";
 	static const StringName province_info_rgo_icon_key = "rgo_icon";
+	static const StringName province_info_rgo_production_tooltip_key = "rgo_production_tooltip";
 	static const StringName province_info_rgo_total_employees_key = "rgo_total_employees";
 	static const StringName province_info_rgo_employment_percentage_key = "rgo_employment_percentage";
 	static const StringName province_info_rgo_employment_tooltip_key = "rgo_employment_tooltip";
@@ -604,7 +606,23 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	TerrainType const* terrain_type = province->get_terrain_type();
 	if (terrain_type != nullptr) {
-		ret[province_info_terrain_type_key] = Utilities::std_to_godot_string(terrain_type->get_identifier());
+		String terrain_type_string = Utilities::std_to_godot_string(terrain_type->get_identifier());
+
+		static const StringName terrain_type_localisation_key = "PROVINCEVIEW_TERRAIN";
+		static const String terrain_type_replace_key = "$TERRAIN$";
+		static const StringName movement_cost_localisation_key = "TERRAIN_MOVEMENT_COST";
+		static const String terrain_type_template_string = "%s" + get_tooltip_separator() + "%s" +
+			GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!%s";
+
+		ret[province_info_terrain_type_tooltip_key] = vformat(
+			terrain_type_template_string,
+			tr(terrain_type_localisation_key).replace(terrain_type_replace_key, tr(terrain_type_string)),
+			tr(movement_cost_localisation_key),
+			Utilities::fixed_point_to_string_dp(terrain_type->get_movement_cost(), 2),
+			_make_modifier_effects_tooltip(*terrain_type)
+		);
+
+		ret[province_info_terrain_type_key] = std::move(terrain_type_string);
 	}
 
 	ret[province_info_life_rating_key] = province->get_life_rating();
@@ -612,60 +630,358 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	CountryInstance const* controller = province->get_controller();
 	if (controller != nullptr) {
 		ret[province_info_controller_key] = Utilities::std_to_godot_string(controller->get_identifier());
+
+		static const StringName controller_localisation_key = "PV_CONTROLLER";
+		static const String controller_template_string = "%s %s";
+		ret[province_info_controller_tooltip_key] = vformat(
+			controller_template_string, tr(controller_localisation_key), _get_country_name(*controller)
+		);
 	}
 
 	ResourceGatheringOperation const& rgo = province->get_rgo();
-	ret[province_info_rgo_output_quantity_yesterday_key] = rgo.get_output_quantity_yesterday().to_float();
-	ret[province_info_rgo_revenue_yesterday_key] = rgo.get_revenue_yesterday().to_float();
-	ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
-	const pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
-	if (max_employee_count == 0) {
-		ret[province_info_rgo_employment_percentage_key] = 100.0f;
-	} else {
-		ret[province_info_rgo_employment_percentage_key] =
-			(rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float_rounded();
-	}
 
 	if (rgo.is_valid()) {
-		String amount_of_employees_by_pop_type;
-		for (auto const& [pop_type, employees_of_type] : rgo.get_employee_count_per_type_cache()) {
-			if (employees_of_type > 0) {
-				amount_of_employees_by_pop_type +=
-					"  -" + GUILabel::get_colour_marker() + "Y" +
-					tr(Utilities::std_to_godot_string(pop_type.get_identifier())) + GUILabel::get_colour_marker() + "!:" +
-					String::num_int64(employees_of_type) + "\n";
+		ProductionType const& production_type = *rgo.get_production_type_nullable();
+		GoodDefinition const& rgo_good = *province->get_rgo_good();
+
+		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good.get_index());
+
+		ret[province_info_rgo_output_quantity_yesterday_key] = rgo.get_output_quantity_yesterday().to_float();
+		ret[province_info_rgo_revenue_yesterday_key] = rgo.get_revenue_yesterday().to_float();
+		ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
+		const pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
+		if (max_employee_count == 0) {
+			ret[province_info_rgo_employment_percentage_key] = 100.0f;
+		} else {
+			ret[province_info_rgo_employment_percentage_key] =
+				(rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float();
+		}
+
+		ModifierEffectCache const& modifier_effect_cache =
+			game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
+
+		fixed_point_t output_from_workers = fixed_point_t::_1(), throughput_from_workers = fixed_point_t::_0(),
+			output_multiplier = fixed_point_t::_1(), throughput_multiplier = fixed_point_t::_1();
+		String size_string, output_string, throughput_string;
+
+		static const String employee_effect_template_string = "\n  -%s: " + GUILabel::get_colour_marker() + "Y%s" +
+			GUILabel::get_colour_marker() + "!: %s";
+
+		using enum Job::effect_t;
+
+		std::optional<Job> const& owner_job = production_type.get_owner();
+		if (owner_job.has_value()) {
+			PopType const& owner_pop_type = *owner_job->get_pop_type();
+			State const* state = province->get_state();
+
+			if (unlikely(state == nullptr)) {
+				Logger::error(
+					"Province \"", province->get_identifier(), "\" has no state, preventing calculation of state-wide "
+					"population proportion of RGO owner pop type \"", owner_pop_type.get_identifier(), "\""
+				);
+			} else {
+				const fixed_point_t effect_value = owner_job->get_effect_multiplier() *
+					state->get_pop_type_distribution()[owner_pop_type] / state->get_total_population();
+
+				static const StringName owners_localisation_key = "PRODUCTION_FACTOR_OWNER";
+
+				switch (owner_job->get_effect_type()) {
+				case OUTPUT:
+					output_multiplier += effect_value;
+					output_string += vformat(
+						employee_effect_template_string,
+						tr(owners_localisation_key),
+						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
+						_make_modifier_effect_value_coloured(
+							*modifier_effect_cache.get_rgo_output(), effect_value, true
+						)
+					);
+					break;
+				case THROUGHPUT:
+					throughput_multiplier += effect_value;
+					throughput_string += vformat(
+						employee_effect_template_string,
+						tr(owners_localisation_key),
+						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
+						_make_modifier_effect_value_coloured(
+							*modifier_effect_cache.get_rgo_throughput(), effect_value, true
+						)
+					);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
-		ProductionType const& production_type = *rgo.get_production_type_nullable();
+		String amount_of_employees_by_pop_type;
 
-		String contributing_modifier_effects;
-		// TODO - generate list of contributing modifier effects (including combined "From Technology" effects)
+		for (auto const& [pop_type, employees_of_type] : rgo.get_employee_count_per_type_cache()) {
+			if (employees_of_type <= 0) {
+				continue;
+			}
+
+			static const String amount_of_employees_by_pop_type_template_string = "\n  -" + GUILabel::get_colour_marker() +
+				"Y%s" + GUILabel::get_colour_marker() + "!:%d";
+
+			amount_of_employees_by_pop_type += vformat(
+				amount_of_employees_by_pop_type_template_string,
+				tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+				employees_of_type
+			);
+
+			for (Job const& job : production_type.get_jobs()) {
+				if (job.get_pop_type() != &pop_type) {
+					continue;
+				}
+
+				const fixed_point_t effect_multiplier = job.get_effect_multiplier();
+				fixed_point_t relative_to_workforce = fixed_point_t::parse(employees_of_type) / max_employee_count;
+				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1()
+					? relative_to_workforce
+					: effect_multiplier * std::min(relative_to_workforce, job.get_amount());
+
+				static const StringName workers_localisation_key = "PRODUCTION_FACTOR_WORKER";
+
+				switch (job.get_effect_type()) {
+					case OUTPUT:
+						output_from_workers += effect_value;
+						output_string += vformat(
+							employee_effect_template_string,
+							tr(workers_localisation_key),
+							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+							_make_modifier_effect_value_coloured(
+								*modifier_effect_cache.get_rgo_output(), effect_value, true
+							)
+						);
+						break;
+					case THROUGHPUT:
+						throughput_from_workers += effect_value;
+						throughput_string += vformat(
+							employee_effect_template_string,
+							tr(workers_localisation_key),
+							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+							_make_modifier_effect_value_coloured(
+								*modifier_effect_cache.get_rgo_throughput(), effect_value, true
+							)
+						);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		{
+			fixed_point_t output_from_tech, throughput_from_tech;
+			String output_modifiers, throughput_modifiers;
+
+			static const String modifier_effect_contributions_prefix = "\n  -";
+
+			output_modifiers += _make_modifier_effect_contributions_tooltip(
+				*province, *modifier_effect_cache.get_rgo_output(), &output_from_tech, &output_multiplier,
+				modifier_effect_contributions_prefix
+			);
+			output_modifiers += _make_modifier_effect_contributions_tooltip(
+				*province, *modifier_effect_cache.get_local_rgo_output(), &output_from_tech, &output_multiplier,
+				modifier_effect_contributions_prefix
+			);
+			throughput_modifiers += _make_modifier_effect_contributions_tooltip(
+				*province, *modifier_effect_cache.get_rgo_throughput(), &throughput_from_tech, &throughput_multiplier,
+				modifier_effect_contributions_prefix
+			);
+			throughput_modifiers += _make_modifier_effect_contributions_tooltip(
+				*province, *modifier_effect_cache.get_local_rgo_throughput(), &throughput_from_tech, &throughput_multiplier,
+				modifier_effect_contributions_prefix
+			);
+
+			fixed_point_t size_from_terrain, size_from_province;
+
+			if (production_type.get_is_farm_for_non_tech()) {
+				output_modifiers += _make_modifier_effect_contributions_tooltip(
+					*province, *modifier_effect_cache.get_farm_rgo_output_global(), &output_from_tech, &output_multiplier,
+					modifier_effect_contributions_prefix
+				);
+				output_modifiers += _make_modifier_effect_contributions_tooltip(
+					*province, *modifier_effect_cache.get_farm_rgo_output_local(), &output_from_tech, &output_multiplier,
+					modifier_effect_contributions_prefix
+				);
+
+				if (terrain_type != nullptr) {
+					size_from_terrain = terrain_type->get_effect(*modifier_effect_cache.get_farm_rgo_size_local());
+				}
+				size_from_province = province->get_modifier_effect_value(*modifier_effect_cache.get_farm_rgo_size_local());
+			}
+
+			if (production_type.get_is_mine_for_non_tech()) {
+				output_modifiers += _make_modifier_effect_contributions_tooltip(
+					*province, *modifier_effect_cache.get_mine_rgo_output_global(), &output_from_tech, &output_multiplier,
+					modifier_effect_contributions_prefix
+				);
+				output_modifiers += _make_modifier_effect_contributions_tooltip(
+					*province, *modifier_effect_cache.get_mine_rgo_output_local(), &output_from_tech, &output_multiplier,
+					modifier_effect_contributions_prefix
+				);
+
+				if (terrain_type != nullptr) {
+					size_from_terrain += terrain_type->get_effect(*modifier_effect_cache.get_mine_rgo_size_local());
+				}
+				size_from_province += province->get_modifier_effect_value(*modifier_effect_cache.get_mine_rgo_size_local());
+			}
+
+			static const String size_modifier_template_string = "%s: %s\n";
+
+			if (size_from_terrain != fixed_point_t::_0()) {
+				size_string = vformat(
+					size_modifier_template_string,
+					tr(Utilities::std_to_godot_string(province->get_terrain_type()->get_identifier())),
+					_make_modifier_effect_value_coloured(
+						*modifier_effect_cache.get_farm_rgo_size_local(), size_from_terrain, false
+					)
+				);
+			}
+
+			if (size_from_province != fixed_point_t::_0()) {
+				static const StringName rgo_size_localisation_key = "RGO_SIZE";
+
+				size_string += vformat(
+					size_modifier_template_string,
+					tr(rgo_size_localisation_key),
+					_make_modifier_effect_value_coloured(
+						*modifier_effect_cache.get_farm_rgo_size_local(), size_from_province, false
+					)
+				);
+			}
+
+			ModifierEffectCache::good_effects_t const& good_effects =
+				modifier_effect_cache.get_good_effects()[production_type.get_output_good()];
+
+			output_from_tech += province->get_modifier_effect_value(*good_effects.get_rgo_goods_output());
+			throughput_from_tech += province->get_modifier_effect_value(*good_effects.get_rgo_goods_throughput());
+
+			fixed_point_t size_from_tech;
+
+			size_from_tech = province->get_modifier_effect_value(*good_effects.get_rgo_size());
+			if (production_type.get_is_farm_for_tech()) {
+				const fixed_point_t value =
+					province->get_modifier_effect_value(*modifier_effect_cache.get_farm_rgo_throughput_and_output());
+				output_from_tech += value;
+				throughput_from_tech += value;
+
+				size_from_tech += province->get_modifier_effect_value(*modifier_effect_cache.get_farm_rgo_size_global());
+			}
+
+			if (production_type.get_is_mine_for_tech()) {
+				const fixed_point_t value =
+					province->get_modifier_effect_value(*modifier_effect_cache.get_mine_rgo_throughput_and_output());
+				output_from_tech += value;
+				throughput_from_tech += value;
+
+				size_from_tech += province->get_modifier_effect_value(*modifier_effect_cache.get_mine_rgo_size_global());
+			}
+
+			if (size_from_tech != fixed_point_t::_0()) {
+				static const StringName from_technology_localisation_key = "employ_from_tech";
+
+				size_string += tr(from_technology_localisation_key) + _make_modifier_effect_value_coloured(
+					*modifier_effect_cache.get_farm_rgo_size_global(), size_from_tech, false
+				);
+			}
+
+			static const String tech_modifier_template_string = modifier_effect_contributions_prefix + String { "%s: %s" };
+
+			if (output_from_tech != fixed_point_t::_0()) {
+				output_multiplier += output_from_tech;
+
+				static const StringName rgo_output_tech_localisation_key = "RGO_OUTPUT_TECH";
+
+				output_string += vformat(
+					tech_modifier_template_string,
+					tr(rgo_output_tech_localisation_key),
+					_make_modifier_effect_value_coloured(
+						*modifier_effect_cache.get_rgo_output(), output_from_tech, true
+					)
+				);
+			}
+
+			if (throughput_from_tech != fixed_point_t::_0()) {
+				throughput_multiplier += throughput_from_tech;
+
+				static const StringName rgo_throughput_tech_localisation_key = "RGO_THROUGHPUT_TECH";
+
+				throughput_string += vformat(
+					tech_modifier_template_string,
+					tr(rgo_throughput_tech_localisation_key),
+					_make_modifier_effect_value_coloured(
+						*modifier_effect_cache.get_rgo_throughput(), throughput_from_tech, true
+					)
+				);
+			}
+
+			output_string += output_modifiers;
+			throughput_string += throughput_modifiers;
+		}
+
+		static const StringName rgo_production_localisation_key = "PROVINCEVIEW_GOODSINCOME";
+		static const String rgo_good_replace_key = "$GOODS$";
+		static const String value_replace_key = "$VALUE$";
+		static const StringName max_output_localisation_key = "PRODUCTION_OUTPUT_GOODS_TOOLTIP2";
+		static const String curr_replace_key = "$CURR$";
+		static const StringName output_explanation_localisation_key = "PRODUCTION_OUTPUT_EXPLANATION";
+		static const StringName base_output_localisation_key = "PRODUCTION_BASE_OUTPUT_GOODS_TOOLTIP";
+		static const String base_replace_key = "$BASE$";
+		static const StringName output_efficiency_localisation_key = "PRODUCTION_OUTPUT_EFFICIENCY_TOOLTIP";
+		static const StringName base_localisation_key = "PRODUCTION_BASE_OUTPUT";
+		static const StringName throughput_efficiency_localisation_key = "PRODUCTION_THROUGHPUT_EFFICIENCY_TOOLTIP";
+		static const String rgo_production_template_string = "%s\n%s%s" + get_tooltip_separator() + "%s%s%s\n%s " +
+			GUILabel::get_colour_marker() + "G100%%" + GUILabel::get_colour_marker() + "!%s\n\n%s%s%s";
+
+		const fixed_point_t throughput_efficiency = throughput_from_workers * throughput_multiplier;
+		const fixed_point_t output_efficiency = output_from_workers * output_multiplier;
+		const fixed_point_t base_output = production_type.get_base_output_quantity();
+		const fixed_point_t max_output = base_output * throughput_efficiency * output_efficiency;
+
+		ret[province_info_rgo_production_tooltip_key] = vformat(
+			rgo_production_template_string,
+			tr(rgo_production_localisation_key).replace(
+				rgo_good_replace_key, tr(Utilities::std_to_godot_string(rgo_good.get_identifier()))
+			).replace(value_replace_key, Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)),
+			tr(max_output_localisation_key).replace(curr_replace_key, Utilities::fixed_point_to_string_dp(max_output, 2)),
+			tr(output_explanation_localisation_key),
+			tr(base_output_localisation_key).replace(base_replace_key, Utilities::fixed_point_to_string_dp(base_output, 2)),
+			tr(output_efficiency_localisation_key),
+			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_output(), output_efficiency, false),
+			tr(base_localisation_key),
+			output_string,
+			tr(throughput_efficiency_localisation_key),
+			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_throughput(), throughput_efficiency, false),
+			throughput_string
+		);
 
 		static const StringName employment_localisation_key = "PROVINCEVIEW_EMPLOYMENT";
-		static const String value_replace_key = "$VALUE$";
 		static const StringName employee_count_localisation_key = "PRODUCTION_FACTORY_EMPLOYEECOUNT_TOOLTIP2";
 		static const String employee_replace_key = "$EMPLOYEES$";
 		static const String employee_max_replace_key = "$EMPLOYEE_MAX$";
 		static const StringName rgo_workforce_localisation_key = "BASE_RGO_SIZE";
 		static const StringName province_size_localisation_key = "FROM_PROV_SIZE";
+		static const String rgo_employment_template_string = "%s" + get_tooltip_separator() + "%s%s\n%s%d\n%s\n%s" +
+			GUILabel::get_colour_marker() + "G%d";
 
-		ret[province_info_rgo_employment_tooltip_key] =
-			tr(employment_localisation_key).replace(value_replace_key, {}) + get_tooltip_separator() +
+		ret[province_info_rgo_employment_tooltip_key] = vformat(
+			rgo_employment_template_string,
+			tr(employment_localisation_key).replace(value_replace_key, {}),
 			tr(employee_count_localisation_key).replace(
 				employee_replace_key, String::num_int64(rgo.get_total_employees_count_cache())
 			).replace(
 				employee_max_replace_key, String::num_int64(rgo.get_max_employee_count_cache())
-			) + "\n" + amount_of_employees_by_pop_type + tr(rgo_workforce_localisation_key) +
-			String::num_int64(production_type.get_base_workforce_size()) + "\n" +
-			contributing_modifier_effects + "\n" + tr(province_size_localisation_key) + GUILabel::get_colour_marker() + "G" +
-			String::num_int64(static_cast<int32_t>(rgo.get_size_multiplier())); // TODO - remove cast once variable is an int32_t
-	}
-
-	GoodDefinition const* const rgo_good = province->get_rgo_good();
-	if (rgo_good != nullptr) {
-		ret[province_info_rgo_name_key] = Utilities::std_to_godot_string(rgo_good->get_identifier());
-		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good->get_index());
+			),
+			amount_of_employees_by_pop_type,
+			tr(rgo_workforce_localisation_key),
+			production_type.get_base_workforce_size(),
+			size_string,
+			tr(province_size_localisation_key),
+			static_cast<int32_t>(rgo.get_size_multiplier()) // TODO - remove cast once variable is an int32_t
+		);
 	}
 
 	Crime const* crime = province->get_crime();
@@ -834,8 +1150,14 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			}
 		);
 		for (auto const& [state_name, power] : industrial_power_states) {
-			industrial_power_tooltip += "\n" + state_name + ": " + GUILabel::get_colour_marker() + "Y"
-				+ GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
+			static const String state_power_template_string =
+				"\n%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
+
+			industrial_power_tooltip += vformat(
+				state_power_template_string,
+				state_name,
+				Utilities::fixed_point_to_string_dp(power, 3)
+			);
 		}
 
 		// Tuple: Country identifier / Country name / Power
@@ -853,9 +1175,15 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			}
 		);
 		for (auto const& [country_identifier, country_name, power] : industrial_power_from_investments) {
-			industrial_power_tooltip += "\n" + GUILabel::get_flag_marker() + country_identifier + " " + country_name + ": "
-				+ GUILabel::get_colour_marker() + "Y" + GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker()
-				+ "!";
+			static const String investment_power_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: " +
+				GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
+
+			industrial_power_tooltip += vformat(
+				investment_power_template_string,
+				country_identifier,
+				country_name,
+				Utilities::fixed_point_to_string_dp(power, 3)
+			);
 		}
 
 		ret[industrial_power_tooltip_key] = std::move(industrial_power_tooltip);
@@ -882,7 +1210,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		}) {
 			if (power != 0) {
 				military_power_tooltip += "\n" + tr(source) + ": " + GUILabel::get_colour_marker() + "Y"
-					+ GUINode::float_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
+					+ Utilities::fixed_point_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
 			}
 		}
 

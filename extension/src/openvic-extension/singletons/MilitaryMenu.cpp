@@ -124,7 +124,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderBase const& leader) {
 		static const String value_replace_key = "$VAL$";
 
 		String prestige_tooltip = tr(prestige_localisation_key).replace(
-			value_replace_key, Utilities::float_to_string_dp(prestige * 100, 2) + "%"
+			value_replace_key, Utilities::fixed_point_to_string_dp(prestige * 100, 2) + "%"
 		);
 
 		tooltip += "\n" + prestige_tooltip;

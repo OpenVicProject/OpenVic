@@ -236,10 +236,12 @@ func _update_info() -> void:
 	const _province_info_slave_status_key     : StringName = &"slave_status"
 	const _province_info_colony_status_key    : StringName = &"colony_status"
 	const _province_info_terrain_type_key     : StringName = &"terrain_type"
+	const _province_info_terrain_type_tooltip_key : StringName = &"terrain_type_tooltip"
 	const _province_info_life_rating_key      : StringName = &"life_rating"
 	const _province_info_controller_key       : StringName = &"controller"
-	const _province_info_rgo_name_key         : StringName = &"rgo_name"
+	const _province_info_controller_tooltip_key : StringName = &"controller_tooltip"
 	const _province_info_rgo_icon_key         : StringName = &"rgo_icon"
+	const _province_info_rgo_production_tooltip_key : StringName = &"rgo_production_tooltip"
 	const _province_info_rgo_total_employees_key : StringName = &"rgo_total_employees"
 	const _province_info_rgo_employment_percentage_key : StringName = &"rgo_employment_percentage"
 	const _province_info_rgo_employment_tooltip_key : StringName = &"rgo_employment_tooltip"
@@ -298,27 +300,35 @@ func _update_info() -> void:
 				const _terrain_type_prefix : String = "GFX_terrainimg_"
 				if _terrain_type_icon.set_gfx_texture_sprite_name(_terrain_type_prefix + terrain_type) != OK:
 					push_error("Failed to set terrain type texture: ", terrain_type)
+			_terrain_type_icon.set_tooltip_string(_province_info.get(_province_info_terrain_type_tooltip_key, ""))
 
 		if _life_rating_bar:
 			_life_rating_bar.value = _province_info.get(_province_info_life_rating_key, 0) / 100.0
 
 		if _controller_flag:
 			_controller_flag.set_flag_country_name(_province_info.get(_province_info_controller_key, ""))
+			_controller_flag.set_tooltip_string(_province_info.get(_province_info_controller_tooltip_key, ""))
 
 		# Statistics
+		var rgo_production_tooltip : String = _province_info.get(_province_info_rgo_production_tooltip_key, "")
+
 		if _rgo_icon:
 			_rgo_icon.set_icon_index(_province_info.get(_province_info_rgo_icon_key, -1) + 2)
+			_rgo_icon.set_tooltip_string(rgo_production_tooltip)
 
 		if _rgo_produced_label:
 			_rgo_produced_label.text = GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_output_quantity_yesterday_key, 0), 3)
+			_rgo_produced_label.set_tooltip_string(rgo_production_tooltip)
 
 		if _rgo_income_label:
 			_rgo_income_label.text = "%s¤" % GUINode.float_to_string_dp(_province_info.get(_province_info_rgo_revenue_yesterday_key, 0), 3)
+			_rgo_income_label.set_tooltip_string(rgo_production_tooltip)
 
+		var rgo_employment_percentage : int = _province_info.get(_province_info_rgo_employment_percentage_key, 0)
 		var rgo_employment_tooltip : String = _province_info.get(_province_info_rgo_employment_tooltip_key, "")
 
 		if _rgo_employment_percentage_icon:
-			_rgo_employment_percentage_icon.set_icon_index(int(_province_info.get(_province_info_rgo_employment_percentage_key, 0) / 10) + 1)
+			_rgo_employment_percentage_icon.set_icon_index(rgo_employment_percentage / 10 + 1)
 			_rgo_employment_percentage_icon.set_tooltip_string(rgo_employment_tooltip)
 
 		if _rgo_employment_population_label:
@@ -326,7 +336,7 @@ func _update_info() -> void:
 			_rgo_employment_population_label.set_tooltip_string(rgo_employment_tooltip)
 
 		if _rgo_employment_percentage_label:
-			_rgo_employment_percentage_label.text = "%d%%" % _province_info.get(_province_info_rgo_employment_percentage_key, 0)
+			_rgo_employment_percentage_label.text = "%d%%" % rgo_employment_percentage
 			_rgo_employment_percentage_label.set_tooltip_string(rgo_employment_tooltip)
 
 		if _crime_name_label:
