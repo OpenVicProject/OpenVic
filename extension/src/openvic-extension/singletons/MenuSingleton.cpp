@@ -184,13 +184,13 @@ template<typename T>
 requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions,
-	fixed_point_t* other_contributions, String const& prefix
+	fixed_point_t* other_contributions, String const& prefix, String const& suffix
 ) const {
 	String result;
 
 	modifier_sum.for_each_contributing_modifier(
 		effect,
-		[this, &effect, tech_contributions, other_contributions, &prefix, &result](
+		[this, &effect, tech_contributions, other_contributions, &prefix, &suffix, &result](
 			modifier_entry_t const& modifier_entry, fixed_point_t value
 		) -> void {
 			using enum Modifier::modifier_type_t;
@@ -222,6 +222,7 @@ String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 			result += tr(Utilities::std_to_godot_string(modifier_entry.modifier.get_identifier()));
 			result += ": ";
 			result += _make_modifier_effect_value_coloured(effect, value, true);
+			result += suffix;
 		}
 	);
 
@@ -229,10 +230,10 @@ String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 }
 
 template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<CountryInstance>(
-	CountryInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&
+	CountryInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&, String const&
 ) const;
 template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<ProvinceInstance>(
-	ProvinceInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&
+	ProvinceInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&, String const&
 ) const;
 
 String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
@@ -789,6 +790,9 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		return {};
 	}
 
+	DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+	ModifierEffectCache const& modifier_effect_cache = definition_manager.get_modifier_manager().get_modifier_effect_cache();
+
 	Dictionary ret;
 
 	// Country / Ranking
@@ -898,6 +902,130 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	// Budget
 
 	// Technology
+	{
+		static const StringName research_key = "research";
+		static const StringName research_tooltip_key = "research_tooltip";
+		static const StringName research_progress_key = "research_progress";
+		static const StringName literacy_key = "literacy";
+		static const StringName literacy_change_key = "literacy_change";
+		static const StringName research_points_key = "research_points";
+		static const StringName research_points_tooltip_key = "research_points_tooltip";
+
+		Technology const* current_research = country->get_current_research();
+		if (current_research != nullptr) {
+			static const StringName research_localisation_key = "TECHNOLOGYVIEW_RESEARCH_TOOLTIP";
+			static const String tech_replace_key = "$TECH$";
+			static const String date_replace_key = "$DATE$";
+			static const StringName research_invested_localisation_key = "TECHNOLOGYVIEW_RESEARCH_INVESTED_TOOLTIP";
+			static const String invested_replace_key = "$INVESTED$";
+			static const String cost_replace_key = "$COST$";
+
+			String current_tech_localised = tr(Utilities::std_to_godot_string(current_research->get_identifier()));
+
+			ret[research_tooltip_key] = tr(research_localisation_key).replace(
+				tech_replace_key, current_tech_localised
+			).replace(
+				date_replace_key, Utilities::date_to_formatted_string(country->get_expected_research_completion_date(), false)
+			) + "\n" + tr(research_invested_localisation_key).replace(
+				invested_replace_key, String::num_uint64(country->get_invested_research_points().to_int64_t())
+			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost().to_int64_t()));
+
+			ret[research_key] = std::move(current_tech_localised);
+
+			ret[research_progress_key] = country->get_research_progress().to_float();
+		} else if (country->is_civilised()) {
+			static const StringName civilised_no_research_localisation_key = "TB_TECH_NO_CURRENT";
+			static const StringName civilised_no_research_tooltip_localisation_key = "TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP";
+
+			ret[research_key] = tr(civilised_no_research_localisation_key);
+			ret[research_tooltip_key] = tr(civilised_no_research_tooltip_localisation_key);
+		} else {
+			static const String red_prefix_text = GUILabel::get_colour_marker() + String { "R" };
+			static const StringName uncivilised_no_research_localisation_key = "unciv_nation";
+			static const StringName uncivilised_no_research_tooltip_localisation_key =
+				"TECHNOLOGYVIEW_NO_RESEARCH_UNCIV_TOOLTIP";
+
+			ret[research_key] = red_prefix_text + tr(uncivilised_no_research_localisation_key);
+			ret[research_tooltip_key] = tr(uncivilised_no_research_tooltip_localisation_key);
+		}
+
+		ret[literacy_key] = country->get_national_literacy().to_float();
+		// TODO - set monthly literacy change (test for precision issues)
+		ret[literacy_change_key] = 0.0f;
+
+		ret[research_points_key] = country->get_daily_research_points().to_float();
+
+		String research_points_tooltip;
+
+		fixed_point_t daily_base_research_points;
+
+		static const String value_replace_key = "$VALUE$";
+
+		for (auto const& [pop_type, research_points] : country->get_research_points_from_pop_types()) {
+			static const StringName pop_type_research_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOOLTIP";
+			static const String pop_type_replace_key = "$POPTYPE$";
+			static const String fraction_replace_key = "$FRACTION$";
+			static const String optimal_replace_key = "$OPTIMAL$";
+
+			daily_base_research_points += research_points;
+
+			research_points_tooltip += tr(pop_type_research_localisation_key).replace(
+				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
+			).replace(
+				value_replace_key, Utilities::fixed_point_to_string_dp(research_points, 2)
+			).replace(
+				fraction_replace_key, Utilities::fixed_point_to_string_dp(
+					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+				)
+			).replace(
+				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
+			) + "\n";
+		}
+
+		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
+		// guaranteed daily base research points line. All contributions are added to daily_base_research_points.
+		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
+			*country, *modifier_effect_cache.get_research_points(), nullptr, &daily_base_research_points, {}, "\n"
+		);
+
+		// The daily base research points line is guaranteed to be present, but those directly above and below it aren't,
+		// so this line has no newline characters of its own. Instead, potential lines above finish with newlines and
+		// potential (and some guaranteed) lines below start with them.
+		static const StringName daily_base_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_BASE_TOOLTIP";
+		research_points_tooltip += tr(daily_base_research_points_localisation_key).replace(
+			value_replace_key, Utilities::fixed_point_to_string_dp(daily_base_research_points, 2)
+		);
+
+		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
+			*country, *modifier_effect_cache.get_research_points_modifier()
+		);
+
+		const fixed_point_t research_points_modifier_from_tech =
+			country->get_modifier_effect_value(*modifier_effect_cache.get_increase_research());
+		if (research_points_modifier_from_tech != fixed_point_t::_0()) {
+			static const StringName from_technology_localisation_key = "FROM_TECHNOLOGY";
+			research_points_tooltip += "\n" + tr(from_technology_localisation_key) + ": " +
+				_make_modifier_effect_value_coloured(
+					*modifier_effect_cache.get_increase_research(), research_points_modifier_from_tech, true
+				);
+		}
+
+		static const StringName daily_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOTAL_TOOLTIP";
+		research_points_tooltip += "\n" + tr(daily_research_points_localisation_key).replace(
+			value_replace_key, Utilities::fixed_point_to_string_dp(country->get_daily_research_points(), 2)
+		);
+
+		// In the base game this section is only shown when no research is set, but it's useful to show it always
+		research_points_tooltip += "\n" + get_tooltip_separator();
+
+		static const StringName accumulated_research_points_localisation_key = "RP_ACCUMULATED";
+		static const String val_replace_key = "$VAL$";
+		research_points_tooltip += tr(accumulated_research_points_localisation_key).replace(
+			val_replace_key, Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile(), 1)
+		);
+
+		ret[research_points_tooltip_key] = std::move(research_points_tooltip);
+	}
 
 	// Politics
 
@@ -923,6 +1051,77 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	} else {
 		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
 		ret[mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
+	}
+
+	{
+		static const StringName leadership_key = "leadership";
+		static const StringName leadership_tooltip_key = "leadership_tooltip";
+
+		ret[leadership_key] = country->get_leadership_point_stockpile().to_int64_t();
+
+		String leadership_tooltip;
+
+		fixed_point_t monthly_base_leadership_points;
+
+		static const String value_replace_key = "$VALUE$";
+
+		for (auto const& [pop_type, leadership_points] : country->get_leadership_points_from_pop_types()) {
+			static const StringName pop_type_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_TOOLTIP";
+			static const String pop_type_replace_key = "$POPTYPE$";
+			static const String fraction_replace_key = "$FRACTION$";
+			static const String optimal_replace_key = "$OPTIMAL$";
+
+			monthly_base_leadership_points += leadership_points;
+
+			leadership_tooltip += tr(pop_type_leadership_localisation_key).replace(
+				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
+			).replace(
+				value_replace_key, Utilities::fixed_point_to_string_dp(leadership_points, 2)
+			).replace(
+				fraction_replace_key, Utilities::fixed_point_to_string_dp(
+					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+				)
+			).replace(
+				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
+			) + "\n";
+		}
+
+		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
+		// guaranteed monthly base leadership points line. All contributions are added to monthly_base_leadership_points.
+		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
+			*country, *modifier_effect_cache.get_leadership(), nullptr, &monthly_base_leadership_points, {}, "\n"
+		);
+
+		// The monthly base leadership points line is guaranteed to be present, but those directly above and below it aren't,
+		// so this line has no newline characters of its own. Instead, potential lines above finish with newlines and
+		// potential (and some guaranteed) lines below start with them.
+		static const StringName monthly_base_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_BASE_TOOLTIP";
+		leadership_tooltip += tr(monthly_base_leadership_localisation_key).replace(
+			value_replace_key, Utilities::fixed_point_to_string_dp(monthly_base_leadership_points, 2)
+		);
+
+		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
+			*country, *modifier_effect_cache.get_leadership_modifier()
+		);
+
+		static const StringName monthly_leadership_points_localisation_key = "TECH_DAILY_LEADERSHIP_TOTAL_TOOLTIP";
+		leadership_tooltip += "\n" + tr(monthly_leadership_points_localisation_key).replace(
+			value_replace_key, Utilities::fixed_point_to_string_dp(country->get_monthly_leadership_points(), 2)
+		);
+
+		const fixed_point_t max_leadership_point_stockpile =
+			definition_manager.get_define_manager().get_military_defines().get_max_leadership_point_stockpile();
+		if (country->get_leadership_point_stockpile() >= max_leadership_point_stockpile) {
+			leadership_tooltip += "\n" + get_tooltip_separator() + "\n";
+
+			static const StringName max_leadership_points_localisation_key = "TOPBAR_LEADERSHIP_MAX";
+			static const String max_replace_key = "$MAX$";
+			leadership_tooltip += tr(max_leadership_points_localisation_key).trim_suffix("\n").replace(
+				max_replace_key, Utilities::fixed_point_to_string_dp(max_leadership_point_stockpile, 1)
+			);
+		}
+
+		ret[leadership_tooltip_key] = std::move(leadership_tooltip);
 	}
 
 	return ret;
