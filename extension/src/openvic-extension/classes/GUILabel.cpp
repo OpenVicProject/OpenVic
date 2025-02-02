@@ -2,6 +2,7 @@
 
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
+#include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/singletons/AssetManager.hpp"
@@ -584,16 +585,19 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 
 	for (int64_t idx = 0; idx < display_text.length(); ++idx) {
 		Color new_colour = current_colour;
-		while (colour_it != colour_instructions.end() && idx == colour_it->first) {
+		for (; colour_it != colour_instructions.end(); colour_it++) {
+			if (idx != colour_it->first) {
+				break;
+			}
 			if (colour_it->second == RESET_COLOUR_CODE) {
 				new_colour = default_colour;
 			} else {
+				ERR_CONTINUE(colour_codes == nullptr);
 				const GFX::Font::colour_codes_t::const_iterator it = colour_codes->find(colour_it->second);
 				if (it != colour_codes->end()) {
 					new_colour = Utilities::to_godot_color(it->second);
 				}
 			}
-			++colour_it;
 		}
 
 		if (current_colour != new_colour) {
