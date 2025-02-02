@@ -1,9 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://do60kx0d3nrh4"]
+[gd_scene load_steps=7 format=3 uid="uid://do60kx0d3nrh4"]
 
 [ext_resource type="Script" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
 [ext_resource type="PackedScene" uid="uid://k71f5gibwmtc" path="res://src/Game/Menu/LobbyMenu/LobbyPanelButton.tscn" id="2_exh17"]
 [ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.tscn" id="3_4otj7"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_y8n6u"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_mgy3w"]
+action = &"menu_pause"
+pressed = true
+
+[sub_resource type="Shortcut" id="Shortcut_is4jx"]
+events = [SubResource("InputEventAction_mgy3w")]
 
 [node name="LobbyMenu" type="HBoxContainer" node_paths=PackedStringArray("game_select_start_date", "game_select_save_tab", "game_select_save_list", "start_button", "session_tag_line_edit", "session_tag_dialog", "delete_dialog", "map_view")]
 editor_description = "UI-36"
@@ -72,6 +79,8 @@ mouse_filter = 2
 [node name="BackButton" type="Button" parent="GameSelectPanel/VBoxContainer"]
 editor_description = "UI-37"
 layout_mode = 2
+shortcut = SubResource("Shortcut_is4jx")
+shortcut_feedback = false
 text = "GAMELOBBY_BACK"
 
 [node name="Spacer2" type="Control" parent="GameSelectPanel/VBoxContainer"]
@@ -141,7 +150,7 @@ cancel_button_text = "DIALOG_CANCEL"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="tab_changed" from="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList/GameSelectSaveTab" to="." method="_on_game_select_save_tab_tab_changed"]
-[connection signal="button_down" from="GameSelectPanel/VBoxContainer/BackButton" to="." method="_on_back_button_button_down"]
+[connection signal="pressed" from="GameSelectPanel/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="text_submitted" from="GameStartPanel/VBoxContainer/SessionTagEdit" to="." method="_on_session_tag_edit_text_submitted"]
 [connection signal="pressed" from="GameStartPanel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="confirmed" from="SessionTagDialog" to="." method="_on_session_tag_dialog_confirmed"]
