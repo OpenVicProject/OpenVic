@@ -404,6 +404,16 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(SORT_SIZE_CHANGE);
 	BIND_ENUM_CONSTANT(SORT_LITERACY);
 
+	/* TRADE MENU */
+	OV_BIND_METHOD(MenuSingleton::get_trade_menu_good_categories_info);
+	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index" });
+	OV_BIND_METHOD(MenuSingleton::get_trade_menu_tables_info);
+
+	BIND_ENUM_CONSTANT(TRADE_SETTING_NONE);
+	BIND_ENUM_CONSTANT(TRADE_SETTING_AUTOMATED);
+	BIND_ENUM_CONSTANT(TRADE_SETTING_BUYING);
+	BIND_ENUM_CONSTANT(TRADE_SETTING_SELLING);
+
 	/* MILITARY MENU */
 	OV_BIND_METHOD(MenuSingleton::get_military_menu_info, {
 		"leader_sort_key", "sort_leaders_descending",

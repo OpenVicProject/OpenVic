@@ -67,6 +67,7 @@ void GUINode::_bind_methods() {
 
 #define GET_BINDINGS(type, name) \
 	OV_BIND_SMETHOD(get_##name##_from_node, { "node" }); \
+	OV_BIND_SMETHOD(get_##name##_from_node_and_path, { "node", "path" }); \
 	OV_BIND_METHOD(GUINode::get_##name##_from_nodepath, { "path" });
 
 	APPLY_TO_CHILD_TYPES(GET_BINDINGS)
@@ -138,6 +139,9 @@ static T* _cast_node(Node* node) {
 #define CHILD_GET_FUNCTIONS(type, name) \
 	type* GUINode::get_##name##_from_node(Node* node) { \
 		return _cast_node<type>(node); \
+	} \
+	type* GUINode::get_##name##_from_node_and_path(Node* node, NodePath const& path) { \
+		return _cast_node<type>(node->get_node_internal(path)); \
 	} \
 	type* GUINode::get_##name##_from_nodepath(NodePath const& path) const { \
 		return _cast_node<type>(get_node_internal(path)); \

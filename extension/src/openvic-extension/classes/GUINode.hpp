@@ -66,6 +66,25 @@ namespace OpenVic {
 		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
 		static GUILineChart* get_gui_line_chart_from_node(godot::Node* node);
 
+		// These expect a non-null node!
+		static GUIIconButton* get_gui_icon_button_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node_and_path(
+			godot::Node* node, godot::NodePath const& path
+		);
+		static GUILabel* get_gui_label_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static godot::Panel* get_panel_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIProgressBar* get_gui_progress_bar_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIIcon* get_gui_icon_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIMaskedFlag* get_gui_masked_flag_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIPieChart* get_gui_pie_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node_and_path(
+			godot::Node* node, godot::NodePath const& path
+		);
+		static GUIScrollbar* get_gui_scrollbar_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIListBox* get_gui_listbox_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static godot::LineEdit* get_line_edit_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUILineChart* get_gui_line_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+
 		GUIIconButton* get_gui_icon_button_from_nodepath(godot::NodePath const& path) const;
 		GUIMaskedFlagButton* get_gui_masked_flag_button_from_nodepath(godot::NodePath const& path) const;
 		GUILabel* get_gui_label_from_nodepath(godot::NodePath const& path) const;
