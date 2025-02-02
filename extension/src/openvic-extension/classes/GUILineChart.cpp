@@ -26,6 +26,7 @@ void GUILineChart::_bind_methods() {
 
 GUILineChart::GUILineChart() {
 	set_clip_contents(true);
+	set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 }
 
 void GUILineChart::clear() {
