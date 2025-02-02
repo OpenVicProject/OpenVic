@@ -4,6 +4,10 @@ extends Node3D
 signal map_view_camera_changed(near_left : Vector2, far_left : Vector2, far_right : Vector2, near_right : Vector2)
 signal parchment_view_changed(is_parchment_view : bool)
 signal detailed_view_changed(is_detailed_view : bool)
+signal province_hovered(index : int)
+signal province_unhovered()
+signal province_clicked(index : int)
+signal province_right_clicked(index : int)
 
 const _action_north : StringName = &"map_north"
 const _action_east : StringName = &"map_east"
@@ -103,15 +107,6 @@ func _ready() -> void:
 
 	GameSingleton.province_selected.connect(_on_province_selected)
 
-	# Set the camera's starting position
-	_camera.position = _map_to_world_coords(
-		# Start at the bookmark's start position (used when loading a bookmark in the lobby)
-		# GameSingleton.get_bookmark_start_position()
-
-		# Start at the player country's capital position (when loading a save game in the lobby or entering the actual game)
-		GameSingleton.get_viewed_country_capital_position()
-	)
-
 	# Start zoomed out with the parchment map active
 	_camera.position.y = _zoom_parchment_threshold * 1.5
 	_zoom_target = _camera.position.y
@@ -134,7 +129,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_MOUSE_EXIT:
 		_mouse_over_viewport = false
-		unset_hovered_province()
+		province_unhovered.emit()
 
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
@@ -195,7 +190,7 @@ func _update_province_hover() -> void:
 	if not _province_hover_dirty: return
 	_province_hover_dirty = false
 	if _mouse_over_viewport:
-		set_hovered_province_at(_viewport_to_map_coords(_mouse_pos_viewport))
+		province_hovered.emit(GameSingleton.get_province_index_from_uv_coords(_viewport_to_map_coords(_mouse_pos_viewport)))
 
 func _on_province_selected(index : int) -> void:
 	if _map_shader_material:
@@ -230,15 +225,13 @@ func _unhandled_input(event : InputEvent) -> void:
 		if _mouse_over_viewport:
 			# Check if the mouse is outside of bounds
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				province_clicked.emit(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 			else:
 				print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_right_click):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				# TODO - open diplomacy screen on province owner or viewed country if province has no owner
-				#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-				GameSingleton.set_viewed_country_by_province_index(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				province_right_clicked.emit(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 			else:
 				print("Right-clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):
@@ -257,7 +250,7 @@ func _process(delta : float) -> void:
 
 	if _is_viewport_inactive():
 		_mouse_over_viewport = false
-		unset_hovered_province()
+		province_unhovered.emit()
 
 	_viewport_dims = Vector2(Resolution.get_current_resolution())
 	# Process movement

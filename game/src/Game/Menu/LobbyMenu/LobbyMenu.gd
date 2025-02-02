@@ -19,6 +19,11 @@ signal start_date_selected(index : int)
 @export var session_tag_line_edit : LineEdit
 @export var session_tag_dialog : ConfirmationDialog
 @export var delete_dialog : ConfirmationDialog
+@export var map_view : MapView
+
+func _ready() -> void:
+	# TODO: Needs to be able to set the map to the political mapmode
+	pass
 
 func filter_for_tag(tag : StringName) -> void:
 	for child : Control in game_select_save_list.get_children():
@@ -171,3 +176,12 @@ func _on_visibility_changed() -> void:
 		_build_save_list()
 	else:
 		_queue_clear_lists()
+
+func _on_map_view_ready() -> void:
+	# TODO: Start at the bookmark's start position (used when loading a bookmark in the lobby)
+	# GameSingleton.get_bookmark_start_position()
+	pass
+
+func _on_map_view_province_clicked(_index: int) -> void:
+	# TODO: need to be able to call something like GameSingleton.set_viewed_country_by_province_index(index) here
+	pass

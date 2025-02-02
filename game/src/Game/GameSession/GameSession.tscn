@@ -39,16 +39,10 @@ transform_format = 1
 use_custom_data = true
 mesh = SubResource("QuadMesh_fm6ks")
 
-[node name="GameSession" type="Control" node_paths=PackedStringArray("_model_manager", "_game_session_menu")]
+[node name="GameSession" type="Node" node_paths=PackedStringArray("_map_view", "_model_manager", "_game_session_menu")]
 editor_description = "SS-102, UI-546"
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 script = ExtResource("1_eklvp")
+_map_view = NodePath("MapView")
 _model_manager = NodePath("ModelManager")
 _game_session_menu = NodePath("UICanvasLayer/UI/GameSessionMenu")
 
@@ -191,6 +185,11 @@ script = ExtResource("20_3306e")
 [connection signal="detailed_view_changed" from="MapView" to="BillboardManager" method="detailed_map"]
 [connection signal="map_view_camera_changed" from="MapView" to="UICanvasLayer/UI/Menubar" method="_on_map_view_camera_changed"]
 [connection signal="parchment_view_changed" from="MapView" to="BillboardManager" method="parchment_view"]
+[connection signal="province_clicked" from="MapView" to="." method="_on_map_view_province_clicked"]
+[connection signal="province_hovered" from="MapView" to="." method="_on_map_view_province_hovered"]
+[connection signal="province_right_clicked" from="MapView" to="." method="_on_map_view_province_right_clicked"]
+[connection signal="province_unhovered" from="MapView" to="." method="_on_map_view_province_unhovered"]
+[connection signal="ready" from="MapView" to="." method="_on_map_view_ready"]
 [connection signal="game_session_menu_button_pressed" from="UICanvasLayer/UI/Menubar" to="." method="_on_game_session_menu_button_pressed"]
 [connection signal="ledger_button_pressed" from="UICanvasLayer/UI/Menubar" to="UICanvasLayer/UI/Ledger" method="toggle_visibility"]
 [connection signal="minimap_clicked" from="UICanvasLayer/UI/Menubar" to="MapView" method="_on_minimap_clicked"]
