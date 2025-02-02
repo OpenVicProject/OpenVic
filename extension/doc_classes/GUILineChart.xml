@@ -29,6 +29,16 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_max_value" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_min_value" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="scale_coloured_lines">
 			<return type="void" />
 			<description>

@@ -96,6 +96,10 @@ namespace OpenVic {
 			std::vector<Pop const*> pops, filtered_pops;
 		};
 
+		enum TradeSettingBit {
+			TRADE_SETTING_NONE = 0, TRADE_SETTING_AUTOMATED = 1, TRADE_SETTING_BUYING = 2, TRADE_SETTING_SELLING = 4
+		};
+
 		enum LeaderSortKey {
 			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
 			MAX_LEADER_SORT_KEY
@@ -233,6 +237,11 @@ namespace OpenVic {
 		/* Array of GFXPieChartTexture::godot_pie_chart_data_t. */
 		godot::TypedArray<godot::Array> get_population_menu_distribution_info() const;
 
+		/* TRADE MENU */
+		godot::Dictionary get_trade_menu_good_categories_info() const;
+		godot::Dictionary get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const;
+		godot::Dictionary get_trade_menu_tables_info() const;
+
 		/* MILITARY MENU */
 		godot::Dictionary make_leader_dict(LeaderBase const& leader);
 		template<UnitType::branch_t Branch>
@@ -257,5 +266,6 @@ namespace OpenVic {
 
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
+VARIANT_ENUM_CAST(OpenVic::MenuSingleton::TradeSettingBit);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::LeaderSortKey);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::UnitGroupSortKey);

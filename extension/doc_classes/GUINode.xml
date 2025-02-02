@@ -55,6 +55,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_icon_button_from_node_and_path" qualifiers="static">
+			<return type="GUIIconButton" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_icon_button_from_nodepath" qualifiers="const">
 			<return type="GUIIconButton" />
 			<param index="0" name="path" type="NodePath" />
@@ -64,6 +71,13 @@
 		<method name="get_gui_icon_from_node" qualifiers="static">
 			<return type="GUIIcon" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_icon_from_node_and_path" qualifiers="static">
+			<return type="GUIIcon" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>
@@ -79,6 +93,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_label_from_node_and_path" qualifiers="static">
+			<return type="GUILabel" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_label_from_nodepath" qualifiers="const">
 			<return type="GUILabel" />
 			<param index="0" name="path" type="NodePath" />
@@ -88,6 +109,13 @@
 		<method name="get_gui_line_chart_from_node" qualifiers="static">
 			<return type="GUILineChart" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_line_chart_from_node_and_path" qualifiers="static">
+			<return type="GUILineChart" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>
@@ -103,6 +131,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_listbox_from_node_and_path" qualifiers="static">
+			<return type="GUIListBox" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_listbox_from_nodepath" qualifiers="const">
 			<return type="GUIListBox" />
 			<param index="0" name="path" type="NodePath" />
@@ -112,6 +147,13 @@
 		<method name="get_gui_masked_flag_button_from_node" qualifiers="static">
 			<return type="GUIMaskedFlagButton" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_masked_flag_button_from_node_and_path" qualifiers="static">
+			<return type="GUIMaskedFlagButton" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>
@@ -127,6 +169,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_masked_flag_from_node_and_path" qualifiers="static">
+			<return type="GUIMaskedFlag" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_masked_flag_from_nodepath" qualifiers="const">
 			<return type="GUIMaskedFlag" />
 			<param index="0" name="path" type="NodePath" />
@@ -139,6 +188,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_overlapping_elements_box_from_node_and_path" qualifiers="static">
+			<return type="GUIOverlappingElementsBox" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_overlapping_elements_box_from_nodepath" qualifiers="const">
 			<return type="GUIOverlappingElementsBox" />
 			<param index="0" name="path" type="NodePath" />
@@ -148,6 +204,13 @@
 		<method name="get_gui_pie_chart_from_node" qualifiers="static">
 			<return type="GUIPieChart" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_pie_chart_from_node_and_path" qualifiers="static">
+			<return type="GUIPieChart" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>
@@ -170,6 +233,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_gui_progress_bar_from_node_and_path" qualifiers="static">
+			<return type="GUIProgressBar" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_gui_progress_bar_from_nodepath" qualifiers="const">
 			<return type="GUIProgressBar" />
 			<param index="0" name="path" type="NodePath" />
@@ -179,6 +249,13 @@
 		<method name="get_gui_scrollbar_from_node" qualifiers="static">
 			<return type="GUIScrollbar" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gui_scrollbar_from_node_and_path" qualifiers="static">
+			<return type="GUIScrollbar" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>
@@ -194,6 +271,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_line_edit_from_node_and_path" qualifiers="static">
+			<return type="LineEdit" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
+			<description>
+			</description>
+		</method>
 		<method name="get_line_edit_from_nodepath" qualifiers="const">
 			<return type="LineEdit" />
 			<param index="0" name="path" type="NodePath" />
@@ -203,6 +287,13 @@
 		<method name="get_panel_from_node" qualifiers="static">
 			<return type="Panel" />
 			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="get_panel_from_node_and_path" qualifiers="static">
+			<return type="Panel" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="path" type="NodePath" />
 			<description>
 			</description>
 		</method>

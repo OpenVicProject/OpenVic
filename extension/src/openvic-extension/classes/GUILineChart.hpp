@@ -12,7 +12,8 @@ namespace OpenVic {
 		GFX::LineChart const* gfx_line_chart = nullptr;
 
 		int32_t point_count = 0;
-		float min_value = 0.0f, max_value = 0.0f;
+		float PROPERTY(min_value, 0.0f);
+		float PROPERTY(max_value, 0.0f);
 
 	protected:
 		static void _bind_methods();

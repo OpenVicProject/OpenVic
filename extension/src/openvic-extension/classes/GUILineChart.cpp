@@ -14,6 +14,9 @@ void GUILineChart::_bind_methods() {
 	OV_BIND_METHOD(GUILineChart::clear);
 	OV_BIND_METHOD(GUILineChart::clear_lines);
 
+	OV_BIND_METHOD(GUILineChart::get_min_value);
+	OV_BIND_METHOD(GUILineChart::get_max_value);
+
 	OV_BIND_METHOD(GUILineChart::set_gfx_line_chart_name, { "new_gfx_line_chart_name" });
 	OV_BIND_METHOD(GUILineChart::get_gfx_line_chart_name);
 
@@ -117,6 +120,9 @@ Error GUILineChart::set_gradient_line(PackedFloat32Array const& line_values, flo
 			min_value_range = abs_value;
 		}
 	}
+
+	min_value = central_value - min_value_range;
+	max_value = central_value + min_value_range;
 
 	if (min_value_range == 0.0f) {
 		min_value_range = 1.0f;

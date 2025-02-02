@@ -170,6 +170,22 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_trade_menu_good_categories_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_trade_menu_tables_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_trade_menu_trade_details_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="trade_detail_good_index" type="int" />
+			<description>
+			</description>
+		</method>
 		<method name="hide_tooltip">
 			<return type="void" />
 			<description>
@@ -336,6 +352,14 @@
 		<constant name="SORT_SIZE_CHANGE" value="16" enum="PopSortKey">
 		</constant>
 		<constant name="SORT_LITERACY" value="17" enum="PopSortKey">
+		</constant>
+		<constant name="TRADE_SETTING_NONE" value="0" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_AUTOMATED" value="1" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_BUYING" value="2" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_SELLING" value="4" enum="TradeSettingBit">
 		</constant>
 		<constant name="LEADER_SORT_NONE" value="0" enum="LeaderSortKey">
 		</constant>
