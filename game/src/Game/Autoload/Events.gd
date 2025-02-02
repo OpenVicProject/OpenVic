@@ -4,8 +4,10 @@
 extends Node
 
 var Options : OptionsEventsObject
+var Multiplayer : MultiplayerEventsObject
 var NationManagementScreens : NationManagementScreensEventsObject
 
 func _init() -> void:
 	Options = OptionsEventsObject.new()
 	NationManagementScreens = NationManagementScreensEventsObject.new()
+	Multiplayer = MultiplayerEventsObject.new()
