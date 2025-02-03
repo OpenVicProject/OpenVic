@@ -12,6 +12,7 @@
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/country/CountryInstance.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -178,17 +179,6 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG");
 	set_viewed_country(starting_country);
 	ERR_FAIL_NULL_V(viewed_country, FAILED);
-
-	// TODO - remove this test starting research
-	for (
-		Technology const& technology :
-			get_definition_manager().get_research_manager().get_technology_manager().get_technologies()
-	) {
-		if (starting_country->can_research_tech(technology, instance_manager->get_today())) {
-			starting_country->start_research(technology, *instance_manager);
-			break;
-		}
-	}
 
 	return ERR(ret);
 }
@@ -425,7 +415,7 @@ void GameSingleton::unset_selected_province() {
 	set_selected_province(ProvinceDefinition::NULL_INDEX);
 }
 
-void GameSingleton::set_viewed_country(CountryInstance const* new_viewed_country) {
+void GameSingleton::set_viewed_country(CountryInstance* new_viewed_country) {
 	if (viewed_country != new_viewed_country) {
 		viewed_country = new_viewed_country;
 
@@ -439,7 +429,7 @@ void GameSingleton::set_viewed_country_by_province_index(int32_t province_index)
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	ProvinceInstance const* province_instance =
+	ProvinceInstance* province_instance =
 		instance_manager->get_map_instance().get_province_instance_by_index(province_index);
 	ERR_FAIL_NULL(province_instance);
 
