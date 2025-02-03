@@ -78,7 +78,7 @@ func _queue_clear_lists() -> void:
 # REQUIREMENTS:
 # * SS-16
 # * UIFUN-40
-func _on_back_button_button_down() -> void:
+func _on_back_button_pressed() -> void:
 	print("Returning to Main Menu.")
 	SaveManager.current_session_tag = ""
 	SaveManager.current_save = null
