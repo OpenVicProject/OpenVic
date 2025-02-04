@@ -152,11 +152,11 @@ func _ready() -> void:
 			_create_admiral_button.pressed.connect(func() -> void: print("CREATE ADMIRAL"))
 		_auto_create_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_create"))
 		if _auto_create_leader_button:
-			_auto_create_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO CREATE LEADERS = ", state))
+			_auto_create_leader_button.toggled.connect(func(state : bool) -> void: PlayerSingleton.set_auto_create_leaders(state))
 			_auto_create_leader_button.set_tooltip_string("MILITARY_AUTOCREATE_TOOLTIP")
 		_auto_assign_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_assign"))
 		if _auto_assign_leader_button:
-			_auto_assign_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO ASSIGN LEADERS = ", state))
+			_auto_assign_leader_button.toggled.connect(func(state : bool) -> void: PlayerSingleton.set_auto_assign_leaders(state))
 			_auto_assign_leader_button.set_tooltip_string("MILITARY_AUTOASSIGN_TOOLTIP")
 		_leader_listbox = GUINode.get_gui_listbox_from_node(military_menu.get_node(^"./leaders/leader_listbox"))
 

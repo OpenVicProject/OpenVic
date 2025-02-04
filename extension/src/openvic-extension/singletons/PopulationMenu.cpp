@@ -291,7 +291,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 		}
 
 		bool operator()(population_menu_t::province_entry_t& province_entry) {
-			if (province_entry.province.get_province_definition().get_index() == _province_index) {
+			if (province_entry.province.get_index() == _province_index) {
 
 				if (state_entry_to_expand >= 0) {
 					ret &= menu_singleton.population_menu_toggle_expanded(state_entry_to_expand, false) == OK;

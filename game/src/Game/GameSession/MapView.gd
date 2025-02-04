@@ -105,7 +105,7 @@ func _ready() -> void:
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
 
-	GameSingleton.province_selected.connect(_on_province_selected)
+	PlayerSingleton.province_selected.connect(_on_province_selected)
 
 	# Start zoomed out with the parchment map active
 	_camera.position.y = _zoom_parchment_threshold * 1.5
