@@ -98,6 +98,7 @@ Economy:
           n_owners_in_state: total size of owner POPs in state
           n_pops_in_state: total size of all POPs in state
           note: included in throughput or output modifier
+      Gold rgo income: output * price * defines.country.GOLD_TO_WORKER_PAY_RATE
     Human resource management:
       Vacancies: max employees - employees count
       Maximum employees hired per day:
