@@ -3,6 +3,7 @@
 	<brief_description>
 	</brief_description>
 	<description>
+		This singleton provides methods of optaining [code]billboard[/code] and [code]projection[/code] type graphics objects. It also provides methods for getting the proper location of these objects on the map.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -10,36 +11,70 @@
 		<method name="get_billboards" qualifiers="const">
 			<return type="Dictionary[]" />
 			<description>
+				Returns an array of Dictionnaries. Each dictionnary contains the keys [code]name[/code] (String), [code]texture[/code] (String), [code]scale[/code] (float), [code]noOfFrames[/code] (int) used to make a billboard object. [code]texture[/code] is a [code]String[/code] path to the billboard texture. [code]noOfFrames[/code] is a [code]float[/code] scaling factor. [code]noOfFrames[/code] is an [code]int[/code] specifying how many icons are in the texture image.
 			</description>
 		</method>
 		<method name="get_capital_positions" qualifiers="const">
 			<return type="PackedVector2Array" />
 			<description>
+				Returns an array of the positions of country capital billboards for all existing countries. The capital billboard position is the [code]city[/code] property of a province which is a capital in the game defines.
+			</description>
+		</method>
+		<method name="get_clicked_port_province_index" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="position" type="Vector2" />
+			<description>
+				Searches the mouse map coordinate for any port within a radius. Returns the province index of a found port, or [code]0[/code] if no port was found within the radius of the click.
 			</description>
 		</method>
 		<method name="get_crime_icons" qualifiers="const">
 			<return type="PackedByteArray" />
 			<description>
+				Returns an array of icon indices to use on the crimes texture to get the appropriate crime icons for every land province. An index of [code]0[/code] indicates there is no crime for that province.
 			</description>
 		</method>
 		<method name="get_max_capital_count" qualifiers="const">
 			<return type="int" />
 			<description>
+				Returns the size of the number of defined countries. This is the maximum possible number of capital billboards the game could have to display.
 			</description>
 		</method>
 		<method name="get_national_focus_icons" qualifiers="const">
 			<return type="PackedByteArray" />
 			<description>
+				TODO: WIP Function awaiting implementation of national focuses. Returns an array of icon indices used with the national focus icons texture for every province. For provinces which aren't state capitals, or don't have have a national focus applied, this will be [code]0[/code].
+			</description>
+		</method>
+		<method name="get_port_position_by_province_index" qualifiers="const">
+			<return type="Vector2" />
+			<param index="0" name="index" type="int" />
+			<description>
+				Given a province [param]index[/param], returns the position of the province's port. Emits an error and returns [code]0,0[/code] if the province does not have a port.
+			</description>
+		</method>
+		<method name="get_projections" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+				Returns an array of Dictionnaries. Each dictionnary contains the keys [code]name[/code] (String), [code]texture[/code] (String), [code]size[/code] (float), [code]spin[/code] (float), [code]expanding[/code] (float), [code]duration[/code] (float), [code]additative[/code] (bool).
 			</description>
 		</method>
 		<method name="get_province_positions" qualifiers="const">
 			<return type="PackedVector2Array" />
 			<description>
+				Returns an array of billboard positions for every land province. This corresponds to a province's [code]city[/code] define.
 			</description>
 		</method>
 		<method name="get_rgo_icons" qualifiers="const">
 			<return type="PackedByteArray" />
 			<description>
+				Returns an array of icon indices used with the trade goods (RGO) icons texture for every land province. If the province the province does not have an RGO, it will be 0.
+			</description>
+		</method>
+		<method name="get_unit_position_by_province_index" qualifiers="const">
+			<return type="Vector2" />
+			<param index="0" name="index" type="int" />
+			<description>
+				Given a province [param]index[/param], returns the province's unit position.
 			</description>
 		</method>
 	</methods>
