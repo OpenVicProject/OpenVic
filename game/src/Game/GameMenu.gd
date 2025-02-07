@@ -2,6 +2,7 @@ extends Control
 
 @export var _main_menu : Control
 @export var _options_menu : Control
+@export var _multiplayer_menu : Control
 @export var _lobby_menu : Control
 @export var _credits_menu : Control
 
@@ -39,4 +40,14 @@ func _on_credits_back_button_pressed() -> void:
 
 func _on_main_menu_credits_button_pressed() -> void:
 	_credits_menu.show()
+	_main_menu.hide()
+
+
+func _on_multiplayer_menu_back_button_pressed() -> void:
+	_multiplayer_menu.hide()
+	_main_menu.show()
+
+
+func _on_main_menu_multiplayer_button_pressed() -> void:
+	_multiplayer_menu.show()
 	_main_menu.hide()

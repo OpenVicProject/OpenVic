@@ -16,7 +16,7 @@ var _id_to_tag : Array[StringName] = []
 
 func filter_for_tag(tag : StringName) -> void:
 	for child : Control in _scroll_list.get_children():
-		if tag == &"":
+		if tag.is_empty():
 			child.show()
 		else:
 			if tag == child.resource.session_tag:
