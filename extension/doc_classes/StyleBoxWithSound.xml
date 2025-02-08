@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="StyleBoxWithSound" inherits="StyleBox" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="audio_bus" type="StringName" setter="set_audio_bus" getter="get_audio_bus" default="&amp;&quot;Master&quot;">
+		</member>
+		<member name="audio_stream" type="AudioStream" setter="set_audio_stream" getter="get_audio_stream">
+		</member>
+		<member name="style_box" type="StyleBox" setter="set_style_box" getter="get_style_box">
+		</member>
+	</members>
+</class>

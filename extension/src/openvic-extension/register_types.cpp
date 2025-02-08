@@ -3,9 +3,9 @@
 #include <godot_cpp/classes/engine.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
@@ -21,6 +21,7 @@
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/classes/GUITextureRect.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
+#include "openvic-extension/classes/resources/StyleBoxWithSound.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
 #include "openvic-extension/singletons/CursorSingleton.hpp"
@@ -115,6 +116,8 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	/* Depend on GUIButton */
 	ClassDB::register_class<GUIIconButton>();
 	ClassDB::register_class<GUIMaskedFlagButton>();
+
+	ClassDB::register_class<StyleBoxWithSound>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
