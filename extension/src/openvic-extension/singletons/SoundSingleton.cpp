@@ -256,7 +256,7 @@ bool SoundSingleton::load_sounds() {
 	}
 
 	for(SoundEffect const& sound_inst : sound_manager.get_sound_effects()){
-		std::string folder_path = StringUtils::append_string_views(sound_directory, "/", sound_inst.get_file());
+		std::string folder_path = StringUtils::append_string_views(sound_directory, "/", sound_inst.get_file().string());
 		fs::path full_path = game_singleton->get_dataloader().lookup_file(folder_path, false);
 
 		//UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
