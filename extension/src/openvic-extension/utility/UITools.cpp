@@ -2,6 +2,9 @@
 
 #include <cctype>
 
+#include <godot_cpp/classes/audio_server.hpp>
+#include <godot_cpp/classes/audio_stream_player.hpp>
+#include <godot_cpp/classes/audio_stream_wav.hpp>
 #include <godot_cpp/classes/base_button.hpp>
 #include <godot_cpp/classes/color_rect.hpp>
 #include <godot_cpp/classes/global_constants.hpp>
@@ -11,11 +14,15 @@
 #include <godot_cpp/classes/line_edit.hpp>
 #include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/panel.hpp>
+#include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/classes/shortcut.hpp>
 #include <godot_cpp/classes/style_box_empty.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/classes/theme.hpp>
+#include <godot_cpp/classes/window.hpp>
 #include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/callable_method_pointer.hpp>
+#include <godot_cpp/variant/packed_byte_array.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
@@ -33,7 +40,10 @@
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/SoundSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+
+#include "openvic-simulation/misc/SoundEffect.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -360,9 +370,10 @@ static bool generate_icon(generate_gui_args_t&& args) {
 static bool generate_button(generate_gui_args_t&& args) {
 	GUI::Button const& button = static_cast<GUI::Button const&>(args.element);
 
-	// TODO - clicksound, rotation (?)
+	// TODO - rotation (?)
 	const String button_name = Utilities::std_to_godot_string(button.get_name());
 	const String shortcut_key_name = Utilities::std_to_godot_string(button.get_shortcut());
+	SoundEffect const* clicksound = button.get_clicksound();
 
 	ERR_FAIL_NULL_V_MSG(button.get_sprite(), false, vformat("Null sprite for GUI button %s", button_name));
 
@@ -416,6 +427,37 @@ static bool generate_button(generate_gui_args_t&& args) {
 
 	gui_button->set_shortcut_feedback(false);
 	gui_button->set_shortcut_in_tooltip(false);
+
+	if (clicksound && !clicksound->get_file().empty()) {
+		static const StringName sfx_bus = "SFX_BUS";
+		static auto gui_pressed = [](GUIButton* button, String const& file, float volume) {
+			static auto on_audio_finished = [](AudioStreamPlayer* stream) {
+				stream->queue_free();
+			};
+			Ref<AudioStreamWAV> audio_stream = SoundSingleton::get_singleton()->get_sound(file);
+
+			if (audio_stream.is_valid()) {
+				AudioStreamPlayer* asp = memnew(AudioStreamPlayer);
+				asp->connect("finished", callable_mp_static(+on_audio_finished).bind(asp));
+				if (AudioServer::get_singleton()->get_bus_index(sfx_bus) != -1) {
+					asp->set_bus(sfx_bus);
+				}
+				asp->set_stream(audio_stream);
+				asp->set_volume_db(volume);
+				asp->set_autoplay(true);
+				button->get_tree()->get_root()->add_child(asp, false, Node::INTERNAL_MODE_BACK);
+			}
+		};
+
+		gui_button->connect(
+			"pressed",
+			callable_mp_static(+gui_pressed)
+				.bind(
+					gui_button, Utilities::std_to_godot_string(clicksound->get_file().string()),
+					clicksound->get_volume().to_float()
+				)
+		);
+	}
 
 	args.result = gui_button;
 	return ret;

@@ -22,6 +22,10 @@ void StyleBoxWithSound::_bind_methods() {
 	OV_BIND_METHOD(StyleBoxWithSound::set_audio_bus, { "bus" });
 	OV_BIND_METHOD(StyleBoxWithSound::get_audio_stream);
 	OV_BIND_METHOD(StyleBoxWithSound::set_audio_stream, { "stream" });
+	OV_BIND_METHOD(StyleBoxWithSound::get_audio_volume);
+	OV_BIND_METHOD(StyleBoxWithSound::set_audio_volume, { "volume" });
+	OV_BIND_METHOD(StyleBoxWithSound::is_audio_disabled);
+	OV_BIND_METHOD(StyleBoxWithSound::set_audio_disabled, { "disabled" });
 
 	ADD_PROPERTY(
 		PropertyInfo(Variant::OBJECT, "style_box", PROPERTY_HINT_RESOURCE_TYPE, "StyleBox"), "set_style_box", "get_style_box"
@@ -31,6 +35,8 @@ void StyleBoxWithSound::_bind_methods() {
 		PropertyInfo(Variant::OBJECT, "audio_stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"), //
 		"set_audio_stream", "get_audio_stream"
 	);
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "audio_volume"), "set_audio_volume", "get_audio_volume");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "audio_disabled"), "set_audio_disabled", "is_audio_disabled");
 }
 
 StyleBoxWithSound::StyleBoxWithSound() {
@@ -50,7 +56,7 @@ StringName StyleBoxWithSound::get_audio_bus() const {
 	return audio_bus;
 }
 
-void StyleBoxWithSound::set_audio_bus(String const& bus) {
+void StyleBoxWithSound::set_audio_bus(StringName const& bus) {
 	audio_bus = bus;
 	emit_changed();
 }
@@ -61,6 +67,16 @@ Ref<AudioStream> StyleBoxWithSound::get_audio_stream() const {
 
 void StyleBoxWithSound::set_audio_stream(Ref<AudioStream> const& stream) {
 	audio_stream = stream;
+	emit_changed();
+}
+
+void StyleBoxWithSound::set_audio_volume(float volume) {
+	audio_volume = volume;
+	emit_changed();
+}
+
+void StyleBoxWithSound::set_audio_disabled(bool disable) {
+	audio_disabled = disable;
 	emit_changed();
 }
 
@@ -76,19 +92,22 @@ void StyleBoxWithSound::_on_audio_finished(AudioStreamPlayer* player) {
 }
 
 void StyleBoxWithSound::_draw(RID const& canvas_item, Rect2 const& rect) const {
-	SceneTree* tree = Object::cast_to<SceneTree>(Engine::get_singleton()->get_main_loop());
-	if (tree != nullptr) {
-		if (audio_stream.is_valid()) {
-			AudioStreamPlayer* asp = memnew(AudioStreamPlayer);
-			asp->connect("finished", callable_mp_static(&StyleBoxWithSound::_on_audio_finished).bind(asp));
-			asp->set_bus(audio_bus);
-			asp->set_stream(audio_stream);
-			asp->set_autoplay(true);
-			tree->get_root()->add_child(asp, false, Node::INTERNAL_MODE_BACK);
+	if (!audio_disabled) {
+		SceneTree* tree = Object::cast_to<SceneTree>(Engine::get_singleton()->get_main_loop());
+		if (tree != nullptr) {
+			if (audio_stream.is_valid()) {
+				AudioStreamPlayer* asp = memnew(AudioStreamPlayer);
+				asp->connect("finished", callable_mp_static(&StyleBoxWithSound::_on_audio_finished).bind(asp));
+				asp->set_bus(audio_bus);
+				asp->set_stream(audio_stream);
+				asp->set_volume_db(audio_volume);
+				asp->set_autoplay(true);
+				tree->get_root()->add_child(asp, false, Node::INTERNAL_MODE_BACK);
+			}
 		}
 	}
 	if (style_box.is_valid()) {
-		style_box->_draw(canvas_item, rect);
+		style_box->draw(canvas_item, rect);
 	}
 }
 
