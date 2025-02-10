@@ -16,6 +16,8 @@ namespace OpenVic {
 		godot::Ref<godot::StyleBox> style_box;
 		godot::StringName audio_bus;
 		godot::Ref<godot::AudioStream> audio_stream;
+		float PROPERTY(audio_volume, 0);
+		bool PROPERTY_CUSTOM_PREFIX(audio_disabled, is, false);
 
 		static void _on_audio_finished(godot::AudioStreamPlayer* player);
 
@@ -30,9 +32,11 @@ namespace OpenVic {
 		godot::Ref<godot::StyleBox> get_style_box() const;
 		void set_style_box(godot::Ref<godot::StyleBox> const& style);
 		godot::StringName get_audio_bus() const;
-		void set_audio_bus(godot::String const& bus);
+		void set_audio_bus(godot::StringName const& bus);
 		godot::Ref<godot::AudioStream> get_audio_stream() const;
 		void set_audio_stream(godot::Ref<godot::AudioStream> const& stream);
+		void set_audio_volume(float volume);
+		void set_audio_disabled(bool disable);
 
 		virtual godot::Rect2 _get_draw_rect(godot::Rect2 const& rect) const override;
 		virtual void _draw(godot::RID const& canvas_item, godot::Rect2 const& rect) const override;
