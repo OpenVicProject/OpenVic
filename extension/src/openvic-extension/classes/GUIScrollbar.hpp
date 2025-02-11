@@ -36,11 +36,12 @@ namespace OpenVic {
 		godot::Orientation PROPERTY(orientation, godot::HORIZONTAL);
 		real_t PROPERTY(length_override, 0.0);
 
+		fixed_point_t PROPERTY(step_size);
 		int32_t PROPERTY(value, 0);
 		int32_t PROPERTY(min_value, 0);
 		int32_t PROPERTY(max_value, 0);
 
-		bool PROPERTY_CUSTOM_PREFIX(range_limited, is);
+		bool PROPERTY_CUSTOM_PREFIX(range_limited, is, false);
 		int32_t PROPERTY(range_limit_min, 0);
 		int32_t PROPERTY(range_limit_max, 0);
 
@@ -102,6 +103,9 @@ namespace OpenVic {
 
 		float get_value_as_ratio() const;
 		void set_value_as_ratio(float new_ratio, bool signal = true);
+
+		fixed_point_t get_value_scaled_fp() const;
+		float get_value_scaled() const;
 
 		godot::Error set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true);
 		godot::Error set_limits(int32_t new_min_value, int32_t new_max_value, bool signal = true);

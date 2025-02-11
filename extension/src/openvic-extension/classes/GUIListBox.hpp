@@ -57,5 +57,7 @@ namespace OpenVic {
 		godot::String get_gui_listbox_name() const;
 
 		GUIScrollbar* get_scrollbar() const;
+
+		godot::Error sort_children(godot::Callable const& callable);
 	};
 }

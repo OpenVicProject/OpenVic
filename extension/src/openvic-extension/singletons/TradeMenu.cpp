@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -316,4 +317,20 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ret[common_market_key] = std::move(common_market);
 
 	return ret;
+}
+
+// TODO - improve accuracy of this calculation (at least so an input of 2000 gives a result of 2000.00)
+
+static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
+	// ln(2001) * 2^16 = 498165.503399
+	constexpr fixed_point_t C = fixed_point_t::parse_raw(498168); // This gives 2000.01 for value = 2000
+	constexpr int32_t D = 2000;
+
+	return fixed_point_t::exp(value * C / D) - fixed_point_t::_1();
+}
+
+float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
+	ERR_FAIL_NULL_V(slider, 0.0f);
+
+	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp());
 }

@@ -331,7 +331,6 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_province_info_from_index, { "index" });
 	OV_BIND_METHOD(MenuSingleton::get_province_building_count);
 	OV_BIND_METHOD(MenuSingleton::get_province_building_identifier, { "building_index" });
-	OV_BIND_METHOD(MenuSingleton::expand_selected_province_building, { "building_index" });
 	OV_BIND_METHOD(MenuSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_rgo_owner_pop_icon_index);
@@ -340,15 +339,15 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_topbar_info);
 
 	/* TIME/SPEED CONTROL PANEL */
-	OV_BIND_METHOD(MenuSingleton::set_paused, { "paused" });
-	OV_BIND_METHOD(MenuSingleton::toggle_paused);
 	OV_BIND_METHOD(MenuSingleton::is_paused);
-	OV_BIND_METHOD(MenuSingleton::increase_speed);
-	OV_BIND_METHOD(MenuSingleton::decrease_speed);
 	OV_BIND_METHOD(MenuSingleton::get_speed);
 	OV_BIND_METHOD(MenuSingleton::can_increase_speed);
 	OV_BIND_METHOD(MenuSingleton::can_decrease_speed);
 	OV_BIND_METHOD(MenuSingleton::get_longform_date);
+
+	/* BUDGET MENU */
+	OV_BIND_METHOD(MenuSingleton::get_budget_menu_setup_info);
+	OV_BIND_METHOD(MenuSingleton::get_budget_menu_info);
 
 	/* POPULATION MENU */
 	OV_BIND_METHOD(MenuSingleton::get_population_menu_province_list_row_count);
@@ -407,6 +406,7 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_good_categories_info);
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index" });
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_tables_info);
+	OV_BIND_SMETHOD(calculate_trade_menu_stockpile_cutoff_amount, { "slider" });
 
 	BIND_ENUM_CONSTANT(TRADE_SETTING_NONE);
 	BIND_ENUM_CONSTANT(TRADE_SETTING_AUTOMATED);
@@ -1064,17 +1064,6 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 	return Utilities::std_to_godot_string(province_building_types[building_index]->get_identifier());
 }
 
-Error MenuSingleton::expand_selected_province_building(int32_t building_index) {
-	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
-	ERR_FAIL_NULL_V(instance_manager, FAILED);
-
-	ERR_FAIL_COND_V_MSG(
-		!instance_manager->expand_province_building(PlayerSingleton::get_singleton()->get_selected_province(), building_index),
-		FAILED, vformat("Failed to expand the currently selected province's building index %d", building_index)
-	);
-	return OK;
-}
-
 int32_t MenuSingleton::get_slave_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
@@ -1461,24 +1450,6 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 /* TIME/SPEED CONTROL PANEL */
 
-void MenuSingleton::set_paused(bool paused) {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().set_paused(paused);
-}
-
-void MenuSingleton::toggle_paused() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().toggle_paused();
-}
-
 bool MenuSingleton::is_paused() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, true);
@@ -1486,24 +1457,6 @@ bool MenuSingleton::is_paused() const {
 	ERR_FAIL_NULL_V(instance_manager, true);
 
 	return instance_manager->get_simulation_clock().is_paused();
-}
-
-void MenuSingleton::increase_speed() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().increase_simulation_speed();
-}
-
-void MenuSingleton::decrease_speed() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().decrease_simulation_speed();
 }
 
 int32_t MenuSingleton::get_speed() const {
