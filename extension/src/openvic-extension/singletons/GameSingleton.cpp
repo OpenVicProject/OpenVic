@@ -163,15 +163,12 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
 		province.set_crime(
 			get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-				(province.get_province_definition().get_index() - 1)
-				% get_definition_manager().get_crime_manager().get_crime_modifier_count()
+				(province.get_index() - 1) % get_definition_manager().get_crime_manager().get_crime_modifier_count()
 			)
 		);
 	}
 
-	MenuSingleton* menu_singleton = MenuSingleton::get_singleton();
-	ERR_FAIL_NULL_V(menu_singleton, FAILED);
-	ret &= menu_singleton->_population_menu_update_provinces() == OK;
+	ret &= MenuSingleton::get_singleton()->_population_menu_update_provinces() == OK;
 
 	// TODO - replace with actual starting country
 	CountryInstance* starting_country =

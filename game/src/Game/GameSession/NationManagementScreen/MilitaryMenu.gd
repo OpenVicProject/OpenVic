@@ -582,6 +582,7 @@ func _update_info() -> void:
 					break
 				_leader_listbox.add_child(unit_entry)
 
+			const military_info_leader_id_key : StringName = &"leader_id"
 			const military_info_leader_name_key : StringName = &"leader_name"
 			const military_info_leader_picture_key : StringName = &"leader_picture"
 			const military_info_leader_prestige_key : StringName = &"leader_prestige"
@@ -596,6 +597,13 @@ func _update_info() -> void:
 			for index : int in mini(leader_entries.size(), _leader_listbox.get_child_count()):
 				var entry_menu : Panel = GUINode.get_panel_from_node(_leader_listbox.get_child(index))
 				var leader_dict : Dictionary = leader_entries[index]
+
+				var leader_id : int = leader_dict.get(military_info_leader_id_key, 0)
+				if leader_id == 0:
+					push_error("Leader ID is 0 or missing in leader dictionary for entry index ", index, ", skipping!")
+					continue
+				else:
+					entry_menu.set_meta(military_info_leader_id_key, leader_id)
 
 				var prestige_progress_bar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(entry_menu.get_node(^"./leader_prestige_bar"))
 				if prestige_progress_bar:

@@ -14,28 +14,28 @@ using namespace godot;
 
 /* MILITARY MENU */
 
-static Ref<Texture2D> _get_leader_picture(LeaderBase const& leader) {
-	AssetManager* asset_manager = AssetManager::get_singleton();
-	ERR_FAIL_NULL_V(asset_manager, {});
+static Ref<Texture2D> _get_leader_picture(LeaderInstance const& leader) {
+	AssetManager& asset_manager = *AssetManager::get_singleton();
 
 	if (!leader.get_picture().empty()) {
-		const Ref<ImageTexture> texture = asset_manager->get_leader_texture_std(leader.get_picture());
+		const Ref<ImageTexture> texture = asset_manager.get_leader_texture_std(leader.get_picture());
 
 		if (texture.is_valid()) {
 			return texture;
 		}
 	}
 
-	return asset_manager->get_missing_leader_texture();
+	return asset_manager.get_missing_leader_texture();
 }
 
-Dictionary MenuSingleton::make_leader_dict(LeaderBase const& leader) {
+Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 	const decltype(cached_leader_dicts)::const_iterator it = cached_leader_dicts.find(&leader);
 
 	if (it != cached_leader_dicts.end()) {
 		return it->second;
 	}
 
+	static const StringName military_info_leader_id_key = "leader_id";
 	static const StringName military_info_leader_name_key = "leader_name";
 	static const StringName military_info_leader_picture_key = "leader_picture";
 	static const StringName military_info_leader_prestige_key = "leader_prestige";
@@ -55,39 +55,36 @@ Dictionary MenuSingleton::make_leader_dict(LeaderBase const& leader) {
 	leader_dict[military_info_leader_picture_key] = _get_leader_picture(leader);
 
 	{
-		// Branched (can be used, assignment, location, title)
-		static const auto branched_section = []<UnitType::branch_t Branch>(
-			LeaderBranched<Branch> const& leader, Dictionary& leader_dict
-		) -> void {
-			leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
+		// Generic data
+		leader_dict[military_info_leader_id_key] = leader.get_unique_id();
 
-			UnitInstanceGroup<Branch> const* group = leader.get_unit_instance_group();
-			if (group != nullptr) {
-				leader_dict[military_info_leader_assignment_key] = Utilities::std_to_godot_string(group->get_name());
+		leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
 
-				ProvinceInstance const* location = group->get_position();
-				if (location != nullptr) {
-					leader_dict[military_info_leader_location_key] =
-						Utilities::std_to_godot_string(location->get_identifier());
-				}
+		UnitInstanceGroup const* group = leader.get_unit_instance_group();
+		if (group != nullptr) {
+			leader_dict[military_info_leader_assignment_key] = Utilities::std_to_godot_string(group->get_name());
+
+			ProvinceInstance const* location = group->get_position();
+			if (location != nullptr) {
+				leader_dict[military_info_leader_location_key] =
+					Utilities::std_to_godot_string(location->get_identifier());
 			}
-		};
+		}
+	}
 
+	{
+		// Title
 		using enum UnitType::branch_t;
 
 		switch (leader.get_branch()) {
 		case LAND: {
 			static const StringName general_localisation_key = "MILITARY_GENERAL_TOOLTIP";
 			tooltip = tr(general_localisation_key) + " ";
-
-			branched_section(static_cast<General const&>(leader), leader_dict);
 		} break;
 
 		case NAVAL: {
 			static const StringName admiral_localisation_key = "MILITARY_ADMIRAL_TOOLTIP";
 			tooltip = tr(admiral_localisation_key) + " ";
-
-			branched_section(static_cast<Admiral const&>(leader), leader_dict);
 		} break;
 
 		default:
@@ -96,9 +93,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderBase const& leader) {
 				Utilities::std_to_godot_string(leader.get_name()), "\""
 			);
 		}
-	}
 
-	{
 		// Name
 		String leader_name = Utilities::std_to_godot_string(leader.get_name());
 
@@ -210,7 +205,7 @@ static inline int32_t _scale_land_unit_strength(fixed_point_t strength) {
 }
 
 template<UnitType::branch_t Branch>
-Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroup<Branch> const& unit_group) {
+Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group) {
 	static const StringName military_info_unit_group_leader_picture_key = "unit_group_leader_picture";
 	static const StringName military_info_unit_group_leader_tooltip_key = "unit_group_leader_tooltip";
 	static const StringName military_info_unit_group_name_key           = "unit_group_name";
@@ -266,12 +261,11 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroup<Branch> const& 
 	}
 
 	if constexpr (Branch == LAND) {
-		ArmyInstance const& army = static_cast<ArmyInstance const&>(unit_group);
+		unit_group_dict[military_info_unit_group_men_count_key] = _scale_land_unit_strength(unit_group.get_total_strength());
+		unit_group_dict[military_info_unit_group_max_men_count_key] =
+			_scale_land_unit_strength(unit_group.get_total_max_strength());
 
-		unit_group_dict[military_info_unit_group_men_count_key] = _scale_land_unit_strength(army.get_total_strength());
-		unit_group_dict[military_info_unit_group_max_men_count_key] = _scale_land_unit_strength(army.get_total_max_strength());
-
-		const ArmyInstance::dig_in_level_t dig_in_level = army.get_dig_in_level();
+		const ArmyInstance::dig_in_level_t dig_in_level = unit_group.get_dig_in_level();
 
 		if (dig_in_level > 0) {
 			static const StringName dig_in_localisation_key = "MILITARY_DIGIN_TOOLTIP";
@@ -290,6 +284,7 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroup<Branch> const& 
 	return unit_group_dict;
 }
 
+// Only ever called if we know player country isn't null
 Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	static const StringName military_info_unit_progress_key = "unit_progress";
 	static const StringName military_info_unit_icon_key = "unit_icon";
@@ -329,7 +324,9 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	in_progress_unit_dict[military_info_unit_progress_key] = progress.to_float();
 	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->get_icon();
 	in_progress_unit_dict[military_info_unit_name_key] = Utilities::std_to_godot_string(unit_type->get_identifier());
-	in_progress_unit_dict[military_info_unit_location_key] = Utilities::std_to_godot_string(location->get_identifier());
+	if (location != nullptr) {
+		in_progress_unit_dict[military_info_unit_location_key] = Utilities::std_to_godot_string(location->get_identifier());
+	}
 	in_progress_unit_dict[military_info_unit_eta_key] = Utilities::date_to_string(eta);
 
 	String tooltip;
@@ -350,74 +347,52 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	return in_progress_unit_dict;
 }
 
-using leader_sort_func_t = bool (*)(LeaderBase const*, LeaderBase const*);
+using leader_sort_func_t = bool (*)(LeaderInstance const*, LeaderInstance const*);
 
 static leader_sort_func_t _get_leader_sort_func(MenuSingleton::LeaderSortKey leader_sort_key) {
-	static const auto get_assignment = [](LeaderBase const* leader) -> std::string_view {
-		static const auto get_assignment_template =
-			[]<UnitType::branch_t Branch>(LeaderBranched<Branch> const* leader) -> std::string_view {
-				UnitInstanceGroup<Branch> const* group = leader->get_unit_instance_group();
-				return group != nullptr ? group->get_name() : std::string_view {};
-			};
-
-		using enum UnitType::branch_t;
-		switch (leader->get_branch()) {
-		case LAND:
-			return get_assignment_template(static_cast<General const*>(leader));
-		case NAVAL:
-			return get_assignment_template(static_cast<Admiral const*>(leader));
-		default:
-			return {};
-		}
-	};
-
 	using enum MenuSingleton::LeaderSortKey;
 
 	switch (leader_sort_key) {
 	case LEADER_SORT_PRESTIGE:
-		return [](LeaderBase const* a, LeaderBase const* b) -> bool {
+		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
 			return a->get_prestige() < b->get_prestige();
 		};
 	case LEADER_SORT_TYPE:
-		return [](LeaderBase const* a, LeaderBase const* b) -> bool {
+		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
 			return a->get_branch() < b->get_branch();
 		};
 	case LEADER_SORT_NAME:
-		return [](LeaderBase const* a, LeaderBase const* b) -> bool {
+		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
 			return a->get_name() < b->get_name();
 		};
 	case LEADER_SORT_ASSIGNMENT:
-		return [](LeaderBase const* a, LeaderBase const* b) -> bool {
-			return get_assignment(a) < get_assignment(b);
+		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
+			return (a->get_unit_instance_group() != nullptr ? a->get_unit_instance_group()->get_name() : std::string_view {})
+				< (b->get_unit_instance_group() != nullptr ? b->get_unit_instance_group()->get_name() : std::string_view {});
 		};
 	default:
 		UtilityFunctions::push_error("Invalid miltiary menu leader sort key: ", leader_sort_key);
-		return [](LeaderBase const* a, LeaderBase const* b) -> bool { return false; };
+		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool { return false; };
 	}
 }
 
-template<UnitType::branch_t Branch>
-using unit_group_sort_func_t = bool (*)(UnitInstanceGroup<Branch> const*, UnitInstanceGroup<Branch> const*);
+using unit_group_sort_func_t = bool (*)(UnitInstanceGroup const*, UnitInstanceGroup const*);
 
-template<UnitType::branch_t Branch>
-static unit_group_sort_func_t<Branch> _get_unit_group_sort_func(MenuSingleton::UnitGroupSortKey unit_group_sort_key) {
+static unit_group_sort_func_t _get_unit_group_sort_func(MenuSingleton::UnitGroupSortKey unit_group_sort_key) {
 	using enum MenuSingleton::UnitGroupSortKey;
 
 	switch (unit_group_sort_key) {
 	case UNIT_GROUP_SORT_NAME:
-		return [](UnitInstanceGroup<Branch> const* a, UnitInstanceGroup<Branch> const* b) -> bool {
+		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
 			return a->get_name() < b->get_name();
 		};
 	case UNIT_GROUP_SORT_STRENGTH:
-		return [](UnitInstanceGroup<Branch> const* a, UnitInstanceGroup<Branch> const* b) -> bool {
+		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
 			return a->get_unit_count() < b->get_unit_count();
 		};
 	default:
-		UtilityFunctions::push_error(
-			"Invalid miltiary menu ", Utilities::std_to_godot_string(UnitType::get_branched_unit_group_name(Branch)),
-			" sort key: ", unit_group_sort_key
-		);
-		return [](UnitInstanceGroup<Branch> const* a, UnitInstanceGroup<Branch> const* b) -> bool { return false; };
+		UtilityFunctions::push_error("Invalid miltiary menu unit group sort key: ", unit_group_sort_key);
+		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool { return false; };
 	}
 }
 
@@ -657,13 +632,13 @@ Dictionary MenuSingleton::get_military_menu_info(
 	ret[military_info_auto_assign_leaders_key] = country->get_auto_assign_leaders();
 
 	if (country->has_leaders()) {
-		std::vector<LeaderBase const*> sorted_leaders;
+		std::vector<LeaderInstance const*> sorted_leaders;
 		sorted_leaders.reserve(country->get_leader_count());
-		for (General const& general : country->get_generals()) {
-			sorted_leaders.push_back(&general);
+		for (LeaderInstance const* general : country->get_generals()) {
+			sorted_leaders.push_back(general);
 		}
-		for (Admiral const& admiral : country->get_admirals()) {
-			sorted_leaders.push_back(&admiral);
+		for (LeaderInstance const* admiral : country->get_admirals()) {
+			sorted_leaders.push_back(admiral);
 		}
 
 		if (leader_sort_key != LEADER_SORT_NONE) {
@@ -672,7 +647,7 @@ Dictionary MenuSingleton::get_military_menu_info(
 			if (sort_leaders_descending) {
 				std::sort(
 					sorted_leaders.begin(), sorted_leaders.end(),
-					[leader_sort_func](LeaderBase const* a, LeaderBase const* b) -> bool {
+					[leader_sort_func](LeaderInstance const* a, LeaderInstance const* b) -> bool {
 						return leader_sort_func(b, a);
 					}
 				);
@@ -707,8 +682,6 @@ Dictionary MenuSingleton::get_military_menu_info(
 
 	ret[military_info_is_disarmed_key] = country->is_disarmed();
 
-	using enum UnitType::branch_t;
-
 	if (country->has_armies()) {
 		std::vector<ArmyInstance const*> sorted_armies;
 		sorted_armies.reserve(country->get_army_count());
@@ -717,12 +690,12 @@ Dictionary MenuSingleton::get_military_menu_info(
 		}
 
 		if (army_sort_key != UNIT_GROUP_SORT_NONE) {
-			const unit_group_sort_func_t<LAND> army_sort_func = _get_unit_group_sort_func<LAND>(army_sort_key);
+			const unit_group_sort_func_t army_sort_func = _get_unit_group_sort_func(army_sort_key);
 
 			if (sort_armies_descending) {
 				std::sort(
 					sorted_armies.begin(), sorted_armies.end(),
-					[army_sort_func](UnitInstanceGroup<LAND> const* a, UnitInstanceGroup<LAND> const* b) -> bool {
+					[army_sort_func](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
 						return army_sort_func(b, a);
 					}
 				);
@@ -764,12 +737,12 @@ Dictionary MenuSingleton::get_military_menu_info(
 		}
 
 		if (navy_sort_key != UNIT_GROUP_SORT_NONE) {
-			const unit_group_sort_func_t<NAVAL> navy_sort_func = _get_unit_group_sort_func<NAVAL>(navy_sort_key);
+			const unit_group_sort_func_t navy_sort_func = _get_unit_group_sort_func(navy_sort_key);
 
 			if (sort_navies_descending) {
 				std::sort(
 					sorted_navies.begin(), sorted_navies.end(),
-					[navy_sort_func](UnitInstanceGroup<NAVAL> const* a, UnitInstanceGroup<NAVAL> const* b) -> bool {
+					[navy_sort_func](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
 						return navy_sort_func(b, a);
 					}
 				);
