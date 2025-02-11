@@ -37,6 +37,15 @@ void PlayerSingleton::_bind_methods() {
 	OV_BIND_METHOD(PlayerSingleton::expand_selected_province_building, { "building_index" });
 
 	// Budget
+	OV_BIND_METHOD(PlayerSingleton::set_strata_tax_slider_value, { "strata", "tax_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_land_spending_slider_value, { "land_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_naval_spending_slider_value, { "naval_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_construction_spending_slider_value, { "construction_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_education_spending_slider_value, { "education_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_administration_spending_slider_value, { "administration_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_social_spending_slider_value, { "social_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_military_spending_slider_value, { "military_spending_slider" });
+	OV_BIND_METHOD(PlayerSingleton::set_tariff_rate_slider_value, { "tariff_rate_slider" });
 
 	// Technology
 
@@ -211,6 +220,131 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 }
 
 // Budget
+void PlayerSingleton::set_strata_tax_slider_value(int32_t strata, GUIScrollbar const* tax_slider) {
+	ERR_FAIL_NULL(tax_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_STRATA_TAX, std::tuple<uint64_t, uint64_t, fixed_point_t> {
+			player_country->get_index(), strata, tax_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_land_spending_slider_value(GUIScrollbar const* land_spending_slider) {
+	ERR_FAIL_NULL(land_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_LAND_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), land_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_naval_spending_slider_value(GUIScrollbar const* naval_spending_slider) {
+	ERR_FAIL_NULL(naval_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_NAVAL_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), naval_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_construction_spending_slider_value(GUIScrollbar const* construction_spending_slider) {
+	ERR_FAIL_NULL(construction_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_CONSTRUCTION_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), construction_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_education_spending_slider_value(GUIScrollbar const* education_spending_slider) {
+	ERR_FAIL_NULL(education_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_EDUCATION_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), education_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_administration_spending_slider_value(GUIScrollbar const* administration_spending_slider) {
+	ERR_FAIL_NULL(administration_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_ADMINISTRATION_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), administration_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_social_spending_slider_value(GUIScrollbar const* social_spending_slider) {
+	ERR_FAIL_NULL(social_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_SOCIAL_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), social_spending_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_military_spending_slider_value(GUIScrollbar const* military_spending_slider) {
+	ERR_FAIL_NULL(military_spending_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_MILITARY_SPENDING, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), military_spending_slider->get_value_scaled_fp()  / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
+
+void PlayerSingleton::set_tariff_rate_slider_value(GUIScrollbar const* tariff_rate_slider) {
+	ERR_FAIL_NULL(tariff_rate_slider);
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_TARIFF_RATE, std::pair<uint64_t, fixed_point_t> {
+			player_country->get_index(), tariff_rate_slider->get_value_scaled_fp() / MenuSingleton::SLIDER_SCALE
+		}
+	);
+}
 
 // Technology
 

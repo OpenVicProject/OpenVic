@@ -480,11 +480,6 @@ func _update_pop_filters() -> void:
 		# TODO - size and promotion/demotion change tooltip
 
 func _update_distributions():
-	const slice_identifier_key : StringName = &"identifier"
-	const slice_tooltip_key : StringName = &"tooltip"
-	const slice_colour_key : StringName = &"colour"
-	const slice_weight_key : StringName = &"weight"
-
 	var distribution_info_list : Array[Array] = MenuSingleton.get_population_menu_distribution_info()
 
 	for distribution_index : int in distribution_info_list.size():
@@ -494,7 +489,10 @@ func _update_distributions():
 			_distribution_charts[distribution_index].set_slices_array(distribution_info)
 
 		if _distribution_lists[distribution_index]:
-			distribution_info.sort_custom(func(a : Dictionary, b : Dictionary) -> bool: return a[slice_weight_key] > b[slice_weight_key])
+			distribution_info.sort_custom(
+				func(a : Dictionary, b : Dictionary) -> bool:
+					return a[GFXPieChartTexture.slice_weight_key()] > b[GFXPieChartTexture.slice_weight_key()]
+			)
 
 			var list : GUIListBox = _distribution_lists[distribution_index]
 
@@ -515,16 +513,18 @@ func _update_distributions():
 
 				var colour_icon : GUIIcon = GUINode.get_gui_icon_from_node(child.get_node(^"./legend_color"))
 				if colour_icon:
-					colour_icon.set_modulate(distribution_row[slice_colour_key])
-					colour_icon.set_tooltip_string(distribution_row[slice_tooltip_key])
+					colour_icon.set_modulate(distribution_row[GFXPieChartTexture.slice_colour_key()])
+					colour_icon.set_tooltip_string(distribution_row[GFXPieChartTexture.slice_tooltip_key()])
 
 				var identifier_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
-					identifier_label.set_text(distribution_row[slice_identifier_key])
+					identifier_label.set_text(distribution_row[GFXPieChartTexture.slice_identifier_key()])
 
 				var weight_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_value"))
 				if weight_label:
-					weight_label.set_text("%s%%" % GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 1))
+					weight_label.set_text(
+						"%s%%" % GUINode.float_to_string_dp(distribution_row[GFXPieChartTexture.slice_weight_key()] * 100.0, 1)
+					)
 
 func _update_pop_list() -> void:
 	if _pop_list_scrollbar:

@@ -29,16 +29,16 @@ namespace OpenVic {
 			float weight;
 		};
 
+		static godot::StringName const& slice_identifier_key();
+		static godot::StringName const& slice_tooltip_key();
+		static godot::StringName const& slice_colour_key();
+		static godot::StringName const& slice_weight_key();
+
 	private:
 		GFX::PieChart const* PROPERTY(gfx_pie_chart, nullptr);
 		std::vector<slice_t> slices;
 		float PROPERTY(total_weight, 0.0f);
 		godot::Ref<godot::Image> pie_chart_image;
-
-		static godot::StringName const& _slice_identifier_key();
-		static godot::StringName const& _slice_tooltip_key();
-		static godot::StringName const& _slice_colour_key();
-		static godot::StringName const& _slice_weight_key();
 
 		godot::Error _generate_pie_chart_image();
 
@@ -98,10 +98,10 @@ namespace OpenVic {
 			for (size_t index = 0; index < array.size(); ++index) {
 				auto const& [key, value] = sorted_distribution[index];
 				Dictionary sub_dict;
-				sub_dict[_slice_identifier_key()] = Utilities::std_to_godot_string(key->get_identifier());
-				sub_dict[_slice_tooltip_key()] = make_tooltip(key, value, total_weight);
-				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
-				sub_dict[_slice_weight_key()] = value;
+				sub_dict[slice_identifier_key()] = Utilities::std_to_godot_string(key->get_identifier());
+				sub_dict[slice_tooltip_key()] = make_tooltip(key, value, total_weight);
+				sub_dict[slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
+				sub_dict[slice_weight_key()] = value;
 				array[index] = std::move(sub_dict);
 			}
 			return array;

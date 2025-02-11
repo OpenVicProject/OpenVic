@@ -31,6 +31,7 @@
 		<method name="float_to_string_suffixed" qualifiers="static">
 			<return type="String" />
 			<param index="0" name="val" type="float" />
+			<param index="1" name="post_number_string" type="String" default="&quot;&quot;" />
 			<description>
 			</description>
 		</method>
@@ -336,6 +337,7 @@
 		<method name="int_to_string_suffixed" qualifiers="static">
 			<return type="String" />
 			<param index="0" name="val" type="int" />
+			<param index="1" name="post_number_string" type="String" default="&quot;&quot;" />
 			<description>
 			</description>
 		</method>

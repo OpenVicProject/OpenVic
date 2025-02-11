@@ -48,6 +48,15 @@ namespace OpenVic {
 		void expand_selected_province_building(int32_t building_index) const;
 
 		// Budget
+		void set_strata_tax_slider_value(int32_t strata, GUIScrollbar const* tax_slider);
+		void set_land_spending_slider_value(GUIScrollbar const* land_spending_slider);
+		void set_naval_spending_slider_value(GUIScrollbar const* naval_spending_slider);
+		void set_construction_spending_slider_value(GUIScrollbar const* construction_spending_slider);
+		void set_education_spending_slider_value(GUIScrollbar const* education_spending_slider);
+		void set_administration_spending_slider_value(GUIScrollbar const* administration_spending_slider);
+		void set_social_spending_slider_value(GUIScrollbar const* social_spending_slider);
+		void set_military_spending_slider_value(GUIScrollbar const* military_spending_slider);
+		void set_tariff_rate_slider_value(GUIScrollbar const* tariff_rate_slider);
 
 		// Technology
 

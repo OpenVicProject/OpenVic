@@ -9,19 +9,19 @@ using namespace godot;
 using namespace OpenVic;
 using namespace OpenVic::Utilities::literals;
 
-StringName const& GFXPieChartTexture::_slice_identifier_key() {
+StringName const& GFXPieChartTexture::slice_identifier_key() {
 	static const StringName slice_identifier_key = "identifier";
 	return slice_identifier_key;
 }
-StringName const& GFXPieChartTexture::_slice_tooltip_key() {
+StringName const& GFXPieChartTexture::slice_tooltip_key() {
 	static const StringName slice_tooltip_key = "tooltip";
 	return slice_tooltip_key;
 }
-StringName const& GFXPieChartTexture::_slice_colour_key() {
+StringName const& GFXPieChartTexture::slice_colour_key() {
 	static const StringName slice_colour_key = "colour";
 	return slice_colour_key;
 }
-StringName const& GFXPieChartTexture::_slice_weight_key() {
+StringName const& GFXPieChartTexture::slice_weight_key() {
 	static const StringName slice_weight_key = "weight";
 	return slice_weight_key;
 }
@@ -117,13 +117,13 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_tooltip_key()) ||
-				!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
+			!slice_dict.has(slice_identifier_key()) || !slice_dict.has(slice_tooltip_key()) ||
+				!slice_dict.has(slice_colour_key()) || !slice_dict.has(slice_weight_key()),
 			vformat("Invalid slice keys at index %d", i)
 		);
 		const slice_t slice {
-			slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()], slice_dict[_slice_colour_key()],
-			slice_dict[_slice_weight_key()]
+			slice_dict[slice_identifier_key()], slice_dict[slice_tooltip_key()], slice_dict[slice_colour_key()],
+			slice_dict[slice_weight_key()]
 		};
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
@@ -134,6 +134,11 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 }
 
 void GFXPieChartTexture::_bind_methods() {
+	OV_BIND_SMETHOD(slice_identifier_key);
+	OV_BIND_SMETHOD(slice_tooltip_key);
+	OV_BIND_SMETHOD(slice_colour_key);
+	OV_BIND_SMETHOD(slice_weight_key);
+
 	OV_BIND_METHOD(GFXPieChartTexture::clear);
 
 	OV_BIND_METHOD(GFXPieChartTexture::set_gfx_pie_chart_name, { "gfx_pie_chart_name" });

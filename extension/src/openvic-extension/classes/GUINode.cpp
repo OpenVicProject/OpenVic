@@ -83,9 +83,9 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::remove_node, { "path" });
 	OV_BIND_METHOD(GUINode::remove_nodes, { "paths" });
 
-	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(int_to_string_suffixed, { "val", "post_number_string" }, DEFVAL(String {}));
 	OV_BIND_SMETHOD(int_to_string_commas, { "val" });
-	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(float_to_string_suffixed, { "val", "post_number_string" }, DEFVAL(String {}));
 	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
 	OV_BIND_SMETHOD(float_to_string_dp_dynamic, { "val" });
 	OV_BIND_SMETHOD(format_province_name, { "province_identifier", "ignore_empty" }, DEFVAL(false));
@@ -235,16 +235,16 @@ Error GUINode::remove_nodes(TypedArray<NodePath> const& paths) const {
 	return ret;
 }
 
-String GUINode::int_to_string_suffixed(int64_t val) {
-	return Utilities::int_to_string_suffixed(val);
+String GUINode::int_to_string_suffixed(int64_t val, String const& post_number_string) {
+	return Utilities::int_to_string_suffixed(val, post_number_string);
 }
 
 String GUINode::int_to_string_commas(int64_t val) {
 	return Utilities::int_to_string_commas(val);
 }
 
-String GUINode::float_to_string_suffixed(float val) {
-	return Utilities::float_to_string_suffixed(val);
+String GUINode::float_to_string_suffixed(float val, String const& post_number_string) {
+	return Utilities::float_to_string_suffixed(val, post_number_string);
 }
 
 String GUINode::float_to_string_dp(float val, int32_t decimal_places) {

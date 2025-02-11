@@ -13,7 +13,7 @@ using namespace OpenVic;
 
 /* Int to 2 decimal place string in terms of the largest suffix less than or equal to it,
  * or normal integer string if less than the smallest suffix. */
-String Utilities::int_to_string_suffixed(int64_t val) {
+String Utilities::int_to_string_suffixed(int64_t val, String const& post_number_string) {
 	static const std::vector<std::pair<int64_t, String>> suffixes {
 		{ 1'000'000'000'000, "T" },
 		{ 1'000'000'000, "B" },
@@ -30,10 +30,10 @@ String Utilities::int_to_string_suffixed(int64_t val) {
 			const int64_t whole = val / suffix_val;
 			const int64_t frac = (val * decimal_places_multiplier / suffix_val) % decimal_places_multiplier;
 			return (negative ? "-" : "") + String::num_int64(whole) + "." +
-				(frac < 10 ? "0" : "") + String::num_int64(frac) + suffix_str;
+				(frac < 10 ? "0" : "") + String::num_int64(frac) + post_number_string + suffix_str;
 		}
 	}
-	return (negative ? "-" : "") + String::num_int64(val);
+	return (negative ? "-" : "") + String::num_int64(val) + post_number_string;
 }
 
 String Utilities::int_to_string_commas(int64_t val) {
@@ -63,26 +63,26 @@ String Utilities::int_to_string_commas(int64_t val) {
 	return result;
 }
 
-String Utilities::float_to_string_suffixed(float val) {
+String Utilities::float_to_string_suffixed(float val, String const& post_number_string) {
 	const float abs_val = std::abs(val);
 
 	if (abs_val < 10'000.0f) {
-		return float_to_string_dp(val, 1);
+		return float_to_string_dp(val, 1) + post_number_string;
 	}
 
 	if (abs_val < 1'000'000.0f) {
-		return float_to_string_dp(val / 1'000.0f, 2) + "k";
+		return float_to_string_dp(val / 1'000.0f, 2) + post_number_string + "k";
 	}
 
 	if (abs_val < 1'000'000'000.0f) {
-		return float_to_string_dp(val / 1'000'000.0f, 2) + "M";
+		return float_to_string_dp(val / 1'000'000.0f, 2) + post_number_string + "M";
 	}
 
 	if (abs_val < 1'000'000'000'000.0f) {
-		return float_to_string_dp(val / 1'000'000'000.0f, 2) + "B";
+		return float_to_string_dp(val / 1'000'000'000.0f, 2) + post_number_string + "B";
 	}
 
-	return float_to_string_dp(val / 1'000'000'000'000.0f, 2) + "T";
+	return float_to_string_dp(val / 1'000'000'000'000.0f, 2) + post_number_string + "T";
 }
 
 /* Float to string formatted with the specified number of decimal places. */
