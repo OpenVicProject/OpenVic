@@ -199,6 +199,24 @@ namespace OpenVic {
 		bool can_decrease_speed() const;
 		godot::String get_longform_date() const;
 
+		/* BUDGET MENU */
+		static constexpr int32_t SLIDER_SCALE = 100;
+		godot::Dictionary get_budget_menu_setup_info(GUIScrollbar* tariff_slider) const;
+		godot::String _make_slider_range_limits_tooltip(
+			CountryInstance const& country, ModifierEffect const& min_effect, ModifierEffect const& max_effect
+		) const;
+		godot::Dictionary get_budget_menu_info(
+			godot::TypedArray<GUIScrollbar> const& strata_tax_sliders,
+			GUIScrollbar* land_spending_slider,
+			GUIScrollbar* naval_spending_slider,
+			GUIScrollbar* construction_spending_slider,
+			GUIScrollbar* education_spending_slider,
+			GUIScrollbar* administration_spending_slider,
+			GUIScrollbar* social_spending_slider,
+			GUIScrollbar* military_spending_slider,
+			GUIScrollbar* tariff_slider
+		) const;
+
 		/* POPULATION MENU */
 		godot::Error _population_menu_update_provinces();
 		int32_t get_population_menu_province_list_row_count() const;

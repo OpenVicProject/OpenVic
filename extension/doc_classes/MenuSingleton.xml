@@ -33,6 +33,26 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_budget_menu_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="strata_tax_sliders" type="GUIScrollbar[]" />
+			<param index="1" name="land_spending_slider" type="GUIScrollbar" />
+			<param index="2" name="naval_spending_slider" type="GUIScrollbar" />
+			<param index="3" name="construction_spending_slider" type="GUIScrollbar" />
+			<param index="4" name="education_spending_slider" type="GUIScrollbar" />
+			<param index="5" name="administration_spending_slider" type="GUIScrollbar" />
+			<param index="6" name="social_spending_slider" type="GUIScrollbar" />
+			<param index="7" name="military_spending_slider" type="GUIScrollbar" />
+			<param index="8" name="tariff_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="get_budget_menu_setup_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="tariff_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="get_country_adjective_from_identifier" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="country_identifier" type="String" />

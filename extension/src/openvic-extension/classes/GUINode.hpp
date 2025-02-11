@@ -109,9 +109,9 @@ namespace OpenVic {
 		godot::Error remove_node(godot::NodePath const& path) const;
 		godot::Error remove_nodes(godot::TypedArray<godot::NodePath> const& paths) const;
 
-		static godot::String int_to_string_suffixed(int64_t val);
+		static godot::String int_to_string_suffixed(int64_t val, godot::String const& post_number_string = {});
 		static godot::String int_to_string_commas(int64_t val);
-		static godot::String float_to_string_suffixed(float val);
+		static godot::String float_to_string_suffixed(float val, godot::String const& post_number_string = {});
 		static godot::String float_to_string_dp(float val, int32_t decimal_places);
 		// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 		static godot::String float_to_string_dp_dynamic(float val);
