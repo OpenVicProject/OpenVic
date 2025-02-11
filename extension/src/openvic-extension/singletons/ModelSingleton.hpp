@@ -40,7 +40,7 @@ namespace OpenVic {
 
 		template<UnitType::branch_t Branch>
 		bool add_unit_dict(
-			ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, godot::TypedArray<godot::Dictionary>& unit_array
+			std::vector<UnitInstanceGroupBranched<Branch>*> const& units, godot::TypedArray<godot::Dictionary>& unit_array
 		);
 
 		bool add_building_dict(
