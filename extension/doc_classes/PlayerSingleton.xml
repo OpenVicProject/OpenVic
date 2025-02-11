@@ -39,6 +39,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_administration_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="administration_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="set_auto_assign_leaders" qualifiers="const">
 			<return type="void" />
 			<param index="0" name="value" type="bool" />
@@ -58,6 +64,18 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_construction_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="construction_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="set_education_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="education_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="set_good_automated" qualifiers="const">
 			<return type="void" />
 			<param index="0" name="good_index" type="int" />
@@ -73,9 +91,27 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_land_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="land_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="set_military_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="military_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="set_mobilise" qualifiers="const">
 			<return type="void" />
 			<param index="0" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_naval_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="naval_spending_slider" type="GUIScrollbar" />
 			<description>
 			</description>
 		</method>
@@ -88,6 +124,25 @@
 		<method name="set_selected_province_by_index">
 			<return type="void" />
 			<param index="0" name="province_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_social_spending_slider_value">
+			<return type="void" />
+			<param index="0" name="social_spending_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="set_strata_tax_slider_value">
+			<return type="void" />
+			<param index="0" name="strata" type="int" />
+			<param index="1" name="tax_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="set_tariff_rate_slider_value">
+			<return type="void" />
+			<param index="0" name="tariff_rate_slider" type="GUIScrollbar" />
 			<description>
 			</description>
 		</method>
