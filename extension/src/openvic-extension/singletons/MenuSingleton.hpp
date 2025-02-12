@@ -25,7 +25,8 @@ namespace OpenVic {
 	struct ModifierValue;
 	struct ModifierSum;
 	struct RuleSet;
-	struct LeaderBase;
+	struct LeaderInstance;
+	struct GUIScrollbar;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -104,7 +105,7 @@ namespace OpenVic {
 			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
 			MAX_LEADER_SORT_KEY
 		};
-		ordered_map<LeaderBase const*, godot::Dictionary> cached_leader_dicts;
+		ordered_map<LeaderInstance const*, godot::Dictionary> cached_leader_dicts;
 		enum UnitGroupSortKey {
 			UNIT_GROUP_SORT_NONE, UNIT_GROUP_SORT_NAME, UNIT_GROUP_SORT_STRENGTH, MAX_UNIT_GROUP_SORT_KEY
 		};
@@ -189,7 +190,6 @@ namespace OpenVic {
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 		int32_t get_province_building_count() const;
 		godot::String get_province_building_identifier(int32_t building_index) const;
-		godot::Error expand_selected_province_building(int32_t building_index);
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
@@ -198,11 +198,7 @@ namespace OpenVic {
 		godot::Dictionary get_topbar_info() const;
 
 		/* TIME/SPEED CONTROL PANEL */
-		void set_paused(bool paused);
-		void toggle_paused();
 		bool is_paused() const;
-		void increase_speed();
-		void decrease_speed();
 		int32_t get_speed() const;
 		bool can_increase_speed() const;
 		bool can_decrease_speed() const;
@@ -241,11 +237,12 @@ namespace OpenVic {
 		godot::Dictionary get_trade_menu_good_categories_info() const;
 		godot::Dictionary get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
+		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
 		/* MILITARY MENU */
-		godot::Dictionary make_leader_dict(LeaderBase const& leader);
+		godot::Dictionary make_leader_dict(LeaderInstance const& leader);
 		template<UnitType::branch_t Branch>
-		godot::Dictionary make_unit_group_dict(UnitInstanceGroup<Branch> const& unit_group);
+		godot::Dictionary make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group);
 		godot::Dictionary make_in_progress_unit_dict() const;
 		godot::Dictionary get_military_menu_info(
 			LeaderSortKey leader_sort_key, bool sort_leaders_descending,

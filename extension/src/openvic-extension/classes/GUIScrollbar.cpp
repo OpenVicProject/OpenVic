@@ -426,13 +426,13 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	_calculate_rects();
 
-	fixed_point_t step_size = gui_scrollbar->get_step_size();
+	step_size = gui_scrollbar->get_step_size();
 	if (step_size <= 0) {
 		UtilityFunctions::push_error(
 			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
 			gui_scrollbar_name, " - not positive! Defaulting to 1."
 		);
-		step_size = 1;
+		step_size = fixed_point_t::_1();
 		ret = false;
 	}
 	min_value = gui_scrollbar->get_min_value() / step_size;

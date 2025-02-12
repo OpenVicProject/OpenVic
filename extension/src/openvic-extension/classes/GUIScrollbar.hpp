@@ -36,6 +36,7 @@ namespace OpenVic {
 		godot::Orientation PROPERTY(orientation, godot::HORIZONTAL);
 		real_t PROPERTY(length_override, 0.0);
 
+		fixed_point_t PROPERTY(step_size);
 		int32_t PROPERTY(value, 0);
 		int32_t PROPERTY(min_value, 0);
 		int32_t PROPERTY(max_value, 0);
