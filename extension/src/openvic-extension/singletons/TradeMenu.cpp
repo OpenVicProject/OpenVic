@@ -35,7 +35,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 		for (GoodDefinition const* good_definition : good_category.get_good_definitions()) {
 			GoodInstance const& good_instance = good_instance_manager.get_good_instance_from_definition(*good_definition);
 
-			if (!good_instance.get_is_available() || !good_definition->get_is_tradeable()) {
+			if (!good_instance.is_trading_good()) {
 				continue;
 			}
 
@@ -68,7 +68,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 			}
 
 			if (country != nullptr) {
-				CountryInstance::good_data_t const& good_data = country->get_goods_data()[good_instance];
+				CountryInstance::good_data_t const& good_data = country->get_good_data(good_instance);
 
 				// Trade settings:
 				//  - 1 bit: automated (1) or not (0)
@@ -161,7 +161,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail
 		return ret;
 	}
 
-	CountryInstance::good_data_t const& good_data = country->get_goods_data()[*good_instance];
+	CountryInstance::good_data_t const& good_data = country->get_good_data(*good_instance);
 
 	ret[trade_detail_is_automated_key] = good_data.is_automated;
 	ret[trade_detail_is_selling_key] = good_data.is_selling;
@@ -241,7 +241,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	PackedVector4Array common_market;
 
 	for (auto const& [good, good_data] : country->get_goods_data()) {
-		if (!good.get_is_available() || !good.get_good_definition().get_is_tradeable()) {
+		if (!good.is_trading_good()) {
 			continue;
 		}
 
