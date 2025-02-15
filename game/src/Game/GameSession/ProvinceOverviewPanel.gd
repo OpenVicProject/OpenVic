@@ -72,7 +72,7 @@ class BuildingSlot:
 			building_name.text = MenuSingleton.get_province_building_identifier(_slot_index)
 		_expand_button = GUINode.get_gui_icon_button_from_node(_slot_node.get_node(^"./expand"))
 		if _expand_button:
-			_expand_button.pressed.connect(func() -> void: MenuSingleton.expand_selected_province_building(_slot_index))
+			_expand_button.pressed.connect(func() -> void: PlayerSingleton.expand_selected_province_building(_slot_index))
 		_expanding_icon = GUINode.get_gui_icon_from_node(_slot_node.get_node(^"./underconstruction_icon"))
 		_expanding_progress_bar = GUINode.get_gui_progress_bar_from_node(_slot_node.get_node(^"./building_progress"))
 		if _expanding_progress_bar:
@@ -117,7 +117,7 @@ var _selected_index : int:
 var _province_info : Dictionary
 
 func _ready() -> void:
-	GameSingleton.province_selected.connect(_on_province_selected)
+	PlayerSingleton.province_selected.connect(_on_province_selected)
 	GameSingleton.gamestate_updated.connect(_update_info)
 
 	if add_gui_element("province_interface", "province_view") != OK:
@@ -394,4 +394,4 @@ func _on_province_selected(index : int) -> void:
 	_selected_index = index
 
 func _on_close_button_pressed() -> void:
-	GameSingleton.unset_selected_province()
+	PlayerSingleton.unset_selected_province()

@@ -7,6 +7,7 @@
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
@@ -293,14 +294,13 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	static const StringName military_info_unit_eta_key = "unit_eta";
 	static const StringName military_info_unit_tooltip_key = "unit_tooltip";
 
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 	GoodDefinitionManager const& good_definition_manager =
 		definition_manager.get_economy_manager().get_good_definition_manager();
 
 	// TODO - remove test data, read actual in-progress units from SIM
 	UnitType const* unit_type = definition_manager.get_military_manager().get_unit_type_manager().get_unit_type_by_index(0);
-	ProvinceInstance const* location = game_singleton->get_viewed_country()->get_capital();
+	ProvinceInstance const* location = PlayerSingleton::get_singleton()->get_player_country()->get_capital();
 	const Date eta { 1900 };
 	const fixed_point_t progress = fixed_point_t::_0_50();
 	const ordered_map<GoodDefinition const*, std::pair<fixed_point_t, fixed_point_t>> required_goods {
@@ -411,7 +411,7 @@ Dictionary MenuSingleton::get_military_menu_info(
 	StaticModifierCache const& static_modifier_cache = definition_manager.get_modifier_manager().get_static_modifier_cache();
 	IssueManager const& issue_manager = definition_manager.get_politics_manager().get_issue_manager();
 
-	CountryInstance const* country = game_singleton->get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 	if (country == nullptr) {
 		return {};
 	}

@@ -88,10 +88,10 @@ func _ready() -> void:
 	# Mobilisation
 	_mobilise_button = GUINode.get_gui_icon_button_from_node(military_menu.get_node(^"./mobilize"))
 	if _mobilise_button:
-		_mobilise_button.pressed.connect(func() -> void: print("MOBILISE PRESSED"))
+		_mobilise_button.pressed.connect(PlayerSingleton.set_mobilise.bind(true))
 	_demobilise_button = GUINode.get_gui_icon_button_from_node(military_menu.get_node(^"./demobilize"))
 	if _demobilise_button:
-		_demobilise_button.pressed.connect(func() -> void: print("DEMOBILISE PRESSED"))
+		_demobilise_button.pressed.connect(PlayerSingleton.set_mobilise.bind(false))
 		_demobilise_button.set_tooltip_string("$MILITARY_DEMOBILIZE$" + MenuSingleton.get_tooltip_separator() + "$MILITARY_DEMOBILIZE_DESC$")
 	_mobilisation_progress_bar = GUINode.get_gui_progress_bar_from_node(military_menu.get_node(^"./mobilize_progress"))
 	_mobilisation_progress_label = GUINode.get_gui_label_from_node(military_menu.get_node(^"./mobilize_progress_text"))
@@ -146,17 +146,17 @@ func _ready() -> void:
 			sort_leader_army_button.set_tooltip_string("MILITARY_SORT_BY_ASSIGNMENT_TOOLTIP")
 		_create_general_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./new_general"))
 		if _create_general_button:
-			_create_general_button.pressed.connect(func() -> void: print("CREATE GENERAL"))
+			_create_general_button.pressed.connect(PlayerSingleton.create_leader.bind(true))
 		_create_admiral_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./new_admiral"))
 		if _create_admiral_button:
-			_create_admiral_button.pressed.connect(func() -> void: print("CREATE ADMIRAL"))
+			_create_admiral_button.pressed.connect(PlayerSingleton.create_leader.bind(false))
 		_auto_create_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_create"))
 		if _auto_create_leader_button:
-			_auto_create_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO CREATE LEADERS = ", state))
+			_auto_create_leader_button.toggled.connect(PlayerSingleton.set_auto_create_leaders)
 			_auto_create_leader_button.set_tooltip_string("MILITARY_AUTOCREATE_TOOLTIP")
 		_auto_assign_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_assign"))
 		if _auto_assign_leader_button:
-			_auto_assign_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO ASSIGN LEADERS = ", state))
+			_auto_assign_leader_button.toggled.connect(PlayerSingleton.set_auto_assign_leaders)
 			_auto_assign_leader_button.set_tooltip_string("MILITARY_AUTOASSIGN_TOOLTIP")
 		_leader_listbox = GUINode.get_gui_listbox_from_node(military_menu.get_node(^"./leaders/leader_listbox"))
 
@@ -642,7 +642,10 @@ func _update_info() -> void:
 					# TODO - investigate why "set_pressed_no_signal" wasn't enough
 					use_leader_button.set_pressed(leader_dict.get(military_info_leader_can_be_used_key, false))
 					# TODO - ensure only one connection?
-					use_leader_button.toggled.connect(func(state : bool) -> void: print("Toggled use_leader to ", state))
+					use_leader_button.toggled.connect(
+						func(state : bool) -> void:
+							PlayerSingleton.set_can_use_leader(entry_menu.get_meta(military_info_leader_id_key, 0) as int, state)
+					)
 					use_leader_button.set_tooltip_string("USE_LEADER" if use_leader_button.is_pressed() else "")
 
 				var army_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./army"))
