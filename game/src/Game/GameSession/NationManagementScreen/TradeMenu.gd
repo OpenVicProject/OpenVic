@@ -276,7 +276,6 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	const trade_detail_government_needs_key : StringName = &"trade_detail_government_needs"
 	const trade_detail_army_needs_key : StringName = &"trade_detail_army_needs"
 	const trade_detail_navy_needs_key : StringName = &"trade_detail_navy_needs"
-	const trade_detail_production_needs_key : StringName = &"trade_detail_production_needs"
 	const trade_detail_overseas_needs_key : StringName = &"trade_detail_overseas_needs"
 	const trade_detail_factory_needs_key : StringName = &"trade_detail_factory_needs"
 	const trade_detail_pop_needs_key : StringName = &"trade_detail_pop_needs"
@@ -350,6 +349,9 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 		_trade_detail_confirm_trade_button.set_disabled(is_automated)
 		_trade_detail_confirm_trade_button.set_tooltip_string("TRADE_DISABLED_AUTOMATE" if is_automated else "TRADE_CONFIRM_DESC")
 
+	var factory_needs : float = trade_info.get(trade_detail_factory_needs_key, 0)
+	var factory_needs_string : String = GUINode.float_to_string_dp(factory_needs, 2)
+
 	if _trade_detail_government_good_needs_label:
 		_trade_detail_government_good_needs_label.add_substitution("VAL", GUINode.float_to_string_dp(trade_info.get(trade_detail_government_needs_key, 0), 2))
 		var government_needs_tooltip : String
@@ -359,9 +361,8 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 		var navy_needs : float = trade_info.get(trade_detail_navy_needs_key, 0)
 		if navy_needs > 0:
 			government_needs_tooltip += tr(&"TRADE_SUPPLY_NEED_N").replace("$VAL$", GUINode.float_to_string_dp(navy_needs, 2))
-		var production_needs : float = trade_info.get(trade_detail_production_needs_key, 0)
-		if production_needs > 0:
-			government_needs_tooltip += tr(&"TRADE_TEMP_PROD_NEED").replace("$VAL$", GUINode.float_to_string_dp(production_needs, 2))
+		if factory_needs > 0:
+			government_needs_tooltip += tr(&"TRADE_TEMP_PROD_NEED").replace("$VAL$", factory_needs_string)
 		var overseas_needs : float = trade_info.get(trade_detail_overseas_needs_key, 0)
 		if overseas_needs > 0:
 			government_needs_tooltip += tr(&"TRADE_OVERSEAS_NEED").replace("$VAL$", GUINode.float_to_string_dp(overseas_needs, 2))
@@ -370,7 +371,7 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 		_trade_detail_government_good_needs_label.set_tooltip_string(government_needs_tooltip)
 
 	if _trade_detail_factory_good_needs_label:
-		_trade_detail_factory_good_needs_label.add_substitution("VAL", GUINode.float_to_string_dp(trade_info.get(trade_detail_factory_needs_key, 0), 2))
+		_trade_detail_factory_good_needs_label.add_substitution("VAL", factory_needs_string)
 
 	if _trade_detail_pop_good_needs_label:
 		_trade_detail_pop_good_needs_label.add_substitution("VAL", GUINode.float_to_string_dp(trade_info.get(trade_detail_pop_needs_key, 0), 2))

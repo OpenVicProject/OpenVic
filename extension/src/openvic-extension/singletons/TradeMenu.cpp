@@ -117,7 +117,6 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail
 	static const StringName trade_detail_government_needs_key = "trade_detail_government_needs";
 	static const StringName trade_detail_army_needs_key = "trade_detail_army_needs";
 	static const StringName trade_detail_navy_needs_key = "trade_detail_navy_needs";
-	static const StringName trade_detail_production_needs_key = "trade_detail_production_needs";
 	static const StringName trade_detail_overseas_needs_key = "trade_detail_overseas_needs";
 	static const StringName trade_detail_factory_needs_key = "trade_detail_factory_needs";
 	static const StringName trade_detail_pop_needs_key = "trade_detail_pop_needs";
@@ -171,10 +170,9 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail
 	ret[trade_detail_government_needs_key] = good_data.government_needs.to_float();
 	ret[trade_detail_army_needs_key] = good_data.army_needs.to_float();
 	ret[trade_detail_navy_needs_key] = good_data.navy_needs.to_float();
-	ret[trade_detail_production_needs_key] = good_data.production_needs.to_float();
-	ret[trade_detail_overseas_needs_key] = good_data.overseas_needs.to_float();
-	ret[trade_detail_factory_needs_key] = good_data.factory_needs.to_float();
-	ret[trade_detail_pop_needs_key] = good_data.pop_needs.to_float();
+	ret[trade_detail_overseas_needs_key] = good_data.overseas_maintenance.to_float();
+	ret[trade_detail_factory_needs_key] = good_data.factory_demand.to_float();
+	ret[trade_detail_pop_needs_key] = good_data.pop_demand.to_float();
 	ret[trade_detail_available_key] = good_data.available_amount.to_float();
 
 	return ret;
@@ -277,16 +275,16 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			});
 		}
 
-		if (good_data.factory_needs != fixed_point_t::_0()) {
+		if (good_data.factory_demand != fixed_point_t::_0()) {
 			factory_needs.push_back({
 				good_index,
-				good_data.factory_needs.to_float()
+				good_data.factory_demand.to_float()
 			});
 		}
 
-		if (good_data.pop_needs != fixed_point_t::_0()) {
+		if (good_data.pop_demand != fixed_point_t::_0()) {
 			pop_needs.push_back({
-				good_index, good_data.pop_needs.to_float()
+				good_index, good_data.pop_demand.to_float()
 			});
 		}
 
