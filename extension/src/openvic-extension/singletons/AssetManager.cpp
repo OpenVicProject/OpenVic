@@ -51,6 +51,9 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 		image.is_null() || image->is_empty(), nullptr,
 		vformat("Failed to load image: %s (looked up: %s)", path, lookedup_path)
 	);
+	if (image->detect_alpha() != Image::ALPHA_NONE) {
+		image->fix_alpha_edges();
+	}
 
 	if (flip_y) {
 		image->flip_y();
