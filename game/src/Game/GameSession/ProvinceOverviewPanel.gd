@@ -117,7 +117,7 @@ var _selected_index : int:
 var _province_info : Dictionary
 
 func _ready() -> void:
-	GameSingleton.province_selected.connect(_on_province_selected)
+	PlayerSingleton.province_selected.connect(_on_province_selected)
 	GameSingleton.gamestate_updated.connect(_update_info)
 
 	if add_gui_element("province_interface", "province_view") != OK:
@@ -394,4 +394,4 @@ func _on_province_selected(index : int) -> void:
 	_selected_index = index
 
 func _on_close_button_pressed() -> void:
-	GameSingleton.unset_selected_province()
+	PlayerSingleton.unset_selected_province()
