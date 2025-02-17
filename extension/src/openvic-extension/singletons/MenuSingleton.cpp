@@ -503,7 +503,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 					tr(Utilities::std_to_godot_string(pop_type.get_identifier())) + GUILabel::get_colour_marker() + "!:" +
 					String::num_int64(employees_of_type) + "\n";
 				if (pop_type.get_is_slave()) {
-					throughput_workers = "  -" + tr(rgo_worker_key) + GUILabel::get_colour_marker() + "Y" +
+					throughput_workers = "  -" + tr(rgo_worker_key) + ": " + GUILabel::get_colour_marker() + "Y" +
 					tr(Utilities::std_to_godot_string(pop_type.get_identifier())) + GUILabel::get_colour_marker() + "!:";
 				}
 			}
@@ -548,7 +548,8 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		static const StringName rgo_worker_key = "PRODUCTION_FACTOR_WORKER";
 		static const StringName rgo_input_tech_key = "RGO_INPUT_TECH";
 		static const StringName rgo_owner_pop_name = Utilities::std_to_godot_string(production_type.get_owner()->get_pop_type()->get_identifier());
-
+		GameSingleton const* game_singleton = GameSingleton::get_singleton();
+		ModifierEffectCache const & testTHING = game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
 		ret[province_info_rgo_income_tooltip_key] =
 			tr(good_income_localisation_key).replace(
 					good_replace_key, Utilities::std_to_godot_string( province->get_rgo_good() != nullptr ? province->get_rgo_good()->get_identifier() : "rgo_good null")
@@ -564,9 +565,9 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			"\n" + tr(production_output_key) +  GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
 			"\n" + "  -" + tr(production_owner_key) + ": " + GUILabel::get_colour_marker() + "Y" + tr(rgo_owner_pop_name) +
 			GUILabel::get_colour_marker() + "!:" + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
-			"\n" + throughput_workers + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
+			"\n" + throughput_workers +
 			"\n" + "  -" + tr(rgo_output_tech_key) + ":" + GUILabel::get_colour_marker() + "G" + "" + GUILabel::get_colour_marker() + "!" +
-			//"\n" + "  -"+ tr(Utilities::std_to_godot_string(terrain_type->get_identifier())) + TODO only display if modifier is negative
+			"\n" + "  -"+ tr(Utilities::std_to_godot_string(terrain_type->get_identifier())) +
 			"\n" + tr(production_throughput_tooltip_key) + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" +
 			"\n" + "  -" + tr(rgo_worker_key) + ":" + GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!" + "\n" + "  -" + tr(rgo_input_tech_key) + ":" +
 			GUILabel::get_colour_marker() + "G" + "TEST" + GUILabel::get_colour_marker() + "!";
