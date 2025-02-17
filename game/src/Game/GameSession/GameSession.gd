@@ -28,7 +28,7 @@ func _on_map_view_ready() -> void:
 	# Set the camera's starting position
 	_map_view._camera.position = _map_view._map_to_world_coords(
 		# Start at the player country's capital position (when loading a save game in the lobby or entering the actual game)
-		GameSingleton.get_viewed_country_capital_position()
+		PlayerSingleton.get_player_country_capital_position()
 	)
 
 func _on_map_view_province_hovered(index: int) -> void:
@@ -38,9 +38,9 @@ func _on_map_view_province_unhovered() -> void:
 	_map_view.unset_hovered_province()
 
 func _on_map_view_province_clicked(index: int) -> void:
-	GameSingleton.set_selected_province(index)
+	PlayerSingleton.set_selected_province_by_index(index)
 
 func _on_map_view_province_right_clicked(index: int) -> void:
 	# TODO - open diplomacy screen on province owner or viewed country if province has no owner
 	#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-	GameSingleton.set_viewed_country_by_province_index(index)
+	PlayerSingleton.set_player_country_by_province_index(index)

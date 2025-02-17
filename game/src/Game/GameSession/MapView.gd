@@ -109,7 +109,7 @@ func _ready() -> void:
 		map_mesh_aabb.position.z - map_mesh_aabb.end.z
 	))
 
-	GameSingleton.province_selected.connect(_on_province_selected)
+	PlayerSingleton.province_selected.connect(_on_province_selected)
 
 	# Start zoomed out with the parchment map active
 	_camera.position.y = _zoom_parchment_threshold * 1.5
@@ -228,7 +228,7 @@ func _unhandled_input(event : InputEvent) -> void:
 	elif event.is_action_pressed(_action_select_add):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				GameSingleton.set_selected_province(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				PlayerSingleton.set_selected_province_by_index(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
 				var province_index : int = GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
 				# TODO: Proper unit selection logic should replace this temporary behaviour
 				var port_province_index : int = MapItemSingleton.get_clicked_port_province_index(_mouse_pos_map)
@@ -261,7 +261,7 @@ func _unhandled_input(event : InputEvent) -> void:
 					validMoveMarkers.add_move_marker(_map_to_world_coords(unit_position), randi_range(0,1))
 				# TODO - open diplomacy screen on province owner or viewed country if province has no owner
 				#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-				GameSingleton.set_viewed_country_by_province_index(province_index)
+				PlayerSingleton.set_player_country_by_province_index(province_index)
 			else:
 				print("Right-clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):

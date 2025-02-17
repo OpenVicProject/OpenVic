@@ -10,6 +10,7 @@
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -24,10 +25,6 @@ static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 StringName const& GameSingleton::_signal_gamestate_updated() {
 	static const StringName signal_gamestate_updated = "gamestate_updated";
 	return signal_gamestate_updated;
-}
-StringName const& GameSingleton::_signal_province_selected() {
-	static const StringName signal_province_selected = "province_selected";
-	return signal_province_selected;
 }
 StringName const& GameSingleton::_signal_clock_state_changed() {
 	static const StringName signal_clock_state_changed = "clock_state_changed";
@@ -73,17 +70,10 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::get_current_mapmode_index);
 	OV_BIND_METHOD(GameSingleton::set_mapmode, { "index" });
 	OV_BIND_METHOD(GameSingleton::is_parchment_mapmode_allowed);
-	OV_BIND_METHOD(GameSingleton::get_selected_province_index);
-	OV_BIND_METHOD(GameSingleton::set_selected_province, { "index" });
-	OV_BIND_METHOD(GameSingleton::unset_selected_province);
-
-	OV_BIND_METHOD(GameSingleton::set_viewed_country_by_province_index, { "province_index" });
-	OV_BIND_METHOD(GameSingleton::get_viewed_country_capital_position);
 
 	OV_BIND_METHOD(GameSingleton::update_clock);
 
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
-	ADD_SIGNAL(MethodInfo(_signal_province_selected(), PropertyInfo(Variant::INT, "index")));
 	ADD_SIGNAL(MethodInfo(_signal_clock_state_changed()));
 	ADD_SIGNAL(MethodInfo(_signal_mapmode_changed(), PropertyInfo(Variant::INT, "index")));
 }
@@ -173,8 +163,10 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	// TODO - replace with actual starting country
 	CountryInstance* starting_country =
 		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG");
-	set_viewed_country(starting_country);
-	ERR_FAIL_NULL_V(viewed_country, FAILED);
+
+	PlayerSingleton& player_singleton = *PlayerSingleton::get_singleton();
+	player_singleton.set_player_country(starting_country);
+	ERR_FAIL_NULL_V(player_singleton.get_player_country(), FAILED);
 
 	// TODO - remove this test starting research
 	for (
@@ -306,8 +298,11 @@ Error GameSingleton::_update_colour_image() {
 	Error err = OK;
 
 	InstanceManager const* instance_manager = get_instance_manager();
+	PlayerSingleton const& player_singleton = *PlayerSingleton::get_singleton();
 	if (instance_manager != nullptr && !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
-		instance_manager->get_map_instance(), mapmode, colour_data_array.ptrw()
+		instance_manager->get_map_instance(), mapmode,
+		player_singleton.get_player_country(), player_singleton.get_selected_province(),
+		colour_data_array.ptrw()
 	)) {
 		err = FAILED;
 	}
@@ -400,59 +395,6 @@ Error GameSingleton::set_mapmode(int32_t index) {
 bool GameSingleton::is_parchment_mapmode_allowed() const {
 	/* Disallows parchment mapmode, e.g. for the cosmetic terrain mapmode */
 	return mapmode->is_parchment_mapmode_allowed();
-}
-
-int32_t GameSingleton::get_selected_province_index() const {
-	InstanceManager const* instance_manager = get_instance_manager();
-	ERR_FAIL_NULL_V(instance_manager, 0);
-
-	return instance_manager->get_map_instance().get_selected_province_index();
-}
-
-void GameSingleton::set_selected_province(int32_t index) {
-	InstanceManager* instance_manager = get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_map_instance().set_selected_province(index);
-	_update_colour_image();
-	emit_signal(_signal_province_selected(), index);
-}
-
-void GameSingleton::unset_selected_province() {
-	set_selected_province(ProvinceDefinition::NULL_INDEX);
-}
-
-void GameSingleton::set_viewed_country(CountryInstance const* new_viewed_country) {
-	if (viewed_country != new_viewed_country) {
-		viewed_country = new_viewed_country;
-
-		Logger::info("Set viewed country to: ", viewed_country != nullptr ? viewed_country->get_identifier() : "NULL");
-
-		_on_gamestate_updated();
-	}
-}
-
-void GameSingleton::set_viewed_country_by_province_index(int32_t province_index) {
-	InstanceManager* instance_manager = get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	ProvinceInstance const* province_instance =
-		instance_manager->get_map_instance().get_province_instance_by_index(province_index);
-	ERR_FAIL_NULL(province_instance);
-
-	set_viewed_country(province_instance->get_owner());
-}
-
-Vector2 GameSingleton::get_viewed_country_capital_position() const {
-	if (viewed_country != nullptr) {
-		ProvinceInstance const* capital = viewed_country->get_capital();
-
-		if (capital != nullptr) {
-			return get_billboard_pos(capital->get_province_definition());
-		}
-	}
-
-	return {};
 }
 
 Error GameSingleton::update_clock() {

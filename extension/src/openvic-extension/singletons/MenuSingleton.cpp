@@ -9,6 +9,7 @@
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -263,16 +264,14 @@ String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 }
 
 String MenuSingleton::_make_mobilisation_impact_tooltip() const {
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, {});
-
-	CountryInstance const* country = game_singleton->get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
 	if (country == nullptr) {
 		return {};
 	}
 
-	IssueManager const& issue_manager = game_singleton->get_definition_manager().get_politics_manager().get_issue_manager();
+	IssueManager const& issue_manager =
+		GameSingleton::get_singleton()->get_definition_manager().get_politics_manager().get_issue_manager();
 
 	static const StringName mobilisation_impact_tooltip_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC";
 	static const String mobilisation_impact_tooltip_replace_impact_key = "$IMPACT$";
@@ -1066,14 +1065,12 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 }
 
 Error MenuSingleton::expand_selected_province_building(int32_t building_index) {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V_MSG(
-		!instance_manager->expand_selected_province_building(building_index), FAILED,
-		vformat("Failed to expand the currently selected province's building index %d", building_index)
+		!instance_manager->expand_province_building(PlayerSingleton::get_singleton()->get_selected_province(), building_index),
+		FAILED, vformat("Failed to expand the currently selected province's building index %d", building_index)
 	);
 	return OK;
 }
@@ -1108,15 +1105,12 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TOPBAR */
 
 Dictionary MenuSingleton::get_topbar_info() const {
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, {});
-
-	CountryInstance const* country = game_singleton->get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 	if (country == nullptr) {
 		return {};
 	}
 
-	DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 	ModifierEffectCache const& modifier_effect_cache = definition_manager.get_modifier_manager().get_modifier_effect_cache();
 
 	Dictionary ret;
