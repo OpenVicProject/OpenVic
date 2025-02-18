@@ -40,6 +40,7 @@ void GUIScrollbar::_bind_methods() {
 	OV_BIND_METHOD(GUIScrollbar::increment_value, { "signal" }, DEFVAL(true));
 	OV_BIND_METHOD(GUIScrollbar::decrement_value, { "signal" }, DEFVAL(true));
 	OV_BIND_METHOD(GUIScrollbar::set_value_as_ratio, { "new_ratio", "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::get_value_scaled);
 
 	OV_BIND_METHOD(GUIScrollbar::is_range_limited);
 	OV_BIND_METHOD(GUIScrollbar::get_range_limit_min);
@@ -426,13 +427,13 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	_calculate_rects();
 
-	fixed_point_t step_size = gui_scrollbar->get_step_size();
+	step_size = gui_scrollbar->get_step_size();
 	if (step_size <= 0) {
 		UtilityFunctions::push_error(
 			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
 			gui_scrollbar_name, " - not positive! Defaulting to 1."
 		);
-		step_size = 1;
+		step_size = fixed_point_t::_1();
 		ret = false;
 	}
 	min_value = gui_scrollbar->get_min_value() / step_size;
@@ -486,6 +487,14 @@ float GUIScrollbar::get_value_as_ratio() const {
 
 void GUIScrollbar::set_value_as_ratio(float new_ratio, bool signal) {
 	set_value(min_value + (max_value - min_value) * new_ratio, signal);
+}
+
+fixed_point_t GUIScrollbar::get_value_scaled_fp() const {
+	return value * step_size;
+}
+
+float GUIScrollbar::get_value_scaled() const {
+	return get_value_scaled_fp().to_float();
 }
 
 Error GUIScrollbar::set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal) {

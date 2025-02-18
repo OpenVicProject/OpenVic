@@ -73,6 +73,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_value_scaled" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="increment_value">
 			<return type="void" />
 			<param index="0" name="signal" type="bool" default="true" />

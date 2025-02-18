@@ -26,6 +26,43 @@ void PlayerSingleton::_bind_methods() {
 	OV_BIND_METHOD(PlayerSingleton::unset_selected_province);
 	OV_BIND_METHOD(PlayerSingleton::get_selected_province_index);
 
+	// Core
+	OV_BIND_METHOD(PlayerSingleton::toggle_paused);
+	OV_BIND_METHOD(PlayerSingleton::increase_speed);
+	OV_BIND_METHOD(PlayerSingleton::decrease_speed);
+
+	// Production
+	OV_BIND_METHOD(PlayerSingleton::expand_selected_province_building, { "building_index" });
+
+	// Budget
+	OV_BIND_METHOD(PlayerSingleton::set_strata_tax, { "strata", "tax" });
+	OV_BIND_METHOD(PlayerSingleton::set_land_spending, { "land_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_naval_spending, { "naval_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_construction_spending, { "construction_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_education_spending, { "education_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_administration_spending, { "administration_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_social_spending, { "social_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_military_spending, { "military_spending" });
+	OV_BIND_METHOD(PlayerSingleton::set_tariff_rate, { "tariff_rate" });
+
+	// Technology
+
+	// Politics
+
+	// Population
+
+	// Trade
+	OV_BIND_METHOD(PlayerSingleton::set_good_automated, { "good_index", "is_automated" });
+
+	// Diplomacy
+
+	// Military
+	OV_BIND_METHOD(PlayerSingleton::create_leader, { "is_general" });
+	OV_BIND_METHOD(PlayerSingleton::set_can_use_leader, { "leader_id", "can_use" });
+	OV_BIND_METHOD(PlayerSingleton::set_auto_create_leaders, { "value" });
+	OV_BIND_METHOD(PlayerSingleton::set_auto_assign_leaders, { "value" });
+	OV_BIND_METHOD(PlayerSingleton::set_mobilise, { "value" });
+
 	ADD_SIGNAL(MethodInfo(_signal_province_selected(), PropertyInfo(Variant::INT, "index")));
 }
 
@@ -44,13 +81,27 @@ PlayerSingleton::~PlayerSingleton() {
 }
 
 // Player country
-void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
+void PlayerSingleton::set_player_country(CountryInstance const* new_player_country) {
 	if (player_country != new_player_country) {
 		GameSingleton& game_singleton = *GameSingleton::get_singleton();
 		InstanceManager* instance_manager = game_singleton.get_instance_manager();
 		ERR_FAIL_NULL(instance_manager);
 
+		if (player_country != nullptr) {
+			instance_manager->queue_game_action(
+				game_action_type_t::GAME_ACTION_SET_AI,
+				std::pair<uint64_t, bool> { player_country->get_index(), true }
+			);
+		}
+
 		player_country = new_player_country;
+
+		if (player_country != nullptr) {
+			instance_manager->queue_game_action(
+				game_action_type_t::GAME_ACTION_SET_AI,
+				std::pair<uint64_t, bool> { player_country->get_index(), false }
+			);
+		}
 
 		Logger::info("Set player country to: ", player_country != nullptr ? player_country->get_identifier() : "<NULL>");
 
@@ -81,7 +132,7 @@ Vector2 PlayerSingleton::get_player_country_capital_position() const {
 }
 
 // Selected province
-void PlayerSingleton::set_selected_province(ProvinceInstance* new_selected_province) {
+void PlayerSingleton::set_selected_province(ProvinceInstance const* new_selected_province) {
 	if (selected_province != new_selected_province) {
 		selected_province = new_selected_province;
 
@@ -95,10 +146,10 @@ void PlayerSingleton::set_selected_province_by_index(int32_t province_index) {
 	if (province_index == ProvinceDefinition::NULL_INDEX) {
 		unset_selected_province();
 	} else {
-		InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+		InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 		ERR_FAIL_NULL(instance_manager);
 
-		MapInstance& map_instance = instance_manager->get_map_instance();
+		MapInstance const& map_instance = instance_manager->get_map_instance();
 
 		set_selected_province(map_instance.get_province_instance_by_index(province_index));
 
@@ -117,4 +168,237 @@ void PlayerSingleton::unset_selected_province() {
 
 int32_t PlayerSingleton::get_selected_province_index() const {
 	return selected_province != nullptr ? selected_province->get_index() : ProvinceDefinition::NULL_INDEX;
+}
+
+// Core
+void PlayerSingleton::toggle_paused() const {
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_PAUSE,
+		!instance_manager->get_simulation_clock().is_paused()
+	);
+}
+
+void PlayerSingleton::increase_speed() const {
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_SPEED,
+		instance_manager->get_simulation_clock().get_simulation_speed() + 1
+	);
+}
+
+void PlayerSingleton::decrease_speed() const {
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_SPEED,
+		instance_manager->get_simulation_clock().get_simulation_speed() - 1
+	);
+}
+
+// Production
+void PlayerSingleton::expand_selected_province_building(int32_t building_index) const {
+	ERR_FAIL_NULL(selected_province);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_EXPAND_PROVINCE_BUILDING,
+		std::pair<uint64_t, uint64_t> { selected_province->get_index(), building_index }
+	);
+}
+
+// Budget
+void PlayerSingleton::set_strata_tax(int32_t strata, int32_t tax) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), tax }
+	);
+}
+
+void PlayerSingleton::set_land_spending(int32_t land_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_LAND_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), land_spending }
+	);
+}
+
+void PlayerSingleton::set_naval_spending(int32_t naval_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_NAVAL_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), naval_spending }
+	);
+}
+
+void PlayerSingleton::set_construction_spending(int32_t construction_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_CONSTRUCTION_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), construction_spending }
+	);
+}
+
+void PlayerSingleton::set_education_spending(int32_t education_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_EDUCATION_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), education_spending }
+	);
+}
+
+void PlayerSingleton::set_administration_spending(int32_t administration_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_ADMINISTRATION_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), administration_spending }
+	);
+}
+
+void PlayerSingleton::set_social_spending(int32_t social_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_SOCIAL_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), social_spending }
+	);
+}
+
+void PlayerSingleton::set_military_spending(int32_t military_spending) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_MILITARY_SPENDING,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), military_spending }
+	);
+}
+
+void PlayerSingleton::set_tariff_rate(int32_t tariff_rate) {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_TARIFF_RATE,
+		std::pair<uint64_t, int64_t> { player_country->get_index(), tariff_rate }
+	);
+}
+
+// Technology
+
+// Politics
+
+// Population
+
+// Trade
+void PlayerSingleton::set_good_automated(int32_t good_index, bool is_automated) const {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_GOOD_AUTOMATED,
+		std::tuple<uint64_t, uint64_t, bool> { player_country->get_index(), good_index, is_automated }
+	);
+}
+
+// Diplomacy
+
+// Military
+void PlayerSingleton::create_leader(bool is_general) const {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_CREATE_LEADER,
+		std::pair<uint64_t, bool> { player_country->get_index(), is_general }
+	);
+}
+
+void PlayerSingleton::set_can_use_leader(uint64_t leader_id, bool can_use) const {
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_USE_LEADER,
+		std::pair<uint64_t, bool> { leader_id, can_use }
+	);
+}
+
+void PlayerSingleton::set_auto_create_leaders(bool value) const {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_AUTO_CREATE_LEADERS,
+		std::pair<uint64_t, bool> { player_country->get_index(), value }
+	);
+}
+
+void PlayerSingleton::set_auto_assign_leaders(bool value) const {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_AUTO_ASSIGN_LEADERS,
+		std::pair<uint64_t, bool> { player_country->get_index(), value }
+	);
+}
+
+void PlayerSingleton::set_mobilise(bool value) const {
+	ERR_FAIL_NULL(player_country);
+
+	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_MOBILISE,
+		std::pair<uint64_t, bool> { player_country->get_index(), value }
+	);
 }

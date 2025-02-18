@@ -171,6 +171,10 @@ func _ready() -> void:
 		trade_detail_automate_label.set_tooltip_string("AUTOMATE_TRADE_CHECK")
 	_trade_detail_automate_checkbox = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/automate")
 	if _trade_detail_automate_checkbox:
+		_trade_detail_automate_checkbox.toggled.connect(
+			func(state : bool) -> void:
+				PlayerSingleton.set_good_automated(_trade_detail_good_index, state)
+		)
 		_trade_detail_automate_checkbox.set_tooltip_string("AUTOMATE_TRADE_CHECK")
 	_trade_detail_buy_sell_stockpile_checkbox = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/sell_stockpile")
 	_trade_detail_buy_sell_stockpile_label = get_gui_label_from_nodepath(^"./country_trade/trade_details/sell_stockpile_label")
@@ -179,6 +183,15 @@ func _ready() -> void:
 	_trade_detail_stockpile_slider_amount_label = get_gui_label_from_nodepath(^"./country_trade/trade_details/slider_value")
 	if _trade_detail_stockpile_slider_amount_label:
 		_trade_detail_stockpile_slider_amount_label.set_auto_translate(false)
+		if _trade_detail_stockpile_slider_scrollbar:
+			_trade_detail_stockpile_slider_scrollbar.value_changed.connect(
+				func(value : int) -> void:
+					# const step_size : float = 2.0
+					# const c : float = log(2001.0) / 2000.0 * step_size
+					# var slider_amount : float = exp(c * value) - 1.0
+					var slider_amount : float = MenuSingleton.calculate_trade_menu_stockpile_cutoff_amount(_trade_detail_stockpile_slider_scrollbar)
+					_trade_detail_stockpile_slider_amount_label.set_text(GUINode.float_to_string_dp(slider_amount, 3 if slider_amount < 10.0 else 2))
+			)
 	_trade_detail_confirm_trade_button = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/confirm_trade")
 	if _trade_detail_confirm_trade_button:
 		_trade_detail_confirm_trade_button.pressed.connect(
@@ -338,12 +351,12 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	if _trade_detail_stockpile_slider_description_label:
 		_trade_detail_stockpile_slider_description_label.set_text("MINIMUM_STOCKPILE_TARGET" if is_selling else "MAXIMUM_STOCKPILE_TARGET")
 
-	if _trade_detail_stockpile_slider_scrollbar:
-		_trade_detail_stockpile_slider_scrollbar.set_value(trade_info.get(trade_detail_slider_value_key, 0), false)
+	#if _trade_detail_stockpile_slider_scrollbar:
+		#_trade_detail_stockpile_slider_scrollbar.set_value(trade_info.get(trade_detail_slider_value_key, 0), false)
 
-	if _trade_detail_stockpile_slider_amount_label:
-		var slider_amount : float = trade_info.get(trade_detail_slider_amount_key, 0)
-		_trade_detail_stockpile_slider_amount_label.set_text(GUINode.float_to_string_dp(slider_amount, 3 if slider_amount < 10.0 else 2))
+	#if _trade_detail_stockpile_slider_amount_label:
+		#var slider_amount : float = trade_info.get(trade_detail_slider_amount_key, 0)
+		#_trade_detail_stockpile_slider_amount_label.set_text(GUINode.float_to_string_dp(slider_amount, 3 if slider_amount < 10.0 else 2))
 
 	if _trade_detail_confirm_trade_button:
 		_trade_detail_confirm_trade_button.set_disabled(is_automated)
@@ -395,23 +408,13 @@ func _sort_table(table : Table) -> void:
 	if column == TABLE_UNSORTED:
 		return
 
-	var listbox : GUIListBox = _table_listboxes[table]
 	var sort_key : StringName = TABLE_COLUMN_KEYS[column]
-	var descending : bool = _table_sort_directions[table] == SORT_DESCENDING
 
-	var items : Array[Node] = listbox.get_children()
-
-	for child : Node in items:
-		listbox.remove_child(child)
-
-	items.sort_custom(
+	_table_listboxes[table].sort_children(
 		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) > b.get_meta(sort_key))
-		if descending else
+		if _table_sort_directions[table] == SORT_DESCENDING else
 		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) < b.get_meta(sort_key))
 	)
-
-	for child : Node in items:
-		listbox.add_child(child)
 
 func _float_to_string_suffixed_dp(value : float, decimals : int) -> String:
 	if value < 1000:

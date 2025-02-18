@@ -26,6 +26,7 @@ namespace OpenVic {
 	struct ModifierSum;
 	struct RuleSet;
 	struct LeaderInstance;
+	struct GUIScrollbar;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -189,7 +190,6 @@ namespace OpenVic {
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 		int32_t get_province_building_count() const;
 		godot::String get_province_building_identifier(int32_t building_index) const;
-		godot::Error expand_selected_province_building(int32_t building_index);
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
@@ -198,15 +198,15 @@ namespace OpenVic {
 		godot::Dictionary get_topbar_info() const;
 
 		/* TIME/SPEED CONTROL PANEL */
-		void set_paused(bool paused);
-		void toggle_paused();
 		bool is_paused() const;
-		void increase_speed();
-		void decrease_speed();
 		int32_t get_speed() const;
 		bool can_increase_speed() const;
 		bool can_decrease_speed() const;
 		godot::String get_longform_date() const;
+
+		/* BUDGET MENU */
+		godot::Dictionary get_budget_menu_setup_info() const;
+		godot::Dictionary get_budget_menu_info() const;
 
 		/* POPULATION MENU */
 		godot::Error _population_menu_update_provinces();
@@ -241,6 +241,7 @@ namespace OpenVic {
 		godot::Dictionary get_trade_menu_good_categories_info() const;
 		godot::Dictionary get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
+		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
 		/* MILITARY MENU */
 		godot::Dictionary make_leader_dict(LeaderInstance const& leader);
