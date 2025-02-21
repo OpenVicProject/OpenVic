@@ -467,7 +467,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	case SORT_CASH:
 		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_cash() < b->get_cash();
+			return a->get_cash().get_copy_of_value() < b->get_cash().get_copy_of_value();
 		};
 	case SORT_LIFE_NEEDS:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -687,7 +687,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_ideology_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_ideology_distribution());
 		pop_dict[pop_issues_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_issue_distribution());
 		pop_dict[pop_unemployment_key] = pop->get_unemployment().to_float();
-		pop_dict[pop_cash_key] = pop->get_cash().to_float();
+		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
 		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
 		pop_dict[pop_everyday_needs_key] = pop->get_everyday_needs_fulfilled().to_float();
 		pop_dict[pop_luxury_needs_key] = pop->get_luxury_needs_fulfilled().to_float();
