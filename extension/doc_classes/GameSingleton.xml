@@ -192,11 +192,6 @@
 		</method>
 	</methods>
 	<signals>
-		<signal name="clock_state_changed">
-			<description>
-				Signal emitted when the simulation's clock changes state (paused vs unpaused, clock speed, etc.).
-			</description>
-		</signal>
 		<signal name="gamestate_updated">
 			<description>
 				Signal emitted when the simulation's gamestate is updated (this happens after any event that changes the gamestate, e.g. a day tick, a player taking a decision, etc).

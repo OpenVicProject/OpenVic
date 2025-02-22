@@ -26,10 +26,6 @@ StringName const& GameSingleton::_signal_gamestate_updated() {
 	static const StringName signal_gamestate_updated = "gamestate_updated";
 	return signal_gamestate_updated;
 }
-StringName const& GameSingleton::_signal_clock_state_changed() {
-	static const StringName signal_clock_state_changed = "clock_state_changed";
-	return signal_clock_state_changed;
-}
 StringName const& GameSingleton::_signal_mapmode_changed() {
 	static const StringName signal_mapmode_changed = "mapmode_changed";
 	return signal_mapmode_changed;
@@ -74,7 +70,6 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::update_clock);
 
 	ADD_SIGNAL(MethodInfo(_signal_gamestate_updated()));
-	ADD_SIGNAL(MethodInfo(_signal_clock_state_changed()));
 	ADD_SIGNAL(MethodInfo(_signal_mapmode_changed(), PropertyInfo(Variant::INT, "index")));
 }
 
@@ -87,16 +82,12 @@ void GameSingleton::_on_gamestate_updated() {
 	emit_signal(_signal_gamestate_updated());
 }
 
-void GameSingleton::_on_clock_state_changed() {
-	emit_signal(_signal_clock_state_changed());
-}
-
 /* REQUIREMENTS:
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
   : game_manager {
-		std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&GameSingleton::_on_clock_state_changed, this)
+		std::bind(&GameSingleton::_on_gamestate_updated, this)
 	},
 	mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);

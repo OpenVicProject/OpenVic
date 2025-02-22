@@ -30,7 +30,6 @@ namespace OpenVic {
 		ordered_map<godot::StringName, int32_t> flag_type_index_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
-		static godot::StringName const& _signal_clock_state_changed();
 		static godot::StringName const& _signal_mapmode_changed();
 
 		godot::Error _load_map_images();
@@ -41,9 +40,6 @@ namespace OpenVic {
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
 		void _on_gamestate_updated();
-
-	private:
-		void _on_clock_state_changed();
 
 	protected:
 		static void _bind_methods();
