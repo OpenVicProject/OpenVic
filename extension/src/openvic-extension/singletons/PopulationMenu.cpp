@@ -650,6 +650,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	static const StringName pop_unemployment_key = "unemployment";
 
 	static const StringName pop_cash_key = "cash";
+	static const StringName pop_daily_money_key = "daily_money";
 	// TODO - daily income, needs, salary and savings
 
 	static const StringName pop_life_needs_key = "life_needs";
@@ -688,6 +689,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_issues_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_issue_distribution());
 		pop_dict[pop_unemployment_key] = pop->get_unemployment().to_float();
 		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
+		pop_dict[pop_daily_money_key] = pop->get_income().to_float();
 		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
 		pop_dict[pop_everyday_needs_key] = pop->get_everyday_needs_fulfilled().to_float();
 		pop_dict[pop_luxury_needs_key] = pop->get_luxury_needs_fulfilled().to_float();
