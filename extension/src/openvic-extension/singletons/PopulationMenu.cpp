@@ -397,10 +397,10 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
 		population_menu.religion_distribution[&pop->get_religion()] += pop_size;
-		population_menu.ideology_distribution += pop->get_ideology_distribution() * pop_size;
+		population_menu.ideology_distribution += pop->get_ideology_distribution();
 		population_menu.culture_distribution[&pop->get_culture()] += pop_size;
-		population_menu.issue_distribution += pop->get_issue_distribution() * pop_size;
-		population_menu.vote_distribution += pop->get_vote_distribution() * pop_size;
+		population_menu.issue_distribution += pop->get_issue_distribution();
+		population_menu.vote_distribution += pop->get_vote_distribution();
 	}
 
 	normalise_fixed_point_map(population_menu.workforce_distribution);
@@ -605,6 +605,53 @@ Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 	return _population_menu_sort_pops();
 }
 
+template<IsPieChartDistribution Container>
+GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_menu_pop_row_pie_chart_data(
+	Container const& distribution
+) const {
+	using key_type = std::remove_pointer_t<typename Container::key_type>;
+
+	ordered_map<key_type const*, String> tooltips;
+	tooltips.reserve(distribution.size());
+
+	String full_tooltip = get_tooltip_separator().trim_suffix("\n");
+
+	float total_weight = 0.0f;
+	for (auto [key, weight] : distribution) {
+		total_weight += static_cast<float>(weight);
+	}
+
+	static const String pie_chart_tooltip_format_key = "%s: " + GUILabel::get_colour_marker() + "Y%s%%" +
+		GUILabel::get_colour_marker() + "!";
+
+	for (auto [key_ref_or_ptr, weight] : distribution) {
+		if (weight > 0.0f) {
+			key_type const* key_ptr;
+			if constexpr (std::same_as<decltype(key_ptr), decltype(key_ref_or_ptr)>) {
+				key_ptr = key_ref_or_ptr;
+			} else {
+				key_ptr = &key_ref_or_ptr;
+			}
+			String tooltip = vformat(
+				pie_chart_tooltip_format_key,
+				tr(Utilities::std_to_godot_string(key_ptr->get_identifier())),
+				Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
+			);
+			full_tooltip += "\n" + tooltip;
+			tooltips.emplace(key_ptr, std::move(tooltip));
+		}
+		// No need to handle negative (invalid) weights here, GFXPieChartTexture::distribution_to_slices_array will
+		// log errors for them and discard them without attempting to generate a tooltip.
+	}
+
+	return GFXPieChartTexture::distribution_to_slices_array(
+		distribution,
+		[&tooltips, full_tooltip](key_type const* key, float weight, float total_weight) -> String {
+			return tooltips.at(key) + full_tooltip;
+		}
+	);
+}
+
 TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start, int32_t count) const {
 	if (population_menu.filtered_pops.empty()) {
 		return {};
@@ -685,8 +732,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		}
 		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
-		pop_dict[pop_ideology_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_ideology_distribution());
-		pop_dict[pop_issues_key] = GFXPieChartTexture::distribution_to_slices_array(pop->get_issue_distribution());
+		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_ideology_distribution());
+		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_issue_distribution());
 		pop_dict[pop_unemployment_key] = pop->get_unemployment().to_float();
 		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
 		pop_dict[pop_daily_money_key] = pop->get_income().to_float();
@@ -832,12 +879,24 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	TypedArray<Array> array;
 	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
-	array[0] = GFXPieChartTexture::distribution_to_slices_array(population_menu.workforce_distribution);
-	array[1] = GFXPieChartTexture::distribution_to_slices_array(population_menu.religion_distribution);
-	array[2] = GFXPieChartTexture::distribution_to_slices_array(population_menu.ideology_distribution);
-	array[3] = GFXPieChartTexture::distribution_to_slices_array(population_menu.culture_distribution);
-	array[4] = GFXPieChartTexture::distribution_to_slices_array(population_menu.issue_distribution);
-	array[5] = GFXPieChartTexture::distribution_to_slices_array(population_menu.vote_distribution);
+	const auto make_pie_chart_tooltip = [this](
+		HasGetIdentifierAndGetColour auto const* key, float weight, float total_weight
+	) -> String {
+		static const String format_key =
+			GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
+		return  vformat(
+			format_key,
+			tr(Utilities::std_to_godot_string(key->get_identifier())),
+			Utilities::float_to_string_dp(100.0f * weight / total_weight, 2)
+		);
+	};
+
+	array[0] = GFXPieChartTexture::distribution_to_slices_array(population_menu.workforce_distribution, make_pie_chart_tooltip);
+	array[1] = GFXPieChartTexture::distribution_to_slices_array(population_menu.religion_distribution, make_pie_chart_tooltip);
+	array[2] = GFXPieChartTexture::distribution_to_slices_array(population_menu.ideology_distribution, make_pie_chart_tooltip);
+	array[3] = GFXPieChartTexture::distribution_to_slices_array(population_menu.culture_distribution, make_pie_chart_tooltip);
+	array[4] = GFXPieChartTexture::distribution_to_slices_array(population_menu.issue_distribution, make_pie_chart_tooltip);
+	array[5] = GFXPieChartTexture::distribution_to_slices_array(population_menu.vote_distribution, make_pie_chart_tooltip);
 
 	return array;
 }

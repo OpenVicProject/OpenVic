@@ -10,6 +10,8 @@
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
+#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+
 namespace OpenVic {
 	struct CountryInstance;
 	struct State;
@@ -219,6 +221,10 @@ namespace OpenVic {
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
+		template<IsPieChartDistribution Container>
+		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
+			Container const& distribution
+		) const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 

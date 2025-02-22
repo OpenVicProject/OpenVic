@@ -997,20 +997,31 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	ret[province_info_total_population_key] = province->get_total_population();
 
+	const auto make_pie_chart_tooltip = [this](
+		HasGetIdentifierAndGetColour auto const* key, float weight, float total_weight
+	) -> String {
+		static const String format_key = "%d%% %s";
+		return  vformat(
+			format_key,
+			static_cast<int32_t>(100.0f * weight / total_weight),
+			tr(Utilities::std_to_godot_string(key->get_identifier()))
+		);
+	};
+
 	GFXPieChartTexture::godot_pie_chart_data_t pop_types =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_pop_type_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_pop_type_distribution(), make_pie_chart_tooltip);
 	if (!pop_types.is_empty()) {
 		ret[province_info_pop_types_key] = std::move(pop_types);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t ideologies =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_ideology_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_ideology_distribution(), make_pie_chart_tooltip);
 	if (!ideologies.is_empty()) {
 		ret[province_info_pop_ideologies_key] = std::move(ideologies);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t cultures =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_culture_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_culture_distribution(), make_pie_chart_tooltip);
 	if (!cultures.is_empty()) {
 		ret[province_info_pop_cultures_key] = std::move(cultures);
 	}

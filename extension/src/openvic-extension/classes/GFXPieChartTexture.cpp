@@ -13,6 +13,10 @@ StringName const& GFXPieChartTexture::_slice_identifier_key() {
 	static const StringName slice_identifier_key = "identifier";
 	return slice_identifier_key;
 }
+StringName const& GFXPieChartTexture::_slice_tooltip_key() {
+	static const StringName slice_tooltip_key = "tooltip";
+	return slice_tooltip_key;
+}
 StringName const& GFXPieChartTexture::_slice_colour_key() {
 	static const StringName slice_colour_key = "colour";
 	return slice_colour_key;
@@ -113,12 +117,13 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_colour_key())
-				|| !slice_dict.has(_slice_weight_key()),
+			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_tooltip_key()) ||
+				!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
 			vformat("Invalid slice keys at index %d", i)
 		);
 		const slice_t slice {
-			slice_dict[_slice_identifier_key()], slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]
+			slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()], slice_dict[_slice_colour_key()],
+			slice_dict[_slice_weight_key()]
 		};
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
