@@ -558,6 +558,7 @@ func _update_pop_list() -> void:
 			const pop_issues_key : StringName = &"issues"
 			const pop_unemployment_key : StringName = &"unemployment"
 			const pop_cash_key : StringName = &"cash"
+			const pop_daily_money_key : StringName = &"daily_money"
 			const pop_life_needs_key : StringName = &"life_needs"
 			const pop_everyday_needs_key : StringName = &"everyday_needs"
 			const pop_luxury_needs_key : StringName = &"luxury_needs"
@@ -605,7 +606,7 @@ func _update_pop_list() -> void:
 			if _pop_list_cash_labels[index]:
 				_pop_list_cash_labels[index].set_text("%s¤" % GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
 				_pop_list_cash_labels[index].set_tooltip_string_and_substitution_dict("POP_DAILY_MONEY", {
-					"VAL": GUINode.float_to_string_dp(1.23, 2)
+					"VAL": GUINode.float_to_string_dp(pop_row[pop_daily_money_key], 2)
 				})
 			if _pop_list_life_needs_progressbars[index]:
 				var life_needs : float = pop_row[pop_life_needs_key]
