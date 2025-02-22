@@ -37,6 +37,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 	}
 
 	static const StringName military_info_leader_id_key = "leader_id";
+	static const StringName military_info_leader_branch_key = "leader_branch";
 	static const StringName military_info_leader_name_key = "leader_name";
 	static const StringName military_info_leader_picture_key = "leader_picture";
 	static const StringName military_info_leader_prestige_key = "leader_prestige";
@@ -58,6 +59,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 	{
 		// Generic data
 		leader_dict[military_info_leader_id_key] = leader.get_unique_id();
+		leader_dict[military_info_leader_branch_key] = static_cast<int32_t>(leader.get_branch());
 
 		leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
 
@@ -347,60 +349,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	return in_progress_unit_dict;
 }
 
-using leader_sort_func_t = bool (*)(LeaderInstance const*, LeaderInstance const*);
-
-static leader_sort_func_t _get_leader_sort_func(MenuSingleton::LeaderSortKey leader_sort_key) {
-	using enum MenuSingleton::LeaderSortKey;
-
-	switch (leader_sort_key) {
-	case LEADER_SORT_PRESTIGE:
-		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
-			return a->get_prestige() < b->get_prestige();
-		};
-	case LEADER_SORT_TYPE:
-		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
-			return a->get_branch() < b->get_branch();
-		};
-	case LEADER_SORT_NAME:
-		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
-			return a->get_name() < b->get_name();
-		};
-	case LEADER_SORT_ASSIGNMENT:
-		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool {
-			return (a->get_unit_instance_group() != nullptr ? a->get_unit_instance_group()->get_name() : std::string_view {})
-				< (b->get_unit_instance_group() != nullptr ? b->get_unit_instance_group()->get_name() : std::string_view {});
-		};
-	default:
-		UtilityFunctions::push_error("Invalid miltiary menu leader sort key: ", leader_sort_key);
-		return [](LeaderInstance const* a, LeaderInstance const* b) -> bool { return false; };
-	}
-}
-
-using unit_group_sort_func_t = bool (*)(UnitInstanceGroup const*, UnitInstanceGroup const*);
-
-static unit_group_sort_func_t _get_unit_group_sort_func(MenuSingleton::UnitGroupSortKey unit_group_sort_key) {
-	using enum MenuSingleton::UnitGroupSortKey;
-
-	switch (unit_group_sort_key) {
-	case UNIT_GROUP_SORT_NAME:
-		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
-			return a->get_name() < b->get_name();
-		};
-	case UNIT_GROUP_SORT_STRENGTH:
-		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
-			return a->get_unit_count() < b->get_unit_count();
-		};
-	default:
-		UtilityFunctions::push_error("Invalid miltiary menu unit group sort key: ", unit_group_sort_key);
-		return [](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool { return false; };
-	}
-}
-
-Dictionary MenuSingleton::get_military_menu_info(
-	LeaderSortKey leader_sort_key, bool sort_leaders_descending,
-	UnitGroupSortKey army_sort_key, bool sort_armies_descending,
-	UnitGroupSortKey navy_sort_key, bool sort_navies_descending
-) {
+Dictionary MenuSingleton::get_military_menu_info() {
 	cached_leader_dicts.clear();
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
@@ -632,42 +581,24 @@ Dictionary MenuSingleton::get_military_menu_info(
 	ret[military_info_auto_assign_leaders_key] = country->get_auto_assign_leaders();
 
 	if (country->has_leaders()) {
-		std::vector<LeaderInstance const*> sorted_leaders;
-		sorted_leaders.reserve(country->get_leader_count());
-		for (LeaderInstance const* general : country->get_generals()) {
-			sorted_leaders.push_back(general);
-		}
-		for (LeaderInstance const* admiral : country->get_admirals()) {
-			sorted_leaders.push_back(admiral);
-		}
-
-		if (leader_sort_key != LEADER_SORT_NONE) {
-			const leader_sort_func_t leader_sort_func = _get_leader_sort_func(leader_sort_key);
-
-			if (sort_leaders_descending) {
-				std::sort(
-					sorted_leaders.begin(), sorted_leaders.end(),
-					[leader_sort_func](LeaderInstance const* a, LeaderInstance const* b) -> bool {
-						return leader_sort_func(b, a);
-					}
-				);
-			} else {
-				std::sort(sorted_leaders.begin(), sorted_leaders.end(), leader_sort_func);
-			}
-		}
+		const int64_t general_count = country->get_general_count();
+		const int64_t admiral_count = country->get_admiral_count();
+		const int64_t leader_count = general_count + admiral_count;
 
 		TypedArray<Dictionary> leaders;
-		if (leaders.resize(sorted_leaders.size()) == OK) {
+		if (leaders.resize(leader_count) == OK) {
 
-			for (size_t index = 0; index < sorted_leaders.size(); ++index) {
-				leaders[index] = make_leader_dict(*sorted_leaders[index]);
+			for (size_t index = 0; index < general_count; ++index) {
+				leaders[index] = make_leader_dict(*country->get_generals()[index]);
+			}
+			for (size_t index = 0; index < admiral_count; ++index) {
+				leaders[general_count + index] = make_leader_dict(*country->get_admirals()[index]);
 			}
 
 			ret[military_info_leaders_list_key] = std::move(leaders);
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to resize military menu leaders array to the correct size (",
-				static_cast<int64_t>(sorted_leaders.size()), ") for country \"",
+				"Failed to resize military menu leaders array to the correct size (", leader_count, ") for country \"",
 				Utilities::std_to_godot_string(country->get_identifier()), "\""
 			);
 		}
@@ -683,39 +614,19 @@ Dictionary MenuSingleton::get_military_menu_info(
 	ret[military_info_is_disarmed_key] = country->is_disarmed();
 
 	if (country->has_armies()) {
-		std::vector<ArmyInstance const*> sorted_armies;
-		sorted_armies.reserve(country->get_army_count());
-		for (ArmyInstance const* army : country->get_armies()) {
-			sorted_armies.push_back(army);
-		}
-
-		if (army_sort_key != UNIT_GROUP_SORT_NONE) {
-			const unit_group_sort_func_t army_sort_func = _get_unit_group_sort_func(army_sort_key);
-
-			if (sort_armies_descending) {
-				std::sort(
-					sorted_armies.begin(), sorted_armies.end(),
-					[army_sort_func](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
-						return army_sort_func(b, a);
-					}
-				);
-			} else {
-				std::sort(sorted_armies.begin(), sorted_armies.end(), army_sort_func);
-			}
-		}
+		const int64_t army_count = country->get_army_count();
 
 		TypedArray<Dictionary> armies;
-		if (armies.resize(sorted_armies.size()) == OK) {
+		if (armies.resize(army_count) == OK) {
 
-			for (size_t index = 0; index < sorted_armies.size(); ++index) {
-				armies[index] = make_unit_group_dict(*sorted_armies[index]);
+			for (size_t index = 0; index < army_count; ++index) {
+				armies[index] = make_unit_group_dict(*country->get_armies()[index]);
 			}
 
 			ret[military_info_armies_key] = std::move(armies);
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to resize military menu armies array to the correct size (",
-				static_cast<int64_t>(sorted_armies.size()), ") for country \"",
+				"Failed to resize military menu armies array to the correct size (", army_count, ") for country \"",
 				Utilities::std_to_godot_string(country->get_identifier()), "\""
 			);
 		}
@@ -730,39 +641,19 @@ Dictionary MenuSingleton::get_military_menu_info(
 	}
 
 	if (country->has_navies()) {
-		std::vector<NavyInstance const*> sorted_navies;
-		sorted_navies.reserve(country->get_navy_count());
-		for (NavyInstance const* navy : country->get_navies()) {
-			sorted_navies.push_back(navy);
-		}
-
-		if (navy_sort_key != UNIT_GROUP_SORT_NONE) {
-			const unit_group_sort_func_t navy_sort_func = _get_unit_group_sort_func(navy_sort_key);
-
-			if (sort_navies_descending) {
-				std::sort(
-					sorted_navies.begin(), sorted_navies.end(),
-					[navy_sort_func](UnitInstanceGroup const* a, UnitInstanceGroup const* b) -> bool {
-						return navy_sort_func(b, a);
-					}
-				);
-			} else {
-				std::sort(sorted_navies.begin(), sorted_navies.end(), navy_sort_func);
-			}
-		}
+		const int64_t navy_count = country->get_navy_count();
 
 		TypedArray<Dictionary> navies;
-		if (navies.resize(sorted_navies.size()) == OK) {
+		if (navies.resize(navy_count) == OK) {
 
-			for (size_t index = 0; index < sorted_navies.size(); ++index) {
-				navies[index] = make_unit_group_dict(*sorted_navies[index]);
+			for (size_t index = 0; index < navy_count; ++index) {
+				navies[index] = make_unit_group_dict(*country->get_navies()[index]);
 			}
 
 			ret[military_info_navies_key] = std::move(navies);
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to resize military menu navies array to the correct size (",
-				static_cast<int64_t>(sorted_navies.size()), ") for country \"",
+				"Failed to resize military menu navies array to the correct size (", navy_count, ") for country \"",
 				Utilities::std_to_godot_string(country->get_identifier()), "\""
 			);
 		}

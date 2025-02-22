@@ -73,6 +73,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="sort_children">
+			<return type="int" enum="Error" />
+			<param index="0" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
 		<method name="unset_fixed">
 			<return type="int" enum="Error" />
 			<param index="0" name="signal" type="bool" default="true" />

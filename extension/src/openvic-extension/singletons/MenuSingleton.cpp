@@ -410,23 +410,7 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(TRADE_SETTING_SELLING);
 
 	/* MILITARY MENU */
-	OV_BIND_METHOD(MenuSingleton::get_military_menu_info, {
-		"leader_sort_key", "sort_leaders_descending",
-		"army_sort_key", "sort_armies_descending",
-		"navy_sort_key", "sort_navies_descending"
-	});
-
-	BIND_ENUM_CONSTANT(LEADER_SORT_NONE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_PRESTIGE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_TYPE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_NAME);
-	BIND_ENUM_CONSTANT(LEADER_SORT_ASSIGNMENT);
-	BIND_ENUM_CONSTANT(MAX_LEADER_SORT_KEY);
-
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NONE);
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NAME);
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_STRENGTH);
-	BIND_ENUM_CONSTANT(MAX_UNIT_GROUP_SORT_KEY);
+	OV_BIND_METHOD(MenuSingleton::get_military_menu_info);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
