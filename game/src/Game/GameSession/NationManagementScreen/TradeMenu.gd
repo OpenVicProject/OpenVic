@@ -6,7 +6,7 @@ const _screen : NationManagement.Screen = NationManagement.Screen.TRADE
 
 const _gui_file : String = "country_trade"
 
-var _trade_detail_good_index : int = 0
+var _trade_detail_good_index : int = -1
 
 # Trade details
 var _trade_detail_good_icon : GUIIcon
@@ -171,6 +171,10 @@ func _ready() -> void:
 		trade_detail_automate_label.set_tooltip_string("AUTOMATE_TRADE_CHECK")
 	_trade_detail_automate_checkbox = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/automate")
 	if _trade_detail_automate_checkbox:
+		_trade_detail_automate_checkbox.toggled.connect(
+			func(state : bool) -> void:
+				PlayerSingleton.set_good_automated(_trade_detail_good_index, state)
+		)
 		_trade_detail_automate_checkbox.set_tooltip_string("AUTOMATE_TRADE_CHECK")
 	_trade_detail_buy_sell_stockpile_checkbox = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/sell_stockpile")
 	if _trade_detail_buy_sell_stockpile_checkbox:
@@ -190,8 +194,11 @@ func _ready() -> void:
 	if _trade_detail_confirm_trade_button:
 		_trade_detail_confirm_trade_button.pressed.connect(
 			func() -> void:
-				# TODO - implement button functionality
-				print("Confirm trade!")
+				PlayerSingleton.set_good_trade_order(
+					_trade_detail_good_index,
+					_trade_detail_buy_sell_stockpile_checkbox and _trade_detail_buy_sell_stockpile_checkbox.is_pressed(),
+					_trade_detail_stockpile_slider_scrollbar
+				)
 		)
 	var good_details_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/goods_details")
 	if good_details_button:
@@ -262,6 +269,7 @@ func _update_info() -> void:
 	else:
 		hide()
 
+# Set new_trade_detail_good_index to -1 if you're updating for any reason other than explicitly selecting a trade good to view the details of
 func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	# If the new index isn't negative, update the current index to match it
 	# Even if the new index is the same as the current index, it indicates a forced refresh (including the trade order
@@ -269,6 +277,11 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	var force_refresh : bool = new_trade_detail_good_index >= 0
 	if force_refresh:
 		_trade_detail_good_index = new_trade_detail_good_index
+	elif _trade_detail_good_index < 0:
+		# Fallback for non-force refresh updates without a trade good chosen yet,
+		# e.g. when opening the menu for the first time in a game session
+		_trade_detail_good_index = 0
+		force_refresh = true
 
 	# Trade details
 	const trade_detail_good_name_key : StringName = &"trade_detail_good_name"

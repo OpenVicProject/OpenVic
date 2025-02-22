@@ -190,7 +190,6 @@ namespace OpenVic {
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 		int32_t get_province_building_count() const;
 		godot::String get_province_building_identifier(int32_t building_index) const;
-		godot::Error expand_selected_province_building(int32_t building_index);
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
@@ -199,11 +198,7 @@ namespace OpenVic {
 		godot::Dictionary get_topbar_info() const;
 
 		/* TIME/SPEED CONTROL PANEL */
-		void set_paused(bool paused);
-		void toggle_paused();
 		bool is_paused() const;
-		void increase_speed();
-		void decrease_speed();
 		int32_t get_speed() const;
 		bool can_increase_speed() const;
 		bool can_decrease_speed() const;
