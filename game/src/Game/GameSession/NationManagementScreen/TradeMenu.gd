@@ -173,12 +173,19 @@ func _ready() -> void:
 	if _trade_detail_automate_checkbox:
 		_trade_detail_automate_checkbox.set_tooltip_string("AUTOMATE_TRADE_CHECK")
 	_trade_detail_buy_sell_stockpile_checkbox = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/sell_stockpile")
+	if _trade_detail_buy_sell_stockpile_checkbox:
+		_trade_detail_buy_sell_stockpile_checkbox.toggled.connect(_update_trade_order_buy_sell)
 	_trade_detail_buy_sell_stockpile_label = get_gui_label_from_nodepath(^"./country_trade/trade_details/sell_stockpile_label")
 	_trade_detail_stockpile_slider_description_label = get_gui_label_from_nodepath(^"./country_trade/trade_details/sell_slidier_desc")
 	_trade_detail_stockpile_slider_scrollbar = get_gui_scrollbar_from_nodepath(^"./country_trade/trade_details/sell_slider")
 	_trade_detail_stockpile_slider_amount_label = get_gui_label_from_nodepath(^"./country_trade/trade_details/slider_value")
 	if _trade_detail_stockpile_slider_amount_label:
 		_trade_detail_stockpile_slider_amount_label.set_auto_translate(false)
+		if _trade_detail_stockpile_slider_scrollbar:
+			_trade_detail_stockpile_slider_scrollbar.value_changed.connect(
+				func(value : int) -> void:
+					_update_stockpile_slider_amount_label(MenuSingleton.calculate_trade_menu_stockpile_cutoff_amount(_trade_detail_stockpile_slider_scrollbar))
+			)
 	_trade_detail_confirm_trade_button = get_gui_icon_button_from_nodepath(^"./country_trade/trade_details/confirm_trade")
 	if _trade_detail_confirm_trade_button:
 		_trade_detail_confirm_trade_button.pressed.connect(
@@ -256,12 +263,11 @@ func _update_info() -> void:
 		hide()
 
 func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
-	# If the desired good is already selected, do nothing (current index will never be negative, so -1 forces a refresh)
-	if _trade_detail_good_index == new_trade_detail_good_index:
-		return
-
-	# If the new index isn't negative, update the current index to match it (newly selected good)
-	if new_trade_detail_good_index >= 0:
+	# If the new index isn't negative, update the current index to match it
+	# Even if the new index is the same as the current index, it indicates a forced refresh (including the trade order
+	# buy/sell checkbox and stockpile cutoff slider, which otherwise wouldn't be refreshed)
+	var force_refresh : bool = new_trade_detail_good_index >= 0
+	if force_refresh:
 		_trade_detail_good_index = new_trade_detail_good_index
 
 	# Trade details
@@ -271,7 +277,6 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	const trade_detail_price_history_key : StringName = &"trade_detail_price_history"
 	const trade_detail_is_automated_key : StringName = &"trade_detail_is_automated"
 	const trade_detail_is_selling_key : StringName = &"trade_detail_is_selling" # or buying (false)
-	const trade_detail_slider_value_key : StringName = &"trade_detail_slider_value" # linear slider value
 	const trade_detail_slider_amount_key : StringName = &"trade_detail_slider_amount" # exponential good amount
 	const trade_detail_government_needs_key : StringName = &"trade_detail_government_needs"
 	const trade_detail_army_needs_key : StringName = &"trade_detail_army_needs"
@@ -281,7 +286,9 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 	const trade_detail_pop_needs_key : StringName = &"trade_detail_pop_needs"
 	const trade_detail_available_key : StringName = &"trade_detail_available"
 
-	var trade_info : Dictionary = MenuSingleton.get_trade_menu_trade_details_info(_trade_detail_good_index)
+	var trade_info : Dictionary = MenuSingleton.get_trade_menu_trade_details_info(
+		_trade_detail_good_index, _trade_detail_stockpile_slider_scrollbar if force_refresh else null
+	)
 
 	var trade_detail_good_name : String = trade_info.get(trade_detail_good_name_key, "")
 
@@ -322,28 +329,16 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 		_trade_detail_good_chart_time_label.add_substitution("MONTHS", str(price_history.size()))
 
 	var is_automated : bool = trade_info.get(trade_detail_is_automated_key, false)
-	var is_selling : bool = trade_info.get(trade_detail_is_selling_key, false)
 
 	if _trade_detail_automate_checkbox:
 		# Investigate whether set_pressed_no_signal can/should be used here
 		_trade_detail_automate_checkbox.set_pressed(is_automated)
 
-	if _trade_detail_buy_sell_stockpile_checkbox:
-		# Investigate whether set_pressed_no_signal can/should be used here
-		_trade_detail_buy_sell_stockpile_checkbox.set_pressed(is_selling)
+	if force_refresh:
+		_update_trade_order_buy_sell(trade_info.get(trade_detail_is_selling_key, false))
 
-	if _trade_detail_buy_sell_stockpile_label:
-		_trade_detail_buy_sell_stockpile_label.set_text("SELL" if is_selling else "BUY")
-
-	if _trade_detail_stockpile_slider_description_label:
-		_trade_detail_stockpile_slider_description_label.set_text("MINIMUM_STOCKPILE_TARGET" if is_selling else "MAXIMUM_STOCKPILE_TARGET")
-
-	if _trade_detail_stockpile_slider_scrollbar:
-		_trade_detail_stockpile_slider_scrollbar.set_value(trade_info.get(trade_detail_slider_value_key, 0), false)
-
-	if _trade_detail_stockpile_slider_amount_label:
-		var slider_amount : float = trade_info.get(trade_detail_slider_amount_key, 0)
-		_trade_detail_stockpile_slider_amount_label.set_text(GUINode.float_to_string_dp(slider_amount, 3 if slider_amount < 10.0 else 2))
+		if _trade_detail_stockpile_slider_amount_label:
+			_update_stockpile_slider_amount_label(trade_info.get(trade_detail_slider_amount_key, 0))
 
 	if _trade_detail_confirm_trade_button:
 		_trade_detail_confirm_trade_button.set_disabled(is_automated)
@@ -378,6 +373,20 @@ func _update_trade_details(new_trade_detail_good_index : int = -1) -> void:
 
 	if _trade_detail_good_available_label:
 		_trade_detail_good_available_label.add_substitution("VAL", GUINode.float_to_string_dp(trade_info.get(trade_detail_available_key, 0), 2))
+
+func _update_trade_order_buy_sell(is_selling : bool) -> void:
+	if _trade_detail_buy_sell_stockpile_checkbox:
+		# Investigate whether set_pressed_no_signal can/should be used here
+		_trade_detail_buy_sell_stockpile_checkbox.set_pressed(is_selling)
+
+	if _trade_detail_buy_sell_stockpile_label:
+		_trade_detail_buy_sell_stockpile_label.set_text("SELL" if is_selling else "BUY")
+
+	if _trade_detail_stockpile_slider_description_label:
+		_trade_detail_stockpile_slider_description_label.set_text("MINIMUM_STOCKPILE_TARGET" if is_selling else "MAXIMUM_STOCKPILE_TARGET")
+
+func _update_stockpile_slider_amount_label(slider_amount : float) -> void:
+	_trade_detail_stockpile_slider_amount_label.set_text(GUINode.float_to_string_dp(slider_amount, 3 if slider_amount < 10.0 else 2))
 
 func _change_table_sorting(table : Table, column : int) -> void:
 	if _table_sort_columns[table] != column:

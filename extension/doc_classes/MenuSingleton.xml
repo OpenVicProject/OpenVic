@@ -7,6 +7,12 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="calculate_trade_menu_stockpile_cutoff_amount" qualifiers="static">
+			<return type="float" />
+			<param index="0" name="slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="can_decrease_speed" qualifiers="const">
 			<return type="bool" />
 			<description>
@@ -183,6 +189,7 @@
 		<method name="get_trade_menu_trade_details_info" qualifiers="const">
 			<return type="Dictionary" />
 			<param index="0" name="trade_detail_good_index" type="int" />
+			<param index="1" name="stockpile_cutoff_slider" type="GUIScrollbar" />
 			<description>
 			</description>
 		</method>
