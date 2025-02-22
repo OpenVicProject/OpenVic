@@ -73,6 +73,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_value_scaled" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="increment_value">
 			<return type="void" />
 			<param index="0" name="signal" type="bool" default="true" />
@@ -115,6 +120,15 @@
 			<param index="0" name="new_range_limit_min" type="int" />
 			<param index="1" name="new_range_limit_max" type="int" />
 			<param index="2" name="signal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
+		<method name="set_range_limits_and_value">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_range_limit_min" type="int" />
+			<param index="1" name="new_range_limit_max" type="int" />
+			<param index="2" name="new_value" type="int" />
+			<param index="3" name="signal" type="bool" default="true" />
 			<description>
 			</description>
 		</method>

@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -105,14 +106,15 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	return ret;
 }
 
-Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const {
+Dictionary MenuSingleton::get_trade_menu_trade_details_info(
+	int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
+) const {
 	static const StringName trade_detail_good_name_key = "trade_detail_good_name";
 	static const StringName trade_detail_good_price_key = "trade_detail_good_price";
 	static const StringName trade_detail_good_base_price_key = "trade_detail_good_base_price";
 	static const StringName trade_detail_price_history_key = "trade_detail_price_history";
 	static const StringName trade_detail_is_automated_key = "trade_detail_is_automated";
 	static const StringName trade_detail_is_selling_key = "trade_detail_is_selling"; // or buying (false)
-	static const StringName trade_detail_slider_value_key = "trade_detail_slider_value"; // linear slider value
 	static const StringName trade_detail_slider_amount_key = "trade_detail_slider_amount"; // exponential good amount
 	static const StringName trade_detail_government_needs_key = "trade_detail_government_needs";
 	static const StringName trade_detail_army_needs_key = "trade_detail_army_needs";
@@ -163,8 +165,19 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail
 
 	ret[trade_detail_is_automated_key] = good_data.is_automated;
 	ret[trade_detail_is_selling_key] = good_data.is_selling;
-	// TODO - use exponential formula!
-	ret[trade_detail_slider_value_key] = (good_data.stockpile_cutoff / 2000).to_int32_t();
+	if (stockpile_cutoff_slider != nullptr) {
+		int32_t index = 0;
+
+		while (index < stockpile_cutoff_slider->get_max_value() && calculate_trade_menu_stockpile_cutoff_amount_fp(
+			index * stockpile_cutoff_slider->get_step_size()
+		) < good_data.stockpile_cutoff) {
+			++index;
+		}
+
+		// TODO - use a more efficient algorithm, e.g. some kind of binary search
+
+		stockpile_cutoff_slider->set_value(index, false);
+	}
 	ret[trade_detail_slider_amount_key] = good_data.stockpile_cutoff.to_float();
 	ret[trade_detail_government_needs_key] = good_data.government_needs.to_float();
 	ret[trade_detail_army_needs_key] = good_data.army_needs.to_float();
@@ -316,4 +329,10 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ret[common_market_key] = std::move(common_market);
 
 	return ret;
+}
+
+float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
+	ERR_FAIL_NULL_V(slider, 0.0f);
+
+	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp());
 }

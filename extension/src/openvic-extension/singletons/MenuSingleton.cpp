@@ -405,8 +405,9 @@ void MenuSingleton::_bind_methods() {
 
 	/* TRADE MENU */
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_good_categories_info);
-	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index" });
+	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index", "stockpile_cutoff_slider" });
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_tables_info);
+	OV_BIND_SMETHOD(calculate_trade_menu_stockpile_cutoff_amount, { "slider" });
 
 	BIND_ENUM_CONSTANT(TRADE_SETTING_NONE);
 	BIND_ENUM_CONSTANT(TRADE_SETTING_AUTOMATED);

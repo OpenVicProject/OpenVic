@@ -26,6 +26,7 @@ namespace OpenVic {
 	struct ModifierSum;
 	struct RuleSet;
 	struct LeaderInstance;
+	struct GUIScrollbar;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -239,8 +240,15 @@ namespace OpenVic {
 
 		/* TRADE MENU */
 		godot::Dictionary get_trade_menu_good_categories_info() const;
-		godot::Dictionary get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const;
+		godot::Dictionary get_trade_menu_trade_details_info(
+			int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
+		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
+		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
+			// TODO - replace this with: pow(2001, value / 2000) - 1
+			return value;
+		}
+		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
 		/* MILITARY MENU */
 		godot::Dictionary make_leader_dict(LeaderInstance const& leader);
