@@ -150,14 +150,46 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_specific_technology_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="technology_identifier" type="String" />
+			<description>
+				Returns the effects, point cost, unlock year, and prerequisite tech of the given technology, in a [Dictionary].
+			</description>
+		</method>
 		<method name="get_speed" qualifiers="const">
 			<return type="int" />
 			<description>
 			</description>
 		</method>
+		<method name="get_technology_menu_defines" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Returns a [Dictionary] with static defines for the technology menu.
+			</description>
+		</method>
+		<method name="get_technology_menu_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Returns a [Dictionary] with the dynamic state of the technology menu.
+			</description>
+		</method>
+		<method name="get_tooltip_condition_met" qualifiers="static">
+			<return type="String" />
+			<description>
+				Returns the colored symbol used by met tooltip conditions "(*)"
+			</description>
+		</method>
+		<method name="get_tooltip_condition_unmet" qualifiers="static">
+			<return type="String" />
+			<description>
+				Returns the colored symbol used by unmet tooltip conditions "(X)"
+			</description>
+		</method>
 		<method name="get_tooltip_separator" qualifiers="static">
 			<return type="String" />
 			<description>
+				Returns the symbol used to separate normal and extended tooltips.
 			</description>
 		</method>
 		<method name="get_topbar_info" qualifiers="const">

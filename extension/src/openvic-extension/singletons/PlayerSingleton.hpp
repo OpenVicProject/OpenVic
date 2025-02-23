@@ -50,6 +50,7 @@ namespace OpenVic {
 		// Budget
 
 		// Technology
+		void start_research(godot::String const& technology_identifier) const;
 
 		// Politics
 

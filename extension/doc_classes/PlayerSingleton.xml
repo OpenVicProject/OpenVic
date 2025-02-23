@@ -91,6 +91,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="start_research" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="technology_identifier" type="String" />
+			<description>
+			</description>
+		</method>
 		<method name="toggle_paused" qualifiers="const">
 			<return type="void" />
 			<description>

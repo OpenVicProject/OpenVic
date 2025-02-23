@@ -7,6 +7,7 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -39,6 +40,7 @@ void PlayerSingleton::_bind_methods() {
 	// Budget
 
 	// Technology
+	OV_BIND_METHOD(PlayerSingleton::start_research, { "technology_identifier" });
 
 	// Politics
 
@@ -213,6 +215,25 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 // Budget
 
 // Technology
+void PlayerSingleton::start_research(String const& technology_identifier) const {
+	ERR_FAIL_NULL(player_country);
+
+	GameSingleton& game_singleton = *GameSingleton::get_singleton();
+
+	Technology const* technology =
+		game_singleton.get_definition_manager().get_research_manager().get_technology_manager().get_technology_by_identifier(
+			Utilities::godot_to_std_string(technology_identifier)
+		);
+	ERR_FAIL_NULL(technology);
+
+	InstanceManager* instance_manager = game_singleton.get_instance_manager();
+	ERR_FAIL_NULL(instance_manager);
+
+	instance_manager->queue_game_action(
+		game_action_type_t::GAME_ACTION_START_RESEARCH,
+		std::pair<uint64_t, uint64_t> { player_country->get_index(), technology->get_index() }
+	);
+}
 
 // Politics
 
