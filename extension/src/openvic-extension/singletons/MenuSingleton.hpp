@@ -240,8 +240,7 @@ namespace OpenVic {
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
 		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
-			// TODO - replace this with: pow(2001, value / 2000) - 1
-			return value;
+			return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1();
 		}
 		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
