@@ -481,6 +481,7 @@ func _update_pop_filters() -> void:
 
 func _update_distributions():
 	const slice_identifier_key : StringName = &"identifier"
+	const slice_tooltip_key : StringName = &"tooltip"
 	const slice_colour_key : StringName = &"colour"
 	const slice_weight_key : StringName = &"weight"
 
@@ -515,13 +516,7 @@ func _update_distributions():
 				var colour_icon : GUIIcon = GUINode.get_gui_icon_from_node(child.get_node(^"./legend_color"))
 				if colour_icon:
 					colour_icon.set_modulate(distribution_row[slice_colour_key])
-					colour_icon.set_tooltip_string_and_substitution_dict(
-						"§Y$ID$§!: $PC$%" + "\nTEST: colour_icon",
-						{
-							"ID": distribution_row[slice_identifier_key],
-							"PC": GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 2)
-						}
-					)
+					colour_icon.set_tooltip_string(distribution_row[slice_tooltip_key])
 
 				var identifier_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
