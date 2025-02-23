@@ -36,7 +36,7 @@ Dictionary MenuSingleton::get_technology_menu_defines() const {
 		int32_t num_in_folder = 0;
 
 		PackedStringArray folder_areas {};
-		Array tech_folder_nested_array {}; // tech_identifiers has three levels of nested arrays :P
+		TypedArray<PackedStringArray> tech_folder_nested_array {}; // tech_identifiers has three levels of nested arrays :P
 		for (TechnologyArea const* area : folder.get_technology_areas()) {
 			folder_areas.push_back(Utilities::std_to_godot_string(area->get_identifier()));
 
@@ -68,20 +68,20 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 	TechnologyManager const& tech_manager = definition_manager.get_research_manager().get_technology_manager();
 
 	static const StringName tech_school_key = "tech_school";
-	static const StringName tech_school_mod_values = "tech_school_mod_values";
-	static const StringName tech_school_mod_icons = "tech_school_mod_icons";
-	static const StringName tech_school_mod_tt = "tech_school_mod_tt";
+	static const StringName tech_school_mod_values_key = "tech_school_mod_values";
+	static const StringName tech_school_mod_icons_key = "tech_school_mod_icons";
+	static const StringName tech_school_mod_tt_key = "tech_school_mod_tt";
 
 	static const StringName researched_technologies_key = "researched_technologies";
 	static const StringName researchable_technologies_key = "researchable_technologies";
 
-	static const StringName current_research_tech = "current_research_tech";
-	static const StringName current_research_cat = "current_research_cat";
-	static const StringName current_research_finish_date = "current_research_finish_date";
-	static const StringName current_research_invested = "current_research_invested";
-	static const StringName current_research_cost = "current_research_cost";
-	static const StringName current_research_effect_tt = "current_research_effect_tt";
-	static const StringName current_research_progress = "current_research_progress";
+	static const StringName current_research_tech_key = "current_research_tech";
+	static const StringName current_research_cat_key = "current_research_cat";
+	static const StringName current_research_finish_date_key = "current_research_finish_date";
+	static const StringName current_research_invested_key = "current_research_invested";
+	static const StringName current_research_cost_key = "current_research_cost";
+	static const StringName current_research_effect_tt_key = "current_research_effect_tt";
+	static const StringName current_research_progress_key = "current_research_progress";
 
 	Dictionary ret;
 
@@ -90,7 +90,7 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 		return ret;
 	}
 
-		TechnologySchool const* tech_school = country->get_tech_school();
+	TechnologySchool const* tech_school = country->get_tech_school();
 	if (tech_school == nullptr) {
 		tech_school = tech_manager.get_technology_school_by_index(0);
 	}
@@ -110,9 +110,9 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 				school_modifier_tt.push_back(_make_modifier_effect_tooltip(*research_bonus_effect, research_bonus_value));
 			}
 		}
-		ret[tech_school_mod_values] = std::move(school_modifier_values);
-		ret[tech_school_mod_icons] = std::move(school_modifier_icons);
-		ret[tech_school_mod_tt] = std::move(school_modifier_tt);
+		ret[tech_school_mod_values_key] = std::move(school_modifier_values);
+		ret[tech_school_mod_icons_key] = std::move(school_modifier_icons);
+		ret[tech_school_mod_tt_key] = std::move(school_modifier_tt);
 	}
 
 	PackedStringArray researched_technologies {};
@@ -130,15 +130,15 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 
 	Technology const* current_research = country->get_current_research();
 	if (current_research != nullptr) {
-		ret[current_research_tech] = Utilities::std_to_godot_string(current_research->get_identifier());
-		ret[current_research_cat] =
+		ret[current_research_tech_key] = Utilities::std_to_godot_string(current_research->get_identifier());
+		ret[current_research_cat_key] =
 			tr(Utilities::std_to_godot_string(current_research->get_area().get_folder().get_identifier())) + ", " +
 			tr(Utilities::std_to_godot_string(current_research->get_area().get_identifier()));
-		ret[current_research_finish_date] = Utilities::date_to_string(country->get_expected_research_completion_date());
-		ret[current_research_invested] = country->get_invested_research_points().to_int32_t();
-		ret[current_research_cost] = country->get_current_research_cost().to_int32_t();
-		ret[current_research_effect_tt] = _make_modifier_effects_tooltip(*current_research).trim_prefix("\n");
-		ret[current_research_progress] = country->get_research_progress().to_float();
+		ret[current_research_finish_date_key] = Utilities::date_to_string(country->get_expected_research_completion_date());
+		ret[current_research_invested_key] = country->get_invested_research_points().to_int32_t();
+		ret[current_research_cost_key] = country->get_current_research_cost().to_int32_t();
+		ret[current_research_effect_tt_key] = _make_modifier_effects_tooltip(*current_research).trim_prefix("\n");
+		ret[current_research_progress_key] = country->get_research_progress().to_float();
 	}
 
 	return ret;
@@ -147,7 +147,7 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 Dictionary MenuSingleton::get_specific_technology_info(String technology_identifier) const {
 	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 
-	static const StringName effect_tooltip_key = "effects";
+	static const StringName effect_tooltip_key = "effects_tooltip";
 	static const StringName research_points_key = "research_points";
 	static const StringName start_year_key = "start_year";
 	static const StringName prerequisite_key = "prerequisite";
