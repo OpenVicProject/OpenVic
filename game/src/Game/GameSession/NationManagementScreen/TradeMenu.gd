@@ -408,8 +408,6 @@ func _change_table_sorting(table : Table, column : int) -> void:
 	else:
 		_table_sort_directions[table] = SORT_ASCENDING if _table_sort_directions[table] == SORT_DESCENDING else SORT_DESCENDING
 
-	print("Sorting table ", TABLE_NAMES[table], " by column ", column, " ", "ascending" if _table_sort_directions[table] == SORT_ASCENDING else "descending")
-
 	_sort_table(table)
 
 func _sort_table(table : Table) -> void:
@@ -417,23 +415,13 @@ func _sort_table(table : Table) -> void:
 	if column == TABLE_UNSORTED:
 		return
 
-	var listbox : GUIListBox = _table_listboxes[table]
 	var sort_key : StringName = TABLE_COLUMN_KEYS[column]
-	var descending : bool = _table_sort_directions[table] == SORT_DESCENDING
 
-	var items : Array[Node] = listbox.get_children()
-
-	for child : Node in items:
-		listbox.remove_child(child)
-
-	items.sort_custom(
+	_table_listboxes[table].sort_children(
 		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) > b.get_meta(sort_key))
-		if descending else
+		if _table_sort_directions[table] == SORT_DESCENDING else
 		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) < b.get_meta(sort_key))
 	)
-
-	for child : Node in items:
-		listbox.add_child(child)
 
 func _float_to_string_suffixed_dp(value : float, decimals : int) -> String:
 	if value < 1000:

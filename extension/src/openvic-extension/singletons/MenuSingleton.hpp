@@ -103,14 +103,7 @@ namespace OpenVic {
 			TRADE_SETTING_NONE = 0, TRADE_SETTING_AUTOMATED = 1, TRADE_SETTING_BUYING = 2, TRADE_SETTING_SELLING = 4
 		};
 
-		enum LeaderSortKey {
-			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
-			MAX_LEADER_SORT_KEY
-		};
 		ordered_map<LeaderInstance const*, godot::Dictionary> cached_leader_dicts;
-		enum UnitGroupSortKey {
-			UNIT_GROUP_SORT_NONE, UNIT_GROUP_SORT_NAME, UNIT_GROUP_SORT_STRENGTH, MAX_UNIT_GROUP_SORT_KEY
-		};
 
 		struct search_panel_t {
 			struct entry_t {
@@ -255,11 +248,7 @@ namespace OpenVic {
 		template<UnitType::branch_t Branch>
 		godot::Dictionary make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group);
 		godot::Dictionary make_in_progress_unit_dict() const;
-		godot::Dictionary get_military_menu_info(
-			LeaderSortKey leader_sort_key, bool sort_leaders_descending,
-			UnitGroupSortKey army_sort_key, bool sort_armies_descending,
-			UnitGroupSortKey navy_sort_key, bool sort_navies_descending
-		);
+		godot::Dictionary get_military_menu_info();
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
@@ -275,5 +264,3 @@ namespace OpenVic {
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::TradeSettingBit);
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::LeaderSortKey);
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::UnitGroupSortKey);
