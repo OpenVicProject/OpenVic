@@ -463,7 +463,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	case SORT_UNEMPLOYMENT:
 		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_unemployment() < b->get_unemployment();
+			return a->get_unemployment_fraction() < b->get_unemployment_fraction();
 		};
 	case SORT_CASH:
 		return [](Pop const* a, Pop const* b) -> bool {
@@ -734,7 +734,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
 		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_ideology_distribution());
 		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_issue_distribution());
-		pop_dict[pop_unemployment_key] = pop->get_unemployment().to_float();
+		pop_dict[pop_unemployment_key] = pop->get_unemployment_fraction().to_float();
 		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
 		pop_dict[pop_daily_money_key] = pop->get_income().to_float();
 		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
