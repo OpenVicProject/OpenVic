@@ -26,11 +26,11 @@ namespace OpenVic::Utilities {
 		return file->get_buffer(size).get_string_from_ascii();
 	}
 
-	godot::String int_to_string_suffixed(int64_t val);
+	godot::String int_to_string_suffixed(int64_t val, godot::String const& post_number_string = {});
 
 	godot::String int_to_string_commas(int64_t val);
 
-	godot::String float_to_string_suffixed(float val);
+	godot::String float_to_string_suffixed(float val, godot::String const& post_number_string = {});
 
 	godot::String float_to_string_dp(float val, int32_t decimal_places);
 

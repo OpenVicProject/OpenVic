@@ -484,10 +484,10 @@ func _update_info() -> void:
 		# TODO - suffixes on both numbers should be white!
 		var total_population : int = 16000000
 		var growth : int = 1500
-		_population_total_size_label.set_text("§Y%s§!(§%s%s§!)" % [
-			GUINode.int_to_string_suffixed(total_population),
+		_population_total_size_label.set_text("§Y%s(§%s%s)" % [
+			GUINode.int_to_string_suffixed(total_population, "§!"),
 			"G" if growth >= 0 else "R",
-			GUINode.int_to_string_suffixed(growth),
+			GUINode.int_to_string_suffixed(growth, "§!"),
 		])
 
 	if _population_national_foci_label:
