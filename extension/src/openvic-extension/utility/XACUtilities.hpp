@@ -72,10 +72,7 @@ namespace OpenVic {
 
 	#pragma pack(pop)
 
-	using namespace godot;
-	using namespace OpenVic;
-
-	static bool read_string(Ref<FileAccess> const& file, String& str, bool replace_chars = true, bool log = false) {
+	static bool read_string(godot::Ref<godot::FileAccess> const& file, godot::String& str, bool replace_chars = true, bool log = false) {
 		//string = uint32 len, char[len]
 		uint32_t length = file->get_32();
 		if (file->get_length() - file->get_position() < length) {
@@ -84,7 +81,7 @@ namespace OpenVic {
 
 		str = file->get_buffer(length).get_string_from_ascii();
 		if (log) {
-			UtilityFunctions::print(vformat("before %s", str));
+			godot::UtilityFunctions::print(vformat("before %s", str));
 		}
 		if (replace_chars) {
 			str = str.replace(":", "_");
@@ -92,13 +89,13 @@ namespace OpenVic {
 			str = str.replace("/", "_");
 		}
 		if (log) {
-			UtilityFunctions::print(vformat("after %s", str));
+			godot::UtilityFunctions::print(vformat("after %s", str));
 		} 
 		return true;
 	}
 
 	template<typename T>
-	static bool read_struct(Ref<FileAccess> const& file, T& t) {
+	static bool read_struct(godot::Ref<godot::FileAccess> const& file, T& t) {
 		if (file->get_length() - file->get_position() < sizeof(T)) {
 			return false;
 		}
@@ -108,7 +105,7 @@ namespace OpenVic {
 
 	//Warning: works on the assumption of it being a packed struct being loaded into the array
 	template<typename T>
-	static bool read_struct_array(Ref<FileAccess> const& file, std::vector<T>& t, uint32_t size) {
+	static bool read_struct_array(godot::Ref<godot::FileAccess> const& file, std::vector<T>& t, uint32_t size) {
 		if (file->get_length() - file->get_position() < size*sizeof(T)) {
 			return false;
 		}
@@ -117,27 +114,27 @@ namespace OpenVic {
 		return res;
 	}
 
-	static bool read_chunk_header(Ref<FileAccess> const& file, chunk_header_t& header) {
+	static bool read_chunk_header(godot::Ref<godot::FileAccess> const& file, chunk_header_t& header) {
 		//ERR_FAIL_COND_V(!read_struct(file, header), false);
 		bool res = read_struct(file, header);
 
-		//UtilityFunctions::print(
+		//godot::UtilityFunctions::print(
 		//	vformat("XAC/XSM chunk: type = %x, length = %x, version = %d, successful? %s", header.type, header.length, header.version, res)
 		//);
 
 		return res;
 	}
 
-	static Vector2 vec2d_to_godot(vec2d_t const& vec2_in) {
-		Vector2 vec2_out = {
+	static godot::Vector2 vec2d_to_godot(vec2d_t const& vec2_in) {
+		godot::Vector2 vec2_out = {
 			vec2_in.x,
 			vec2_in.y
 		};
 		return vec2_out;
 	}
 
-	static Vector3 vec3d_to_godot(vec3d_t const& vec3_in, bool is_position = false) {
-		Vector3 vec3_out = {
+	static godot::Vector3 vec3d_to_godot(vec3d_t const& vec3_in, bool is_position = false) {
+		godot::Vector3 vec3_out = {
 			vec3_in.x,
 			vec3_in.y,
 			vec3_in.z
@@ -148,8 +145,8 @@ namespace OpenVic {
 		return vec3_out;
 	}
 
-	static Vector4 vec4d_to_godot(vec4d_t const& vec4_in) {
-		Vector4 vec4_out = {
+	static godot::Vector4 vec4d_to_godot(vec4d_t const& vec4_in) {
+		godot::Vector4 vec4_out = {
 			vec4_in.x,
 			vec4_in.y,
 			vec4_in.z,
@@ -158,37 +155,37 @@ namespace OpenVic {
 		return vec4_out;
 	}
 
-	static Quaternion quat_v1_to_godot(quat_v1_t const& quat_in) {
-		Quaternion quat_out = Quaternion(
+	static godot::Quaternion quat_v1_to_godot(quat_v1_t const& quat_in) {
+		godot::Quaternion quat_out = godot::Quaternion(
 			quat_in.x,
 			-quat_in.y,
 			-quat_in.z,
 			quat_in.w
 		);
 		if (!quat_out.is_normalized()) {
-			quat_out = Quaternion();
+			quat_out = godot::Quaternion();
 		}
 		return quat_out;
 	}
 
-	static Quaternion quat_v2_to_godot(quat_v2_t const& quat_in) {
+	static godot::Quaternion quat_v2_to_godot(quat_v2_t const& quat_in) {
 		static const float scale = 32767;
-		Quaternion quat_out = Quaternion(
+		godot::Quaternion quat_out = godot::Quaternion(
 			static_cast<float>(quat_in.x) / scale,
 			static_cast<float>(-quat_in.y) / scale,
 			static_cast<float>(-quat_in.z) / scale,
 			static_cast<float>(quat_in.w) / scale
 		);
 		if (!quat_out.is_normalized()) {
-			quat_out = Quaternion();
+			quat_out = godot::Quaternion();
 		}
 		
 		return quat_out;
 	}
 
-	static Color color_32_to_godot(color_32_t const& color_in) {
+	static godot::Color color_32_to_godot(color_32_t const& color_in) {
 		static const float scale = 256;
-		Color color_out = {
+		godot::Color color_out = {
 			(float)color_in.r / scale, 
 			(float)color_in.g / scale, 
 			(float)color_in.b / scale, 
@@ -198,9 +195,9 @@ namespace OpenVic {
 	}
 
 	//TODO: verify this conversion is correct >> don't think it is
-	static Color color_128_to_godot(color_128_t const& color_in) {
+	static godot::Color color_128_to_godot(color_128_t const& color_in) {
 		static const double scale = 2147483647;
-		Color color_out = {
+		godot::Color color_out = {
 			static_cast<float>(color_in.r / scale),
 			static_cast<float>(color_in.g / scale),
 			static_cast<float>(color_in.b / scale),
@@ -209,8 +206,8 @@ namespace OpenVic {
 		return color_out;
 	}
 
-	static Color vec4d_to_godot_color(vec4d_t const& color_in) {
-		Color color_out = {
+	static godot::Color vec4d_to_godot_color(vec4d_t const& color_in) {
+		godot::Color color_out = {
 			color_in.x,
 			color_in.y,
 			color_in.z,

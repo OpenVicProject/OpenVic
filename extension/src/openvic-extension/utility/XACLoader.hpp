@@ -211,15 +211,15 @@ namespace OpenVic {
 
 	struct xac_metadata_v2_t {
 		xac_metadata_v2_pack_t packed = {};
-		String source_app;
-		String original_file_name;
-		String export_date;
-		String actor_name;
+		godot::String source_app;
+		godot::String original_file_name;
+		godot::String export_date;
+		godot::String actor_name;
 	};
 
 	struct node_data_t { //v1
 		node_data_pack_t packed = {};
-		String name;
+		godot::String name;
 	};
 
 	struct node_hierarchy_t { //v1
@@ -229,12 +229,12 @@ namespace OpenVic {
 
 	struct material_layer_t {
 		material_layer_pack_t packed = {};
-		String texture;
+		godot::String texture;
 	};
 
 	struct material_definition_t {
 		material_definition_pack_t packed = {};
-		String name;
+		godot::String name;
 		std::vector<material_layer_t> layers;
 	};
 
@@ -265,21 +265,21 @@ namespace OpenVic {
 
 	struct node_chunk_t {
 		node_chunk_pack_t packed = {};
-		String name;
+		godot::String name;
 	};
 
-	static bool read_xac_header(Ref<FileAccess> const& file) {
+	static bool read_xac_header(godot::Ref<godot::FileAccess> const& file) {
 		xac_header_t header = {};
 		ERR_FAIL_COND_V(!read_struct(file, header), false);
 
 		ERR_FAIL_COND_V_MSG(
-			header.format_identifier != XAC_FORMAT_SPECIFIER, false, vformat(
+			header.format_identifier != XAC_FORMAT_SPECIFIER, false, godot::vformat(
 				"Invalid XAC format identifier: %x (should be %x)", header.format_identifier, XAC_FORMAT_SPECIFIER
 			)
 		);
 
 		ERR_FAIL_COND_V_MSG(
-			header.version_major != XAC_VERSION_MAJOR || header.version_minor != XAC_VERSION_MINOR, false, vformat(
+			header.version_major != XAC_VERSION_MAJOR || header.version_minor != XAC_VERSION_MINOR, false, godot::vformat(
 				"Invalid XAC version: %d.%d (should be %d.%d)",
 				header.version_major, header.version_minor, XAC_VERSION_MAJOR, XAC_VERSION_MINOR
 			)
@@ -296,7 +296,7 @@ namespace OpenVic {
 		return true;
 	}
 
-	static bool read_xac_metadata(Ref<FileAccess> const& file, xac_metadata_v2_t& metadata) {
+	static bool read_xac_metadata(godot::Ref<godot::FileAccess> const& file, xac_metadata_v2_t& metadata) {
 		bool ret = read_struct(file, metadata.packed);
 		ret &= read_string(file, metadata.source_app, false);
 		ret &= read_string(file, metadata.original_file_name, false);
@@ -305,13 +305,13 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_node_data(Ref<FileAccess> const& file, node_data_t& node_data) {
+	static bool read_node_data(godot::Ref<godot::FileAccess> const& file, node_data_t& node_data) {
 		bool ret = read_struct(file, node_data.packed);
 		ret &= read_string(file, node_data.name);
 		return ret;
 	}
 
-	static bool read_node_hierarchy(Ref<FileAccess> const& file, node_hierarchy_t& hierarchy) {
+	static bool read_node_hierarchy(godot::Ref<godot::FileAccess> const& file, node_hierarchy_t& hierarchy) {
 		bool ret = read_struct(file, hierarchy.packed);
 		for(int32_t i=0; i<hierarchy.packed.node_count; i++) {
 			node_data_t node;
@@ -321,11 +321,11 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_material_totals(Ref<FileAccess> const& file, material_totals_t& totals) {
+	static bool read_material_totals(godot::Ref<godot::FileAccess> const& file, material_totals_t& totals) {
 		return read_struct(file, totals);
 	}
 
-	static bool read_layer(Ref<FileAccess> const& file, material_layer_t& layer) {
+	static bool read_layer(godot::Ref<godot::FileAccess> const& file, material_layer_t& layer) {
 		bool ret = true;
 		ret &= read_struct(file, layer.packed);
 		ret &= read_string(file, layer.texture, false);
@@ -333,7 +333,7 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_material_definition(Ref<FileAccess> const& file, material_definition_t& def, int32_t version) {
+	static bool read_material_definition(godot::Ref<godot::FileAccess> const& file, material_definition_t& def, int32_t version) {
 		bool ret = read_struct(file, def.packed);
 		ret &= read_string(file, def.name, false);
 		if (version > 1) { //in version 1, the layers are defined in separate chunks of type 0x4
@@ -346,20 +346,20 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_vertices_attribute(Ref<FileAccess> const& file, vertices_attribute_t& attribute, int32_t vertices_count) {
+	static bool read_vertices_attribute(godot::Ref<godot::FileAccess> const& file, vertices_attribute_t& attribute, int32_t vertices_count) {
 		bool ret = read_struct(file, attribute.packed);
 		ret &= read_struct_array(file, attribute.data, vertices_count*attribute.packed.attribute_size);
 		return ret;
 	}
 
-	static bool read_submesh(Ref<FileAccess> const& file, submesh_t& submesh) {
+	static bool read_submesh(godot::Ref<godot::FileAccess> const& file, submesh_t& submesh) {
 		bool ret = read_struct(file, submesh.packed);
 		ret &= read_struct_array(file, submesh.relative_indices, submesh.packed.indices_count);
 		ret &= read_struct_array(file, submesh.bone_ids, submesh.packed.bones_count);
 		return ret;
 	}
 
-	static bool read_mesh(Ref<FileAccess> const& file, mesh_t& mesh) {
+	static bool read_mesh(godot::Ref<godot::FileAccess> const& file, mesh_t& mesh) {
 		bool ret = read_struct(file, mesh.packed);
 		for(int i=0; i<mesh.packed.attribute_layers_count; i++) {
 			vertices_attribute_t attribute;
@@ -374,7 +374,7 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_skinning(Ref<FileAccess> const& file, skinning_t& skin, std::vector<mesh_t> const& meshes, int32_t version) {
+	static bool read_skinning(godot::Ref<godot::FileAccess> const& file, skinning_t& skin, std::vector<mesh_t> const& meshes, int32_t version) {
 		bool ret = read_struct(file, skin.node_id);
 		if (version == 3) {
 			ret &= read_struct(file, skin.local_bones_count);
@@ -393,7 +393,7 @@ namespace OpenVic {
 		return ret;
 	}
 
-	static bool read_node_chunk(Ref<FileAccess> const& file, node_chunk_t& node) {
+	static bool read_node_chunk(godot::Ref<godot::FileAccess> const& file, node_chunk_t& node) {
 		bool ret = read_struct(file, node.packed);
 		ret &= read_string(file, node.name);
 		//Logger::info(Utilities::godot_to_std_string(node.name));
@@ -408,10 +408,10 @@ namespace OpenVic {
 	*/
 
 	//TODO: Verify
-	static Transform3D make_transform(vec3d_t const& position, quat_v1_t const& quaternion, vec3d_t const& scale) {
-		Transform3D transform = Transform3D();
+	static godot::Transform3D make_transform(vec3d_t const& position, quat_v1_t const& quaternion, vec3d_t const& scale) {
+		godot::Transform3D transform = godot::Transform3D();
 
-		Basis basis = Basis();
+		godot::Basis basis = godot::Basis();
 		basis.set_quaternion(quat_v1_to_godot(quaternion));
 		basis.scale(vec3d_to_godot(scale));
 
@@ -422,9 +422,9 @@ namespace OpenVic {
 	}
 
 	//TODO: do we want to use node's bone id instead of current_id?
-	static Skeleton3D* build_armature_hierarchy(node_hierarchy_t const& hierarchy) {
-		static const StringName skeleton_name = "skeleton";
-		Skeleton3D* skeleton = memnew(Skeleton3D);
+	static godot::Skeleton3D* build_armature_hierarchy(node_hierarchy_t const& hierarchy) {
+		static const godot::StringName skeleton_name = "skeleton";
+		godot::Skeleton3D* skeleton = memnew(godot::Skeleton3D);
 		skeleton->set_name(skeleton_name);
 
 		uint32_t current_id = 0;
@@ -433,7 +433,7 @@ namespace OpenVic {
 			skeleton->add_bone(node.name);
 			skeleton->set_bone_parent(current_id, node.packed.parent_node_id);
 			
-			Transform3D transform = make_transform(node.packed.position, node.packed.rotation, node.packed.scale);
+			godot::Transform3D transform = make_transform(node.packed.position, node.packed.rotation, node.packed.scale);
 			skeleton->set_bone_rest(current_id, transform);
 			skeleton->set_bone_pose(current_id, transform);
 
@@ -443,9 +443,9 @@ namespace OpenVic {
 		return skeleton;
 	}
 
-	static Skeleton3D* build_armature_nodes(std::vector<node_chunk_t> const& nodes) {
-		static const StringName skeleton_name = "skeleton";
-		Skeleton3D* skeleton = memnew(Skeleton3D);
+	static godot::Skeleton3D* build_armature_nodes(std::vector<node_chunk_t> const& nodes) {
+		static const godot::StringName skeleton_name = "skeleton";
+		godot::Skeleton3D* skeleton = memnew(godot::Skeleton3D);
 		skeleton->set_name(skeleton_name);
 
 		uint32_t current_id = 0;
@@ -454,7 +454,7 @@ namespace OpenVic {
 			skeleton->add_bone(node.name);
 			skeleton->set_bone_parent(current_id, node.packed.parent_node_id);
 			
-			Transform3D transform = make_transform(node.packed.position, node.packed.rotation, node.packed.scale);
+			godot::Transform3D transform = make_transform(node.packed.position, node.packed.rotation, node.packed.scale);
 			skeleton->set_bone_rest(current_id, transform);
 			skeleton->set_bone_pose(current_id, transform);
 
@@ -476,20 +476,20 @@ namespace OpenVic {
 
 	struct material_mapping {
 		//-1 means unused
-		Ref<Material> godot_material;
+		godot::Ref<godot::Material> godot_material;
 		int32_t diffuse_texture_index = -1;
 		int32_t specular_texture_index = -1;
 		int32_t scroll_index = -1;
 	};
 
-	static Error setup_flag_shader() {
-		Error result = OK;
+	static godot::Error setup_flag_shader() {
+		godot::Error result = godot::OK;
 		GameSingleton const* game_singleton = GameSingleton::get_singleton();
 		ERR_FAIL_NULL_V(game_singleton, {});
 		
-		static const StringName Param_flag_dimensions = "flag_dims";
-		static const StringName Param_flag_texture_sheet = "texture_flag_sheet_diffuse";
-		static const Ref<ShaderMaterial> flag_shader = ResourcePreloader().get_resource("res://src/Game/Model/flag_mat.tres");
+		static const godot::StringName Param_flag_dimensions = "flag_dims";
+		static const godot::StringName Param_flag_texture_sheet = "texture_flag_sheet_diffuse";
+		static const godot::Ref<godot::ShaderMaterial> flag_shader = godot::ResourcePreloader().get_resource("res://src/Game/Model/flag_mat.tres");
 
 		flag_shader->set_shader_parameter(Param_flag_dimensions, game_singleton->get_flag_dims());
 		flag_shader->set_shader_parameter(Param_flag_texture_sheet, game_singleton->get_flag_sheet_texture());
@@ -498,40 +498,40 @@ namespace OpenVic {
 
 	static std::vector<material_mapping> build_materials(std::vector<material_definition_t> const& materials) {
 		
-		static const StringName Textures_path = "gfx/anims/%s.dds";
+		static const godot::StringName Textures_path = "gfx/anims/%s.dds";
 
 		// Parameters for the default model shader
-		static const StringName Param_texture_diffuse = "texture_diffuse";
+		static const godot::StringName Param_texture_diffuse = "texture_diffuse";
 		//red channel is specular, green and blue are nation colours
-		static const StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
+		static const godot::StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
 
 		// Scrolling textures (smoke, tank tracks)
-		static const StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
-		static const StringName Param_Scroll_factor = "scroll_factor";
-		static Dictionary SCROLLING_MATERIAL_FACTORS;
+		static const godot::StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
+		static const godot::StringName Param_Scroll_factor = "scroll_factor";
+		static godot::Dictionary SCROLLING_MATERIAL_FACTORS;
 		SCROLLING_MATERIAL_FACTORS["TexAnim"] = 2.5;
 		SCROLLING_MATERIAL_FACTORS["Smoke"] = 0.3;
 
-		static PackedStringArray Scrolling_textures_diffuse;
-		static PackedStringArray unit_textures_diffuse;
-		static PackedStringArray unit_textures_specular;
+		static godot::PackedStringArray Scrolling_textures_diffuse;
+		static godot::PackedStringArray unit_textures_diffuse;
+		static godot::PackedStringArray unit_textures_specular;
 
 		// Flag textures
 
-		static const StringName Param_texture_normal = "texture_normal";
+		static const godot::StringName Param_texture_normal = "texture_normal";
 
 		//General
 		static const uint32_t MAX_UNIT_TEXTURES = 32;
 
-		static const StringName Texture_skip_nospec = "nospec";
-		static const StringName Texture_skip_flag = "unionjacksquare";
-		static const StringName Texture_skip_diff = "test256texture";
+		static const godot::StringName Texture_skip_nospec = "nospec";
+		static const godot::StringName Texture_skip_flag = "unionjacksquare";
+		static const godot::StringName Texture_skip_diff = "test256texture";
 
-		ResourceLoader* loader = ResourceLoader::get_singleton();
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();
 
-		static const Ref<ShaderMaterial> unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
-		static const Ref<ShaderMaterial> scrolling_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
-		static const Ref<ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
+		static const godot::Ref<godot::ShaderMaterial> unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
+		static const godot::Ref<godot::ShaderMaterial> scrolling_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
+		static const godot::Ref<godot::ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
 		
 		
 		std::vector<material_mapping> mappings;
@@ -542,9 +542,9 @@ namespace OpenVic {
 		//	***	Collect the textures ***
 		
 		for(material_definition_t const& mat : materials) {
-			String diffuse_name;
-			String specular_name;
-			String normal_name;
+			godot::String diffuse_name;
+			godot::String specular_name;
+			godot::String normal_name;
 
 			for(material_layer_t const& layer : mat.layers) {
 				if (layer.texture == Texture_skip_diff || layer.texture == Texture_skip_flag || layer.texture == Texture_skip_nospec) {
@@ -583,26 +583,26 @@ namespace OpenVic {
 						break;
 					default:
 						//Logger::warning("Unknown layer type: ", layer.packed.map_type);
-						UtilityFunctions::print(
-							vformat("Unknown layer type: %x", layer.packed.map_type)
+						godot::UtilityFunctions::print(
+							godot::vformat("Unknown layer type: %x", layer.packed.map_type)
 						);
 						break;
 				}
 			}
 
-			Ref<ImageTexture> diffuse_texture;
-			Ref<ImageTexture> specular_texture;
-			Ref<ImageTexture> normal_texture;
+			godot::Ref<godot::ImageTexture> diffuse_texture;
+			godot::Ref<godot::ImageTexture> specular_texture;
+			godot::Ref<godot::ImageTexture> normal_texture;
 			material_mapping mapping;
 
 			if (!diffuse_name.is_empty()) {
-				diffuse_texture = asset_manager->get_texture(vformat(Textures_path, diffuse_name));
+				diffuse_texture = asset_manager->get_texture(godot::vformat(Textures_path, diffuse_name));
 			} 
 			if (!specular_name.is_empty()) {
-				specular_texture = asset_manager->get_texture(vformat(Textures_path, specular_name));
+				specular_texture = asset_manager->get_texture(godot::vformat(Textures_path, specular_name));
 			}
 			if (!normal_name.is_empty()) {
-				normal_texture = asset_manager->get_texture(vformat(Textures_path, normal_name));
+				normal_texture = asset_manager->get_texture(godot::vformat(Textures_path, normal_name));
 			}
 
 			// *** Determine the correct material to use, and set it up ***
@@ -619,11 +619,11 @@ namespace OpenVic {
 				if (scroll_textures_index_diffuse < 0) {
 					Scrolling_textures_diffuse.push_back(diffuse_name);
 					//err check
-					TypedArray<ImageTexture> scroll_diffuse_textures = scrolling_shader->get_shader_parameter(Param_Scroll_texture_diffuse);
+					godot::TypedArray<godot::ImageTexture> scroll_diffuse_textures = scrolling_shader->get_shader_parameter(Param_Scroll_texture_diffuse);
 					scroll_diffuse_textures.push_back(diffuse_texture);
 					scrolling_shader->set_shader_parameter(Param_Scroll_texture_diffuse, scroll_diffuse_textures);
 
-					PackedFloat32Array scroll_factors = scrolling_shader->get_shader_parameter(Param_Scroll_factor);
+					godot::PackedFloat32Array scroll_factors = scrolling_shader->get_shader_parameter(Param_Scroll_factor);
 
 					scroll_factors.push_back(SCROLLING_MATERIAL_FACTORS[mat.name]);
 					scrolling_shader->set_shader_parameter(Param_Scroll_factor, scroll_factors);
@@ -642,7 +642,7 @@ namespace OpenVic {
 					if (unit_textures_diffuse.size() >= MAX_UNIT_TEXTURES) {
 						Logger::error("Number of diffuse textures exceeded max supported by a shader!");
 					}
-					TypedArray<ImageTexture> diffuse_textures = unit_shader->get_shader_parameter(Param_texture_diffuse);
+					godot::TypedArray<godot::ImageTexture> diffuse_textures = unit_shader->get_shader_parameter(Param_texture_diffuse);
 					diffuse_textures.push_back(diffuse_texture);
 					textures_index_diffuse = diffuse_textures.size() - 1;
 					unit_shader->set_shader_parameter(Param_texture_diffuse, diffuse_textures);
@@ -653,7 +653,7 @@ namespace OpenVic {
 					if (unit_textures_specular.size() >= MAX_UNIT_TEXTURES) {
 						Logger::error("Number of specular textures exceeded max supported by a shader!");
 					}
-					TypedArray<ImageTexture> specular_textures = unit_shader->get_shader_parameter(Param_texture_nation_colors_mask);
+					godot::TypedArray<godot::ImageTexture> specular_textures = unit_shader->get_shader_parameter(Param_texture_nation_colors_mask);
 					//Logger::info(specular_textures[0].)
 					specular_textures.push_back(specular_texture);
 					textures_index_specular = specular_textures.size() - 1;
@@ -674,7 +674,7 @@ namespace OpenVic {
 
 	/*
 	====================================
-	Mesh helper functions
+	godot::Mesh helper functions
 
 	====================================
 	*/
@@ -704,13 +704,13 @@ namespace OpenVic {
 		std::memcpy(target.data(),source.data(),source.size());
 	}
 
-	static MeshInstance3D* build_mesh(mesh_t const& mesh_chunk, skinning_t* skin, std::vector<material_mapping> const& materials) {
+	static godot::MeshInstance3D* build_mesh(mesh_t const& mesh_chunk, skinning_t* skin, std::vector<material_mapping> const& materials) {
 		static const uint32_t EXTRA_CULL_MARGIN = 2;
 
-		MeshInstance3D* mesh_inst = memnew(MeshInstance3D);
+		godot::MeshInstance3D* mesh_inst = memnew(godot::MeshInstance3D);
 		mesh_inst->set_extra_cull_margin(EXTRA_CULL_MARGIN);
 
-		Ref<ArrayMesh> mesh = Ref<ArrayMesh>();
+		godot::Ref<godot::ArrayMesh> mesh = godot::Ref<godot::ArrayMesh>();
 		mesh.instantiate();
 
 		std::vector<vec3d_t> verts = {};
@@ -743,7 +743,7 @@ namespace OpenVic {
 					break;
 				case ATTRIBUTE::INFLUENCE_RANGE:
 					if (skin == nullptr) {
-						Logger::warning("Mesh chunk has influence attribute but no corresponding skinning chunk");
+						Logger::warning("godot::Mesh chunk has influence attribute but no corresponding skinning chunk");
 						break;
 					}
 					convert_data(influence_range_indices, attribute.data);
@@ -762,22 +762,22 @@ namespace OpenVic {
 		
 
 		uint32_t vert_total = 0;
-		static const StringName key_diffuse = "tex_index_diffuse";
-		static const StringName key_specular = "tex_index_specular";
-		static const StringName key_scroll = "scroll_tex_index_diffuse";
+		static const godot::StringName key_diffuse = "tex_index_diffuse";
+		static const godot::StringName key_specular = "tex_index_specular";
+		static const godot::StringName key_scroll = "scroll_tex_index_diffuse";
 
 		//for now we treat a submesh as a godot mesh surface
 		for(submesh_t submesh : mesh_chunk.submeshes) {
-			Array arrs; //surface vertex data arrays
-			ERR_FAIL_COND_V(arrs.resize(Mesh::ARRAY_MAX) != OK, {});
+			godot::Array arrs; //surface vertex data arrays
+			ERR_FAIL_COND_V(arrs.resize(godot::Mesh::ARRAY_MAX) != godot::OK, {});
 
-			PackedVector3Array verts_submesh = {};
-			PackedVector3Array normals_submesh = {};
-			PackedFloat32Array tangents_submesh = {};
-			PackedVector2Array uv1_submesh = {};
-			PackedVector2Array uv2_submesh = {};
-			PackedInt32Array bone_ids = {};
-			PackedFloat32Array weights = {};
+			godot::PackedVector3Array verts_submesh = {};
+			godot::PackedVector3Array normals_submesh = {};
+			godot::PackedFloat32Array tangents_submesh = {};
+			godot::PackedVector2Array uv1_submesh = {};
+			godot::PackedVector2Array uv2_submesh = {};
+			godot::PackedInt32Array bone_ids = {};
+			godot::PackedFloat32Array weights = {};
 			//godot uses a fixed 4 bones influencing a vertex, so size the array accordingly
 			bone_ids.resize(submesh.relative_indices.size()*4);
 			bone_ids.fill(0);
@@ -813,7 +813,7 @@ namespace OpenVic {
 				if (skin != nullptr && influence_range_indices.size() > index) {
 					uint32_t const& influence_range_ind = influence_range_indices[index];
 					uint32_t const& influences_ind = skin->influence_ranges[influence_range_ind].first_influence_index;
-					uint32_t influences_count = Math::min(skin->influence_ranges[influence_range_ind].influences_count, 4);
+					uint32_t influences_count = godot::Math::min(skin->influence_ranges[influence_range_ind].influences_count, 4);
 
 					for(int i = 0; i < influences_count; i++) {
 						bone_ids[rel_ind + i] = skin->influence_data[influences_ind + i].bone_id;
@@ -823,25 +823,25 @@ namespace OpenVic {
 			}
 
 			if (!verts_submesh.is_empty()) {
-				arrs[Mesh::ARRAY_VERTEX] = std::move(verts_submesh);
+				arrs[godot::Mesh::ARRAY_VERTEX] = std::move(verts_submesh);
 			}
 			if (!normals_submesh.is_empty()) {
-				arrs[Mesh::ARRAY_NORMAL] = std::move(normals_submesh);
+				arrs[godot::Mesh::ARRAY_NORMAL] = std::move(normals_submesh);
 			}
 			if (!tangents_submesh.is_empty()) {
-				arrs[Mesh::ARRAY_TANGENT] = std::move(tangents_submesh);
+				arrs[godot::Mesh::ARRAY_TANGENT] = std::move(tangents_submesh);
 			}
 			if (!uv1_submesh.is_empty()) {
-				arrs[Mesh::ARRAY_TEX_UV] = std::move(uv1_submesh);
+				arrs[godot::Mesh::ARRAY_TEX_UV] = std::move(uv1_submesh);
 			}
 			if (!uv2_submesh.is_empty()) {
-				arrs[Mesh::ARRAY_TEX_UV2] = std::move(uv2_submesh);
+				arrs[godot::Mesh::ARRAY_TEX_UV2] = std::move(uv2_submesh);
 			}
 			if (skin != nullptr && influence_range_indices.size() > 0) {
-				//arrs[Mesh::ARRAY_BONES] = std::move(bone_ids);
-				//arrs[Mesh::ARRAY_WEIGHTS] = std::move(weights);
+				//arrs[godot::Mesh::ARRAY_BONES] = std::move(bone_ids);
+				//arrs[godot::Mesh::ARRAY_WEIGHTS] = std::move(weights);
 			}
-			mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrs);
+			mesh->add_surface_from_arrays(godot::Mesh::PRIMITIVE_TRIANGLES, arrs);
 
 			//setup materials for the surface
 			material_mapping const& material_mapping = materials[submesh.packed.material_id];
@@ -870,10 +870,10 @@ namespace OpenVic {
 
 	====================================
 	*/
-	static Node3D* _load_xac_model(Ref<FileAccess> const& file) {
+	static godot::Node3D* _load_xac_model(godot::Ref<godot::FileAccess> const& file) {
 		bool res = read_xac_header(file);
 
-		Node3D* base = memnew(Node3D);
+		godot::Node3D* base = memnew(godot::Node3D);
 
 		if (!res) {
 			return base;
@@ -906,8 +906,8 @@ namespace OpenVic {
 			}
 
 			if (log_all) {
-				UtilityFunctions::print(
-				vformat("XAC chunk: type = %x, length = %x, version = %d at %x", header.type, header.length, header.version, file->get_position())
+				godot::UtilityFunctions::print(
+				godot::vformat("XAC chunk: type = %x, length = %x, version = %d at %x", header.type, header.length, header.version, file->get_position())
 				);
 			}
 
@@ -960,8 +960,8 @@ namespace OpenVic {
 				} 
 			}
 			else {
-				UtilityFunctions::print(
-				vformat("Unsupported XAC chunk: type = %x, length = %x, version = %d at %x", header.type, header.length, header.version, file->get_position())
+				godot::UtilityFunctions::print(
+				godot::vformat("Unsupported XAC chunk: type = %x, length = %x, version = %d at %x", header.type, header.length, header.version, file->get_position())
 				);
 				log_all = true;
 				// Skip unsupported chunks by using get_buffer, make sure this doesn't break anything, since chunk length can be wrong
@@ -976,7 +976,7 @@ namespace OpenVic {
 		}
 
 		//Setup skeleton
-		Skeleton3D* skeleton = nullptr;
+		godot::Skeleton3D* skeleton = nullptr;
 		if (hierarchy_read) {
 			skeleton = build_armature_hierarchy(hierarchy);
 			base->add_child(skeleton);
@@ -1005,7 +1005,7 @@ namespace OpenVic {
 
 			if (skeleton != nullptr && mesh_skin == nullptr) { continue; }
 
-			MeshInstance3D* mesh_inst = build_mesh(mesh, mesh_skin, material_mappings);
+			godot::MeshInstance3D* mesh_inst = build_mesh(mesh, mesh_skin, material_mappings);
 			base->add_child(mesh_inst);
 			mesh_inst->set_owner(base);
 			
