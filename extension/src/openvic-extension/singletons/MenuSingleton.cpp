@@ -9,6 +9,7 @@
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -263,16 +264,14 @@ String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 }
 
 String MenuSingleton::_make_mobilisation_impact_tooltip() const {
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, {});
-
-	CountryInstance const* country = game_singleton->get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
 	if (country == nullptr) {
 		return {};
 	}
 
-	IssueManager const& issue_manager = game_singleton->get_definition_manager().get_politics_manager().get_issue_manager();
+	IssueManager const& issue_manager =
+		GameSingleton::get_singleton()->get_definition_manager().get_politics_manager().get_issue_manager();
 
 	static const StringName mobilisation_impact_tooltip_localisation_key = "MOBILIZATION_IMPACT_LIMIT_DESC";
 	static const String mobilisation_impact_tooltip_replace_impact_key = "$IMPACT$";
@@ -332,7 +331,6 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_province_info_from_index, { "index" });
 	OV_BIND_METHOD(MenuSingleton::get_province_building_count);
 	OV_BIND_METHOD(MenuSingleton::get_province_building_identifier, { "building_index" });
-	OV_BIND_METHOD(MenuSingleton::expand_selected_province_building, { "building_index" });
 	OV_BIND_METHOD(MenuSingleton::get_slave_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_administrative_pop_icon_index);
 	OV_BIND_METHOD(MenuSingleton::get_rgo_owner_pop_icon_index);
@@ -341,11 +339,7 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_topbar_info);
 
 	/* TIME/SPEED CONTROL PANEL */
-	OV_BIND_METHOD(MenuSingleton::set_paused, { "paused" });
-	OV_BIND_METHOD(MenuSingleton::toggle_paused);
 	OV_BIND_METHOD(MenuSingleton::is_paused);
-	OV_BIND_METHOD(MenuSingleton::increase_speed);
-	OV_BIND_METHOD(MenuSingleton::decrease_speed);
 	OV_BIND_METHOD(MenuSingleton::get_speed);
 	OV_BIND_METHOD(MenuSingleton::can_increase_speed);
 	OV_BIND_METHOD(MenuSingleton::can_decrease_speed);
@@ -406,8 +400,9 @@ void MenuSingleton::_bind_methods() {
 
 	/* TRADE MENU */
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_good_categories_info);
-	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index" });
+	OV_BIND_METHOD(MenuSingleton::get_trade_menu_trade_details_info, { "trade_detail_good_index", "stockpile_cutoff_slider" });
 	OV_BIND_METHOD(MenuSingleton::get_trade_menu_tables_info);
+	OV_BIND_SMETHOD(calculate_trade_menu_stockpile_cutoff_amount, { "slider" });
 
 	BIND_ENUM_CONSTANT(TRADE_SETTING_NONE);
 	BIND_ENUM_CONSTANT(TRADE_SETTING_AUTOMATED);
@@ -415,23 +410,7 @@ void MenuSingleton::_bind_methods() {
 	BIND_ENUM_CONSTANT(TRADE_SETTING_SELLING);
 
 	/* MILITARY MENU */
-	OV_BIND_METHOD(MenuSingleton::get_military_menu_info, {
-		"leader_sort_key", "sort_leaders_descending",
-		"army_sort_key", "sort_armies_descending",
-		"navy_sort_key", "sort_navies_descending"
-	});
-
-	BIND_ENUM_CONSTANT(LEADER_SORT_NONE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_PRESTIGE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_TYPE);
-	BIND_ENUM_CONSTANT(LEADER_SORT_NAME);
-	BIND_ENUM_CONSTANT(LEADER_SORT_ASSIGNMENT);
-	BIND_ENUM_CONSTANT(MAX_LEADER_SORT_KEY);
-
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NONE);
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_NAME);
-	BIND_ENUM_CONSTANT(UNIT_GROUP_SORT_STRENGTH);
-	BIND_ENUM_CONSTANT(MAX_UNIT_GROUP_SORT_KEY);
+	OV_BIND_METHOD(MenuSingleton::get_military_menu_info);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1002,20 +981,31 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 	ret[province_info_total_population_key] = province->get_total_population();
 
+	const auto make_pie_chart_tooltip = [this](
+		HasGetIdentifierAndGetColour auto const* key, float weight, float total_weight
+	) -> String {
+		static const String format_key = "%d%% %s";
+		return  vformat(
+			format_key,
+			static_cast<int32_t>(100.0f * weight / total_weight),
+			tr(Utilities::std_to_godot_string(key->get_identifier()))
+		);
+	};
+
 	GFXPieChartTexture::godot_pie_chart_data_t pop_types =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_pop_type_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_pop_type_distribution(), make_pie_chart_tooltip);
 	if (!pop_types.is_empty()) {
 		ret[province_info_pop_types_key] = std::move(pop_types);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t ideologies =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_ideology_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_ideology_distribution(), make_pie_chart_tooltip);
 	if (!ideologies.is_empty()) {
 		ret[province_info_pop_ideologies_key] = std::move(ideologies);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t cultures =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_culture_distribution());
+		GFXPieChartTexture::distribution_to_slices_array(province->get_culture_distribution(), make_pie_chart_tooltip);
 	if (!cultures.is_empty()) {
 		ret[province_info_pop_cultures_key] = std::move(cultures);
 	}
@@ -1065,19 +1055,6 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 	return Utilities::std_to_godot_string(province_building_types[building_index]->get_identifier());
 }
 
-Error MenuSingleton::expand_selected_province_building(int32_t building_index) {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, FAILED);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL_V(instance_manager, FAILED);
-
-	ERR_FAIL_COND_V_MSG(
-		!instance_manager->expand_selected_province_building(building_index), FAILED,
-		vformat("Failed to expand the currently selected province's building index %d", building_index)
-	);
-	return OK;
-}
-
 int32_t MenuSingleton::get_slave_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
@@ -1108,15 +1085,12 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TOPBAR */
 
 Dictionary MenuSingleton::get_topbar_info() const {
-	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, {});
-
-	CountryInstance const* country = game_singleton->get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 	if (country == nullptr) {
 		return {};
 	}
 
-	DefinitionManager const& definition_manager = game_singleton->get_definition_manager();
+	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 	ModifierEffectCache const& modifier_effect_cache = definition_manager.get_modifier_manager().get_modifier_effect_cache();
 
 	Dictionary ret;
@@ -1467,24 +1441,6 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 /* TIME/SPEED CONTROL PANEL */
 
-void MenuSingleton::set_paused(bool paused) {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().set_paused(paused);
-}
-
-void MenuSingleton::toggle_paused() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().toggle_paused();
-}
-
 bool MenuSingleton::is_paused() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, true);
@@ -1492,24 +1448,6 @@ bool MenuSingleton::is_paused() const {
 	ERR_FAIL_NULL_V(instance_manager, true);
 
 	return instance_manager->get_simulation_clock().is_paused();
-}
-
-void MenuSingleton::increase_speed() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().increase_simulation_speed();
-}
-
-void MenuSingleton::decrease_speed() {
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL(game_singleton);
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
-	ERR_FAIL_NULL(instance_manager);
-
-	instance_manager->get_simulation_clock().decrease_simulation_speed();
 }
 
 int32_t MenuSingleton::get_speed() const {

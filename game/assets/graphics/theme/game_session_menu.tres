@@ -1,7 +1,6 @@
-[gd_resource type="Theme" load_steps=11 format=3 uid="uid://cqrfmjt5yeti7"]
+[gd_resource type="Theme" load_steps=10 format=3 uid="uid://cqrfmjt5yeti7"]
 
 [ext_resource type="StyleBox" uid="uid://blwilunhmyvpq" path="res://assets/graphics/theme/main_menu_button_normal.tres" id="1_7med2"]
-[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxWithSound.gd" id="2_oj3dv"]
 [ext_resource type="AudioStream" uid="uid://bsldcs3l8s7ug" path="res://addons/kenney_ui_audio/click3.wav" id="3_j823n"]
 [ext_resource type="Texture2D" uid="uid://c0p34i3d3b0pw" path="res://assets/graphics/main_menu_button.png" id="4_lno5s"]
 
@@ -35,7 +34,7 @@ content_margin_bottom = 14.0
 texture = ExtResource("4_lno5s")
 modulate_color = Color(0.588235, 0.588235, 0.588235, 1)
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l2rw3"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ybnai"]
 content_margin_left = 20.0
 content_margin_top = 10.0
 content_margin_right = 20.0
@@ -43,16 +42,10 @@ content_margin_bottom = 14.0
 texture = ExtResource("4_lno5s")
 modulate_color = Color(0.85098, 0.85098, 0.85098, 1)
 
-[sub_resource type="StyleBox" id="StyleBox_ptkcj"]
-resource_local_to_scene = false
-resource_name = ""
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
-script = ExtResource("2_oj3dv")
-style_box = SubResource("StyleBoxTexture_l2rw3")
-sound = ExtResource("3_j823n")
+[sub_resource type="StyleBoxWithSound" id="StyleBoxWithSound_vn3ou"]
+style_box = SubResource("StyleBoxTexture_ybnai")
+audio_bus = &"SFX_BUS"
+audio_stream = ExtResource("3_j823n")
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_kaw4i"]
 color = Color(0.454902, 0.45098, 0.435294, 1)
@@ -77,7 +70,7 @@ SessionButton/styles/disabled = SubResource("StyleBoxTexture_jvvyi")
 SessionButton/styles/focus = SubResource("StyleBoxFlat_6ab1x")
 SessionButton/styles/hover = SubResource("StyleBoxTexture_jslj0")
 SessionButton/styles/normal = ExtResource("1_7med2")
-SessionButton/styles/pressed = SubResource("StyleBox_ptkcj")
+SessionButton/styles/pressed = SubResource("StyleBoxWithSound_vn3ou")
 SessionPanel/base_type = &"Panel"
 SessionPanel/styles/panel = null
 SessionSeparator/base_type = &"HSeparator"

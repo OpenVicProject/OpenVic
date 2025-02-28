@@ -27,7 +27,7 @@ func _ready() -> void:
 
 func filter_for_tag(tag : StringName) -> void:
 	for child : Control in game_select_save_list.get_children():
-		if tag == &"":
+		if tag.is_empty():
 			child.show()
 		else:
 			if tag == child.resource.session_tag:
@@ -183,5 +183,5 @@ func _on_map_view_ready() -> void:
 	pass
 
 func _on_map_view_province_clicked(_index: int) -> void:
-	# TODO: need to be able to call something like GameSingleton.set_viewed_country_by_province_index(index) here
+	# TODO: need to be able to call something like PlayerSingleton.set_player_country_by_province_index(index) here
 	pass

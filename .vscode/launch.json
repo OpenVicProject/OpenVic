@@ -8,12 +8,12 @@
             "type": "cppdbg",
             "request": "launch",
             "name": "Debug",
-            "program": "/bin/godot4", // TODO: Set your Godot binary path
+            "program": "/bin/godot", // TODO: Set your Godot binary path
             "args": [
-                "-e"
+                ""
             ],
             "cwd": "${workspaceFolder}/game",
-            "preLaunchTask": "dev_build",
+            // "preLaunchTask": "dev_build",
             "windows": {
                 "cwd": "${workspaceFolder}\\game",
             }

@@ -3,7 +3,9 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
@@ -18,14 +20,13 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	static const StringName demand_tooltip_key = "demand_tooltip";
 	static const StringName trade_settings_key = "trade_settings";
 
-	GameSingleton const& game_singleton = *GameSingleton::get_singleton();
-	InstanceManager const* instance_manager = game_singleton.get_instance_manager();
+	InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
 	GoodDefinitionManager const& good_definition_manager = good_instance_manager.get_good_definition_manager();
 
-	CountryInstance const* country = game_singleton.get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
 	Dictionary ret;
 
@@ -35,7 +36,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 		for (GoodDefinition const* good_definition : good_category.get_good_definitions()) {
 			GoodInstance const& good_instance = good_instance_manager.get_good_instance_from_definition(*good_definition);
 
-			if (!good_instance.get_is_available() || !good_definition->get_is_tradeable()) {
+			if (!good_instance.is_trading_good()) {
 				continue;
 			}
 
@@ -68,7 +69,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 			}
 
 			if (country != nullptr) {
-				CountryInstance::good_data_t const& good_data = country->get_goods_data()[good_instance];
+				CountryInstance::good_data_t const& good_data = country->get_good_data(good_instance);
 
 				// Trade settings:
 				//  - 1 bit: automated (1) or not (0)
@@ -105,33 +106,32 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	return ret;
 }
 
-Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const {
+Dictionary MenuSingleton::get_trade_menu_trade_details_info(
+	int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
+) const {
 	static const StringName trade_detail_good_name_key = "trade_detail_good_name";
 	static const StringName trade_detail_good_price_key = "trade_detail_good_price";
 	static const StringName trade_detail_good_base_price_key = "trade_detail_good_base_price";
 	static const StringName trade_detail_price_history_key = "trade_detail_price_history";
 	static const StringName trade_detail_is_automated_key = "trade_detail_is_automated";
 	static const StringName trade_detail_is_selling_key = "trade_detail_is_selling"; // or buying (false)
-	static const StringName trade_detail_slider_value_key = "trade_detail_slider_value"; // linear slider value
 	static const StringName trade_detail_slider_amount_key = "trade_detail_slider_amount"; // exponential good amount
 	static const StringName trade_detail_government_needs_key = "trade_detail_government_needs";
 	static const StringName trade_detail_army_needs_key = "trade_detail_army_needs";
 	static const StringName trade_detail_navy_needs_key = "trade_detail_navy_needs";
-	static const StringName trade_detail_production_needs_key = "trade_detail_production_needs";
 	static const StringName trade_detail_overseas_needs_key = "trade_detail_overseas_needs";
 	static const StringName trade_detail_factory_needs_key = "trade_detail_factory_needs";
 	static const StringName trade_detail_pop_needs_key = "trade_detail_pop_needs";
 	static const StringName trade_detail_available_key = "trade_detail_available";
 
-	GameSingleton const& game_singleton = *GameSingleton::get_singleton();
-	InstanceManager const* instance_manager = game_singleton.get_instance_manager();
+	InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	GoodInstance const* good_instance =
 		instance_manager->get_good_instance_manager().get_good_instance_by_index(trade_detail_good_index);
 	ERR_FAIL_NULL_V(good_instance, {});
 
-	CountryInstance const* country = game_singleton.get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
 	Dictionary ret;
 
@@ -161,20 +161,30 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(int32_t trade_detail
 		return ret;
 	}
 
-	CountryInstance::good_data_t const& good_data = country->get_goods_data()[*good_instance];
+	CountryInstance::good_data_t const& good_data = country->get_good_data(*good_instance);
 
 	ret[trade_detail_is_automated_key] = good_data.is_automated;
 	ret[trade_detail_is_selling_key] = good_data.is_selling;
-	// TODO - use exponential formula!
-	ret[trade_detail_slider_value_key] = (good_data.stockpile_cutoff / 2000).to_int32_t();
+	if (stockpile_cutoff_slider != nullptr) {
+		int32_t index = 0;
+
+		while (index < stockpile_cutoff_slider->get_max_value() && calculate_trade_menu_stockpile_cutoff_amount_fp(
+			index * stockpile_cutoff_slider->get_step_size()
+		) < good_data.stockpile_cutoff) {
+			++index;
+		}
+
+		// TODO - use a more efficient algorithm, e.g. some kind of binary search
+
+		stockpile_cutoff_slider->set_value(index, false);
+	}
 	ret[trade_detail_slider_amount_key] = good_data.stockpile_cutoff.to_float();
 	ret[trade_detail_government_needs_key] = good_data.government_needs.to_float();
 	ret[trade_detail_army_needs_key] = good_data.army_needs.to_float();
 	ret[trade_detail_navy_needs_key] = good_data.navy_needs.to_float();
-	ret[trade_detail_production_needs_key] = good_data.production_needs.to_float();
-	ret[trade_detail_overseas_needs_key] = good_data.overseas_needs.to_float();
-	ret[trade_detail_factory_needs_key] = good_data.factory_needs.to_float();
-	ret[trade_detail_pop_needs_key] = good_data.pop_needs.to_float();
+	ret[trade_detail_overseas_needs_key] = good_data.overseas_maintenance.to_float();
+	ret[trade_detail_factory_needs_key] = good_data.factory_demand.to_float();
+	ret[trade_detail_pop_needs_key] = good_data.pop_demand.to_float();
 	ret[trade_detail_available_key] = good_data.available_amount.to_float();
 
 	return ret;
@@ -190,12 +200,11 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	static const StringName stockpile_key = "stockpile";
 	static const StringName common_market_key = "common_market";
 
-	GameSingleton const& game_singleton = *GameSingleton::get_singleton();
-	InstanceManager const* instance_manager = game_singleton.get_instance_manager();
+	InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
 
-	CountryInstance const* country = game_singleton.get_viewed_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
 	Dictionary ret;
 
@@ -241,7 +250,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	PackedVector4Array common_market;
 
 	for (auto const& [good, good_data] : country->get_goods_data()) {
-		if (!good.get_is_available() || !good.get_good_definition().get_is_tradeable()) {
+		if (!good.is_trading_good()) {
 			continue;
 		}
 
@@ -277,16 +286,16 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			});
 		}
 
-		if (good_data.factory_needs != fixed_point_t::_0()) {
+		if (good_data.factory_demand != fixed_point_t::_0()) {
 			factory_needs.push_back({
 				good_index,
-				good_data.factory_needs.to_float()
+				good_data.factory_demand.to_float()
 			});
 		}
 
-		if (good_data.pop_needs != fixed_point_t::_0()) {
+		if (good_data.pop_demand != fixed_point_t::_0()) {
 			pop_needs.push_back({
-				good_index, good_data.pop_needs.to_float()
+				good_index, good_data.pop_demand.to_float()
 			});
 		}
 
@@ -320,4 +329,10 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ret[common_market_key] = std::move(common_market);
 
 	return ret;
+}
+
+float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
+	ERR_FAIL_NULL_V(slider, 0.0f);
+
+	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp());
 }

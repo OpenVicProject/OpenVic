@@ -10,6 +10,8 @@
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
+#include "openvic-extension/classes/GFXPieChartTexture.hpp"
+
 namespace OpenVic {
 	struct CountryInstance;
 	struct State;
@@ -25,7 +27,8 @@ namespace OpenVic {
 	struct ModifierValue;
 	struct ModifierSum;
 	struct RuleSet;
-	struct LeaderBase;
+	struct LeaderInstance;
+	struct GUIScrollbar;
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -100,14 +103,7 @@ namespace OpenVic {
 			TRADE_SETTING_NONE = 0, TRADE_SETTING_AUTOMATED = 1, TRADE_SETTING_BUYING = 2, TRADE_SETTING_SELLING = 4
 		};
 
-		enum LeaderSortKey {
-			LEADER_SORT_NONE, LEADER_SORT_PRESTIGE, LEADER_SORT_TYPE, LEADER_SORT_NAME, LEADER_SORT_ASSIGNMENT,
-			MAX_LEADER_SORT_KEY
-		};
-		ordered_map<LeaderBase const*, godot::Dictionary> cached_leader_dicts;
-		enum UnitGroupSortKey {
-			UNIT_GROUP_SORT_NONE, UNIT_GROUP_SORT_NAME, UNIT_GROUP_SORT_STRENGTH, MAX_UNIT_GROUP_SORT_KEY
-		};
+		ordered_map<LeaderInstance const*, godot::Dictionary> cached_leader_dicts;
 
 		struct search_panel_t {
 			struct entry_t {
@@ -189,7 +185,6 @@ namespace OpenVic {
 		godot::Dictionary get_province_info_from_index(int32_t index) const;
 		int32_t get_province_building_count() const;
 		godot::String get_province_building_identifier(int32_t building_index) const;
-		godot::Error expand_selected_province_building(int32_t building_index);
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
@@ -198,11 +193,7 @@ namespace OpenVic {
 		godot::Dictionary get_topbar_info() const;
 
 		/* TIME/SPEED CONTROL PANEL */
-		void set_paused(bool paused);
-		void toggle_paused();
 		bool is_paused() const;
-		void increase_speed();
-		void decrease_speed();
 		int32_t get_speed() const;
 		bool can_increase_speed() const;
 		bool can_decrease_speed() const;
@@ -223,6 +214,10 @@ namespace OpenVic {
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
+		template<IsPieChartDistribution Container>
+		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
+			Container const& distribution
+		) const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 
@@ -239,19 +234,21 @@ namespace OpenVic {
 
 		/* TRADE MENU */
 		godot::Dictionary get_trade_menu_good_categories_info() const;
-		godot::Dictionary get_trade_menu_trade_details_info(int32_t trade_detail_good_index) const;
+		godot::Dictionary get_trade_menu_trade_details_info(
+			int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
+		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
+		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
+			return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1();
+		}
+		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
 		/* MILITARY MENU */
-		godot::Dictionary make_leader_dict(LeaderBase const& leader);
+		godot::Dictionary make_leader_dict(LeaderInstance const& leader);
 		template<UnitType::branch_t Branch>
-		godot::Dictionary make_unit_group_dict(UnitInstanceGroup<Branch> const& unit_group);
+		godot::Dictionary make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group);
 		godot::Dictionary make_in_progress_unit_dict() const;
-		godot::Dictionary get_military_menu_info(
-			LeaderSortKey leader_sort_key, bool sort_leaders_descending,
-			UnitGroupSortKey army_sort_key, bool sort_armies_descending,
-			UnitGroupSortKey navy_sort_key, bool sort_navies_descending
-		);
+		godot::Dictionary get_military_menu_info();
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
@@ -267,5 +264,3 @@ namespace OpenVic {
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::ProvinceListEntry);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::PopSortKey);
 VARIANT_ENUM_CAST(OpenVic::MenuSingleton::TradeSettingBit);
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::LeaderSortKey);
-VARIANT_ENUM_CAST(OpenVic::MenuSingleton::UnitGroupSortKey);

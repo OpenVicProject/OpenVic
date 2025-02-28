@@ -119,22 +119,10 @@
 				Return a [Texture2DArray] containing all the textures that the province shape image was split into.
 			</description>
 		</method>
-		<method name="get_selected_province_index" qualifiers="const">
-			<return type="int" />
-			<description>
-				Returns the [int] index of the currently selected province, or [code]0[/code] if there is no selected province.
-			</description>
-		</method>
 		<method name="get_terrain_texture" qualifiers="const">
 			<return type="Texture2DArray" />
 			<description>
 				Return a [Texture2DArray] containing all terrain textures, both the solid blue generated water texture and the loaded land terrain textures.
-			</description>
-		</method>
-		<method name="get_viewed_country_capital_position" qualifiers="const">
-			<return type="Vector2" />
-			<description>
-				Returns the viewed country's capital position as a normalized [Vector2], or [code](0.0, 0.0)[/code] if no country is being viewed.
 			</description>
 		</method>
 		<method name="is_parchment_mapmode_allowed" qualifiers="const">
@@ -177,20 +165,6 @@
 				Sets the active mapmode to that identified by [param index]. Returns [code]FAILED[/code] if the mapmode index is invalid, otherwise returns [code]OK[/code].
 			</description>
 		</method>
-		<method name="set_selected_province">
-			<return type="void" />
-			<param index="0" name="index" type="int" />
-			<description>
-				Sets the currently selected province to that identified by [param index], or unselects the currently selected province if [param index] is [code]0[/code].
-			</description>
-		</method>
-		<method name="set_viewed_country_by_province_index">
-			<return type="void" />
-			<param index="0" name="province_index" type="int" />
-			<description>
-				Sets the viewed country to that which owns the province identified by [param province_index], or unsets the viewed country if the province has no owner/is uncolonised. Returns [code]FAILED[/code] if the [param province_index] is invalid, otherwise returns [code]OK[/code].
-			</description>
-		</method>
 		<method name="setup_game">
 			<return type="int" enum="Error" />
 			<param index="0" name="bookmark_index" type="int" />
@@ -210,12 +184,6 @@
 				Sets up the simulation's clock and timestamps so that it can be unpaused, marking the move from the initialized but static game state used for the lobby to the dynamic game session that is ready to tick, update and simulate.
 			</description>
 		</method>
-		<method name="unset_selected_province">
-			<return type="void" />
-			<description>
-				Unselects the currently selected province, should there be one.
-			</description>
-		</method>
 		<method name="update_clock">
 			<return type="int" enum="Error" />
 			<description>
@@ -224,11 +192,6 @@
 		</method>
 	</methods>
 	<signals>
-		<signal name="clock_state_changed">
-			<description>
-				Signal emitted when the simulation's clock changes state (paused vs unpaused, clock speed, etc.).
-			</description>
-		</signal>
 		<signal name="gamestate_updated">
 			<description>
 				Signal emitted when the simulation's gamestate is updated (this happens after any event that changes the gamestate, e.g. a day tick, a player taking a decision, etc).
@@ -238,12 +201,6 @@
 			<param index="0" name="index" type="int" />
 			<description>
 				Signal emitted when the active mapmode changes, with the new mapmode's [param index] provided as a parameter.
-			</description>
-		</signal>
-		<signal name="province_selected">
-			<param index="0" name="index" type="int" />
-			<description>
-				Signal emitted when the currently selected province changes, with the new province's [param index] provided as a parameter (or [code]0[/code] if there is no longer a selected province/the change was de-selecting a province).
 			</description>
 		</signal>
 	</signals>

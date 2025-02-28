@@ -12,6 +12,7 @@ env = SConscript("scripts/SConstruct")
 
 env.PrependENVPath("PATH", os.getenv("PATH"))
 
+env["disable_rtti"] = False
 opts = env.SetupOptions()
 
 env.FinalizeOptions()

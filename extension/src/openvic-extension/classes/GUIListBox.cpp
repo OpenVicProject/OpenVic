@@ -116,6 +116,7 @@ void GUIListBox::_bind_methods() {
 
 	OV_BIND_METHOD(GUIListBox::get_gui_listbox_name);
 	OV_BIND_METHOD(GUIListBox::get_scrollbar);
+	OV_BIND_METHOD(GUIListBox::sort_children, { "callable" });
 
 	ADD_SIGNAL(MethodInfo(_signal_scroll_index_changed(), PropertyInfo(Variant::INT, "value")));
 }
@@ -196,9 +197,10 @@ void GUIListBox::clear_children(int32_t remaining_child_count) {
 		child->queue_free();
 	}
 
-	if (scrollbar != nullptr) {
-		scrollbar->set_value(0);
-	}
+	// Scrollbar value is left unchanged so we don't jump back to the top of the list when re-generating the same number
+	// of entries. In cases where the value is greater than the new maximum scroll level, it will be clamped by
+	// set_scroll_index, called via _calculate_max_scroll_index by _notification(NOTIFICATION_SORT_CHILDREN) after all the new
+	// children have been added but before the same frame.
 }
 
 void GUIListBox::set_scroll_index(int32_t new_scroll_index, bool signal) {
@@ -301,4 +303,25 @@ String GUIListBox::get_gui_listbox_name() const {
 
 GUIScrollbar* GUIListBox::get_scrollbar() const {
 	return scrollbar;
+}
+
+Error GUIListBox::sort_children(Callable const& callable) {
+	TypedArray<Node> children;
+	ERR_FAIL_COND_V(children.resize(get_child_count()) != OK, FAILED);
+
+	for (int64_t index = children.size() - 1; index >= 0; --index) {
+		Node* child = get_child(index);
+
+		children[index] = child;
+
+		remove_child(child);
+	}
+
+	children.sort_custom(callable);
+
+	for (int64_t index = 0; index < children.size(); ++index) {
+		add_child(Object::cast_to<Node>(children[index]));
+	}
+
+	return OK;
 }

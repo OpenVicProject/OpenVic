@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PlayerSingleton" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="create_leader" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="is_general" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="decrease_speed" qualifiers="const">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="expand_selected_province_building" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="building_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_player_country_capital_position" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+			</description>
+		</method>
+		<method name="get_selected_province_index" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="increase_speed" qualifiers="const">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_auto_assign_leaders" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_auto_create_leaders" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_can_use_leader" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="leader_id" type="int" />
+			<param index="1" name="can_use" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_good_automated" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="good_index" type="int" />
+			<param index="1" name="is_automated" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_good_trade_order" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="good_index" type="int" />
+			<param index="1" name="is_selling" type="bool" />
+			<param index="2" name="amount_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="set_mobilise" qualifiers="const">
+			<return type="void" />
+			<param index="0" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_player_country_by_province_index">
+			<return type="void" />
+			<param index="0" name="province_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_selected_province_by_index">
+			<return type="void" />
+			<param index="0" name="province_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="toggle_paused" qualifiers="const">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="unset_selected_province">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="province_selected">
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

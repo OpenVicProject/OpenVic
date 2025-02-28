@@ -199,7 +199,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
 template<UnitType::branch_t Branch>
 bool ModelSingleton::add_unit_dict(
-	ordered_set<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
+	std::vector<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
 ) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 

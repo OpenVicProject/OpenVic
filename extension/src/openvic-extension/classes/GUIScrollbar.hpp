@@ -9,6 +9,8 @@
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
+	struct SliderValue;
+
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
 
@@ -36,11 +38,12 @@ namespace OpenVic {
 		godot::Orientation PROPERTY(orientation, godot::HORIZONTAL);
 		real_t PROPERTY(length_override, 0.0);
 
+		fixed_point_t PROPERTY(step_size, fixed_point_t::_1());
 		int32_t PROPERTY(value, 0);
 		int32_t PROPERTY(min_value, 0);
 		int32_t PROPERTY(max_value, 0);
 
-		bool PROPERTY_CUSTOM_PREFIX(range_limited, is);
+		bool PROPERTY_CUSTOM_PREFIX(range_limited, is, false);
 		int32_t PROPERTY(range_limit_min, 0);
 		int32_t PROPERTY(range_limit_max, 0);
 
@@ -97,14 +100,32 @@ namespace OpenVic {
 		godot::String get_gui_scrollbar_name() const;
 
 		void set_value(int32_t new_value, bool signal = true);
+		void set_value_fp(fixed_point_t new_value, bool signal = true);
+		void set_value_from_slider_value(SliderValue const& slider_value, int32_t scale, bool signal = true);
 		void increment_value(bool signal = true);
 		void decrement_value(bool signal = true);
 
 		float get_value_as_ratio() const;
 		void set_value_as_ratio(float new_ratio, bool signal = true);
 
-		godot::Error set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true);
+		fixed_point_t get_value_scaled_fp() const;
+		float get_value_scaled() const;
+
+		godot::Error set_range_limits(
+			int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true
+		);
+		godot::Error set_range_limits_and_value(
+			int32_t new_range_limit_min, int32_t new_range_limit_max, int32_t new_value, bool signal = true
+		);
 		godot::Error set_limits(int32_t new_min_value, int32_t new_max_value, bool signal = true);
+
+		godot::Error set_range_limits_and_value_fp(
+			fixed_point_t new_range_limit_min, fixed_point_t new_range_limit_max, fixed_point_t new_value, bool signal = true
+		);
+		godot::Error set_range_limits_and_value_from_slider_value(
+			SliderValue const& slider_value, int32_t scale, bool signal = true
+		);
+		godot::Error set_step_size_and_limits_fp(fixed_point_t new_step_size, int32_t new_min_value, int32_t new_max_value);
 
 		/* Override the main dimension of gui_scollbar's size with the specified length. */
 		void set_length_override(real_t new_length_override);

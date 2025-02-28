@@ -76,7 +76,6 @@ var _military_leadership_points_label : GUILabel
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
-	GameSingleton.clock_state_changed.connect(_update_speed_controls)
 
 	add_gui_element("topbar", "topbar")
 
@@ -109,7 +108,7 @@ func _ready() -> void:
 	# Time controls
 	_speed_up_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speedup")
 	if _speed_up_button:
-		_speed_up_button.pressed.connect(_on_increase_speed_button_pressed)
+		_speed_up_button.pressed.connect(PlayerSingleton.increase_speed)
 		_speed_up_button.set_tooltip_string("TOPBAR_INC_SPEED")
 		var speed_up_action := InputEventAction.new()
 		speed_up_action.action = "time_speed_increase"
@@ -117,7 +116,7 @@ func _ready() -> void:
 		_speed_up_button.shortcut.events.append(speed_up_action)
 	_speed_down_button = get_gui_icon_button_from_nodepath(^"./topbar/button_speeddown")
 	if _speed_down_button:
-		_speed_down_button.pressed.connect(_on_decrease_speed_button_pressed)
+		_speed_down_button.pressed.connect(PlayerSingleton.decrease_speed)
 		_speed_down_button.set_tooltip_string("TOPBAR_DEC_SPEED")
 		var speed_down_action := InputEventAction.new()
 		speed_down_action.action = "time_speed_decrease"
@@ -125,14 +124,14 @@ func _ready() -> void:
 		_speed_down_button.shortcut.events.append(speed_down_action)
 	_pause_bg_button = get_gui_icon_button_from_nodepath(^"./topbar/pause_bg")
 	if _pause_bg_button:
-		_pause_bg_button.pressed.connect(_on_play_pause_button_pressed)
+		_pause_bg_button.pressed.connect(PlayerSingleton.toggle_paused)
 		var time_pause_action := InputEventAction.new()
 		time_pause_action.action = "time_pause"
 		_pause_bg_button.shortcut = Shortcut.new()
 		_pause_bg_button.shortcut.events.append(time_pause_action)
 	_speed_indicator_button = get_gui_icon_button_from_nodepath(^"./topbar/speed_indicator")
 	if _speed_indicator_button:
-		_speed_indicator_button.pressed.connect(_on_play_pause_button_pressed)
+		_speed_indicator_button.pressed.connect(PlayerSingleton.toggle_paused)
 	_date_label = get_gui_label_from_nodepath(^"./topbar/DateText")
 
 	# Nation management screens
@@ -280,13 +279,11 @@ func _ready() -> void:
 		_military_leadership_points_label.set_auto_translate(false)
 
 	_update_info()
-	_update_speed_controls()
 
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_info()
-			_update_speed_controls()
 
 enum CountryStatus {
 	GREAT_POWER,
@@ -298,6 +295,8 @@ enum CountryStatus {
 }
 
 func _update_info() -> void:
+	_update_speed_controls()
+
 	var topbar_info : Dictionary = MenuSingleton.get_topbar_info()
 
 	## Country info
@@ -603,24 +602,6 @@ func _update_speed_controls() -> void:
 				"TOPBAR_SPEED_INDICATOR", { "SPEED": SPEED_NAMES[speed] if speed < SPEED_NAMES.size() else str(speed) }
 			)
 		_speed_indicator_button.set_icon_index(index)
-
-# REQUIREMENTS:
-# * UIFUN-71
-func _on_play_pause_button_pressed() -> void:
-	print("Toggling pause!")
-	MenuSingleton.toggle_paused()
-
-# REQUIREMENTS:
-# * UIFUN-72
-func _on_increase_speed_button_pressed() -> void:
-	print("Speed up!")
-	MenuSingleton.increase_speed()
-
-# REQUIREMENTS:
-# * UIFUN-73
-func _on_decrease_speed_button_pressed() -> void:
-	print("Speed down!")
-	MenuSingleton.decrease_speed()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	for screen : NationManagement.Screen in _nation_management_buttons:

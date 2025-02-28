@@ -33,26 +33,33 @@ var _create_general_button : GUIIconButton
 var _create_admiral_button : GUIIconButton
 var _auto_create_leader_button : GUIIconButton
 var _auto_assign_leader_button : GUIIconButton
-var _leader_listbox : GUIListBox
-var _leader_sort_key : MenuSingleton.LeaderSortKey = MenuSingleton.LeaderSortKey.LEADER_SORT_NONE
-var _leader_sort_descending : bool = true
 
 # Armies and Navies
 var _army_count_label : GUILabel
 var _in_progress_brigade_count_label : GUILabel
 var _disarmed_army_icon : GUIIcon
 var _build_army_button : GUIIconButton
-var _army_listbox : GUIListBox
-var _army_sort_key : MenuSingleton.UnitGroupSortKey = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_NONE
-var _army_sort_descending : bool = true
 
 var _navy_count_label : GUILabel
 var _in_progress_ship_count_label : GUILabel
 var _disarmed_navy_icon : GUIIcon
 var _build_navy_button : GUIIconButton
-var _navy_listbox : GUIListBox
-var _navy_sort_key : MenuSingleton.UnitGroupSortKey = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_NONE
-var _navy_sort_descending : bool = true
+
+enum Table {
+	LEADERS, ARMIES, NAVIES
+}
+
+var _table_listboxes : Array[GUIListBox]
+
+const TABLE_UNSORTED : int = 255
+const TABLE_COLUMN_KEYS : Array[StringName] = [&"COLUMN_0", &"COLUMN_1", &"COLUMN_2", &"COLUMN_3"]
+const TABLE_UNSORTABLE_KEY : StringName = &"UNSORTABLE" # Set to true for unsortable items (always go to the bottom of the list), otherwise defaults to false
+var _table_sort_columns : PackedByteArray
+
+const SORT_DESCENDING : int = 0
+const SORT_ASCENDING : int = 1
+var _table_sort_directions : PackedByteArray
+
 
 func _ready() -> void:
 	GameSingleton.gamestate_updated.connect(_update_info)
@@ -88,10 +95,10 @@ func _ready() -> void:
 	# Mobilisation
 	_mobilise_button = GUINode.get_gui_icon_button_from_node(military_menu.get_node(^"./mobilize"))
 	if _mobilise_button:
-		_mobilise_button.pressed.connect(func() -> void: print("MOBILISE PRESSED"))
+		_mobilise_button.pressed.connect(PlayerSingleton.set_mobilise.bind(true))
 	_demobilise_button = GUINode.get_gui_icon_button_from_node(military_menu.get_node(^"./demobilize"))
 	if _demobilise_button:
-		_demobilise_button.pressed.connect(func() -> void: print("DEMOBILISE PRESSED"))
+		_demobilise_button.pressed.connect(PlayerSingleton.set_mobilise.bind(false))
 		_demobilise_button.set_tooltip_string("$MILITARY_DEMOBILIZE$" + MenuSingleton.get_tooltip_separator() + "$MILITARY_DEMOBILIZE_DESC$")
 	_mobilisation_progress_bar = GUINode.get_gui_progress_bar_from_node(military_menu.get_node(^"./mobilize_progress"))
 	_mobilisation_progress_label = GUINode.get_gui_label_from_node(military_menu.get_node(^"./mobilize_progress_text"))
@@ -105,60 +112,41 @@ func _ready() -> void:
 		_admiral_count_label = GUINode.get_gui_label_from_node(leaders_panel.get_node(^"./admirals"))
 		var sort_leader_prestige_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./sort_leader_prestige"))
 		if sort_leader_prestige_button:
-			sort_leader_prestige_button.pressed.connect(
-				func() -> void:
-					_leader_sort_key = MenuSingleton.LeaderSortKey.LEADER_SORT_PRESTIGE
-					_leader_sort_descending = not _leader_sort_descending
-					print("SORT LEADERS BY PRESTIGE ", "DESCENDING" if _leader_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_leader_prestige_button.pressed.connect(_change_table_sorting.bind(Table.LEADERS, 0))
 			sort_leader_prestige_button.set_tooltip_string("SORT_BY_PRESTIGE")
 		var sort_leader_type_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./sort_leader_type"))
 		if sort_leader_type_button:
-			sort_leader_type_button.pressed.connect(
-				func() -> void:
-					_leader_sort_key = MenuSingleton.LeaderSortKey.LEADER_SORT_TYPE
-					_leader_sort_descending = not _leader_sort_descending
-					print("SORT LEADERS BY TYPE ", "DESCENDING" if _leader_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_leader_type_button.pressed.connect(_change_table_sorting.bind(Table.LEADERS, 1))
 			sort_leader_type_button.set_tooltip_string("MILITARY_SORT_BY_TYPE_TOOLTIP")
 		var sort_leader_name_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./sort_leader_name"))
 		if sort_leader_name_button:
-			sort_leader_name_button.pressed.connect(
-				func() -> void:
-					_leader_sort_key = MenuSingleton.LeaderSortKey.LEADER_SORT_NAME
-					_leader_sort_descending = not _leader_sort_descending
-					print("SORT LEADERS BY NAME ", "DESCENDING" if _leader_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_leader_name_button.pressed.connect(_change_table_sorting.bind(Table.LEADERS, 2))
 			sort_leader_name_button.set_tooltip_string("MILITARY_SORT_BY_NAME_TOOLTIP")
 		var sort_leader_army_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./sort_leader_army"))
 		if sort_leader_army_button:
 			sort_leader_army_button.set_text("MILITARY_SORT_ARMY")
-			sort_leader_army_button.pressed.connect(
-				func() -> void:
-					_leader_sort_key = MenuSingleton.LeaderSortKey.LEADER_SORT_ASSIGNMENT
-					_leader_sort_descending = not _leader_sort_descending
-					print("SORT LEADERS BY ASSIGNMENT ", "DESCENDING" if _leader_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_leader_army_button.pressed.connect(_change_table_sorting.bind(Table.LEADERS, 3))
 			sort_leader_army_button.set_tooltip_string("MILITARY_SORT_BY_ASSIGNMENT_TOOLTIP")
 		_create_general_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./new_general"))
 		if _create_general_button:
-			_create_general_button.pressed.connect(func() -> void: print("CREATE GENERAL"))
+			_create_general_button.pressed.connect(PlayerSingleton.create_leader.bind(true))
 		_create_admiral_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./new_admiral"))
 		if _create_admiral_button:
-			_create_admiral_button.pressed.connect(func() -> void: print("CREATE ADMIRAL"))
+			_create_admiral_button.pressed.connect(PlayerSingleton.create_leader.bind(false))
 		_auto_create_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_create"))
 		if _auto_create_leader_button:
-			_auto_create_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO CREATE LEADERS = ", state))
+			_auto_create_leader_button.toggled.connect(PlayerSingleton.set_auto_create_leaders)
 			_auto_create_leader_button.set_tooltip_string("MILITARY_AUTOCREATE_TOOLTIP")
 		_auto_assign_leader_button = GUINode.get_gui_icon_button_from_node(leaders_panel.get_node(^"./auto_assign"))
 		if _auto_assign_leader_button:
-			_auto_assign_leader_button.toggled.connect(func(state : bool) -> void: print("AUTO ASSIGN LEADERS = ", state))
+			_auto_assign_leader_button.toggled.connect(PlayerSingleton.set_auto_assign_leaders)
 			_auto_assign_leader_button.set_tooltip_string("MILITARY_AUTOASSIGN_TOOLTIP")
-		_leader_listbox = GUINode.get_gui_listbox_from_node(military_menu.get_node(^"./leaders/leader_listbox"))
+
+		_table_listboxes.push_back(GUINode.get_gui_listbox_from_node(military_menu.get_node(^"./leaders/leader_listbox")))
+	else:
+		_table_listboxes.push_back(null)
+	_table_sort_columns.push_back(TABLE_UNSORTED)
+	_table_sort_directions.push_back(SORT_DESCENDING)
 
 	# Armies and Navies
 	var army_pos : Vector2 = GUINode.get_gui_position(_gui_file, "army_pos")
@@ -173,23 +161,11 @@ func _ready() -> void:
 
 		var sort_armies_name_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(army_window.get_node(^"./sort_name"))
 		if sort_armies_name_button:
-			sort_armies_name_button.pressed.connect(
-				func() -> void:
-					_army_sort_key = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_NAME
-					_army_sort_descending = not _army_sort_descending
-					print("SORT ARMIES BY NAME ", "DESCENDING" if _army_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_armies_name_button.pressed.connect(_change_table_sorting.bind(Table.ARMIES, 0))
 			sort_armies_name_button.set_tooltip_string("MILITARY_SORT_BY_NAME_TOOLTIP")
 		var sort_armies_strength_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(army_window.get_node(^"./sort_strength"))
 		if sort_armies_strength_button:
-			sort_armies_strength_button.pressed.connect(
-				func() -> void:
-					_army_sort_key = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_STRENGTH
-					_army_sort_descending = not _army_sort_descending
-					print("SORT ARMIES BY STRENGTH ", "DESCENDING" if _army_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_armies_strength_button.pressed.connect(_change_table_sorting.bind(Table.ARMIES, 1))
 			sort_armies_strength_button.set_tooltip_string("MILITARY_SORT_BY_STRENGTH_TOOLTIP")
 
 		_build_army_button = GUINode.get_gui_icon_button_from_node(army_window.get_node(^"./build_new"))
@@ -198,7 +174,11 @@ func _ready() -> void:
 			_build_army_button.set_text("MILITARY_BUILD_ARMY")
 			_build_army_button.set_tooltip_string("MILITARY_BUILD_ARMY_TOOLTIP")
 
-		_army_listbox = GUINode.get_gui_listbox_from_node(army_window.get_node(^"./unit_listbox"))
+		_table_listboxes.push_back(GUINode.get_gui_listbox_from_node(army_window.get_node(^"./unit_listbox")))
+	else:
+		_table_listboxes.push_back(null)
+	_table_sort_columns.push_back(TABLE_UNSORTED)
+	_table_sort_directions.push_back(SORT_DESCENDING)
 
 	var navy_pos : Vector2 = GUINode.get_gui_position(_gui_file, "navy_pos")
 	var navy_window : Panel = GUINode.generate_gui_element(_gui_file, "unit_window")
@@ -212,23 +192,11 @@ func _ready() -> void:
 
 		var sort_navies_name_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(navy_window.get_node(^"./sort_name"))
 		if sort_navies_name_button:
-			sort_navies_name_button.pressed.connect(
-				func() -> void:
-					_navy_sort_key = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_NAME
-					_navy_sort_descending = not _navy_sort_descending
-					print("SORT NAVIES BY NAME ", "DESCENDING" if _navy_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_navies_name_button.pressed.connect(_change_table_sorting.bind(Table.NAVIES, 0))
 			sort_navies_name_button.set_tooltip_string("MILITARY_SORT_BY_NAME_TOOLTIP")
 		var sort_navies_strength_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(navy_window.get_node(^"./sort_strength"))
 		if sort_navies_strength_button:
-			sort_navies_strength_button.pressed.connect(
-				func() -> void:
-					_navy_sort_key = MenuSingleton.UnitGroupSortKey.UNIT_GROUP_SORT_STRENGTH
-					_navy_sort_descending = not _navy_sort_descending
-					print("SORT NAVIES BY STRENGTH ", "DESCENDING" if _navy_sort_descending else "ASCENDING")
-					_update_info()
-			)
+			sort_navies_strength_button.pressed.connect(_change_table_sorting.bind(Table.NAVIES, 1))
 			sort_navies_strength_button.set_tooltip_string("MILITARY_SORT_BY_STRENGTH_TOOLTIP")
 
 		_build_navy_button = GUINode.get_gui_icon_button_from_node(navy_window.get_node(^"./build_new"))
@@ -237,7 +205,11 @@ func _ready() -> void:
 			_build_navy_button.set_text("MILITARY_BUILD_NAVY")
 			_build_navy_button.set_tooltip_string("MILITARY_BUILD_NAVY_TOOLTIP")
 
-		_navy_listbox = GUINode.get_gui_listbox_from_node(navy_window.get_node(^"./unit_listbox"))
+		_table_listboxes.push_back(GUINode.get_gui_listbox_from_node(navy_window.get_node(^"./unit_listbox")))
+	else:
+		_table_listboxes.push_back(null)
+	_table_sort_columns.push_back(TABLE_UNSORTED)
+	_table_sort_directions.push_back(SORT_DESCENDING)
 
 	_update_info()
 
@@ -250,7 +222,13 @@ func _on_update_active_nation_management_screen(active_screen : NationManagement
 	_active = active_screen == _screen
 	_update_info()
 
-func _update_unit_group_list(listbox : GUIListBox, unit_groups : Array[Dictionary], in_progress_units : Array[Dictionary], is_army : bool) -> void:
+func _update_unit_group_list(table : Table, unit_groups : Array[Dictionary], in_progress_units : Array[Dictionary]) -> void:
+	var listbox : GUIListBox = _table_listboxes[table]
+	if not listbox:
+		return
+
+	var is_army : bool = table == Table.ARMIES
+
 	var total_entry_count : int = unit_groups.size() + in_progress_units.size()
 	listbox.clear_children(total_entry_count)
 	while listbox.get_child_count() < total_entry_count:
@@ -283,6 +261,8 @@ func _update_unit_group_list(listbox : GUIListBox, unit_groups : Array[Dictionar
 		var entry_menu : Panel = GUINode.get_panel_from_node(listbox.get_child(index))
 		var unit_group_dict : Dictionary = unit_groups[index]
 
+		entry_menu.remove_meta(TABLE_UNSORTABLE_KEY)
+
 		var entry_button : GUIIconButton = GUINode.get_gui_icon_button_from_node(entry_menu.get_node(^"./military_unit_entry_bg"))
 		if entry_button:
 			# TODO - sort out repeat connections!!!
@@ -302,19 +282,23 @@ func _update_unit_group_list(listbox : GUIListBox, unit_groups : Array[Dictionar
 		var unit_strip_icon : GUIIcon = GUINode.get_gui_icon_from_node(entry_menu.get_node(^"./unit_strip"))
 		if unit_strip_icon:
 			unit_strip_icon.hide()
+		var name : String = unit_group_dict.get(military_info_unit_group_name_key, "")
+		entry_menu.set_meta(TABLE_COLUMN_KEYS[0], name)
 		var name_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./name"))
 		if name_label:
-			name_label.set_text(unit_group_dict.get(military_info_unit_group_name_key, ""))
+			name_label.set_text(name)
 		var location_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./location"))
 		if location_label:
 			location_label.set_text(GUINode.format_province_name(unit_group_dict.get(military_info_unit_group_location_key, "")))
 		var unit_eta_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./unit_eta"))
 		if unit_eta_label:
 			unit_eta_label.hide()
+		var unit_count : int = unit_group_dict.get(military_info_unit_group_unit_count_key, 0)
+		entry_menu.set_meta(TABLE_COLUMN_KEYS[1], unit_count)
 		var unit_count_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./regiments"))
 		if unit_count_label:
 			unit_count_label.show()
-			var unit_count_string : String = str(unit_group_dict.get(military_info_unit_group_unit_count_key, 0))
+			var unit_count_string : String = str(unit_count)
 			unit_count_label.set_text(unit_count_string)
 			unit_count_label.set_tooltip_string(tr(&"MILITARY_REGIMENTS_TOOLTIP" if is_army else &"MILITARY_SHIPS_TOOLTIP").replace("$VALUE$", unit_count_string))
 		var strength : float = unit_group_dict.get(military_info_unit_group_strength_key, 0)
@@ -370,6 +354,8 @@ func _update_unit_group_list(listbox : GUIListBox, unit_groups : Array[Dictionar
 		var unit_dict : Dictionary = in_progress_units[index]
 		var unit_tooltip : String = unit_dict.get(military_info_unit_tooltip_key, "")
 
+		entry_menu.set_meta(TABLE_UNSORTABLE_KEY, true)
+
 		var unit_progress_bar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(entry_menu.get_node(^"./unit_progress"))
 		if unit_progress_bar:
 			unit_progress_bar.show()
@@ -423,6 +409,8 @@ func _update_unit_group_list(listbox : GUIListBox, unit_groups : Array[Dictionar
 		if combat_icon:
 			combat_icon.hide()
 
+	_sort_table(table)
+
 func _update_info() -> void:
 	if _active:
 		# Military stats
@@ -471,11 +459,7 @@ func _update_info() -> void:
 		const military_info_navies_key                        : StringName = &"navies"
 		const military_info_in_progress_ships_key             : StringName = &"in_progress_ships"
 
-		var military_info : Dictionary = MenuSingleton.get_military_menu_info(
-			_leader_sort_key, _leader_sort_descending,
-			_army_sort_key, _army_sort_descending,
-			_navy_sort_key, _navy_sort_descending
-		)
+		var military_info : Dictionary = MenuSingleton.get_military_menu_info()
 
 		# Military stats
 		if _war_exhaustion_label:
@@ -573,15 +557,18 @@ func _update_info() -> void:
 			_auto_create_leader_button.set_pressed(military_info.get(military_info_auto_create_leaders_key, false))
 		if _auto_assign_leader_button:
 			_auto_assign_leader_button.set_pressed(military_info.get(military_info_auto_assign_leaders_key, false))
-		if _leader_listbox:
+		var leader_listbox : GUIListBox = _table_listboxes[Table.LEADERS]
+		if leader_listbox:
 			var leader_entries : Array[Dictionary] = military_info.get(military_info_leaders_list_key, [] as Array[Dictionary])
-			_leader_listbox.clear_children(leader_entries.size())
-			while _leader_listbox.get_child_count() < leader_entries.size():
+			leader_listbox.clear_children(leader_entries.size())
+			while leader_listbox.get_child_count() < leader_entries.size():
 				var unit_entry : Panel = GUINode.generate_gui_element(_gui_file, "milview_leader_entry")
 				if not unit_entry:
 					break
-				_leader_listbox.add_child(unit_entry)
+				leader_listbox.add_child(unit_entry)
 
+			const military_info_leader_id_key : StringName = &"leader_id"
+			const military_info_leader_branch_key : StringName = &"leader_branch" # 1 = land, 2 = naval
 			const military_info_leader_name_key : StringName = &"leader_name"
 			const military_info_leader_picture_key : StringName = &"leader_picture"
 			const military_info_leader_prestige_key : StringName = &"leader_prestige"
@@ -593,17 +580,32 @@ func _update_info() -> void:
 			const military_info_leader_location_key : StringName = &"leader_location"
 			const military_info_leader_tooltip_key : StringName = &"leader_tooltip"
 
-			for index : int in mini(leader_entries.size(), _leader_listbox.get_child_count()):
-				var entry_menu : Panel = GUINode.get_panel_from_node(_leader_listbox.get_child(index))
+			for index : int in mini(leader_entries.size(), leader_listbox.get_child_count()):
+				var entry_menu : Panel = GUINode.get_panel_from_node(leader_listbox.get_child(index))
 				var leader_dict : Dictionary = leader_entries[index]
+
+				var leader_id : int = leader_dict.get(military_info_leader_id_key, 0)
+				if leader_id == 0:
+					push_error("Leader ID is 0 or missing in leader dictionary for entry index ", index, ", skipping!")
+					continue
+				else:
+					entry_menu.set_meta(military_info_leader_id_key, leader_id)
+
+				var prestige : float = leader_dict.get(military_info_leader_prestige_key, 0)
+
+				entry_menu.set_meta(TABLE_COLUMN_KEYS[0], prestige)
 
 				var prestige_progress_bar : GUIProgressBar = GUINode.get_gui_progress_bar_from_node(entry_menu.get_node(^"./leader_prestige_bar"))
 				if prestige_progress_bar:
-					prestige_progress_bar.set_value_no_signal(leader_dict.get(military_info_leader_prestige_key, 0))
+					prestige_progress_bar.set_value_no_signal(prestige)
 					prestige_progress_bar.set_tooltip_string(leader_dict.get(military_info_leader_prestige_tooltip_key, ""))
+
+				entry_menu.set_meta(TABLE_COLUMN_KEYS[1], leader_dict.get(military_info_leader_branch_key, 0))
 
 				var leader_name : String = leader_dict.get(military_info_leader_name_key, "")
 				var leader_tooltip : String = leader_dict.get(military_info_leader_tooltip_key, "")
+
+				entry_menu.set_meta(TABLE_COLUMN_KEYS[2], leader_name)
 
 				var entry_icon : GUIIcon = GUINode.get_gui_icon_from_node(entry_menu.get_node(^"./military_leader_entry_bg"))
 				if entry_icon:
@@ -634,7 +636,10 @@ func _update_info() -> void:
 					# TODO - investigate why "set_pressed_no_signal" wasn't enough
 					use_leader_button.set_pressed(leader_dict.get(military_info_leader_can_be_used_key, false))
 					# TODO - ensure only one connection?
-					use_leader_button.toggled.connect(func(state : bool) -> void: print("Toggled use_leader to ", state))
+					use_leader_button.toggled.connect(
+						func(state : bool) -> void:
+							PlayerSingleton.set_can_use_leader(entry_menu.get_meta(military_info_leader_id_key, 0) as int, state)
+					)
 					use_leader_button.set_tooltip_string("USE_LEADER" if use_leader_button.is_pressed() else "")
 
 				var army_label : GUILabel = GUINode.get_gui_label_from_node(entry_menu.get_node(^"./army"))
@@ -643,6 +648,9 @@ func _update_info() -> void:
 				var leader_assignment_untype : Variant = leader_dict.get(military_info_leader_assignment_key, null)
 				if leader_assignment_untype != null:
 					var leader_assignment : String = leader_assignment_untype as String
+
+					entry_menu.set_meta(TABLE_COLUMN_KEYS[3], leader_assignment)
+
 					var leader_location : String = GUINode.format_province_name(leader_dict.get(military_info_leader_location_key, ""), true)
 					var assignment_tooltip : String = tr(&"MILITARY_LEADER_NAME_TOOLTIP").replace("$NAME$", leader_name).replace("$ARMY$", leader_assignment).replace("$LOCATION$", leader_location)
 
@@ -653,12 +661,15 @@ func _update_info() -> void:
 						location_label.set_text(leader_location)
 						location_label.set_tooltip_string(assignment_tooltip)
 				else:
+					entry_menu.set_meta(TABLE_COLUMN_KEYS[3], "")
+
 					if army_label:
 						army_label.set_text("MILITARY_UNASSIGNED")
 						army_label.clear_tooltip()
 					if location_label:
 						location_label.set_text("")
 						location_label.clear_tooltip()
+			_sort_table(Table.LEADERS)
 
 		# Armies and Navies
 		var is_disarmed : bool = military_info.get(military_info_is_disarmed_key, false)
@@ -677,8 +688,7 @@ func _update_info() -> void:
 			_disarmed_army_icon.set_visible(is_disarmed)
 		if _build_army_button:
 			_build_army_button.set_disabled(is_disarmed)
-		if _army_listbox:
-			_update_unit_group_list(_army_listbox, armies, in_progress_brigades, true)
+		_update_unit_group_list(Table.ARMIES, armies, in_progress_brigades)
 
 		var navies : Array[Dictionary] = military_info.get(military_info_navies_key, [] as Array[Dictionary])
 		var in_progress_ships : Array[Dictionary] = military_info.get(military_info_in_progress_ships_key, [] as Array[Dictionary])
@@ -694,9 +704,40 @@ func _update_info() -> void:
 			_disarmed_navy_icon.set_visible(is_disarmed)
 		if _build_navy_button:
 			_build_navy_button.set_disabled(is_disarmed)
-		if _navy_listbox:
-			_update_unit_group_list(_navy_listbox, navies, in_progress_ships, false)
+		_update_unit_group_list(Table.NAVIES, navies, in_progress_ships)
 
 		show()
 	else:
 		hide()
+
+func _change_table_sorting(table : Table, column : int) -> void:
+	_table_sort_columns[table] = column
+	_table_sort_directions[table] = SORT_ASCENDING if _table_sort_directions[table] == SORT_DESCENDING else SORT_DESCENDING
+
+	_sort_table(table)
+
+func _make_unsortable_check(callable : Callable) -> Callable:
+	return func(a : Node, b : Node) -> bool:
+		# Unsortable entries are equal to each other and < all sortable entries, so:
+		#  -   sortable <   sortable - normal check
+		#  -   sortable < unsortable - always true
+		#  - unsortable <   sortable - always false
+		#  - unsortable < unsortable - always false
+		return not a.get_meta(TABLE_UNSORTABLE_KEY, false) and (b.get_meta(TABLE_UNSORTABLE_KEY, false) or callable.call(a, b))
+
+func _sort_table(table : Table) -> void:
+	var table_listbox : GUIListBox = _table_listboxes[table]
+	if not table_listbox:
+		return
+
+	var column : int = _table_sort_columns[table]
+	if column == TABLE_UNSORTED:
+		return
+
+	var sort_key : StringName = TABLE_COLUMN_KEYS[column]
+
+	table_listbox.sort_children(_make_unsortable_check(
+		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) > b.get_meta(sort_key))
+		if _table_sort_directions[table] == SORT_DESCENDING else
+		(func(a : Node, b : Node) -> bool: return a.get_meta(sort_key) < b.get_meta(sort_key))
+	))

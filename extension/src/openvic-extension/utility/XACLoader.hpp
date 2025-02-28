@@ -674,7 +674,7 @@ namespace OpenVic {
 
 	/*
 	====================================
-	godot::Mesh helper functions
+	Mesh helper functions
 
 	====================================
 	*/
@@ -743,7 +743,7 @@ namespace OpenVic {
 					break;
 				case ATTRIBUTE::INFLUENCE_RANGE:
 					if (skin == nullptr) {
-						Logger::warning("godot::Mesh chunk has influence attribute but no corresponding skinning chunk");
+						Logger::warning("Mesh chunk has influence attribute but no corresponding skinning chunk");
 						break;
 					}
 					convert_data(influence_range_indices, attribute.data);

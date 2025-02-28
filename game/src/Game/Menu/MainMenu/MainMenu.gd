@@ -3,6 +3,8 @@ extends Control
 signal options_button_pressed
 signal new_game_button_pressed
 signal credits_button_pressed
+signal multiplayer_button_pressed
+signal continue_button_pressed
 
 @export
 var _new_game_button : BaseButton
@@ -19,14 +21,13 @@ func _on_new_game_button_pressed() -> void:
 	print("Start a new game!")
 	new_game_button_pressed.emit()
 
-
 func _on_continue_button_pressed() -> void:
 	print("Continue last game!")
-
+	continue_button_pressed.emit()
 
 func _on_multi_player_button_pressed() -> void:
 	print("Have fun with friends!")
-
+	multiplayer_button_pressed.emit()
 
 func _on_options_button_pressed() -> void:
 	print("Check out some options!")

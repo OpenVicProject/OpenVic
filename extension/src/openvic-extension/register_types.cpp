@@ -3,9 +3,9 @@
 #include <godot_cpp/classes/engine.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
-#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
@@ -21,6 +21,7 @@
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/classes/GUITextureRect.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
+#include "openvic-extension/classes/resources/StyleBoxWithSound.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
 #include "openvic-extension/singletons/CursorSingleton.hpp"
@@ -29,6 +30,7 @@
 #include "openvic-extension/singletons/MapItemSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/singletons/ModelSingleton.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/singletons/SoundSingleton.hpp"
 
 using namespace godot;
@@ -43,6 +45,7 @@ static MenuSingleton* _menu_singleton = nullptr;
 static ModelSingleton* _model_singleton = nullptr;
 static AssetManager* _asset_manager_singleton = nullptr;
 static SoundSingleton* _sound_singleton = nullptr;
+static PlayerSingleton* _player_singleton = nullptr;
 
 void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -85,6 +88,10 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	_sound_singleton = memnew(SoundSingleton);
 	Engine::get_singleton()->register_singleton("SoundSingleton", SoundSingleton::get_singleton());
 
+	ClassDB::register_class<PlayerSingleton>();
+	_player_singleton = memnew(PlayerSingleton);
+	Engine::get_singleton()->register_singleton("PlayerSingleton", PlayerSingleton::get_singleton());
+
 	ClassDB::register_class<MapMesh>();
 	ClassDB::register_abstract_class<GFXCorneredTileSupportingTexture>();
 
@@ -115,6 +122,8 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	/* Depend on GUIButton */
 	ClassDB::register_class<GUIIconButton>();
 	ClassDB::register_class<GUIMaskedFlagButton>();
+
+	ClassDB::register_class<StyleBoxWithSound>();
 }
 
 void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
@@ -148,6 +157,9 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("SoundSingleton");
 	memdelete(_sound_singleton);
+
+	Engine::get_singleton()->unregister_singleton("PlayerSingleton");
+	memdelete(_player_singleton);
 }
 
 extern "C" {

@@ -481,6 +481,7 @@ func _update_pop_filters() -> void:
 
 func _update_distributions():
 	const slice_identifier_key : StringName = &"identifier"
+	const slice_tooltip_key : StringName = &"tooltip"
 	const slice_colour_key : StringName = &"colour"
 	const slice_weight_key : StringName = &"weight"
 
@@ -515,13 +516,7 @@ func _update_distributions():
 				var colour_icon : GUIIcon = GUINode.get_gui_icon_from_node(child.get_node(^"./legend_color"))
 				if colour_icon:
 					colour_icon.set_modulate(distribution_row[slice_colour_key])
-					colour_icon.set_tooltip_string_and_substitution_dict(
-						"§Y$ID$§!: $PC$%" + "\nTEST: colour_icon",
-						{
-							"ID": distribution_row[slice_identifier_key],
-							"PC": GUINode.float_to_string_dp(distribution_row[slice_weight_key] * 100.0, 2)
-						}
-					)
+					colour_icon.set_tooltip_string(distribution_row[slice_tooltip_key])
 
 				var identifier_label : GUILabel = GUINode.get_gui_label_from_node(child.get_node(^"./legend_title"))
 				if identifier_label:
@@ -558,6 +553,7 @@ func _update_pop_list() -> void:
 			const pop_issues_key : StringName = &"issues"
 			const pop_unemployment_key : StringName = &"unemployment"
 			const pop_cash_key : StringName = &"cash"
+			const pop_daily_money_key : StringName = &"daily_money"
 			const pop_life_needs_key : StringName = &"life_needs"
 			const pop_everyday_needs_key : StringName = &"everyday_needs"
 			const pop_luxury_needs_key : StringName = &"luxury_needs"
@@ -605,7 +601,7 @@ func _update_pop_list() -> void:
 			if _pop_list_cash_labels[index]:
 				_pop_list_cash_labels[index].set_text("%s¤" % GUINode.float_to_string_dp(pop_row[pop_cash_key], 2))
 				_pop_list_cash_labels[index].set_tooltip_string_and_substitution_dict("POP_DAILY_MONEY", {
-					"VAL": GUINode.float_to_string_dp(1.23, 2)
+					"VAL": GUINode.float_to_string_dp(pop_row[pop_daily_money_key], 2)
 				})
 			if _pop_list_life_needs_progressbars[index]:
 				var life_needs : float = pop_row[pop_life_needs_key]

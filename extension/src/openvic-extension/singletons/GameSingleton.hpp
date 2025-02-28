@@ -15,8 +15,6 @@ namespace OpenVic {
 
 		GameManager game_manager;
 
-		CountryInstance const* PROPERTY(viewed_country, nullptr);
-
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
 		godot::Ref<godot::Image> province_colour_image;
@@ -32,18 +30,16 @@ namespace OpenVic {
 		ordered_map<godot::StringName, int32_t> flag_type_index_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
-		static godot::StringName const& _signal_province_selected();
-		static godot::StringName const& _signal_clock_state_changed();
 		static godot::StringName const& _signal_mapmode_changed();
 
 		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
 		godot::Error _load_flag_sheet();
 
+	public:
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
 		void _on_gamestate_updated();
-		void _on_clock_state_changed();
 
 	protected:
 		static void _bind_methods();
@@ -129,13 +125,6 @@ namespace OpenVic {
 		int32_t get_current_mapmode_index() const;
 		godot::Error set_mapmode(int32_t index);
 		bool is_parchment_mapmode_allowed() const;
-		int32_t get_selected_province_index() const;
-		void set_selected_province(int32_t index);
-		void unset_selected_province();
-
-		void set_viewed_country(CountryInstance const* new_viewed_country);
-		void set_viewed_country_by_province_index(int32_t province_index);
-		godot::Vector2 get_viewed_country_capital_position() const;
 
 		godot::Error update_clock();
 	};
