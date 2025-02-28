@@ -2,7 +2,7 @@
 #include <cassert>
 //#include <cstddef>
 #include <cstdint>
-#include <cstring>
+//#include <cstring>
 //#include <string_view>
 #include <vector>
 #include "Utilities.hpp"
@@ -337,7 +337,7 @@ namespace OpenVic {
 		bool ret = read_struct(file, def.packed);
 		ret &= read_string(file, def.name, false);
 		if (version > 1) { //in version 1, the layers are defined in separate chunks of type 0x4
-			for(int i=0; i<def.packed.layers_count; i++) {
+			for(uint32_t i=0; i<def.packed.layers_count; i++) {
 				material_layer_t layer;
 				ret &= read_layer(file, layer);
 				def.layers.push_back(layer);
@@ -361,12 +361,12 @@ namespace OpenVic {
 
 	static bool read_mesh(godot::Ref<godot::FileAccess> const& file, mesh_t& mesh) {
 		bool ret = read_struct(file, mesh.packed);
-		for(int i=0; i<mesh.packed.attribute_layers_count; i++) {
+		for(uint32_t i=0; i<mesh.packed.attribute_layers_count; i++) {
 			vertices_attribute_t attribute;
 			ret &= read_vertices_attribute(file, attribute, mesh.packed.vertices_count);
 			mesh.vertices_attributes.push_back(attribute);
 		}
-		for(int i=0; i<mesh.packed.submeshes_count; i++) {
+		for(uint32_t i=0; i<mesh.packed.submeshes_count; i++) {
 			submesh_t submesh;
 			ret &= read_submesh(file, submesh);
 			mesh.submeshes.push_back(submesh);
@@ -429,7 +429,7 @@ namespace OpenVic {
 
 		uint32_t current_id = 0;
 
-		for(node_data_t const node : hierarchy.node_data) {
+		for(node_data_t const& node : hierarchy.node_data) {
 			skeleton->add_bone(node.name);
 			skeleton->set_bone_parent(current_id, node.packed.parent_node_id);
 			
@@ -450,7 +450,7 @@ namespace OpenVic {
 
 		uint32_t current_id = 0;
 
-		for(node_chunk_t const node : nodes) {
+		for(node_chunk_t const& node : nodes) {
 			skeleton->add_bone(node.name);
 			skeleton->set_bone_parent(current_id, node.packed.parent_node_id);
 			
@@ -482,6 +482,7 @@ namespace OpenVic {
 		int32_t scroll_index = -1;
 	};
 
+	//TODO: untested
 	static godot::Error setup_flag_shader() {
 		godot::Error result = godot::OK;
 		GameSingleton const* game_singleton = GameSingleton::get_singleton();
@@ -695,14 +696,14 @@ namespace OpenVic {
 
 	// alternatively, see if a mesh name corresponds to a name in the hierarchy
 	//  if yes, keep the mesh
-
 	//this should get rid of mesh chunks that aren't attached to anything
-	// Is this actually a case for reinterpret_cast?
+
 	template<typename T>
-	static void convert_data(std::vector<T>& target, std::vector<uint8_t> const& source) {
-		target.resize(source.size()/sizeof(T));
-		std::memcpy(target.data(),source.data(),source.size());
-	}
+	struct byte_array_wrapper : std::span<const T> {
+		byte_array_wrapper() = default;
+		byte_array_wrapper(std::vector<uint8_t> const& source) :
+			std::span<const T>(reinterpret_cast<T const* const>(source.data()), source.size() / sizeof(T)) {}
+	};
 
 	static godot::MeshInstance3D* build_mesh(mesh_t const& mesh_chunk, skinning_t* skin, std::vector<material_mapping> const& materials) {
 		static const uint32_t EXTRA_CULL_MARGIN = 2;
@@ -713,31 +714,31 @@ namespace OpenVic {
 		godot::Ref<godot::ArrayMesh> mesh = godot::Ref<godot::ArrayMesh>();
 		mesh.instantiate();
 
-		std::vector<vec3d_t> verts = {};
-		std::vector<vec3d_t> normals = {};
-		std::vector<vec4d_t> tangents = {};
-		int uvs_read = 0;
-		std::vector<vec2d_t> uv1 = {};
-		std::vector<vec2d_t> uv2 = {};
-		std::vector<uint32_t> influence_range_indices = {};
+		byte_array_wrapper<vec3d_t> verts;
+		byte_array_wrapper<vec3d_t> normals;
+		byte_array_wrapper<vec4d_t> tangents;
+		uint32_t uvs_read = 0;
+		byte_array_wrapper<vec2d_t> uv1;
+		byte_array_wrapper<vec2d_t> uv2;
+		byte_array_wrapper<uint32_t> influence_range_indices;
 
 		for(vertices_attribute_t const& attribute : mesh_chunk.vertices_attributes) {
 			switch(attribute.packed.type) {
 				case ATTRIBUTE::POSITION:
-					convert_data(verts, attribute.data);
+					verts = attribute.data;
 					break;
 				case ATTRIBUTE::NORMAL:
-					convert_data(normals, attribute.data);
+					normals = attribute.data;
 					break;
 				case ATTRIBUTE::TANGENT:
-					convert_data(tangents, attribute.data);
+					tangents = attribute.data;
 					break;
 				case ATTRIBUTE::UV:
 					if (uvs_read == 0) {
-						convert_data(uv1, attribute.data);
+						uv1 = attribute.data;
 					} 
 					else if (uvs_read == 1) {
-						convert_data(uv2, attribute.data);
+						uv2 = attribute.data;
 					}
 					uvs_read += 1;
 					break;
@@ -746,7 +747,7 @@ namespace OpenVic {
 						Logger::warning("Mesh chunk has influence attribute but no corresponding skinning chunk");
 						break;
 					}
-					convert_data(influence_range_indices, attribute.data);
+					influence_range_indices = attribute.data;
 					break;
 				//for now, ignore color data
 				case ATTRIBUTE::COL_32:
@@ -767,7 +768,7 @@ namespace OpenVic {
 		static const godot::StringName key_scroll = "scroll_tex_index_diffuse";
 
 		//for now we treat a submesh as a godot mesh surface
-		for(submesh_t submesh : mesh_chunk.submeshes) {
+		for(submesh_t const& submesh : mesh_chunk.submeshes) {
 			godot::Array arrs; //surface vertex data arrays
 			ERR_FAIL_COND_V(arrs.resize(godot::Mesh::ARRAY_MAX) != godot::OK, {});
 
@@ -786,7 +787,7 @@ namespace OpenVic {
 			weights.fill(0);
 
 			//1 vertex is in the surface per relative index
-			for(uint32_t rel_ind : submesh.relative_indices) {
+			for(uint32_t const& rel_ind : submesh.relative_indices) {
 				uint32_t index = rel_ind + vert_total;
 
 				verts_submesh.push_back(vec3d_to_godot(verts[index], true));
@@ -815,7 +816,7 @@ namespace OpenVic {
 					uint32_t const& influences_ind = skin->influence_ranges[influence_range_ind].first_influence_index;
 					uint32_t influences_count = godot::Math::min(skin->influence_ranges[influence_range_ind].influences_count, 4);
 
-					for(int i = 0; i < influences_count; i++) {
+					for(uint32_t i = 0; i < influences_count; i++) {
 						bone_ids[rel_ind + i] = skin->influence_data[influences_ind + i].bone_id;
 						weights[rel_ind + i] = skin->influence_data[influences_ind + i].weight;
 					}
@@ -995,7 +996,7 @@ namespace OpenVic {
 
 			skinning_t* mesh_skin = nullptr;
 			//for(skinning skin : skinnings) {
-			for(int i=0; i < skinnings.size(); i++) {
+			for(uint32_t i=0; i < skinnings.size(); i++) {
 				skinning_t& skin = skinnings[i];
 				if (skin.node_id == mesh.packed.node_id && skin.packed.is_for_collision == mesh.packed.is_collision_mesh) {
 					mesh_skin = &skin;
