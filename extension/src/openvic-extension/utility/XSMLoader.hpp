@@ -207,14 +207,14 @@ namespace OpenVic {
 		if (version == 1) {
 			std::vector<rotation_key_v1_t> rot_keys_v1;
 			res &= read_struct_array(file,rot_keys_v1,count);
-			for(rotation_key_v1_t key : rot_keys_v1) {
+			for(rotation_key_v1_t const& key : rot_keys_v1) {
 				keys_out->push_back({quat_v1_to_godot(key.rotation), key.time});
 			}
 		}
 		else {
 			std::vector<rotation_key_v2_t> rot_keys_v2;
 			res &= read_struct_array(file,rot_keys_v2,count);
-			for(rotation_key_v2_t key : rot_keys_v2) {
+			for(rotation_key_v2_t const& key : rot_keys_v2) {
 				keys_out->push_back({quat_v2_to_godot(key.rotation), key.time});
 			}
 		}
@@ -255,7 +255,7 @@ namespace OpenVic {
 		bone_animation.submotion_count = file->get_32();
 		bool ret = true;
 	
-		for(int i=0; i<bone_animation.submotion_count; i++) {
+		for(uint32_t i=0; i<bone_animation.submotion_count; i++) {
 			skeletal_submotion_t submotion;
 			ret &= read_skeletal_submotion(file, submotion, version);
 			bone_animation.submotions.push_back(submotion);
@@ -288,29 +288,29 @@ namespace OpenVic {
 	
 	//returns highest time in the submotion
 	template<typename T>
-	float add_submotion(godot::Ref<godot::Animation> anim, T submotion) {
+	float add_submotion(godot::Ref<godot::Animation> anim, T const& submotion) {
 		static const godot::StringName SKELETON_NODE_PATH = "./skeleton:%s";
 		float max_time = 0;
 	
 		//NOTE: godot uses ':' to specify properties, so we replaced such characters with '_' when we read them in
 		godot::String skeleton_path = godot::vformat(SKELETON_NODE_PATH, submotion.node_name);
 	
-		int pos_id = anim->add_track(godot::Animation::TYPE_POSITION_3D);
-		int rot_id = anim->add_track(godot::Animation::TYPE_ROTATION_3D);
-		int scale_id = anim->add_track(godot::Animation::TYPE_SCALE_3D);
+		int32_t pos_id = anim->add_track(godot::Animation::TYPE_POSITION_3D);
+		int32_t rot_id = anim->add_track(godot::Animation::TYPE_ROTATION_3D);
+		int32_t scale_id = anim->add_track(godot::Animation::TYPE_SCALE_3D);
 	
 		anim->track_set_path(pos_id, skeleton_path);
 		anim->track_set_path(rot_id, skeleton_path);
 		anim->track_set_path(scale_id, skeleton_path);
 	
-		for(position_key_t key : submotion.position_keys) {
+		for(position_key_t const& key : submotion.position_keys) {
 			anim->position_track_insert_key(pos_id, key.time, vec3d_to_godot(key.position, true));
 			if (key.time > max_time) {
 				max_time = key.time;
 			}
 		}
 	
-		for(rotation_key_t key : submotion.rotation_keys) {
+		for(rotation_key_t const& key : submotion.rotation_keys) {
 			anim->rotation_track_insert_key(rot_id, key.time, key.rotation);
 			if (key.time > max_time) {
 				max_time = key.time;
@@ -318,7 +318,7 @@ namespace OpenVic {
 		}
 		
 		//not needed for vic2 animations, but we can still support it
-		for(scale_key_t key : submotion.scale_keys) {
+		for(scale_key_t const& key : submotion.scale_keys) {
 			anim->scale_track_insert_key(scale_id, key.time, vec3d_to_godot(key.scale));
 			if (key.time > max_time) {
 				max_time = key.time;
@@ -326,7 +326,7 @@ namespace OpenVic {
 		}
 		
 		// TODO: SCALEROTATION
-		for(rotation_key_t key : submotion.scale_rotation_keys) {
+		for(rotation_key_t const& key : submotion.scale_rotation_keys) {
 			if (key.time > max_time) {
 				max_time = key.time;
 			}
@@ -406,14 +406,14 @@ namespace OpenVic {
 			return anim; //exit early if reading the chunks in failed
 		}
 	
-		for(skeletal_submotion_t submotion : bone_anim.submotions) {
+		for(skeletal_submotion_t const& submotion : bone_anim.submotions) {
 			float submotion_len = add_submotion(anim, submotion);
 			if (submotion_len > animation_length) {
 				animation_length = submotion_len;
 			}
 		}
 	
-		for(node_submotion_t submotion : node_submotions) {
+		for(node_submotion_t const& submotion : node_submotions) {
 			float submotion_len = add_submotion(anim, submotion);
 			if (submotion_len > animation_length) {
 				animation_length = submotion_len;
