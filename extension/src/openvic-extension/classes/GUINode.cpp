@@ -283,7 +283,7 @@ void GUINode::set_click_mask(Ref<BitMap> const& mask) {
 bool GUINode::_update_click_mask_for(Ref<Image> const& img, int index) {
 	ERR_FAIL_INDEX_V(index, _mask_controls.size(), false);
 	Control* control = _mask_controls[index];
-	if (!UtilityFunctions::is_instance_valid(control) && !control->is_inside_tree()) {
+	if (!ObjectDB::get_instance(control->get_instance_id()) && !control->is_inside_tree()) {
 		_mask_controls.remove_at(index);
 		return false;
 	}

@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://btri1i0hkhdsh"]
 
 [ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://assets/graphics/theme/options_menu.tres" id="1_5k2lj"]
-[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/MultiplayerMenu.gd" id="2_2x2qh"]
+[ext_resource type="Script" uid="uid://d2fflsmlplgvo" path="res://src/Game/Menu/MultiplayerMenu/MultiplayerMenu.gd" id="2_2x2qh"]
 [ext_resource type="PackedScene" uid="uid://28ummh3fgokc" path="res://src/Game/Menu/MultiplayerMenu/DirectConnectionTab.tscn" id="3_4iwik"]
 [ext_resource type="PackedScene" uid="uid://b4cu0p1wlux3s" path="res://src/Game/Menu/MultiplayerMenu/HostTab.tscn" id="3_ha6kl"]
-[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/PasswordDialog.gd" id="5_t64eu"]
+[ext_resource type="Script" uid="uid://271hnyya7nha" path="res://src/Game/Menu/MultiplayerMenu/PasswordDialog.gd" id="5_t64eu"]
 [ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/Game/Menu/MultiplayerMenu/SecretEdit.tscn" id="6_34d2n"]
-[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/ConnectionFailDialog.gd" id="7_cd4lp"]
+[ext_resource type="Script" uid="uid://cgd6n1okjdink" path="res://src/Game/Menu/MultiplayerMenu/ConnectionFailDialog.gd" id="7_cd4lp"]
 
 [node name="MultiplayerMenu" type="PanelContainer" node_paths=PackedStringArray("_tab_container", "_password_dialog", "_connection_fail_dialog", "_host_tab", "_direct_connection_tab")]
 editor_description = "UI-25"

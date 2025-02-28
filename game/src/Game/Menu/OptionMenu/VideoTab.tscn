@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=3 uid="uid://bq3awxxjn1tuw"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/VideoTab.gd" id="1_jvv62"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/GuiScaleSelector.gd" id="3_pgc5d"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SettingRevertDialog.gd" id="8_ug5mo"]
+[ext_resource type="Script" uid="uid://baata5fx7gs5h" path="res://src/Game/Menu/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
+[ext_resource type="Script" uid="uid://d2baocaag5ifg" path="res://src/Game/Menu/OptionMenu/VideoTab.gd" id="1_jvv62"]
+[ext_resource type="Script" uid="uid://c1sayjwmkvd46" path="res://src/Game/Menu/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
+[ext_resource type="Script" uid="uid://bt8wuvopl1kqv" path="res://src/Game/Menu/OptionMenu/GuiScaleSelector.gd" id="3_pgc5d"]
+[ext_resource type="Script" uid="uid://b1bxjetbdem3j" path="res://src/Game/Menu/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
+[ext_resource type="Script" uid="uid://dhgxcqr7tlicj" path="res://src/Game/Menu/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
+[ext_resource type="Script" uid="uid://fggqr3vjg8rd" path="res://src/Game/Menu/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
+[ext_resource type="Script" uid="uid://cmym81ujx2s8a" path="res://src/Game/Menu/OptionMenu/SettingRevertDialog.gd" id="8_ug5mo"]
 
 [node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-46"

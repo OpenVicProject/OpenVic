@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cvl76duuym1wq"]
 
-[ext_resource type="Script" path="res://src/Game/MusicConductor/MusicPlayer.gd" id="1_gcm4m"]
+[ext_resource type="Script" uid="uid://8jeht8ufkjqk" path="res://src/Game/MusicConductor/MusicPlayer.gd" id="1_gcm4m"]
 
 [node name="MusicPlayer" type="BoxContainer" node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visibility_button")]
 editor_description = "UI-104"

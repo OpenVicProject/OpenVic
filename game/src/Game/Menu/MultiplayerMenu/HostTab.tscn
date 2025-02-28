@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b4cu0p1wlux3s"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/HostTab.gd" id="1_23sa3"]
+[ext_resource type="Script" uid="uid://gashq75jn3c6" path="res://src/Game/Menu/MultiplayerMenu/HostTab.gd" id="1_23sa3"]
 [ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/Game/Menu/MultiplayerMenu/SecretEdit.tscn" id="2_j4o6c"]
 
 [node name="HostTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus", "player_name_entry", "game_name_entry", "password_entry", "is_lan")]
