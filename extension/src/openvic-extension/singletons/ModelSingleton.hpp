@@ -68,5 +68,6 @@ namespace OpenVic {
 
 		godot::Ref<godot::Animation> get_xsm_animation(godot::String source_file);
 		godot::Node3D* get_xac_model(godot::String source_file);
+		godot::Error setup_flag_shader();
 	};
 }

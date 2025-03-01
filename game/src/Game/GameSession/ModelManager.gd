@@ -2,11 +2,13 @@ class_name ModelManager
 extends Node3D
 
 @export var _map_view : MapView
+@export var _buildings : Node3D
+@export var _units : Node3D
 
 const MODEL_SCALE : float = 1.0 / 256.0
 
 func generate_units() -> void:
-	XACLoader.setup_flag_shader() #TODO: replace with C++ call
+	ModelSingleton.setup_flag_shader()
 
 	for unit : Dictionary in ModelSingleton.get_units():
 		_generate_unit(unit)
@@ -61,7 +63,7 @@ func _generate_unit(unit_dict : Dictionary) -> void:
 		model.secondary_colour = unit_dict[secondary_colour_key]
 		model.tertiary_colour = unit_dict[tertiary_colour_key]
 
-	add_child(model)
+	_units.add_child(model,true)
 
 func generate_buildings() -> void:
 	for building : Dictionary in ModelSingleton.get_buildings():
@@ -80,7 +82,7 @@ func _generate_building(building_dict : Dictionary) -> void:
 	model.rotate_y(PI + building_dict.get(rotation_key, 0.0))
 	model.set_position(_map_view._map_to_world_coords(building_dict[position_key]) + Vector3(0, 0.1 * MODEL_SCALE, 0))
 
-	add_child(model)
+	_buildings.add_child(model,true)
 
 func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : bool = false) -> Node3D:
 	const file_key : StringName = &"file"
@@ -112,7 +114,9 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		#ModelSingleton.get_xac_model(model_dict[file_key])
 	else:
 		model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+	#var model : UnitModel = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+	
 	if not model:
 		return null
 	model.scale *= model_dict[scale_key]

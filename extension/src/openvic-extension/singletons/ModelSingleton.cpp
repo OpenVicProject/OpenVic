@@ -10,6 +10,7 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/classes/node3d.hpp"
 
 using namespace godot;
@@ -23,6 +24,7 @@ void ModelSingleton::_bind_methods() {
 	OV_BIND_METHOD(ModelSingleton::get_buildings);
 	OV_BIND_METHOD(ModelSingleton::get_xsm_animation,{ "animation_name" });
 	OV_BIND_METHOD(ModelSingleton::get_xac_model,{ "model_name" });
+	OV_BIND_METHOD(ModelSingleton::setup_flag_shader);
 }
 
 ModelSingleton* ModelSingleton::get_singleton() {
@@ -507,7 +509,13 @@ Ref<Animation> ModelSingleton::get_xsm_animation(String source_file) {
 Node3D* ModelSingleton::get_xac_model(String source_file) {
 	const xac_map_t::const_iterator it = xac_cache.find(source_file);
 	if(it != xac_cache.end()) {
-		return (Node3D*)it->second->duplicate();
+		Node3D* unit = (Node3D*)it->second->duplicate();
+		unit->call("unit_init", true);
+		//if(unit->get_script()->) {
+
+		//}
+		return unit;
+		//return (Node3D*)it->second->duplicate();
 	}
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
@@ -519,5 +527,10 @@ Node3D* ModelSingleton::get_xac_model(String source_file) {
 
 	Node3D* node = _load_xac_model(FileAccess::open(path, FileAccess::READ));
 	xac_cache.emplace(source_file,node);
+	node->call("unit_init", true);
 	return node;
+}
+
+Error ModelSingleton::setup_flag_shader() {
+	return _setup_flag_shader();
 }
