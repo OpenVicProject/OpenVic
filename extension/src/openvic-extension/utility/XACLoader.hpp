@@ -17,6 +17,7 @@
 #include "godot_cpp/classes/mesh_instance3d.hpp"
 #include "godot_cpp/classes/resource_loader.hpp"
 #include "godot_cpp/classes/resource_preloader.hpp"
+#include "godot_cpp/classes/script.hpp"
 #include "godot_cpp/classes/shader_material.hpp"
 #include "godot_cpp/classes/skeleton3d.hpp"
 //#include "godot_cpp/variant/basis.hpp"
@@ -301,7 +302,7 @@ namespace OpenVic {
 		ret &= read_string(file, metadata.source_app, false);
 		ret &= read_string(file, metadata.original_file_name, false);
 		ret &= read_string(file, metadata.export_date, false);
-		ret &= read_string(file, metadata.actor_name, false);
+		ret &= read_string(file, metadata.actor_name, true);
 		return ret;
 	}
 
@@ -482,21 +483,24 @@ namespace OpenVic {
 		int32_t scroll_index = -1;
 	};
 
-	//TODO: untested
-	static godot::Error setup_flag_shader() {
+	//Working
+	static godot::Error _setup_flag_shader() {
 		godot::Error result = godot::OK;
 		GameSingleton const* game_singleton = GameSingleton::get_singleton();
 		ERR_FAIL_NULL_V(game_singleton, {});
 		
 		static const godot::StringName Param_flag_dimensions = "flag_dims";
 		static const godot::StringName Param_flag_texture_sheet = "texture_flag_sheet_diffuse";
-		static const godot::Ref<godot::ShaderMaterial> flag_shader = godot::ResourcePreloader().get_resource("res://src/Game/Model/flag_mat.tres");
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();
+		static const godot::Ref<godot::ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
 
 		flag_shader->set_shader_parameter(Param_flag_dimensions, game_singleton->get_flag_dims());
 		flag_shader->set_shader_parameter(Param_flag_texture_sheet, game_singleton->get_flag_sheet_texture());
 		return result;
 	}
 
+	//unit colours not working, likely due to improper setup of the unit
+	//script
 	static std::vector<material_mapping> build_materials(std::vector<material_definition_t> const& materials) {
 		
 		static const godot::StringName Textures_path = "gfx/anims/%s.dds";
@@ -558,7 +562,11 @@ namespace OpenVic {
  							diffuse_name = layer.texture;
 						}
 						else {
-							Logger::error("Multiple diffuse layers in material: ", Utilities::godot_to_std_string(diffuse_name), " and ", Utilities::godot_to_std_string(layer.texture));
+							Logger::error("Multiple diffuse layers in material: ",
+								Utilities::godot_to_std_string(diffuse_name),
+								" and ",
+								Utilities::godot_to_std_string(layer.texture)
+							);
 						}
 						break;
 					case MAP_TYPE::SPECULAR:
@@ -566,7 +574,11 @@ namespace OpenVic {
 							specular_name = layer.texture;
 						}
 						else {
-							Logger::error("Multiple specular layers in material: ", Utilities::godot_to_std_string(specular_name), " and ", Utilities::godot_to_std_string(layer.texture));
+							Logger::error("Multiple specular layers in material: ",
+								Utilities::godot_to_std_string(specular_name),
+								" and ",
+								Utilities::godot_to_std_string(layer.texture)
+							);
 						}
 						break;
 					case MAP_TYPE::NORMAL:
@@ -574,7 +586,11 @@ namespace OpenVic {
 							normal_name = layer.texture;
 						}
 						else {
-							Logger::error("Multiple normal layers in material: ", Utilities::godot_to_std_string(normal_name), " and ", Utilities::godot_to_std_string(layer.texture));
+							Logger::error("Multiple normal layers in material: ",
+								Utilities::godot_to_std_string(normal_name),
+								" and ",
+								Utilities::godot_to_std_string(layer.texture)
+							);
 						}
 						break;
 					case MAP_TYPE::SHADOW:
@@ -583,7 +599,6 @@ namespace OpenVic {
 						// for now, skip
 						break;
 					default:
-						//Logger::warning("Unknown layer type: ", layer.packed.map_type);
 						godot::UtilityFunctions::print(
 							godot::vformat("Unknown layer type: %x", layer.packed.map_type)
 						);
@@ -781,10 +796,7 @@ namespace OpenVic {
 			godot::PackedFloat32Array weights = {};
 			//godot uses a fixed 4 bones influencing a vertex, so size the array accordingly
 			bone_ids.resize(submesh.relative_indices.size()*4);
-			bone_ids.fill(0);
-
 			weights.resize(submesh.relative_indices.size()*4);
-			weights.fill(0);
 
 			//1 vertex is in the surface per relative index
 			for(uint32_t const& rel_ind : submesh.relative_indices) {
@@ -873,6 +885,20 @@ namespace OpenVic {
 	*/
 	static godot::Node3D* _load_xac_model(godot::Ref<godot::FileAccess> const& file) {
 		bool res = read_xac_header(file);
+
+		// TODO: gets the unit script if it has the specular/unit colours texture or
+		/*
+		is_unit = is_unit or (
+			# Needed for animations
+			idle_key in model_dict or move_key in model_dict or attack_key in model_dict
+			# Currently needs UnitModel's attach_model helper function
+			or attachments_key in model_dict
+		)
+		*/
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();
+
+		//TODO: start with the assumption that all units will use this, then reduce later
+		static const godot::Ref<godot::Script> unit_script = loader->load("res://src/Game/Model/UnitModel.gd");
 
 		godot::Node3D* base = memnew(godot::Node3D);
 
@@ -975,16 +1001,23 @@ namespace OpenVic {
 				} 
 			}
 		}
+		
+		base->set_name("__"+metadata.original_file_name.get_file().get_basename());
+		base->set_script(unit_script);
 
 		//Setup skeleton
 		godot::Skeleton3D* skeleton = nullptr;
 		if (hierarchy_read) {
 			skeleton = build_armature_hierarchy(hierarchy);
 			base->add_child(skeleton);
+			//unit_script->set("skeleton", skeleton);
+			//base->call("unit_init", true);
 		}
 		else if (!nodes.empty()) {
 			skeleton = build_armature_nodes(nodes);
 			base->add_child(skeleton);
+			//unit_script->set("skeleton", skeleton);
+			//base->call("unit_init", true);
 		}
 
 		//Setup materials
@@ -995,7 +1028,6 @@ namespace OpenVic {
 			if (mesh.packed.is_collision_mesh) { continue; } //we'll use our own collision meshes where needed
 
 			skinning_t* mesh_skin = nullptr;
-			//for(skinning skin : skinnings) {
 			for(uint32_t i=0; i < skinnings.size(); i++) {
 				skinning_t& skin = skinnings[i];
 				if (skin.node_id == mesh.packed.node_id && skin.packed.is_for_collision == mesh.packed.is_collision_mesh) {
@@ -1021,6 +1053,7 @@ namespace OpenVic {
 				}
 			} 
 		}
+		//base->call("unit_init", true);
 
 		return base;
 	}
