@@ -18,10 +18,12 @@
 #include "godot_cpp/classes/resource_loader.hpp"
 #include "godot_cpp/classes/resource_preloader.hpp"
 #include "godot_cpp/classes/script.hpp"
+#include "godot_cpp/classes/shader.hpp"
 #include "godot_cpp/classes/shader_material.hpp"
 #include "godot_cpp/classes/skeleton3d.hpp"
 //#include "godot_cpp/variant/basis.hpp"
 //#include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/array.hpp"
 #include "godot_cpp/variant/dictionary.hpp"
 #include "godot_cpp/variant/packed_byte_array.hpp"
 #include "godot_cpp/variant/packed_float32_array.hpp"
@@ -32,21 +34,20 @@
 #include "godot_cpp/variant/packed_vector3_array.hpp"
 #include "godot_cpp/variant/packed_vector4_array.hpp"
 #include "godot_cpp/variant/transform3d.hpp"
-#include "godot_cpp/variant/typed_array.hpp"
+//#include "godot_cpp/variant/typed_array.hpp"
 #include "godot_cpp/variant/variant.hpp"
 #include "godot_cpp/variant/vector3.hpp"
 #include "openvic-simulation/utility/Logger.hpp"
 
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <openvic-extension/singletons/ModelSingleton.hpp>
 #include <openvic-extension/singletons/AssetManager.hpp>
 #include <openvic-extension/singletons/GameSingleton.hpp>
 
 //#include "openvic-extension/utility/Utilities.hpp"
 
 namespace OpenVic {
-
-	//using OpenVic::Utilities::std_view_to_godot_string;
 
 	static constexpr uint32_t XAC_FORMAT_SPECIFIER = ' CAX'; // Order reversed due to little endian
 	static constexpr uint8_t XAC_VERSION_MAJOR = 1, XAC_VERSION_MINOR = 0;
@@ -132,6 +133,18 @@ namespace OpenVic {
 		uint8_t pad[3];
 	};
 
+	struct ATTRIBUTE {
+		enum Values : int32_t {
+			POSITION,
+			NORMAL,
+			TANGENT,
+			UV,
+			COL_32,
+			INFLUENCE_RANGE,
+			COL_128
+		};
+	};
+
 	struct vertices_attribute_pack_t {
 		int32_t type; //0-6 (enum ATTRIBUTE)
 		int32_t attribute_size;
@@ -188,27 +201,6 @@ namespace OpenVic {
 	*/
 
 	#pragma pack(pop)
-
-	struct MAP_TYPE {
-		enum Values : int32_t {
-			DIFFUSE = 2,
-			SPECULAR,
-			SHADOW,
-			NORMAL
-		};
-	};
-
-	struct ATTRIBUTE {
-		enum Values : int32_t {
-			POSITION,
-			NORMAL,
-			TANGENT,
-			UV,
-			COL_32,
-			INFLUENCE_RANGE,
-			COL_128
-		};
-	};
 
 	struct xac_metadata_v2_t {
 		xac_metadata_v2_pack_t packed = {};
@@ -469,17 +461,24 @@ namespace OpenVic {
 	====================================
 	Material helper functions
 
-	TODO: wasn't there an alpha mode (alpha clip, ...) needed
-	 to fix the textures
-
 	====================================
 	*/
+
+	//TODO: we need a persistent map of texture names to indices
+
+	/*struct unit_shader_textures_manager {
+		using texture_map_t = deque_ordered_map<godot::StringName, int32_t>;
+		texture_map_t diffuse_texture_index_map;
+		texture_map_t specular_texture_index_map;
+		//texture_map_t shadow_texture_index_map;
+	};*/
 
 	struct material_mapping {
 		//-1 means unused
 		godot::Ref<godot::Material> godot_material;
 		int32_t diffuse_texture_index = -1;
 		int32_t specular_texture_index = -1;
+		//int32_t shadow_texture_index = -1;
 		int32_t scroll_index = -1;
 	};
 
@@ -499,186 +498,119 @@ namespace OpenVic {
 		return result;
 	}
 
-	//unit colours not working, likely due to improper setup of the unit
-	//script
-	static std::vector<material_mapping> build_materials(std::vector<material_definition_t> const& materials) {
-		
+	struct model_texture_set {
+		godot::String diffuse_name;
+		godot::String specular_name;
+		godot::String normal_name;
+		//godot::String shadow_name;
+	};
+
+	static godot::Ref<godot::ImageTexture> get_texture(godot::String name) {
+		AssetManager* asset_manager = AssetManager::get_singleton();
+		//ERR_FAIL_NULL_V(asset_manager, {});
 		static const godot::StringName Textures_path = "gfx/anims/%s.dds";
+		return asset_manager->get_texture(godot::vformat(Textures_path, name));
+	}
 
-		// Parameters for the default model shader
-		static const godot::StringName Param_texture_diffuse = "texture_diffuse";
-		//red channel is specular, green and blue are nation colours
-		static const godot::StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
+	static void pushback_shader_array(godot::Ref<godot::ShaderMaterial> shader, godot::String property, godot::Variant value) {
+		godot::Array arr = shader->get_shader_parameter(property);
+		arr.push_back(value);
+		shader->set_shader_parameter(property, arr);
+	}
 
-		// Scrolling textures (smoke, tank tracks)
-		static const godot::StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
-		static const godot::StringName Param_Scroll_factor = "scroll_factor";
-		static godot::Dictionary SCROLLING_MATERIAL_FACTORS;
-		SCROLLING_MATERIAL_FACTORS["TexAnim"] = 2.5;
-		SCROLLING_MATERIAL_FACTORS["Smoke"] = 0.3;
+	static void set_model_texture_set_texture(godot::String const& layer_name, godot::String* name) {
+		if (name->is_empty()) {
+			*name = layer_name;
+		}
+		else {
+			Logger::error("Multiple diffuse layers in material: ",
+				Utilities::godot_to_std_string(*name),
+				" and ",
+				Utilities::godot_to_std_string(layer_name)
+			);
+		}
+		return;
+	}
 
-		static godot::PackedStringArray Scrolling_textures_diffuse;
-		static godot::PackedStringArray unit_textures_diffuse;
-		static godot::PackedStringArray unit_textures_specular;
-
-		// Flag textures
-
-		static const godot::StringName Param_texture_normal = "texture_normal";
-
-		//General
-		static const uint32_t MAX_UNIT_TEXTURES = 32;
-
+	static model_texture_set get_model_textures(material_definition_t const& material) {
 		static const godot::StringName Texture_skip_nospec = "nospec";
 		static const godot::StringName Texture_skip_flag = "unionjacksquare";
 		static const godot::StringName Texture_skip_diff = "test256texture";
 
-		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();
+		model_texture_set texture_set;
 
-		static const godot::Ref<godot::ShaderMaterial> unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
-		static const godot::Ref<godot::ShaderMaterial> scrolling_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
-		static const godot::Ref<godot::ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
-		
-		
+		for(material_layer_t const& layer : material.layers) {
+			if (layer.texture == Texture_skip_diff || layer.texture == Texture_skip_flag || layer.texture == Texture_skip_nospec) {
+				continue;
+			}
+			//Get the texture names
+			switch(static_cast<ModelSingleton::MAP_TYPE>(layer.packed.map_type)) {
+				case ModelSingleton::MAP_TYPE::DIFFUSE:
+					set_model_texture_set_texture(layer.texture, &texture_set.diffuse_name);
+					break;
+				case ModelSingleton::MAP_TYPE::SPECULAR:
+					set_model_texture_set_texture(layer.texture, &texture_set.specular_name);
+					break;
+				case ModelSingleton::MAP_TYPE::NORMAL:
+					set_model_texture_set_texture(layer.texture, &texture_set.normal_name);
+					break;
+				case ModelSingleton::MAP_TYPE::SHADOW:// ModelSingleton::MAP_TYPE::SHADOW:
+					/*godot::UtilityFunctions::print(
+						godot::vformat("Shadow layer: %s", layer.texture)
+					);*/
+					break;
+				default:
+					godot::UtilityFunctions::print(
+						godot::vformat("Unknown layer type: %x, texture: %s", layer.packed.map_type, layer.texture)
+					);
+					break;
+			}
+		}
+
+		return texture_set;
+	}
+
+	//unit colours not working, likely due to improper setup of the unit script
+	static std::vector<material_mapping> build_materials(std::vector<material_definition_t> const& materials) {
+
+		// Scrolling textures (smoke, tank tracks)
+		static const godot::StringName tracks = "TexAnim";
+		static const godot::StringName smoke = "Smoke";
+
+		//General
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();		
 		std::vector<material_mapping> mappings;
 
-		AssetManager* asset_manager = AssetManager::get_singleton();
-		ERR_FAIL_NULL_V(asset_manager, {});
-
-		//	***	Collect the textures ***
-		
 		for(material_definition_t const& mat : materials) {
-			godot::String diffuse_name;
-			godot::String specular_name;
-			godot::String normal_name;
-
-			for(material_layer_t const& layer : mat.layers) {
-				if (layer.texture == Texture_skip_diff || layer.texture == Texture_skip_flag || layer.texture == Texture_skip_nospec) {
-					continue;
-				}
-				//Get the texture names
-				switch(layer.packed.map_type) {
-					case MAP_TYPE::DIFFUSE:
-						if (diffuse_name.is_empty()) {
- 							diffuse_name = layer.texture;
-						}
-						else {
-							Logger::error("Multiple diffuse layers in material: ",
-								Utilities::godot_to_std_string(diffuse_name),
-								" and ",
-								Utilities::godot_to_std_string(layer.texture)
-							);
-						}
-						break;
-					case MAP_TYPE::SPECULAR:
-						if (specular_name.is_empty()) {
-							specular_name = layer.texture;
-						}
-						else {
-							Logger::error("Multiple specular layers in material: ",
-								Utilities::godot_to_std_string(specular_name),
-								" and ",
-								Utilities::godot_to_std_string(layer.texture)
-							);
-						}
-						break;
-					case MAP_TYPE::NORMAL:
-						if (normal_name.is_empty()) {
-							normal_name = layer.texture;
-						}
-						else {
-							Logger::error("Multiple normal layers in material: ",
-								Utilities::godot_to_std_string(normal_name),
-								" and ",
-								Utilities::godot_to_std_string(layer.texture)
-							);
-						}
-						break;
-					case MAP_TYPE::SHADOW:
-						//Layer type 4 (Fort_Early_Shadow.dds) is used by Fort_Early.xac
-						// it corresponds to the blob shadow?
-						// for now, skip
-						break;
-					default:
-						godot::UtilityFunctions::print(
-							godot::vformat("Unknown layer type: %x", layer.packed.map_type)
-						);
-						break;
-				}
-			}
-
-			godot::Ref<godot::ImageTexture> diffuse_texture;
-			godot::Ref<godot::ImageTexture> specular_texture;
-			godot::Ref<godot::ImageTexture> normal_texture;
+			model_texture_set texture_names = get_model_textures(mat);
 			material_mapping mapping;
-
-			if (!diffuse_name.is_empty()) {
-				diffuse_texture = asset_manager->get_texture(godot::vformat(Textures_path, diffuse_name));
-			} 
-			if (!specular_name.is_empty()) {
-				specular_texture = asset_manager->get_texture(godot::vformat(Textures_path, specular_name));
-			}
-			if (!normal_name.is_empty()) {
-				normal_texture = asset_manager->get_texture(godot::vformat(Textures_path, normal_name));
-			}
 
 			// *** Determine the correct material to use, and set it up ***
 
 			//flag TODO: perhaps flag should be determined by hard-coding so that other models can have a normal texture?
-			if (!normal_texture.is_null() && diffuse_texture.is_null()) {
-				//There shouldn't be a specular texture
-				flag_shader->set_shader_parameter(Param_texture_normal, normal_texture);
+			//There shouldn't be a specular texture
+			if (!texture_names.normal_name.is_empty() && texture_names.diffuse_name.is_empty()) {
+				static const godot::StringName Param_texture_normal = "texture_normal";
+				static const godot::Ref<godot::ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
+				flag_shader->set_shader_parameter(Param_texture_normal, get_texture(texture_names.normal_name));
 				mapping.godot_material = flag_shader;
 			}
 			//Scrolling texture
-			else if (!diffuse_texture.is_null() && SCROLLING_MATERIAL_FACTORS.has(mat.name)) {
-				int32_t scroll_textures_index_diffuse = Scrolling_textures_diffuse.find(diffuse_name);
-				if (scroll_textures_index_diffuse < 0) {
-					Scrolling_textures_diffuse.push_back(diffuse_name);
-					//err check
-					godot::TypedArray<godot::ImageTexture> scroll_diffuse_textures = scrolling_shader->get_shader_parameter(Param_Scroll_texture_diffuse);
-					scroll_diffuse_textures.push_back(diffuse_texture);
-					scrolling_shader->set_shader_parameter(Param_Scroll_texture_diffuse, scroll_diffuse_textures);
-
-					godot::PackedFloat32Array scroll_factors = scrolling_shader->get_shader_parameter(Param_Scroll_factor);
-
-					scroll_factors.push_back(SCROLLING_MATERIAL_FACTORS[mat.name]);
-					scrolling_shader->set_shader_parameter(Param_Scroll_factor, scroll_factors);
-				}
+			else if (!texture_names.diffuse_name.is_empty() && (mat.name == tracks || mat.name == smoke)) {
+				static const godot::Ref<godot::ShaderMaterial> scrolling_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
+				ModelSingleton* model_singleton = ModelSingleton::get_singleton();
+				mapping.scroll_index = model_singleton->set_scroll_material_texture(texture_names.diffuse_name);
 				mapping.godot_material = scrolling_shader;
-				mapping.scroll_index = scroll_textures_index_diffuse;
-				
 			}
 			//standard material (diffuse optionally with a specular/unit colours)
 			else {
-				int32_t textures_index_diffuse = unit_textures_diffuse.find(diffuse_name);
-				int32_t textures_index_specular = unit_textures_specular.find(specular_name);
-				
-				if (textures_index_diffuse < 0 && !diffuse_name.is_empty()) {
-					unit_textures_diffuse.push_back(diffuse_name);
-					if (unit_textures_diffuse.size() >= MAX_UNIT_TEXTURES) {
-						Logger::error("Number of diffuse textures exceeded max supported by a shader!");
-					}
-					godot::TypedArray<godot::ImageTexture> diffuse_textures = unit_shader->get_shader_parameter(Param_texture_diffuse);
-					diffuse_textures.push_back(diffuse_texture);
-					textures_index_diffuse = diffuse_textures.size() - 1;
-					unit_shader->set_shader_parameter(Param_texture_diffuse, diffuse_textures);
-				}
-				//in a vic2 "specular" texture -> r=specular, g=secondary unit color, b=tertiary unit color
-				if (textures_index_specular < 0 && !specular_name.is_empty()) {
-					unit_textures_specular.push_back(specular_name);
-					if (unit_textures_specular.size() >= MAX_UNIT_TEXTURES) {
-						Logger::error("Number of specular textures exceeded max supported by a shader!");
-					}
-					godot::TypedArray<godot::ImageTexture> specular_textures = unit_shader->get_shader_parameter(Param_texture_nation_colors_mask);
-					//Logger::info(specular_textures[0].)
-					specular_textures.push_back(specular_texture);
-					textures_index_specular = specular_textures.size() - 1;
-					unit_shader->set_shader_parameter(Param_texture_nation_colors_mask, specular_textures);
-				}
-
+				static const godot::Ref<godot::ShaderMaterial> unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
+				ModelSingleton* model_singleton = ModelSingleton::get_singleton();
+				//ModelSingleton::MAP_TYPE::DIFFUSE 2
+				//ModelSingleton::MAP_TYPE::SPECULAR 3
+				mapping.diffuse_texture_index = model_singleton->set_unit_material_texture(ModelSingleton::MAP_TYPE::DIFFUSE, texture_names.diffuse_name);
+				mapping.specular_texture_index = model_singleton->set_unit_material_texture(ModelSingleton::MAP_TYPE::SPECULAR, texture_names.specular_name);
 				mapping.godot_material = unit_shader;
-				mapping.diffuse_texture_index = textures_index_diffuse;
-				mapping.specular_texture_index = textures_index_specular;
 			}
 
 			mappings.push_back(mapping);

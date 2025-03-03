@@ -114,6 +114,7 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		#ModelSingleton.get_xac_model(model_dict[file_key])
 	else:
 		model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+		#model = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : UnitModel = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
 	

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 #include <godot_cpp/classes/animation.hpp>
 #include <godot_cpp/classes/object.hpp>
@@ -12,6 +13,7 @@
 #include "godot_cpp/classes/node3d.hpp"
 
 namespace OpenVic {
+
 	struct BuildingInstance;
 
 	class ModelSingleton : public godot::Object {
@@ -38,11 +40,20 @@ namespace OpenVic {
 		using model_map_t = deque_ordered_map<GFX::Actor const*, godot::Dictionary>;
 		using xsm_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::Animation>>;
 		using xac_map_t = deque_ordered_map<godot::StringName, godot::Node3D*>;
+		using shader_array_index_map_t = deque_ordered_map<godot::StringName, int32_t>;
 
 		animation_map_t animation_cache;
 		model_map_t model_cache;
+
 		xsm_map_t xsm_cache;
 		xac_map_t xac_cache;
+
+		godot::Ref<godot::ShaderMaterial> unit_shader;
+		godot::Ref<godot::ShaderMaterial> scroll_shader;
+		shader_array_index_map_t diffuse_texture_index_map;
+		shader_array_index_map_t specular_texture_index_map;
+		//shader_array_index_map_t shadow_texture_index_map;
+		shader_array_index_map_t scroll_index_map;
 
 		godot::Dictionary get_animation_dict(GFX::Actor::Animation const& animation);
 		godot::Dictionary get_model_dict(GFX::Actor const& actor);
@@ -69,5 +80,22 @@ namespace OpenVic {
 		godot::Ref<godot::Animation> get_xsm_animation(godot::String source_file);
 		godot::Node3D* get_xac_model(godot::String source_file);
 		godot::Error setup_flag_shader();
+
+		/*struct MAP_TYPE {
+			enum Values : int32_t {
+				DIFFUSE = 2,
+				SPECULAR,
+				SHADOW,
+				NORMAL
+			};
+		};*/
+		enum class MAP_TYPE {
+			DIFFUSE = 2,
+			SPECULAR,
+			SHADOW,
+			NORMAL
+		};
+		int32_t set_unit_material_texture(MAP_TYPE type, godot::String name);
+		int32_t set_scroll_material_texture(godot::String texture_name);
 	};
 }

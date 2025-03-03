@@ -108,8 +108,8 @@ const ANIMATION_ATTACK : String = ANIMATION_LIBRARY + "/attack"
 			unit.scroll_speed_attack = speed_in
 
 func unit_init(print:bool = false) -> void:
-	if print:
-		print("unit_init called!")
+	#if print:
+	#	print("unit_init called!")
 	for child : Node in get_children():
 		if child is MeshInstance3D:
 			meshes.append(child)
