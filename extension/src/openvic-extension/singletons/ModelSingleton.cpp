@@ -12,6 +12,7 @@
 #include "openvic-extension/utility/Utilities.hpp"
 #include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/classes/node3d.hpp"
+#include "godot_cpp/variant/string_name.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -25,6 +26,8 @@ void ModelSingleton::_bind_methods() {
 	OV_BIND_METHOD(ModelSingleton::get_xsm_animation,{ "animation_name" });
 	OV_BIND_METHOD(ModelSingleton::get_xac_model,{ "model_name" });
 	OV_BIND_METHOD(ModelSingleton::setup_flag_shader);
+	OV_BIND_METHOD(ModelSingleton::set_scroll_material_texture, {"texture_name"});
+	OV_BIND_METHOD(ModelSingleton::set_unit_material_texture, {"type", "texture_name"});
 }
 
 ModelSingleton* ModelSingleton::get_singleton() {
@@ -533,4 +536,77 @@ Node3D* ModelSingleton::get_xac_model(String source_file) {
 
 Error ModelSingleton::setup_flag_shader() {
 	return _setup_flag_shader();
+}
+
+//TODO: put this back, 64 is likely needed because of names being added twice
+// (due to 2 loaders operating)
+static constexpr uint32_t MAX_UNIT_TEXTURES = 64;//32;
+
+//int32_t ModelSingleton::set_unit_material_texture(godot::Ref<godot::ShaderMaterial> unit_shader, godot::String shader_param, godot::PackedStringArray& texture_names, godot::String name, godot::Ref<godot::ImageTexture> texture) {
+int32_t ModelSingleton::set_unit_material_texture(MAP_TYPE type, godot::String texture_name) {
+	shader_array_index_map_t& map = type==MAP_TYPE::DIFFUSE ? diffuse_texture_index_map : specular_texture_index_map;
+	const shader_array_index_map_t::const_iterator it = map.find(texture_name);
+	if(it != map.end()) {
+		return it->second; //return the index
+	}
+
+	map.emplace(texture_name,map.size());
+	if (map.size() >= MAX_UNIT_TEXTURES) {
+		Logger::error("Number of textures exceeded max supported by a shader!");
+		return 0;
+	}
+
+	if(unit_shader.is_null()) {
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
+		unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
+	}
+
+	// Parameters for the default model shader
+	static const godot::StringName Param_texture_diffuse = "texture_diffuse";
+	//red channel is specular, green and blue are nation colours
+	static const godot::StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
+	//static const godot::StringName Param_texture_shadow = "texture_shadow";
+	String shader_param = type==MAP_TYPE::DIFFUSE ? Param_texture_diffuse : Param_texture_nation_colors_mask;
+
+	//godot::Ref<godot::ImageTexture> texture = get_texture(texture_name);
+
+	//godot::TypedArray<godot::ImageTexture> textures = unit_shader->get_shader_parameter(shader_param);
+	//textures.push_back(texture);
+	//unit_shader->set_shader_parameter(shader_param, textures);
+	pushback_shader_array(unit_shader, shader_param, get_texture(texture_name));
+
+	return map[texture_name];
+}
+
+int32_t ModelSingleton::set_scroll_material_texture(godot::String texture_name) {
+	const shader_array_index_map_t::const_iterator it = scroll_index_map.find(texture_name);
+	if(it != scroll_index_map.end()) {
+		return it->second; //return the index
+	}
+
+	scroll_index_map.emplace(texture_name,scroll_index_map.size());
+	if (scroll_index_map.size() >= MAX_UNIT_TEXTURES) {
+		Logger::error("Number of textures exceeded max supported by a shader!");
+		return 0;
+	}
+
+	if(scroll_shader.is_null()) {
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
+		scroll_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
+	}
+
+	static const godot::StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
+	static const godot::StringName Param_Scroll_factor = "scroll_factor";
+
+	pushback_shader_array(scroll_shader, Param_Scroll_texture_diffuse, get_texture(texture_name));
+	
+	float scroll_factor = 0.0;
+	static const godot::StringName tracks = "TexAnim";
+	static const godot::StringName smoke = "Smoke";
+	if(texture_name == tracks) { scroll_factor = 2.5; }
+	else if(texture_name == smoke) { scroll_factor = 0.3; }
+	
+	pushback_shader_array(scroll_shader, Param_Scroll_factor, scroll_factor);
+
+	return scroll_index_map[texture_name];
 }

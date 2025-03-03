@@ -10,7 +10,7 @@ static var flag_shader : ShaderMaterial = preload("res://src/Game/Model/flag_mat
 
 static var scrolling_shader : ShaderMaterial = preload("res://src/Game/Model/scrolling_mat.tres")
 const MAX_SCROLLING_TEXTURES : int = 32 # max number of textures supported by the shader
-static var added_scrolling_textures_diffuse : PackedStringArray
+#static var added_scrolling_textures_diffuse : PackedStringArray
 const SCROLLING_MATERIAL_FACTORS : Dictionary = {
 	"TexAnim" : 2.5, # Tank tracks
 	"Smoke" : 0.3 # Buildings, factories, steam ships, sieges
@@ -414,8 +414,8 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 				push_error("Specular texture present in scrolling material: ", specular_name)
 			if normal_name:
 				push_error("Normal texture present in scrolling material: ", normal_name)
-
-			var scroll_textures_index_diffuse : int = added_scrolling_textures_diffuse.find(diffuse_name)
+			#ModelSingleton. TODO
+			"""var scroll_textures_index_diffuse : int = added_scrolling_textures_diffuse.find(diffuse_name)
 			if scroll_textures_index_diffuse < 0:
 				var diffuse_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % diffuse_name)
 				if diffuse_texture:
@@ -438,7 +438,7 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 					scroll_factors.push_back(SCROLLING_MATERIAL_FACTORS[matdef.name])
 					scrolling_shader.set_shader_parameter(param_scroll_factor, scroll_factors)
 				else:
-					push_error("Failed to load diffuse texture: ", diffuse_name)
+					push_error("Failed to load diffuse texture: ", diffuse_name)"""
 
 			materials.push_back(MaterialDefinition.new(scrolling_shader, -1, -1, scroll_textures_index_diffuse))
 
