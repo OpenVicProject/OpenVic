@@ -1,6 +1,7 @@
 #include "ModelSingleton.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <numbers>
 
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -12,6 +13,8 @@
 #include "openvic-extension/utility/Utilities.hpp"
 #include "godot_cpp/classes/global_constants.hpp"
 #include "godot_cpp/classes/node3d.hpp"
+#include "godot_cpp/classes/resource_loader.hpp"
+#include "godot_cpp/classes/shader_material.hpp"
 #include "godot_cpp/variant/string_name.hpp"
 
 using namespace godot;
@@ -528,37 +531,72 @@ Node3D* ModelSingleton::get_xac_model(String source_file) {
 
 	Logger::info("Load XAC Model from file: ",Utilities::godot_to_std_string(source_file));
 
-	Node3D* node = _load_xac_model(FileAccess::open(path, FileAccess::READ));
+	Node3D* node = XacLoader()._load_xac_model(FileAccess::open(path, FileAccess::READ));
 	xac_cache.emplace(source_file,node);
-	node->call("unit_init", true);
-	return node;
+
+	//if we return the "prototype" in the cache, then it will get scale by 1/256, and then all subsequent units
+	//duplicated from the cache will get effectively scaled by 1/256*1/256, among other problems.
+	Node3D* unit = (Node3D*)node->duplicate();
+	unit->call("unit_init", true);
+	return unit;
 }
 
 Error ModelSingleton::setup_flag_shader() {
-	return _setup_flag_shader();
+	godot::Error result = godot::OK;
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	
+	static const godot::StringName Param_flag_dimensions = "flag_dims";
+	static const godot::StringName Param_flag_texture_sheet = "texture_flag_sheet_diffuse";
+	godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();
+	static const godot::Ref<godot::ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
+
+	flag_shader->set_shader_parameter(Param_flag_dimensions, game_singleton->get_flag_dims());
+	flag_shader->set_shader_parameter(Param_flag_texture_sheet, game_singleton->get_flag_sheet_texture());
+	return result;
+}
+
+static void pushback_shader_array(godot::Ref<godot::ShaderMaterial> shader, godot::String property, godot::Variant value) {
+	godot::Array arr = shader->get_shader_parameter(property);
+	arr.push_back(value);
+	shader->set_shader_parameter(property, arr);
+}
+
+Ref<ShaderMaterial> ModelSingleton::get_unit_shader() {
+	if(unit_shader.is_null()) {
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
+		unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
+	}
+	return unit_shader;
+}
+
+Ref<ShaderMaterial> ModelSingleton::get_scroll_shader() {
+	if(scroll_shader.is_null()) {
+		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
+		scroll_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
+	}
+	return scroll_shader;
 }
 
 //TODO: put this back, 64 is likely needed because of names being added twice
 // (due to 2 loaders operating)
-static constexpr uint32_t MAX_UNIT_TEXTURES = 64;//32;
+static constexpr uint32_t MAX_UNIT_TEXTURES = 32;
 
-//int32_t ModelSingleton::set_unit_material_texture(godot::Ref<godot::ShaderMaterial> unit_shader, godot::String shader_param, godot::PackedStringArray& texture_names, godot::String name, godot::Ref<godot::ImageTexture> texture) {
-int32_t ModelSingleton::set_unit_material_texture(MAP_TYPE type, godot::String texture_name) {
-	shader_array_index_map_t& map = type==MAP_TYPE::DIFFUSE ? diffuse_texture_index_map : specular_texture_index_map;
+int32_t ModelSingleton::set_unit_material_texture(int32_t type, godot::String texture_name) {//MAP_TYPE::Values
+	shader_array_index_map_t& map = type==2 ? diffuse_texture_index_map : specular_texture_index_map; //OpenVic::MAP_TYPE::DIFFUSE
 	const shader_array_index_map_t::const_iterator it = map.find(texture_name);
 	if(it != map.end()) {
+		//godot::UtilityFunctions::print(
+		//	godot::vformat("cached texture: %s type: %d, index %d", texture_name, type, it->second)
+		//);
 		return it->second; //return the index
 	}
 
-	map.emplace(texture_name,map.size());
+	int32_t index = map.size();
+	map.emplace(texture_name,index);
 	if (map.size() >= MAX_UNIT_TEXTURES) {
 		Logger::error("Number of textures exceeded max supported by a shader!");
 		return 0;
-	}
-
-	if(unit_shader.is_null()) {
-		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
-		unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
 	}
 
 	// Parameters for the default model shader
@@ -566,16 +604,14 @@ int32_t ModelSingleton::set_unit_material_texture(MAP_TYPE type, godot::String t
 	//red channel is specular, green and blue are nation colours
 	static const godot::StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
 	//static const godot::StringName Param_texture_shadow = "texture_shadow";
-	String shader_param = type==MAP_TYPE::DIFFUSE ? Param_texture_diffuse : Param_texture_nation_colors_mask;
+	String shader_param = type==2 ? Param_texture_diffuse : Param_texture_nation_colors_mask; //OpenVic::MAP_TYPE::DIFFUSE
 
-	//godot::Ref<godot::ImageTexture> texture = get_texture(texture_name);
+	//godot::UtilityFunctions::print(
+	//	godot::vformat("texture: %s type: %d, index %d", texture_name, type, index)
+	//);
+	pushback_shader_array(get_unit_shader(), shader_param, XacLoader::get_model_texture(texture_name));
 
-	//godot::TypedArray<godot::ImageTexture> textures = unit_shader->get_shader_parameter(shader_param);
-	//textures.push_back(texture);
-	//unit_shader->set_shader_parameter(shader_param, textures);
-	pushback_shader_array(unit_shader, shader_param, get_texture(texture_name));
-
-	return map[texture_name];
+	return index;
 }
 
 int32_t ModelSingleton::set_scroll_material_texture(godot::String texture_name) {
@@ -590,15 +626,10 @@ int32_t ModelSingleton::set_scroll_material_texture(godot::String texture_name) 
 		return 0;
 	}
 
-	if(scroll_shader.is_null()) {
-		godot::ResourceLoader* loader = godot::ResourceLoader::get_singleton();	
-		scroll_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
-	}
-
 	static const godot::StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
 	static const godot::StringName Param_Scroll_factor = "scroll_factor";
 
-	pushback_shader_array(scroll_shader, Param_Scroll_texture_diffuse, get_texture(texture_name));
+	pushback_shader_array(get_scroll_shader(), Param_Scroll_texture_diffuse, XacLoader::get_model_texture(texture_name));
 	
 	float scroll_factor = 0.0;
 	static const godot::StringName tracks = "TexAnim";
@@ -606,7 +637,7 @@ int32_t ModelSingleton::set_scroll_material_texture(godot::String texture_name) 
 	if(texture_name == tracks) { scroll_factor = 2.5; }
 	else if(texture_name == smoke) { scroll_factor = 0.3; }
 	
-	pushback_shader_array(scroll_shader, Param_Scroll_factor, scroll_factor);
+	pushback_shader_array(get_scroll_shader(), Param_Scroll_factor, scroll_factor);
 
 	return scroll_index_map[texture_name];
 }
