@@ -49,5 +49,23 @@
 				Gets the animation from an internal cache or file system using the provided file path.
 			</description>
 		</method>
+		<method name="set_scroll_material_texture">
+			<return type="int" />
+			<param index="0" name="texture_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_unit_material_texture">
+			<return type="int" />
+			<param index="0" name="type" type="int" />
+			<param index="1" name="texture_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="setup_flag_shader">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
 	</methods>
 </class>

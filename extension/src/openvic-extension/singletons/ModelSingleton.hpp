@@ -10,6 +10,8 @@
 #include <openvic-simulation/types/OrderedContainers.hpp>
 #include "../utility/XSMLoader.hpp"
 #include "../utility/XACLoader.hpp"
+#include "godot_cpp/classes/shader.hpp"
+#include "godot_cpp/classes/shader_material.hpp"
 #include "godot_cpp/classes/node3d.hpp"
 
 namespace OpenVic {
@@ -81,21 +83,9 @@ namespace OpenVic {
 		godot::Node3D* get_xac_model(godot::String source_file);
 		godot::Error setup_flag_shader();
 
-		/*struct MAP_TYPE {
-			enum Values : int32_t {
-				DIFFUSE = 2,
-				SPECULAR,
-				SHADOW,
-				NORMAL
-			};
-		};*/
-		enum class MAP_TYPE {
-			DIFFUSE = 2,
-			SPECULAR,
-			SHADOW,
-			NORMAL
-		};
-		int32_t set_unit_material_texture(MAP_TYPE type, godot::String name);
+		godot::Ref<godot::ShaderMaterial> get_unit_shader();
+		godot::Ref<godot::ShaderMaterial> get_scroll_shader();
+		int32_t set_unit_material_texture(int32_t type, godot::String name); //MAP_TYPE::Values
 		int32_t set_scroll_material_texture(godot::String texture_name);
 	};
 }

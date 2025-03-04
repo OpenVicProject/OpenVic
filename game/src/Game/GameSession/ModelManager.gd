@@ -77,8 +77,8 @@ func _generate_building(building_dict : Dictionary) -> void:
 	var model : Node3D = _generate_model(building_dict[model_key])
 	if not model:
 		return
-
 	model.scale *= MODEL_SCALE
+	
 	model.rotate_y(PI + building_dict.get(rotation_key, 0.0))
 	model.set_position(_map_view._map_to_world_coords(building_dict[position_key]) + Vector3(0, 0.1 * MODEL_SCALE, 0))
 
@@ -113,14 +113,15 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 	#	print(file_key)
 		#ModelSingleton.get_xac_model(model_dict[file_key])
 	else:
-		model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
-		#model = ModelSingleton.get_xac_model(model_dict[file_key])
+		#model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
+		model = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : UnitModel = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
 	
 	if not model:
 		return null
-	model.scale *= model_dict[scale_key]
+	model.scale *= model_dict[scale_key] #* MODEL_SCALE #TODO: sometimes 0?
+	
 	#print("GENERATE MODEL")
 	if model is UnitModel:
 		# Animations
