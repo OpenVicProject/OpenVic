@@ -14,7 +14,7 @@ config/name="OpenVic"
 config/description="A faithful recreation of Victoria 2: Heart of Darkness with a focus on enhancing performance, multiplayer stability, and modability for modern machines."
 run/main_scene="res://src/Game/GameStart.tscn"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
 boot_splash/image="res://assets/graphics/splash_image.png"
@@ -54,6 +54,9 @@ window/size/window_height_override=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
 window/per_pixel_transparency/allowed=true
+window/size/mode.editor=0
+window/size/window_width_override.editor=0
+window/size/window_height_override.editor=0
 
 [editor_plugins]
 
@@ -170,6 +173,11 @@ settings/settings_file_path="user://settings.cfg"
 data/saves_directory="user://saves"
 project_file_req_comment.editor="FS-2, FS-20, FS-21, FS-22"
 settings/ips_file_path="user://ips.cfg"
+
+[physics]
+
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
 
 [rendering]
 

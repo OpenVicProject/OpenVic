@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://br26w6mwqilyr"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/MultiplayerMenu/DirectConnectionEntry.gd" id="1_8v0qa"]
+[ext_resource type="Script" uid="uid://dvmrp0ohbbg5l" path="res://src/Game/Menu/MultiplayerMenu/DirectConnectionEntry.gd" id="1_8v0qa"]
 [ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/Game/Menu/MultiplayerMenu/SecretEdit.tscn" id="2_3yivm"]
 
 [node name="DirectConnectionEntry" type="HBoxContainer" node_paths=PackedStringArray("ip_edit", "name_edit", "connect_button", "delete_button")]

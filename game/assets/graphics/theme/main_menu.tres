@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=36 format=3 uid="uid://qoi3oec48jp0"]
 
-[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
-[ext_resource type="Script" path="res://src/Game/Theme/TextureSetting.gd" id="2_7bwl2"]
+[ext_resource type="Script" uid="uid://d2etcw6vfl0k3" path="res://src/Game/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
+[ext_resource type="Script" uid="uid://bho74dnf1rq0x" path="res://src/Game/Theme/TextureSetting.gd" id="2_7bwl2"]
 [ext_resource type="Texture2D" uid="uid://dapuqgpjs56bs" path="res://assets/graphics/main_menu_background.png" id="3_cpatd"]
 [ext_resource type="Texture2D" uid="uid://q25s41oavuxw" path="res://assets/graphics/main_menu_border_paper.png" id="4_sl60o"]
 [ext_resource type="Texture2D" uid="uid://c0p34i3d3b0pw" path="res://assets/graphics/main_menu_button.png" id="5_xj7ql"]

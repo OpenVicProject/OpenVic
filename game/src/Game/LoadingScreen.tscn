@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://3kktdpfnc0sn"]
 
-[ext_resource type="Script" path="res://src/Game/LoadingScreen.gd" id="1_b0p3w"]
+[ext_resource type="Script" uid="uid://b4kd4qvtrpdkb" path="res://src/Game/LoadingScreen.gd" id="1_b0p3w"]
 [ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://assets/graphics/loading_screen.png" id="2_ny153"]
 [ext_resource type="Texture2D" uid="uid://hlouxrjm7pqy" path="res://assets/graphics/ovgear.png" id="3_avohi"]
 [ext_resource type="Texture2D" uid="uid://oirhxlyiogv8" path="res://assets/graphics/globe.png" id="4_eyeeb"]
@@ -54,8 +54,8 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wo8l0"]
 _data = {
-"RESET": SubResource("Animation_wsrst"),
-"loadingscreen_gear": SubResource("Animation_3ktkq")
+&"RESET": SubResource("Animation_wsrst"),
+&"loadingscreen_gear": SubResource("Animation_3ktkq")
 }
 
 [node name="LoadingScreen" type="Control" node_paths=PackedStringArray("progress_bar", "quote_label", "animation_player")]

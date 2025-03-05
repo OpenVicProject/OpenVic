@@ -1,23 +1,23 @@
 [gd_scene load_steps=16 format=3 uid="uid://dkehmdnuxih2r"]
 
-[ext_resource type="Script" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
-[ext_resource type="Shader" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
-[ext_resource type="Script" path="res://src/Game/GameSession/MapText.gd" id="2_13bgq"]
-[ext_resource type="Script" path="res://src/Game/GameSession/ProjectionManager.gd" id="2_xnmdg"]
-[ext_resource type="Script" path="res://src/Game/GameSession/SelectionMarkers.gd" id="3_fi78k"]
-[ext_resource type="Shader" path="res://src/Game/GameSession/Projection.gdshader" id="4_2f4io"]
-[ext_resource type="Script" path="res://src/Game/GameSession/ValidMoveMarkers.gd" id="5_h3t3v"]
+[ext_resource type="Script" uid="uid://bk5kuepyebwq5" path="res://src/Game/GameSession/MapView.gd" id="1_exccw"]
+[ext_resource type="Shader" uid="uid://cgm5ffev0il7n" path="res://src/Game/GameSession/TerrainMap.gdshader" id="1_upocn"]
+[ext_resource type="Script" uid="uid://bc6x2mr71d2he" path="res://src/Game/GameSession/MapText.gd" id="2_13bgq"]
+[ext_resource type="Script" uid="uid://b0ehhh0vc32hp" path="res://src/Game/GameSession/ProjectionManager.gd" id="2_xnmdg"]
+[ext_resource type="Script" uid="uid://r5s47317udos" path="res://src/Game/GameSession/SelectionMarkers.gd" id="3_fi78k"]
+[ext_resource type="Shader" uid="uid://bmf40fxtgo3kh" path="res://src/Game/GameSession/Projection.gdshader" id="4_2f4io"]
+[ext_resource type="Script" uid="uid://cfpw51y2ga1nl" path="res://src/Game/GameSession/ValidMoveMarkers.gd" id="5_h3t3v"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_blhuf"]
 render_priority = 0
 shader = ExtResource("4_2f4io")
-shader_parameter/sizes = null
-shader_parameter/spin = null
-shader_parameter/expanding = null
-shader_parameter/duration = null
-shader_parameter/additative = null
-shader_parameter/time = 0.0
 shader_parameter/projections = null
+shader_parameter/sizes = PackedFloat32Array(0, 0, 0)
+shader_parameter/spin = PackedFloat32Array(0, 0, 0)
+shader_parameter/expanding = PackedFloat32Array(0, 0, 0)
+shader_parameter/duration = PackedFloat32Array(0, 0, 0)
+shader_parameter/additative = PackedInt32Array(0, 0, 0)
+shader_parameter/time = PackedFloat32Array(0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_72iss"]
 material = SubResource("ShaderMaterial_blhuf")
@@ -36,13 +36,13 @@ mesh = SubResource("QuadMesh_72iss")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tayeg"]
 render_priority = 0
 shader = ExtResource("1_upocn")
-shader_parameter/province_shape_subdivisions = null
-shader_parameter/hover_index = null
-shader_parameter/selected_index = null
-shader_parameter/parchment_mix = null
-shader_parameter/terrain_tile_factor = null
-shader_parameter/stripe_tile_factor = null
-shader_parameter/overlay_tile_factor = null
+shader_parameter/province_shape_subdivisions = Vector2(0, 0)
+shader_parameter/hover_index = 0
+shader_parameter/selected_index = 0
+shader_parameter/parchment_mix = 0.0
+shader_parameter/terrain_tile_factor = 0.0
+shader_parameter/stripe_tile_factor = 0.0
+shader_parameter/overlay_tile_factor = 0.0
 
 [sub_resource type="MapMesh" id="MapMesh_3gtsd"]
 

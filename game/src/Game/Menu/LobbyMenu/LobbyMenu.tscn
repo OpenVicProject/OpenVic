@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://do60kx0d3nrh4"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
+[ext_resource type="Script" uid="uid://cammednedjaup" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.gd" id="1_cvwum"]
 [ext_resource type="PackedScene" uid="uid://k71f5gibwmtc" path="res://src/Game/Menu/LobbyMenu/LobbyPanelButton.tscn" id="2_exh17"]
 [ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.tscn" id="3_4otj7"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_y8n6u"]
@@ -55,6 +55,7 @@ layout_mode = 2
 
 [node name="GameSelectSaveTab" type="TabBar" parent="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList"]
 layout_mode = 2
+current_tab = 0
 tab_count = 1
 tab_0/title = "GAMELOBBY_SELECT_ALL"
 

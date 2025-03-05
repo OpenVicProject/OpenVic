@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://cbtgwpx2wxi33"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SoundTab.gd" id="1_a7k0s"]
+[ext_resource type="Script" uid="uid://c6pwa6g4bji6q" path="res://src/Game/Menu/OptionMenu/SoundTab.gd" id="1_a7k0s"]
 [ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/Game/Menu/OptionMenu/VolumeGrid.tscn" id="1_okpft"]
-[ext_resource type="Script" path="res://src/Game/Menu/OptionMenu/SettingNodes/SettingCheckBox.gd" id="2_f3aj4"]
+[ext_resource type="Script" uid="uid://cuk60t6htfhxu" path="res://src/Game/Menu/OptionMenu/SettingNodes/SettingCheckBox.gd" id="2_f3aj4"]
 
 [node name="Sound" type="HBoxContainer" node_paths=PackedStringArray("_startup_music_button")]
 alignment = 1
