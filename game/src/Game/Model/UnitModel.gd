@@ -31,28 +31,22 @@ var meshes : Array[MeshInstance3D]
 			unit.tertiary_colour = col_in
 
 # ANIMATION VARIABLES
-@export_group("Animation")
-@export var idle_anim : Animation:
-	set(anim_in):
-		load_animation("idle", anim_in)
-		idle_anim = anim_in
+var _idle_anim_path : StringName
+var _move_anim_path : StringName
+var _attack_anim_path : StringName
 
-@export var move_anim : Animation:
-	set(anim_in):
-		load_animation("move", anim_in)
-		move_anim = anim_in
+func set_idle_anim(anim_in : Animation) -> void:
+	_idle_anim_path = load_animation("idle", anim_in)
 
-@export var attack_anim : Animation:
-	set(anim_in):
-		load_animation("attack", anim_in)
-		attack_anim = anim_in
+func set_move_anim(anim_in : Animation) -> void:
+	_move_anim_path = load_animation("move", anim_in)
+
+func set_attack_anim(anim_in : Animation) -> void:
+	_attack_anim_path = load_animation("attack", anim_in)
 
 enum Anim { NONE, IDLE, MOVE, ATTACK }
 
 const ANIMATION_LIBRARY : StringName = &"default_lib"
-const ANIMATION_IDLE : String = ANIMATION_LIBRARY + "/idle"
-const ANIMATION_MOVE : String = ANIMATION_LIBRARY + "/move"
-const ANIMATION_ATTACK : String = ANIMATION_LIBRARY + "/attack"
 
 @export var current_anim : Anim:
 	set(anim_in):
@@ -62,20 +56,20 @@ const ANIMATION_ATTACK : String = ANIMATION_LIBRARY + "/attack"
 		if anim_player:
 			match anim_in:
 				Anim.IDLE:
-					if idle_anim:
-						anim_player.set_current_animation(ANIMATION_IDLE)
+					if _idle_anim_path:
+						anim_player.set_current_animation(_idle_anim_path)
 						_set_tex_scroll(scroll_speed_idle)
 						current_anim = Anim.IDLE
 						return
 				Anim.MOVE:
-					if move_anim:
-						anim_player.set_current_animation(ANIMATION_MOVE)
+					if _move_anim_path:
+						anim_player.set_current_animation(_move_anim_path)
 						_set_tex_scroll(scroll_speed_move)
 						current_anim = Anim.MOVE
 						return
 				Anim.ATTACK:
-					if attack_anim:
-						anim_player.set_current_animation(ANIMATION_ATTACK)
+					if _attack_anim_path:
+						anim_player.set_current_animation(_attack_anim_path)
 						_set_tex_scroll(scroll_speed_attack)
 						current_anim = Anim.ATTACK
 						return
@@ -166,9 +160,14 @@ func _set_tex_scroll(speed : float) -> void:
 func set_flag_index(index : int) -> void:
 	_set_shader_parameter(&"flag_index", index)
 
-func load_animation(prop_name : String, animIn : Animation) -> void:
+func load_animation(prop_name : String, animIn : Animation) -> StringName:
 	if not animIn:
-		return
+		return &""
 	if not anim_player:
 		add_anim_player()
-	anim_lib.add_animation(prop_name,animIn)
+
+	var anim_path : StringName = anim_player.find_animation(animIn)
+	if anim_path.is_empty():
+		anim_lib.add_animation(prop_name, animIn)
+		anim_path = anim_player.find_animation(animIn)
+	return anim_path

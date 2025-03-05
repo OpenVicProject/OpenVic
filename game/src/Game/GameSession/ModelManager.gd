@@ -113,17 +113,17 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		# Animations
 		var idle_dict : Dictionary = model_dict.get(idle_key, {})
 		if idle_dict:
-			model.idle_anim = XSMLoader.get_xsm_animation(idle_dict[animation_file_key])
+			model.set_idle_anim(XSMLoader.get_xsm_animation(idle_dict[animation_file_key]))
 			model.scroll_speed_idle = idle_dict[animation_time_key]
 
 		var move_dict : Dictionary = model_dict.get(move_key, {})
 		if move_dict:
-			model.move_anim = XSMLoader.get_xsm_animation(move_dict[animation_file_key])
+			model.set_move_anim(XSMLoader.get_xsm_animation(move_dict[animation_file_key]))
 			model.scroll_speed_move = move_dict[animation_time_key]
 
 		var attack_dict : Dictionary = model_dict.get(attack_key, {})
 		if attack_dict:
-			model.attack_anim = XSMLoader.get_xsm_animation(attack_dict[animation_file_key])
+			model.set_attack_anim(XSMLoader.get_xsm_animation(attack_dict[animation_file_key]))
 			model.scroll_speed_attack = attack_dict[animation_time_key]
 
 		# Attachments
