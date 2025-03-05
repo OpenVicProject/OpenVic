@@ -48,9 +48,15 @@ _game_session_menu = NodePath("UICanvasLayer/UI/GameSessionMenu")
 
 [node name="MapView" parent="." instance=ExtResource("4_xkg5j")]
 
-[node name="ModelManager" type="Node3D" parent="." node_paths=PackedStringArray("_map_view")]
+[node name="ModelManager" type="Node3D" parent="." node_paths=PackedStringArray("_map_view", "_buildings", "_units")]
 script = ExtResource("3_qwk4j")
 _map_view = NodePath("../MapView")
+_buildings = NodePath("Buildings")
+_units = NodePath("Units")
+
+[node name="Buildings" type="Node3D" parent="ModelManager"]
+
+[node name="Units" type="Node3D" parent="ModelManager"]
 
 [node name="BillboardManager" type="MultiMeshInstance3D" parent="." node_paths=PackedStringArray("_map_view")]
 sorting_offset = 10.0
