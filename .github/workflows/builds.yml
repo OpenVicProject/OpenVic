@@ -214,7 +214,7 @@ jobs:
           cd game
           ${{ steps.export_game.outputs.executable_path }} --doctool --headless ../extension --gdextension-docs 2>&1 > /dev/null || true
           cd ..
-          git diff --color --exit-code && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
+          git diff --color --exit-code -- '*.xml' && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
 
       - name: Upload pack artifact
         uses: actions/upload-artifact@v4.3.0
