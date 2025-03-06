@@ -61,24 +61,6 @@ SoundSingleton::~SoundSingleton() {
 	_singleton = nullptr;
 }
 
-// Load a sound from the path
-Ref<AudioStreamMP3> SoundSingleton::load_godot_mp3(String const& path) {
-	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
-
-	Error err = FileAccess::get_open_error();
-	ERR_FAIL_COND_V_MSG(
-		err != OK || file.is_null(), nullptr, vformat("Failed to open mp3 file %s", path) // named %s, path,
-	);
-
-	const PackedByteArray data = file->get_buffer(file->get_length());
-
-	Ref<AudioStreamMP3> sound = Ref<AudioStreamMP3>();
-	sound.instantiate();
-	sound->set_data(data);
-
-	return sound;
-}
-
 // slices a path down to after the base_folder, keeps the extension
 // this is because the defines refer to audio files using this format,
 // so we might as well use this form as the key for the "name"->audiostream map
@@ -97,7 +79,7 @@ Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
 		return it->second;
 	}
 
-	const Ref<AudioStreamMP3> song = load_godot_mp3(path);
+	const Ref<AudioStreamMP3> song = AudioStreamMP3::load_from_file(path);
 
 	ERR_FAIL_NULL_V_MSG(song, nullptr, vformat("Failed to load music file: %s", path));
 	tracks.emplace(std::move(name), song);
