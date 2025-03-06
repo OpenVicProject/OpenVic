@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://d3g6wbvwflmyk"]
 
-[ext_resource type="Script" path="res://src/Game/Menu/SaveLoadMenu/SaveLoadMenu.gd" id="1_3jkds"]
+[ext_resource type="Script" uid="uid://f4w5734blvbb" path="res://src/Game/Menu/SaveLoadMenu/SaveLoadMenu.gd" id="1_3jkds"]
 [ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/Game/Menu/SaveLoadMenu/SavePanelButton.tscn" id="2_fc6r3"]
 
 [sub_resource type="InputEventAction" id="InputEventAction_8vo2t"]

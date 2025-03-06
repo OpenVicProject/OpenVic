@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c8knthxkwj1uj"]
 
 [ext_resource type="Theme" uid="uid://stfxt4hpsify" path="res://assets/graphics/theme/credits_menu.tres" id="1_7pmpu"]
-[ext_resource type="Script" path="res://src/Game/Menu/CreditsMenu/CreditsMenu.gd" id="1_csd7i"]
+[ext_resource type="Script" uid="uid://bc10eyal27ggd" path="res://src/Game/Menu/CreditsMenu/CreditsMenu.gd" id="1_csd7i"]
 [ext_resource type="PackedScene" uid="uid://ddjbee5gj6bkv" path="res://src/Game/Menu/CreditsMenu/GodotEngineButton.tscn" id="3_fl02a"]
 
 [node name="CreditsMenu" type="Control" node_paths=PackedStringArray("credits_list")]

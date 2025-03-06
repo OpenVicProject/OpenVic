@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://dayjmgc34tqo6"]
 
-[ext_resource type="Script" path="res://src/Game/Autoload/Argument/ArgumentParser.gd" id="1_pc7xr"]
-[ext_resource type="Script" path="res://src/Game/Autoload/Argument/ArgumentOption.gd" id="2_4hguj"]
+[ext_resource type="Script" uid="uid://d22wlfmqvy2yg" path="res://src/Game/Autoload/Argument/ArgumentParser.gd" id="1_pc7xr"]
+[ext_resource type="Script" uid="uid://dtugawg7cc5k1" path="res://src/Game/Autoload/Argument/ArgumentOption.gd" id="2_4hguj"]
 
 [sub_resource type="Resource" id="Resource_tq3y4"]
 script = ExtResource("2_4hguj")

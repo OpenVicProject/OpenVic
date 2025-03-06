@@ -1,35 +1,35 @@
 [gd_scene load_steps=27 format=3 uid="uid://bgnupcshe1m7r"]
 
-[ext_resource type="Script" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
+[ext_resource type="Script" uid="uid://bytu6rnfilo8w" path="res://src/Game/GameSession/GameSession.gd" id="1_eklvp"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="2_kt6aa"]
 [ext_resource type="PackedScene" uid="uid://dvdynl6eir40o" path="res://src/Game/GameSession/GameSessionMenu.tscn" id="3_bvmqh"]
-[ext_resource type="Script" path="res://src/Game/GameSession/ModelManager.gd" id="3_qwk4j"]
-[ext_resource type="Script" path="res://src/Game/GameSession/Topbar.gd" id="4_2kbih"]
-[ext_resource type="Script" path="res://src/Game/GameSession/BillboardManager.gd" id="4_b3l7b"]
+[ext_resource type="Script" uid="uid://b6gvunn4jaq62" path="res://src/Game/GameSession/ModelManager.gd" id="3_qwk4j"]
+[ext_resource type="Script" uid="uid://dsexu6le2pmrs" path="res://src/Game/GameSession/Topbar.gd" id="4_2kbih"]
+[ext_resource type="Script" uid="uid://1vvx8hboshu7" path="res://src/Game/GameSession/BillboardManager.gd" id="4_b3l7b"]
 [ext_resource type="PackedScene" uid="uid://dkehmdnuxih2r" path="res://src/Game/GameSession/MapView.tscn" id="4_xkg5j"]
-[ext_resource type="Shader" path="res://src/Game/GameSession/billboard.gdshader" id="5_7yrtq"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/ProductionMenu.gd" id="5_16755"]
-[ext_resource type="Script" path="res://src/Game/GameSession/ProvinceOverviewPanel.gd" id="5_lfv8l"]
-[ext_resource type="Script" path="res://src/Game/GameSession/SearchPanel.gd" id="5_t260f"]
+[ext_resource type="Shader" uid="uid://c1mjns1pc1mws" path="res://src/Game/GameSession/billboard.gdshader" id="5_7yrtq"]
+[ext_resource type="Script" uid="uid://cyqfdvy515q0n" path="res://src/Game/GameSession/NationManagementScreen/ProductionMenu.gd" id="5_16755"]
+[ext_resource type="Script" uid="uid://bj67he15o55hq" path="res://src/Game/GameSession/ProvinceOverviewPanel.gd" id="5_lfv8l"]
+[ext_resource type="Script" uid="uid://bovkuvc6bllce" path="res://src/Game/GameSession/SearchPanel.gd" id="5_t260f"]
 [ext_resource type="PackedScene" uid="uid://cnbfxjy1m6wja" path="res://src/Game/Menu/OptionMenu/OptionsMenu.tscn" id="6_p5mnx"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/BudgetMenu.gd" id="6_vninv"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/TechnologyMenu.gd" id="7_r712c"]
+[ext_resource type="Script" uid="uid://buax4vyqruuwq" path="res://src/Game/GameSession/NationManagementScreen/BudgetMenu.gd" id="6_vninv"]
+[ext_resource type="Script" uid="uid://d4mn2serpowg0" path="res://src/Game/GameSession/NationManagementScreen/TechnologyMenu.gd" id="7_r712c"]
 [ext_resource type="PackedScene" uid="uid://d3g6wbvwflmyk" path="res://src/Game/Menu/SaveLoadMenu/SaveLoadMenu.tscn" id="8_4g7ko"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/PoliticsMenu.gd" id="8_ppdek"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/PopulationMenu.gd" id="10_laee7"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/TradeMenu.gd" id="10_mv1r6"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/DiplomacyMenu.gd" id="11_fu7ys"]
-[ext_resource type="Script" path="res://src/Game/GameSession/NationManagementScreen/MilitaryMenu.gd" id="12_6h6nc"]
-[ext_resource type="Script" path="res://src/Game/GameSession/Ledger.gd" id="15_vhb1p"]
-[ext_resource type="Script" path="res://src/Game/GameSession/Tooltip.gd" id="20_3306e"]
-[ext_resource type="Script" path="res://src/Game/GameSession/Menubar.gd" id="20_s1i71"]
+[ext_resource type="Script" uid="uid://bmp4hdgiud28a" path="res://src/Game/GameSession/NationManagementScreen/PoliticsMenu.gd" id="8_ppdek"]
+[ext_resource type="Script" uid="uid://bdy8coelqpven" path="res://src/Game/GameSession/NationManagementScreen/PopulationMenu.gd" id="10_laee7"]
+[ext_resource type="Script" uid="uid://bessw6400bsc7" path="res://src/Game/GameSession/NationManagementScreen/TradeMenu.gd" id="10_mv1r6"]
+[ext_resource type="Script" uid="uid://clfk8eo1fsls" path="res://src/Game/GameSession/NationManagementScreen/DiplomacyMenu.gd" id="11_fu7ys"]
+[ext_resource type="Script" uid="uid://b1phfivef88rl" path="res://src/Game/GameSession/NationManagementScreen/MilitaryMenu.gd" id="12_6h6nc"]
+[ext_resource type="Script" uid="uid://c13log8xxe0ka" path="res://src/Game/GameSession/Ledger.gd" id="15_vhb1p"]
+[ext_resource type="Script" uid="uid://dwl7hkcjjjv0y" path="res://src/Game/GameSession/Tooltip.gd" id="20_3306e"]
+[ext_resource type="Script" uid="uid://brj7thir5rehc" path="res://src/Game/GameSession/Menubar.gd" id="20_s1i71"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ghmi8"]
 render_priority = 0
 shader = ExtResource("5_7yrtq")
-shader_parameter/numframes = null
-shader_parameter/sizes = null
 shader_parameter/billboards = null
+shader_parameter/numframes = PackedInt32Array(0, 0, 0, 0)
+shader_parameter/sizes = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_fm6ks"]
 material = SubResource("ShaderMaterial_ghmi8")
