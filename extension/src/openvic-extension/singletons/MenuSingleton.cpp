@@ -345,6 +345,20 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::can_decrease_speed);
 	OV_BIND_METHOD(MenuSingleton::get_longform_date);
 
+	/* BUDGET MENU */
+	OV_BIND_METHOD(MenuSingleton::get_budget_menu_setup_info, { "tariff_slider" });
+	OV_BIND_METHOD(MenuSingleton::get_budget_menu_info, {
+		"strata_tax_sliders",
+		"land_spending_slider",
+		"naval_spending_slider",
+		"construction_spending_slider",
+		"education_spending_slider",
+		"administration_spending_slider",
+		"social_spending_slider",
+		"military_spending_slider",
+		"tariff_slider"
+	});
+
 	/* POPULATION MENU */
 	OV_BIND_METHOD(MenuSingleton::get_population_menu_province_list_row_count);
 	OV_BIND_METHOD(MenuSingleton::get_population_menu_province_list_rows, { "start", "count" });

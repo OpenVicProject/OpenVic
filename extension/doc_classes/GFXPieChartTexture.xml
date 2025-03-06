@@ -29,5 +29,25 @@
 			<description>
 			</description>
 		</method>
+		<method name="slice_colour_key" qualifiers="static">
+			<return type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="slice_identifier_key" qualifiers="static">
+			<return type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="slice_tooltip_key" qualifiers="static">
+			<return type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="slice_weight_key" qualifiers="static">
+			<return type="StringName" />
+			<description>
+			</description>
+		</method>
 	</methods>
 </class>
