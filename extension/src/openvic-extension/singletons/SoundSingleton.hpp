@@ -60,9 +60,8 @@ namespace OpenVic {
 		static godot::String to_define_file_name(godot::String const& path, std::string_view const& base_folder);
 
 	public:
-		/* Loads AudioStreams (.mp3 or .wav) at runtime using godot's functions*/
+		/* Loads AudioStreams (.mp3) at runtime using godot's functions*/
 		static godot::Ref<godot::AudioStreamMP3> load_godot_mp3(godot::String const& path);
-		static godot::Ref<godot::AudioStreamWAV> load_godot_wav(godot::String const& path);
 
 		// gets a song from the cache ('tracks' variable), or if not, then from the files using _load_godot_mp3
 		godot::Ref<godot::AudioStreamMP3> get_song(godot::String const& name);
