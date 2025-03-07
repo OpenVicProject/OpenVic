@@ -229,13 +229,12 @@ bool SoundSingleton::load_sounds() {
 	}
 
 	for (SoundEffect const& sound_inst : sound_manager.get_sound_effects()) {
-		std::string folder_path = StringUtils::append_string_views(sound_directory, "/", sound_inst.get_file().string());
-		fs::path full_path = game_singleton->get_dataloader().lookup_file(folder_path, false);
+		fs::path const& full_path = sound_inst.get_file();
 
 		// UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		// the define its associated with also isn't used in game
 		if (full_path.empty()) {
-			WARN_PRINT(vformat("The sound define %s points to non-existent file %s.", std_to_godot_string(sound_inst.get_identifier()), std_to_godot_string(folder_path)));
+			WARN_PRINT(vformat("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier())));
 			continue;
 		}
 
