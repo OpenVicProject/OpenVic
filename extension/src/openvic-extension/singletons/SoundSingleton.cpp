@@ -2,6 +2,7 @@
 
 #include <string_view>
 
+#include <godot_cpp/classes/audio_stream_wav.hpp>
 #include <godot_cpp/classes/dir_access.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/stream_peer_buffer.hpp>
@@ -185,7 +186,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 		return it->second;
 	}
 
-	const Ref<AudioStreamWAV> sound = load_godot_wav(path);
+	const Ref<AudioStreamWAV> sound = AudioStreamWAV::load_from_file(path);
 
 	ERR_FAIL_NULL_V_MSG(
 		sound, nullptr, vformat("Failed to load sound file %s", path) // named %s, path
@@ -255,112 +256,4 @@ bool SoundSingleton::load_sounds() {
 	}
 
 	return ret;
-}
-
-Ref<AudioStreamWAV> SoundSingleton::load_godot_wav(String const& path) {
-	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
-
-	Error err = FileAccess::get_open_error();
-	ERR_FAIL_COND_V_MSG(err != OK || file.is_null(), nullptr, vformat("Failed to open wav file %s", path));
-
-	Ref<AudioStreamWAV> sound = Ref<AudioStreamWAV>();
-	sound.instantiate();
-
-	// RIFF file header
-	String riff_id = Utilities::read_riff_str(file); // RIFF
-	int riff_size = std::min(static_cast<uint64_t>(file->get_32()), file->get_length());
-	String form_type = Utilities::read_riff_str(file); // WAVE
-
-	// ie. 16, 24, 32 bit audio
-	int bits_per_sample = 0;
-
-	// godot audiostreamwav has: data,format,loop_begin,loop_end,loop_mode,mix_rate,stereo
-
-	// RIFF reader
-	while (file->get_position() < riff_size) {
-		String id = Utilities::read_riff_str(file);
-		int size = file->get_32();
-		if (id == "LIST") {
-			String list_type = Utilities::read_riff_str(file);
-		} else if (id == "JUNK") {
-			const PackedByteArray junk = file->get_buffer(size);
-		} else if (id == "fmt ") {
-			// what fields to read depends on the fmt chunk variant (can be 16, 18, or 40 bytes long)
-			// basic fields
-
-			// 2bytes: type of format can be 1=PCM, 3=IEEE float, 6=8bit Alaw, 7=8bit mu-law, FFFE=go by subformat
-			int formatTag = file->get_16();
-			int channels = file->get_16();
-			int samplesPerSec = file->get_32();
-			int avgBytesPerSec = file->get_32();
-			int blockAlign = file->get_16();
-
-			bits_per_sample = file->get_16();
-			ERR_FAIL_COND_V_MSG(
-				bits_per_sample == 24 || bits_per_sample == 32, nullptr,
-				vformat("Unsupported wav file sample rate %s", bits_per_sample)
-			);
-
-			if (size > 16) {
-				int extensionSize = file->get_16();
-			}
-			if (size > 18) {
-				// extensible format
-				int validBitsPerSample = file->get_16();
-				int channelMask = file->get_32();
-
-				// 16 byte subformat
-				int subFormat = file->get_16();
-				String subFormatString = Utilities::read_riff_str(file, 14);
-			}
-
-			// set godot properties
-			sound->set_stereo(channels == 2);
-			switch (formatTag) { // TODO: verify, looks from 1 doc like these should be 0x0101, 0x102, ...
-			case 0: {
-				sound->set_format(sound->FORMAT_8_BITS);
-				break;
-			}
-			case 1: {
-				sound->set_format(sound->FORMAT_16_BITS);
-				break;
-			}
-			case 2: {
-				sound->set_format(sound->FORMAT_IMA_ADPCM);
-				break;
-			}
-			default: {
-				WARN_PRINT(vformat("unknown WAV format tag %x", formatTag));
-				sound->set_format(sound->FORMAT_16_BITS);
-				break;
-			}
-			}
-
-			sound->set_mix_rate(samplesPerSec);
-		} else if (id == "data") {
-			PackedByteArray audio_data = file->get_buffer(size);
-
-			if (bits_per_sample == 24 || bits_per_sample == 32) {
-				// sound->set_data(to_16bit_wav_data(audio_data,bits_per_sample));
-				ERR_PRINT(vformat("WAV file %s uses an unsupported sample rate %d", path, bits_per_sample));
-			} else {
-				sound->set_data(audio_data);
-			}
-		} else if (id == "fact") { // for compressed formats that aren't PCM
-			// TODO: Handle these other cases
-			int sampleLen = file->get_32(); // # samples/channel
-			WARN_PRINT("WAV fact header, indicates likely unhandled case");
-		} else {
-			// Logger::warning("skipping Unhandled RIFF chunk of id ",godot_to_std_string(id));
-			// known chunks that cause this: "smpl", "labl", "cue ", "ltxt", info chunks (IART, ICOP, IENG, ...)
-			// these don't seem to be needed for our uses
-			const PackedByteArray junk = file->get_buffer(size); // just try and skip this chunk
-		}
-		if (file->get_position() % 2 != 0) { // align to even bytes
-			file->get_8();
-		}
-	}
-
-	sound->set_loop_end(file->get_length() / 4);
-	return sound;
 }
