@@ -1,4 +1,5 @@
 #include "XACLoader.hpp"
+#include <cstdint>
 //#include "Utilities.hpp"
 
 #include "godot_cpp/classes/array_mesh.hpp"
@@ -445,11 +446,17 @@ godot::MeshInstance3D* XacLoader::build_mesh(mesh_t const& mesh_chunk, skinning_
 		godot::PackedFloat32Array weights = {};
 		//godot uses a fixed 4 bones influencing a vertex, so size the array accordingly
 		//TODO: should this actually be verts.size()?
+		//godot::UtilityFunctions::print(
+	//		godot::vformat("vert count %d, inds size %d, count used %d", 
+	//			submesh.packed.vertices_count, submesh.relative_indices.size(), submesh.relative_indices.size()*4)
+	//	);
 		bone_ids.resize(submesh.relative_indices.size()*4);
 		weights.resize(submesh.relative_indices.size()*4);
-
+		//submesh.relative_indices.size()*4
 		//1 vertex is in the surface per relative index
 		for(uint32_t const& rel_ind : submesh.relative_indices) {
+		//for(uint32_t j=0; j<submesh.relative_indices.size(); j++) {
+			//uint32_t rel_ind = submesh.relative_indices[j];
 			uint32_t index = rel_ind + vert_total;
 
 			verts_submesh.push_back(vec3d_to_godot(verts[index], true));
@@ -476,14 +483,33 @@ godot::MeshInstance3D* XacLoader::build_mesh(mesh_t const& mesh_chunk, skinning_
 			if (skin != nullptr && influence_range_indices.size() > index) {
 				uint32_t const& influence_range_ind = influence_range_indices[index];
 				influence_range_t const& range = skin->influence_ranges[influence_range_ind];
+				uint32_t inf_count = godot::Math::min(range.influences_count,4);
+				uint32_t rem = 4-inf_count;
 
-				for(uint32_t i = 0; i < godot::Math::min(range.influences_count,4); i++) {
+				for(uint32_t i = 0; i < inf_count; i++) {
 					influence_data_t const& inf_data = skin->influence_data[range.first_influence_index + i];
-					bone_ids[rel_ind*4 + i] = inf_data.bone_id;
-					weights[rel_ind*4 + i] = inf_data.weight;
+					//bone_ids.push_back(inf_data.bone_id);
+					//weights.push_back(inf_data.weight);
+					bone_ids[index*4 + i] = static_cast<int32_t>(inf_data.bone_id);
+					weights[index*4 + i] = inf_data.weight;
+				}
+				for(uint32_t i = 0; i < rem; i++) {
+					//bone_ids.push_back(0);
+					//weights.push_back(0);
+					bone_ids[index*4 + i] = 0;
+					weights[index*4 + i] = 0;
 				}
 			}
 		}
+		if(bone_ids.size() != verts_submesh.size()*4 && !bone_ids.is_empty()){
+			godot::UtilityFunctions::print(
+			godot::vformat("bone size %d was not = verts size %d*4. inf_range_inds size: %d", 
+				bone_ids.size(), verts_submesh.size(), influence_range_indices.size())
+			);
+		}
+			//bone_ids.resize(verts_submesh.size()*4);
+			//weights.resize(verts_submesh.size()*4);
+		//}
 
 		if (!verts_submesh.is_empty()) {
 			arrs[godot::Mesh::ARRAY_VERTEX] = std::move(verts_submesh);
@@ -500,7 +526,9 @@ godot::MeshInstance3D* XacLoader::build_mesh(mesh_t const& mesh_chunk, skinning_
 		if (!uv2_submesh.is_empty()) {
 			arrs[godot::Mesh::ARRAY_TEX_UV2] = std::move(uv2_submesh);
 		}
-		if (skin != nullptr && influence_range_indices.size() > 0) {
+		//influence_range_indices.size() > 0 can be true while bones.is_empty is also true?
+		//if (skin != nullptr && !bone_ids.is_empty() && !weights.is_empty() && influence_range_indices.size() > 0) {
+		{
 			arrs[godot::Mesh::ARRAY_BONES] = std::move(bone_ids);
 			arrs[godot::Mesh::ARRAY_WEIGHTS] = std::move(weights);
 		}

@@ -39,7 +39,7 @@ func _generate_unit(unit_dict : Dictionary) -> void:
 			else:
 				mount_model.free()
 
-	var rotation : float = unit_dict.get(rotation_key, 0.0)
+	var model_rotation : float = unit_dict.get(rotation_key, 0.0)
 
 	var flag_dict : Dictionary = ModelSingleton.get_flag_model(unit_dict.get(flag_floating_key, false))
 	if flag_dict:
@@ -48,12 +48,12 @@ func _generate_unit(unit_dict : Dictionary) -> void:
 			flag_model.set_flag_index(unit_dict[flag_index_key])
 			flag_model.current_anim = UnitModel.Anim.IDLE
 			flag_model.scale /= model.scale
-			flag_model.rotate_y(-rotation)
+			flag_model.rotate_y(-model_rotation)
 
 			model.add_child(flag_model)
 
 	model.scale *= MODEL_SCALE
-	model.rotate_y(PI + rotation)
+	model.rotate_y(PI + model_rotation)
 	model.set_position(_map_view._map_to_world_coords(unit_dict[position_key]) + Vector3(0, 0.1 * MODEL_SCALE, 0))
 
 	if model is UnitModel:
@@ -106,16 +106,16 @@ func _generate_model(model_dict : Dictionary, culture : String = "", is_unit : b
 		or attachments_key in model_dict
 	)
 
-	var model : Node3D
-	if !is_unit:
-		model = ModelSingleton.get_xac_model(model_dict[file_key])
+	#var model : Node3D
+	#if !is_unit:
+	#	model = ModelSingleton.get_xac_model(model_dict[file_key])
 		#model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
 	#	print(file_key)
 		#ModelSingleton.get_xac_model(model_dict[file_key])
-	else:
+	#else:
 		#model = XACLoader.get_xac_model(model_dict[file_key], is_unit)
-		model = ModelSingleton.get_xac_model(model_dict[file_key])
-	#var model : UnitModel = ModelSingleton.get_xac_model(model_dict[file_key])
+	#	model = ModelSingleton.get_xac_model(model_dict[file_key])
+	var model : UnitModel = ModelSingleton.get_xac_model(model_dict[file_key])
 	#var model : Node3D = XACLoader.get_xac_model(model_dict[file_key], is_unit)
 	
 	if not model:

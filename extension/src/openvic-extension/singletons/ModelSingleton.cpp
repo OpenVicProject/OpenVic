@@ -529,7 +529,7 @@ Node3D* ModelSingleton::get_xac_model(String source_file) {
 
 	String path = game_singleton->lookup_file_path(source_file);
 
-	Logger::info("Load XAC Model from file: ",Utilities::godot_to_std_string(source_file));
+	//Logger::info("Load XAC Model from file: ",Utilities::godot_to_std_string(source_file));
 
 	Node3D* node = XacLoader()._load_xac_model(FileAccess::open(path, FileAccess::READ));
 	xac_cache.emplace(source_file,node);
@@ -580,7 +580,7 @@ Ref<ShaderMaterial> ModelSingleton::get_scroll_shader() {
 
 //TODO: put this back, 64 is likely needed because of names being added twice
 // (due to 2 loaders operating)
-static constexpr uint32_t MAX_UNIT_TEXTURES = 32;
+static constexpr uint32_t MAX_UNIT_TEXTURES = 64;
 
 int32_t ModelSingleton::set_unit_material_texture(int32_t type, godot::String texture_name) {//MAP_TYPE::Values
 	shader_array_index_map_t& map = type==2 ? diffuse_texture_index_map : specular_texture_index_map; //OpenVic::MAP_TYPE::DIFFUSE
