@@ -669,8 +669,12 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 					"population proportion of RGO owner pop type \"", owner_pop_type.get_identifier(), "\""
 				);
 			} else {
-				const fixed_point_t effect_value = owner_job->get_effect_multiplier() *
-					state->get_pop_type_distribution()[owner_pop_type] / state->get_total_population();
+				fixed_point_t effect_value =
+					owner_job->get_effect_multiplier() * state->get_pop_type_distribution()[owner_pop_type];
+
+				if (effect_value != fixed_point_t::_0()) {
+					effect_value /= state->get_total_population();
+				}
 
 				static const StringName owners_localisation_key = "PRODUCTION_FACTOR_OWNER";
 
