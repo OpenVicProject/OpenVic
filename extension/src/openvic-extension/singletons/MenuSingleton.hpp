@@ -167,6 +167,8 @@ namespace OpenVic {
 		MenuSingleton();
 		~MenuSingleton();
 
+		static godot::String get_issue_identifier_suffix();
+
 		static godot::String get_tooltip_separator();
 		godot::String get_country_name_from_identifier(godot::String const& country_identifier) const;
 		godot::String get_country_adjective_from_identifier(godot::String const& country_identifier) const;
@@ -216,7 +218,7 @@ namespace OpenVic {
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
 		template<IsPieChartDistribution Container>
 		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
-			Container const& distribution
+			Container const& distribution, godot::String const& identifier_suffix = {}
 		) const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
