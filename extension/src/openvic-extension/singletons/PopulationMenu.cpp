@@ -607,7 +607,7 @@ Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 
 template<IsPieChartDistribution Container>
 GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_menu_pop_row_pie_chart_data(
-	Container const& distribution
+	Container const& distribution, String const& identifier_suffix
 ) const {
 	using key_type = std::remove_pointer_t<typename Container::key_type>;
 
@@ -634,7 +634,7 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 			}
 			String tooltip = vformat(
 				pie_chart_tooltip_format_key,
-				tr(Utilities::std_to_godot_string(key_ptr->get_identifier())),
+				tr(Utilities::std_to_godot_string(key_ptr->get_identifier()) + identifier_suffix),
 				Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
 			);
 			full_tooltip += "\n" + tooltip;
@@ -646,9 +646,10 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 
 	return GFXPieChartTexture::distribution_to_slices_array(
 		distribution,
-		[&tooltips, full_tooltip](key_type const* key, float weight, float total_weight) -> String {
+		[&tooltips, full_tooltip](key_type const* key, String const& identifier, float weight, float total_weight) -> String {
 			return tooltips.at(key) + full_tooltip;
-		}
+		},
+		identifier_suffix
 	);
 }
 
@@ -733,7 +734,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
 		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
 		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_ideology_distribution());
-		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_issue_distribution());
+		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(
+			pop->get_issue_distribution(), get_issue_identifier_suffix()
+		);
 		pop_dict[pop_unemployment_key] = pop->get_unemployment_fraction().to_float();
 		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
 		pop_dict[pop_daily_money_key] = pop->get_income().to_float();
@@ -880,13 +883,13 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
 	const auto make_pie_chart_tooltip = [this](
-		HasGetIdentifierAndGetColour auto const* key, float weight, float total_weight
+		HasGetIdentifierAndGetColour auto const* key, String const& identifier, float weight, float total_weight
 	) -> String {
 		static const String format_key =
 			GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
 		return  vformat(
 			format_key,
-			tr(Utilities::std_to_godot_string(key->get_identifier())),
+			tr(identifier),
 			Utilities::float_to_string_dp(100.0f * weight / total_weight, 2)
 		);
 	};
@@ -895,7 +898,9 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	array[1] = GFXPieChartTexture::distribution_to_slices_array(population_menu.religion_distribution, make_pie_chart_tooltip);
 	array[2] = GFXPieChartTexture::distribution_to_slices_array(population_menu.ideology_distribution, make_pie_chart_tooltip);
 	array[3] = GFXPieChartTexture::distribution_to_slices_array(population_menu.culture_distribution, make_pie_chart_tooltip);
-	array[4] = GFXPieChartTexture::distribution_to_slices_array(population_menu.issue_distribution, make_pie_chart_tooltip);
+	array[4] = GFXPieChartTexture::distribution_to_slices_array(
+		population_menu.issue_distribution, make_pie_chart_tooltip, get_issue_identifier_suffix()
+	);
 	array[5] = GFXPieChartTexture::distribution_to_slices_array(population_menu.vote_distribution, make_pie_chart_tooltip);
 
 	return array;
