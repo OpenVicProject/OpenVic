@@ -536,7 +536,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[building_info_start_date_key] = Utilities::date_to_string(building.get_start_date());
 			building_dict[building_info_end_date_key] = Utilities::date_to_string(building.get_end_date());
-			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress();
+			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress().to_float();
 
 			buildings_array[idx] = std::move(building_dict);
 		}
