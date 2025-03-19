@@ -1,4 +1,4 @@
-name: Builds
+name: 🖥️ Builds
 
 on:
   push:
@@ -9,6 +9,13 @@ on:
       - 'LICENSE.md'
       - 'README.md'
   pull_request:
+    paths-ignore:
+      - '.vscode/**'
+      - 'docs/**'
+      - 'LICENSE-EXCEPTIONS.md'
+      - 'LICENSE.md'
+      - 'README.md'
+  merge_group:
     paths-ignore:
       - '.vscode/**'
       - 'docs/**'
@@ -45,9 +52,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
+          git config diff.wsErrorHighlight all
+          if [ "${{ github.event_name }}" == "pull_request" -o "${{ github.event.forced }}" == "true" -o "${{ github.event.created }}" == "true" ]; then
             files=$(git diff-tree --no-commit-id --name-only -r HEAD^1..HEAD 2> /dev/null || true)
-          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.forced }}" == "false" -a "${{ github.event.created }}" == "false" ]; then
+          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.created }}" == "false" ]; then
             files=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }}..${{ github.event.after }} 2> /dev/null || true)
           fi
           echo "$files" >> changed.txt
