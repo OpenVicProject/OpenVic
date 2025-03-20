@@ -1,3 +1,5 @@
+[![🖥️ Builds](https://github.com/OpenVicProject/OpenVic/actions/workflows/builds.yml/badge.svg)](https://github.com/OpenVicProject/OpenVic/actions/workflows/builds.yml)
+
 # OpenVic
 Main Repo for the OpenVic Project
 
