@@ -404,7 +404,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	ret[military_info_war_exhaustion_tooltip_key] = vformat(
 		war_exhaustion_tooltip_template_string,
 		tr(war_exhaution_localisation_key).replace(value_replace_key, war_exhaustion_string),
-		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_war_exhaustion()),
+		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_war_exhaustion_monthly()),
 		tr(max_war_exhaution_localisation_key).replace(value_replace_key, max_war_exhaustion_string),
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_max_war_exhaustion()),
 		tr(current_effects_localisation_key),
