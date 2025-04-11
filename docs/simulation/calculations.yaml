@@ -65,8 +65,13 @@ Economy:
         FACTORY_PURCHASE_DRAWDOWN_FACTOR: defines.economy.FACTORY_PURCHASE_DRAWDOWN_FACTOR
     Resource gathering operation:
       base workforce: defined in common/production_types.txt as workforce
+      rgo size modifier:
+        formula: sum of good rgo size modifiers + sum of farm size modifiers + sum of mine size modifiers
+        good rgo size modifiers: from tech, example rgo_size = { coal = 0.1 }
+        farm size modifiers: farm_rgo_size if farm=yes for province modifier and for tech also no mine=yes
+        mine size modifiers: mine_rgo_size if mine=yes for tech or no farm=yes for province modifier
       rgo size:
-        formula: floor(1.5 * ceil(n_workers_in_province / (base workforce * (1 + terrain rgo size modifier)))
+        formula: floor(1.5 * ceil(n_workers_in_province / (base workforce * (1 + rgo size modifier)))
         n_workers_in_province: Total size of POPs in province where POP type is in employees (common/production_types.txt).
         note: Calculated when starting a new game.
       Output:
@@ -78,7 +83,6 @@ Economy:
         workforce:
           formula: base workforce * rgo size * (1 + rgo size modifier)
           base workforce: Defined in common/production_types.txt as workforce.
-          rgo size modifier: sum of rgo size modifiers + sum of farm size modifiers (if farm=yes) + sum of mine size modifiers (if mine=yes)
         job portion of workforce:
           formula: employees with job / workforce
           employees with job: Number of POPs employed with the job. Job being an entry in employees in common/production_types.txt.
