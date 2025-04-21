@@ -110,38 +110,65 @@ String MenuSingleton::_get_country_adjective(CountryInstance const& country) con
 	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
-static constexpr int32_t DECIMAL_PLACES = 2;
-
 String MenuSingleton::_make_modifier_effect_value(
 	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
-) {
+) const {
 	String result;
 
 	if (plus_for_non_negative && value >= 0) {
 		result = "+";
 	}
 
-	using enum ModifierEffect::format_t;
+	const uint8_t format = static_cast<uint8_t>(format_effect.get_format());
 
-	switch (format_effect.get_format()) {
-	case PROPORTION_DECIMAL:
-		value *= 100;
-		[[fallthrough]];
-	case PERCENTAGE_DECIMAL:
-		result += Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES) + "%";
+	// Apply multiplier format part
+	{
+		uint8_t multiplier_power = (format >> ModifierEffect::FORMAT_MULTIPLIER_BIT_OFFSET) &
+			((1 << ModifierEffect::FORMAT_MULTIPLIER_BIT_COUNT) - 1);
+		while (multiplier_power-- > 0) {
+			value *= 10;
+		}
+	}
+
+	// Apply decimal places format part
+	const uint8_t decimal_places = (format >> ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_OFFSET) &
+		((1 << ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_COUNT) - 1);
+
+	result += Utilities::fixed_point_to_string_dp(value, decimal_places);
+
+	// Apply suffix format part
+	const ModifierEffect::suffix_t suffix = static_cast<ModifierEffect::suffix_t>(
+		(format >> ModifierEffect::FORMAT_SUFFIX_BIT_OFFSET) & ((1 << ModifierEffect::FORMAT_SUFFIX_BIT_COUNT) - 1)
+	);
+
+	static const String normal_suffix_text = GUILabel::get_colour_marker() + String { "!" };
+	static const String special_suffix_text = " " + normal_suffix_text;
+
+	switch (suffix) {
+		using enum ModifierEffect::suffix_t;
+
+	case PERCENT: {
+		result += "%" + normal_suffix_text;
 		break;
-	case INT:
-		// This won't produce a decimal point for actual whole numbers, but if the value has a fractional part it will be
-		// displayed to 2 decimal places. This mirrors the base game, where effects which are meant to have integer values
-		// will still display a fractional part if they are given one in the game defines.
-		result += value.is_integer()
-			? String::num_int64(value.to_int64_t())
-			: Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES);
+	}
+
+	// DAYS AND SPEED MUST BE DEFAULT COLOUR!
+	case DAYS: {
+		static const StringName days_localisation_key = "DAYS";
+		result += special_suffix_text + tr(days_localisation_key);
 		break;
-	case RAW_DECIMAL: [[fallthrough]];
-	default: // Use raw decimal as fallback format
-		result += Utilities::fixed_point_to_string_dp(value, DECIMAL_PLACES);
+	}
+
+	case SPEED: {
+		static const StringName speed_localisation_key = "KPH";
+		result += special_suffix_text + tr(speed_localisation_key);
 		break;
+	}
+
+	default: {
+		result += normal_suffix_text;
+		break;
+	}
 	}
 
 	return result;
@@ -149,21 +176,22 @@ String MenuSingleton::_make_modifier_effect_value(
 
 String MenuSingleton::_make_modifier_effect_value_coloured(
 	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
-) {
+) const {
 	String result = GUILabel::get_colour_marker();
+
+	const bool is_positive_green = (
+		static_cast<uint8_t>(format_effect.get_format()) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)
+	) == static_cast<uint8_t>(ModifierEffect::format_t::FORMAT_PART_POS);
 
 	if (value == 0) {
 		result += "Y";
-	} else if (format_effect.is_positive_good() == (value > 0)) {
+	} else if (is_positive_green == (value > 0)) {
 		result += "G";
 	} else {
 		result += "R";
 	}
 
 	result += _make_modifier_effect_value(format_effect, value, plus_for_non_negative);
-
-	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-	result += end_text;
 
 	return result;
 }
@@ -184,30 +212,20 @@ String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifi
 template<typename T>
 requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 String MenuSingleton::_make_modifier_effect_contributions_tooltip(
-	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions,
-	fixed_point_t* other_contributions, String const& prefix, String const& suffix
+	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* effect_value,
+	String const& prefix, String const& suffix
 ) const {
 	String result;
 
 	modifier_sum.for_each_contributing_modifier(
 		effect,
-		[this, &effect, tech_contributions, other_contributions, &prefix, &suffix, &result](
+		[this, &effect, effect_value, &prefix, &suffix, &result](
 			modifier_entry_t const& modifier_entry, fixed_point_t value
 		) -> void {
 			using enum Modifier::modifier_type_t;
 
-			// TODO - make sure we only include invention contributions from inside their "effect = { ... }" blocks,
-			// as contributions from outside the blocks are treated as if they're from normal country modifiers and
-			// displayed as "[invention name]: X.Y%" (both types of contributions can come from the same invention)
-			if (tech_contributions != nullptr && (
-				modifier_entry.modifier.get_type() == TECHNOLOGY || modifier_entry.modifier.get_type() == INVENTION
-			)) {
-				*tech_contributions += value;
-				return;
-			}
-
-			if (other_contributions != nullptr) {
-				*other_contributions += value;
+			if (effect_value != nullptr) {
+				*effect_value += value;
 			}
 
 			result += prefix;
@@ -231,10 +249,10 @@ String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 }
 
 template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<CountryInstance>(
-	CountryInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&, String const&
+	CountryInstance const&, ModifierEffect const&, fixed_point_t*, String const&, String const&
 ) const;
 template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tooltip<ProvinceInstance>(
-	ProvinceInstance const&, ModifierEffect const&, fixed_point_t*, fixed_point_t*, String const&, String const&
+	ProvinceInstance const&, ModifierEffect const&, fixed_point_t*, String const&, String const&
 ) const;
 
 String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
@@ -691,7 +709,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 						tr(owners_localisation_key),
 						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
-							*modifier_effect_cache.get_rgo_output(), effect_value, true
+							*modifier_effect_cache.get_rgo_output_country(), effect_value, true
 						)
 					);
 					break;
@@ -702,7 +720,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 						tr(owners_localisation_key),
 						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
-							*modifier_effect_cache.get_rgo_throughput(), effect_value, true
+							*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
 						)
 					);
 					break;
@@ -749,7 +767,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 							tr(workers_localisation_key),
 							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
 							_make_modifier_effect_value_coloured(
-								*modifier_effect_cache.get_rgo_output(), effect_value, true
+								*modifier_effect_cache.get_rgo_output_country(), effect_value, true
 							)
 						);
 						break;
@@ -760,7 +778,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 							tr(workers_localisation_key),
 							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
 							_make_modifier_effect_value_coloured(
-								*modifier_effect_cache.get_rgo_throughput(), effect_value, true
+								*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
 							)
 						);
 						break;
@@ -771,25 +789,24 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		}
 
 		{
-			fixed_point_t output_from_tech, throughput_from_tech;
 			String output_modifiers, throughput_modifiers;
 
 			static const String modifier_effect_contributions_prefix = "\n  -";
 
 			output_modifiers += _make_modifier_effect_contributions_tooltip(
-				*province, *modifier_effect_cache.get_rgo_output(), &output_from_tech, &output_multiplier,
+				*province, *modifier_effect_cache.get_rgo_output_country(), &output_multiplier,
 				modifier_effect_contributions_prefix
 			);
 			output_modifiers += _make_modifier_effect_contributions_tooltip(
-				*province, *modifier_effect_cache.get_local_rgo_output(), &output_from_tech, &output_multiplier,
+				*province, *modifier_effect_cache.get_local_rgo_output(), &output_multiplier,
 				modifier_effect_contributions_prefix
 			);
 			throughput_modifiers += _make_modifier_effect_contributions_tooltip(
-				*province, *modifier_effect_cache.get_rgo_throughput(), &throughput_from_tech, &throughput_multiplier,
+				*province, *modifier_effect_cache.get_rgo_throughput_country(), &throughput_multiplier,
 				modifier_effect_contributions_prefix
 			);
 			throughput_modifiers += _make_modifier_effect_contributions_tooltip(
-				*province, *modifier_effect_cache.get_local_rgo_throughput(), &throughput_from_tech, &throughput_multiplier,
+				*province, *modifier_effect_cache.get_local_rgo_throughput(), &throughput_multiplier,
 				modifier_effect_contributions_prefix
 			);
 
@@ -797,11 +814,11 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 			if (production_type.get_is_farm_for_non_tech()) {
 				output_modifiers += _make_modifier_effect_contributions_tooltip(
-					*province, *modifier_effect_cache.get_farm_rgo_output_global(), &output_from_tech, &output_multiplier,
+					*province, *modifier_effect_cache.get_farm_rgo_output_global(), &output_multiplier,
 					modifier_effect_contributions_prefix
 				);
 				output_modifiers += _make_modifier_effect_contributions_tooltip(
-					*province, *modifier_effect_cache.get_farm_rgo_output_local(), &output_from_tech, &output_multiplier,
+					*province, *modifier_effect_cache.get_farm_rgo_output_local(), &output_multiplier,
 					modifier_effect_contributions_prefix
 				);
 
@@ -813,11 +830,11 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 			if (production_type.get_is_mine_for_non_tech()) {
 				output_modifiers += _make_modifier_effect_contributions_tooltip(
-					*province, *modifier_effect_cache.get_mine_rgo_output_global(), &output_from_tech, &output_multiplier,
+					*province, *modifier_effect_cache.get_mine_rgo_output_global(), &output_multiplier,
 					modifier_effect_contributions_prefix
 				);
 				output_modifiers += _make_modifier_effect_contributions_tooltip(
-					*province, *modifier_effect_cache.get_mine_rgo_output_local(), &output_from_tech, &output_multiplier,
+					*province, *modifier_effect_cache.get_mine_rgo_output_local(), &output_multiplier,
 					modifier_effect_contributions_prefix
 				);
 
@@ -854,8 +871,12 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			ModifierEffectCache::good_effects_t const& good_effects =
 				modifier_effect_cache.get_good_effects()[production_type.get_output_good()];
 
-			output_from_tech += province->get_modifier_effect_value(*good_effects.get_rgo_goods_output());
-			throughput_from_tech += province->get_modifier_effect_value(*good_effects.get_rgo_goods_throughput());
+			fixed_point_t output_from_tech =
+				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_output_tech()) +
+				province->get_modifier_effect_value(*good_effects.get_rgo_goods_output());
+			fixed_point_t throughput_from_tech =
+				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_throughput_tech()) +
+				province->get_modifier_effect_value(*good_effects.get_rgo_goods_throughput());
 
 			fixed_point_t size_from_tech;
 
@@ -897,7 +918,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 					tech_modifier_template_string,
 					tr(rgo_output_tech_localisation_key),
 					_make_modifier_effect_value_coloured(
-						*modifier_effect_cache.get_rgo_output(), output_from_tech, true
+						*modifier_effect_cache.get_rgo_output_tech(), output_from_tech, true
 					)
 				);
 			}
@@ -911,7 +932,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 					tech_modifier_template_string,
 					tr(rgo_throughput_tech_localisation_key),
 					_make_modifier_effect_value_coloured(
-						*modifier_effect_cache.get_rgo_throughput(), throughput_from_tech, true
+						*modifier_effect_cache.get_rgo_throughput_tech(), throughput_from_tech, true
 					)
 				);
 			}
@@ -948,11 +969,13 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			tr(output_explanation_localisation_key),
 			tr(base_output_localisation_key).replace(base_replace_key, Utilities::fixed_point_to_string_dp(base_output, 2)),
 			tr(output_efficiency_localisation_key),
-			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_output(), output_efficiency, false),
+			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_output_country(), output_efficiency, false),
 			tr(base_localisation_key),
 			output_string,
 			tr(throughput_efficiency_localisation_key),
-			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_throughput(), throughput_efficiency, false),
+			_make_modifier_effect_value_coloured(
+				*modifier_effect_cache.get_rgo_throughput_country(), throughput_efficiency, false
+			),
 			throughput_string
 		);
 
@@ -1306,7 +1329,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
 		// guaranteed daily base research points line. All contributions are added to daily_base_research_points.
 		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_research_points(), nullptr, &daily_base_research_points, {}, "\n"
+			*country, *modifier_effect_cache.get_research_points(), &daily_base_research_points, {}, "\n"
 		);
 
 		// The daily base research points line is guaranteed to be present, but those directly above and below it aren't,
@@ -1410,7 +1433,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
 		// guaranteed monthly base leadership points line. All contributions are added to monthly_base_leadership_points.
 		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_leadership(), nullptr, &monthly_base_leadership_points, {}, "\n"
+			*country, *modifier_effect_cache.get_leadership(), &monthly_base_leadership_points, {}, "\n"
 		);
 
 		// The monthly base leadership points line is guaranteed to be present, but those directly above and below it aren't,

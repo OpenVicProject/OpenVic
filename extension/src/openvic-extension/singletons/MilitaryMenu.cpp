@@ -415,9 +415,8 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	const String base_value_percent_tooltip = tr(base_value_percent_localisation_key);
 
 	ret[military_info_supply_consumption_key] = country->get_supply_consumption().to_float();
-	ret[military_info_supply_consumption_tooltip_key] = base_value_percent_tooltip + _make_modifier_effect_contributions_tooltip(
-		*country, *modifier_effect_cache.get_supply_consumption()
-	);
+	ret[military_info_supply_consumption_tooltip_key] = base_value_percent_tooltip +
+		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_supply_consumption());
 
 	static const StringName from_tech_localisation_key = "FROM_TECHNOLOGY";
 	const String from_technology_tooltip = "\n" + tr(from_tech_localisation_key) + ": ";
@@ -438,14 +437,12 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	}
 
 	ret[military_info_land_organisation_key] = country->get_land_organisation().to_float();
-	ret[military_info_land_organisation_tooltip_key] = base_value_percent_tooltip + _make_modifier_effect_contributions_tooltip(
-		*country, *modifier_effect_cache.get_land_organisation()
-	);
+	ret[military_info_land_organisation_tooltip_key] = base_value_percent_tooltip +
+		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_land_organisation());
 
 	ret[military_info_naval_organisation_key] = country->get_naval_organisation().to_float();
-	ret[military_info_naval_organisation_tooltip_key] = base_value_percent_tooltip + _make_modifier_effect_contributions_tooltip(
-		*country, *modifier_effect_cache.get_naval_organisation()
-	);
+	ret[military_info_naval_organisation_tooltip_key] = base_value_percent_tooltip +
+		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_naval_organisation());
 
 	ret[military_info_land_unit_start_experience_key] = country->get_land_unit_start_experience().to_float();
 	ret[military_info_naval_unit_start_experience_key] = country->get_naval_unit_start_experience().to_float();
@@ -515,14 +512,38 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	// ret[military_info_mobilisation_progress_key] = country->get_mobilisation_progress().to_float();
 	ret[military_info_mobilisation_size_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
 
-	static const StringName mobilisation_size_tooltip_localisation_key = "MOB_SIZE_IRO";
-	static const String mobilisation_size_tooltip_replace_value_key = "$VALUE$";
+	{
+		static const StringName mobilisation_size_tooltip_localisation_key = "MOB_SIZE_IRO";
+		static const StringName mobilisation_size_tech_tooltip_localisation_key = "MOB_FROM_TECH";
+		static const String mobilisation_size_tooltip_replace_value_key = "$VALUE$";
 
-	ret[military_info_mobilisation_size_tooltip_key] = tr(mobilisation_size_tooltip_localisation_key).replace(
-		mobilisation_size_tooltip_replace_value_key, Utilities::fixed_point_to_string_dp(
-			country->get_modifier_effect_value(*modifier_effect_cache.get_mobilisation_size()) * 100, 2
-		)
-	) + _make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_mobilisation_size());
+		const fixed_point_t mobilisation_size_from_tech = country->get_modifier_effect_value(
+			*modifier_effect_cache.get_mobilisation_size_tech()
+		);
+
+		String military_info_mobilisation_size_tooltip = tr(mobilisation_size_tooltip_localisation_key).replace(
+			mobilisation_size_tooltip_replace_value_key, Utilities::fixed_point_to_string_dp(
+				(
+					country->get_modifier_effect_value(*modifier_effect_cache.get_mobilisation_size_country()) +
+					mobilisation_size_from_tech
+				) * 100, 2
+			)
+		);
+
+		if (mobilisation_size_from_tech != fixed_point_t::_0()) {
+			military_info_mobilisation_size_tooltip += "\n" + tr(mobilisation_size_tech_tooltip_localisation_key).replace(
+				mobilisation_size_tooltip_replace_value_key, _make_modifier_effect_value_coloured(
+					*modifier_effect_cache.get_mobilisation_size_country(), mobilisation_size_from_tech, false
+				)
+			);
+		}
+
+		military_info_mobilisation_size_tooltip += _make_modifier_effect_contributions_tooltip(
+			*country, *modifier_effect_cache.get_mobilisation_size_country()
+		);
+
+		ret[military_info_mobilisation_size_tooltip_key] = std::move(military_info_mobilisation_size_tooltip);
+	}
 
 	if (!country->is_mobilised()) {
 		ret[military_info_mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
@@ -531,10 +552,12 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	ret[military_info_mobilisation_economy_impact_key] = country->get_mobilisation_economy_impact().to_float();
 
 	{
-		fixed_point_t research_contribution;
-
 		String mobilisation_economy_impact_tooltip = _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_mobilisation_economy_impact(), &research_contribution
+			*country, *modifier_effect_cache.get_mobilisation_economy_impact_country()
+		);
+
+		const fixed_point_t research_contribution = country->get_modifier_effect_value(
+			*modifier_effect_cache.get_mobilisation_economy_impact_tech()
 		);
 
 		if (research_contribution != fixed_point_t::_0()) {
@@ -548,7 +571,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 					: research_contribution_positive_key
 			).replace(
 				replace_value_key, _make_modifier_effect_value(
-					*modifier_effect_cache.get_mobilisation_economy_impact(), research_contribution.abs(), false
+					*modifier_effect_cache.get_mobilisation_economy_impact_tech(), research_contribution.abs(), false
 				)
 			) + mobilisation_economy_impact_tooltip;
 		} else if (!mobilisation_economy_impact_tooltip.is_empty()) {
