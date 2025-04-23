@@ -136,21 +136,21 @@ namespace OpenVic {
 		godot::String _get_country_name(CountryInstance const& country) const;
 		godot::String _get_country_adjective(CountryInstance const& country) const;
 
-		static godot::String _make_modifier_effect_value(
+		godot::String _make_modifier_effect_value(
 			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
-		);
+		) const;
 
-		static godot::String _make_modifier_effect_value_coloured(
+		godot::String _make_modifier_effect_value_coloured(
 			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
-		);
+		) const;
 
 		godot::String _make_modifier_effects_tooltip(ModifierValue const& modifier) const;
 
 		template<typename T>
 		requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 		godot::String _make_modifier_effect_contributions_tooltip(
-			T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* tech_contributions = nullptr,
-			fixed_point_t* other_contributions = nullptr, godot::String const& prefix = "\n", godot::String const& suffix = {}
+			T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* effect_value = nullptr,
+			godot::String const& prefix = "\n", godot::String const& suffix = {}
 		) const;
 
 		godot::String _make_rules_tooltip(RuleSet const& rules) const;
