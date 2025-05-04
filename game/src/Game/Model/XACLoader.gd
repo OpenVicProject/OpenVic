@@ -141,8 +141,9 @@ static func _load_xac_model(source_file : String, is_unit : bool) -> Node3D:
 		if mesh_chunk_name in INVALID_MESHES:
 			push_warning("Skipping unused mesh \"", mesh_chunk_name, "\" in model \"", node.name, "\"")
 			continue
-
+		#st.commit_to_arrays()
 		var mesh : ArrayMesh = null
+		#mesh.add_surface_from_arrays(
 		var verts : PackedVector3Array
 		var normals : PackedVector3Array
 		var tangents : Array[Vector4]
@@ -354,8 +355,9 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 		if diffuse_name and specular_name:
 			if normal_name:
 				push_error("Normal texture present in unit colours material: ", normal_name)
-
-			var textures_index_spec : int = added_unit_textures_spec.find(specular_name)
+			var textures_index_diffuse = ModelSingleton.set_unit_material_texture(2,diffuse_name)
+			var textures_index_spec = ModelSingleton.set_unit_material_texture(3,specular_name)
+			"""var textures_index_spec : int = added_unit_textures_spec.find(specular_name)
 			if textures_index_spec < 0:
 				var unit_colours_mask_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % specular_name)
 				if unit_colours_mask_texture:
@@ -392,7 +394,8 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 					unit_shader.set_shader_parameter(param_texture_diffuse, diffuse_textures)
 				else:
 					push_error("Failed to load diffuse texture: ", diffuse_name)
-
+			"""
+			
 			materials.push_back(MaterialDefinition.new(unit_shader, textures_index_diffuse, textures_index_spec))
 
 		# Flag (diffuse is unionjacksquare which is ignored)
@@ -414,7 +417,7 @@ static func make_materials(materialDefinitionChunks : Array[MaterialDefinitionCh
 				push_error("Specular texture present in scrolling material: ", specular_name)
 			if normal_name:
 				push_error("Normal texture present in scrolling material: ", normal_name)
-
+			#ModelSingleton. TODO
 			var scroll_textures_index_diffuse : int = added_scrolling_textures_diffuse.find(diffuse_name)
 			if scroll_textures_index_diffuse < 0:
 				var diffuse_texture : ImageTexture = AssetManager.get_texture(TEXTURES_PATH % diffuse_name)
