@@ -13,11 +13,11 @@
 
 #include <openvic-simulation/dataloader/Dataloader.hpp>
 #include <openvic-simulation/dataloader/NodeTools.hpp>
+#include <openvic-simulation/utility/StringUtils.hpp>
 
-#include "openvic-simulation/utility/StringUtils.hpp"
-#include <openvic-extension/singletons/GameSingleton.hpp>
-#include <openvic-extension/utility/ClassBindings.hpp>
-#include <openvic-extension/utility/Utilities.hpp>
+#include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using OpenVic::Utilities::godot_to_std_string;
 using OpenVic::Utilities::std_to_godot_string;
@@ -110,7 +110,10 @@ bool SoundSingleton::load_title_theme() {
 		String file_stem = to_define_file_name(file, music_folder);
 
 		if (file_stem == title_theme_name.data()) {
-			ERR_BREAK_MSG(!get_song(file).is_valid(), vformat("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
+			ERR_BREAK_MSG(
+				!get_song(file).is_valid(),
+				vformat("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string()))
+			);
 
 			String name = to_define_file_name(file, music_folder);
 			title_theme = name;
@@ -217,13 +220,18 @@ bool SoundSingleton::load_sounds() {
 		// UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		// the define its associated with also isn't used in game
 		if (full_path.empty()) {
-			WARN_PRINT(vformat("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier())));
+			WARN_PRINT(
+				vformat("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier()))
+			);
 			continue;
 		}
 
 		Ref<AudioStreamWAV> stream = get_sound(std_to_godot_string(full_path.string()));
 		if (stream.is_null()) {
-			ERR_PRINT(vformat("Failed to load sound %s at path %s.", std_to_godot_string(sound_inst.get_identifier()), std_to_godot_string(full_path.string())));
+			ERR_PRINT(vformat(
+				"Failed to load sound %s at path %s.", std_to_godot_string(sound_inst.get_identifier()),
+				std_to_godot_string(full_path.string())
+			));
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}

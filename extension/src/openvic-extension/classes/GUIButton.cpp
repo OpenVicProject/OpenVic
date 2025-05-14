@@ -95,9 +95,10 @@ Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 		err = FAILED;
 	}
 
-	static const std::array<StringName, 5> button_font_themes {
-		"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
-	};
+	static const std::array<StringName, 5> button_font_themes //
+		{ //
+		  "font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
+		};
 
 	const Color colour = Utilities::to_godot_color(gfx_font->get_colour());
 
