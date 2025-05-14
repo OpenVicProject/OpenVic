@@ -12,7 +12,7 @@ namespace OpenVic {
 	struct SliderValue;
 
 	class GUIScrollbar : public godot::Control {
-		GDCLASS(GUIScrollbar, godot::Control)
+		GDCLASS(GUIScrollbar, godot::Control);
 
 		GUI_TOOLTIP_DEFINITIONS
 
@@ -111,9 +111,7 @@ namespace OpenVic {
 		fixed_point_t get_value_scaled_fp() const;
 		float get_value_scaled() const;
 
-		godot::Error set_range_limits(
-			int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true
-		);
+		godot::Error set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal = true);
 		godot::Error set_range_limits_and_value(
 			int32_t new_range_limit_min, int32_t new_range_limit_max, int32_t new_value, bool signal = true
 		);
@@ -122,7 +120,7 @@ namespace OpenVic {
 		godot::Error set_range_limits_and_value_fp(
 			fixed_point_t new_range_limit_min, fixed_point_t new_range_limit_max, fixed_point_t new_value, bool signal = true
 		);
-		godot::Error set_range_limits_and_value_from_slider_value(
+		godot::Error set_range_limits_and_value_from_slider_value( //
 			SliderValue const& slider_value, int32_t scale, bool signal = true
 		);
 		godot::Error set_step_size_and_limits_fp(fixed_point_t new_step_size, int32_t new_min_value, int32_t new_max_value);

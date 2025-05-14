@@ -5,7 +5,7 @@
 
 namespace OpenVic {
 	class GUIIcon : public GUITextureRect {
-		GDCLASS(GUIIcon, GUITextureRect)
+		GDCLASS(GUIIcon, GUITextureRect);
 
 		godot::Ref<GFXSpriteTexture> gfx_sprite_texture;
 
@@ -13,13 +13,11 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
-		godot::Error set_gfx_texture_sprite(
-			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
-		);
+		godot::Error set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES);
 
 		godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture() const;
 
-		godot::Error set_gfx_texture_sprite_name(
+		godot::Error set_gfx_texture_sprite_name( //
 			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
