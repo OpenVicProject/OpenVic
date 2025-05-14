@@ -17,10 +17,10 @@ void AssetManager::_bind_methods() {
 	OV_BIND_METHOD(AssetManager::get_currency_texture, { "height" });
 	OV_BIND_METHOD(AssetManager::get_leader_texture, { "name" });
 
-	BIND_ENUM_CONSTANT(LOAD_FLAG_NONE);
-	BIND_ENUM_CONSTANT(LOAD_FLAG_CACHE_IMAGE);
-	BIND_ENUM_CONSTANT(LOAD_FLAG_CACHE_TEXTURE);
-	BIND_ENUM_CONSTANT(LOAD_FLAG_FLIP_Y);
+	BIND_BITFIELD_FLAG(LOAD_FLAG_NONE);
+	BIND_BITFIELD_FLAG(LOAD_FLAG_CACHE_IMAGE);
+	BIND_BITFIELD_FLAG(LOAD_FLAG_CACHE_TEXTURE);
+	BIND_BITFIELD_FLAG(LOAD_FLAG_FLIP_Y);
 }
 
 AssetManager* AssetManager::get_singleton() {
@@ -62,7 +62,7 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 	return image;
 }
 
-Ref<Image> AssetManager::get_image(StringName const& path, LoadFlags load_flags) {
+Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing image entry indicating a previous load attempt, whether successful or not. */
 	const image_asset_map_t::iterator it = image_assets.find(path);
 	if (it != image_assets.end()) {
@@ -92,7 +92,7 @@ Ref<Image> AssetManager::get_image(StringName const& path, LoadFlags load_flags)
 	}
 }
 
-Ref<ImageTexture> AssetManager::get_texture(StringName const& path, LoadFlags load_flags) {
+Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing texture entry indicating a previous creation attempt, whether successful or not. */
 	const image_asset_map_t::const_iterator it = image_assets.find(path);
 	if (it != image_assets.end()) {

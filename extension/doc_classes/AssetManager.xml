@@ -22,7 +22,7 @@
 		<method name="get_image">
 			<return type="Image" />
 			<param index="0" name="path" type="StringName" />
-			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" default="1" />
+			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" is_bitfield="true" default="1" />
 			<description>
 			</description>
 		</method>
@@ -35,19 +35,19 @@
 		<method name="get_texture">
 			<return type="ImageTexture" />
 			<param index="0" name="path" type="StringName" />
-			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" default="2" />
+			<param index="1" name="load_flags" type="int" enum="AssetManager.LoadFlags" is_bitfield="true" default="2" />
 			<description>
 			</description>
 		</method>
 	</methods>
 	<constants>
-		<constant name="LOAD_FLAG_NONE" value="0" enum="LoadFlags">
+		<constant name="LOAD_FLAG_NONE" value="0" enum="LoadFlags" is_bitfield="true">
 		</constant>
-		<constant name="LOAD_FLAG_CACHE_IMAGE" value="1" enum="LoadFlags">
+		<constant name="LOAD_FLAG_CACHE_IMAGE" value="1" enum="LoadFlags" is_bitfield="true">
 		</constant>
-		<constant name="LOAD_FLAG_CACHE_TEXTURE" value="2" enum="LoadFlags">
+		<constant name="LOAD_FLAG_CACHE_TEXTURE" value="2" enum="LoadFlags" is_bitfield="true">
 		</constant>
-		<constant name="LOAD_FLAG_FLIP_Y" value="4" enum="LoadFlags">
+		<constant name="LOAD_FLAG_FLIP_Y" value="4" enum="LoadFlags" is_bitfield="true">
 		</constant>
 	</constants>
 </class>
