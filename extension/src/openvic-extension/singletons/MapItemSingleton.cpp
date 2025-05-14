@@ -77,7 +77,7 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 
 	TypedArray<Dictionary> ret;
 
-	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+	for (memory::unique_base_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
 		GFX::Billboard const* billboard = obj->cast_to<GFX::Billboard>();
 		if (billboard != nullptr) {
 			add_billboard_dict(*billboard, ret);
@@ -114,7 +114,7 @@ TypedArray<Dictionary> MapItemSingleton::get_projections() const {
 
 	TypedArray<Dictionary> ret;
 
-	for (std::unique_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+	for (memory::unique_base_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
 		GFX::Projection const* projection = obj->cast_to<GFX::Projection>();
 		if (projection != nullptr) {
 			add_projection_dict(*projection, ret);

@@ -537,7 +537,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<size_t> sorted_items;
 
 	const auto generate_sort_cache = [this, &localised_items, &sorted_items]<HasGetIdentifier T>(
-		IndexedMap<T, size_t>& cache, std::vector<T> const& items
+		IndexedMap<T, size_t>& cache, memory::vector<T> const& items
 	) {
 		localised_items.resize(items.size());
 		sorted_items.resize(items.size());

@@ -530,7 +530,7 @@ Error GameSingleton::_load_flag_sheet() {
 
 	/* Generate flag type - index lookup map */
 	flag_type_index_map.clear();
-	for (std::string const& type : government_type_manager.get_flag_types()) {
+	for (memory::string const& type : government_type_manager.get_flag_types()) {
 		flag_type_index_map.emplace(Utilities::std_to_godot_string(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 

@@ -62,7 +62,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 		)
 	);
 
-	std::string actor_name = StringUtils::append_string_views(culture, name);
+	memory::string actor_name = StringUtils::append_string_views(culture, name);
 
 	GFX::Actor const* actor = get_actor(actor_name, false);
 
@@ -141,7 +141,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 	set_animation(move_key, actor.get_move_animation());
 	set_animation(attack_key, actor.get_attack_animation());
 
-	std::vector<GFX::Actor::Attachment> const& attachments = actor.get_attachments();
+	memory::vector<GFX::Actor::Attachment> const& attachments = actor.get_attachments();
 
 	if (!attachments.empty()) {
 		static const StringName attachment_node_key = "node";
@@ -195,7 +195,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
 template<UnitType::branch_t Branch>
 bool ModelSingleton::add_unit_dict(
-	std::vector<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
+	memory::vector<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
 ) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 
@@ -429,7 +429,7 @@ bool ModelSingleton::add_building_dict(
 	fvec2_t const* position_ptr = province_definition.get_building_position(&building.get_building_type());
 	const float rotation = province_definition.get_building_rotation(&building.get_building_type());
 
-	const std::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
+	const memory::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(

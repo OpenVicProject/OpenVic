@@ -529,7 +529,7 @@ void MenuSingleton::hide_tooltip() {
 static TypedArray<Dictionary> _make_buildings_dict_array(
 	ProvinceInstance const* province
 ) {
-	std::vector<BuildingInstance> const& buildings = province->get_buildings();
+	memory::vector<BuildingInstance> const& buildings = province->get_buildings();
 
 	if (buildings.empty()) {
 		return {};
@@ -1078,7 +1078,7 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 
-	std::vector<BuildingType const*> const& province_building_types = game_singleton->get_definition_manager()
+	memory::vector<BuildingType const*> const& province_building_types = game_singleton->get_definition_manager()
 		.get_economy_manager().get_building_type_manager().get_province_building_types();
 	ERR_FAIL_COND_V_MSG(
 		building_index < 0 || building_index >= province_building_types.size(), {},
@@ -1528,9 +1528,9 @@ Error MenuSingleton::generate_search_cache() {
 
 	search_panel.entry_cache.clear();
 
-	std::vector<ProvinceInstance> const& provinces = instance_manager->get_map_instance().get_province_instances();
-	std::vector<StateSet> const& state_sets = instance_manager->get_map_instance().get_state_manager().get_state_sets();
-	std::vector<CountryInstance> const& countries = instance_manager->get_country_instance_manager().get_country_instances();
+	memory::vector<ProvinceInstance> const& provinces = instance_manager->get_map_instance().get_province_instances();
+	memory::vector<StateSet> const& state_sets = instance_manager->get_map_instance().get_state_manager().get_state_sets();
+	memory::vector<CountryInstance> const& countries = instance_manager->get_country_instance_manager().get_country_instances();
 
 	// TODO - reserve actual state count rather than state set count (maybe use a vector of pointers to all states?)
 	search_panel.entry_cache.reserve(provinces.size() + state_sets.size() + countries.size());
