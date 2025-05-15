@@ -32,6 +32,29 @@ env.Prepend(LIBS=godot_env["LIBS"])
 
 SConscript("extension/deps/SCsub", "env")
 
+def version_git_info_builder(target, source, env):
+    with open(str(target[0]), "wt", encoding="utf-8", newline="\n") as file:
+        file.write("/* THIS FILE IS GENERATED. EDITS WILL BE LOST. */\n\n")
+        file.write(
+            """\
+#pragma once
+
+#include <cstdint>
+#include <string_view>
+
+namespace OpenVic {{
+	static constexpr std::string_view GAME_TAG = "{git_tag}";
+	static constexpr std::string_view GAME_RELEASE = "{git_release}";
+	static constexpr std::string_view GAME_COMMIT_HASH = "{git_hash}";
+	static constexpr const uint64_t GAME_COMMIT_TIMESTAMP = {git_timestamp}ull;
+}}
+""".format(**source[0].read())
+        )
+
+result = env.Command("extension/src/gen/git_info.gen.hpp", env.Value(env.get_git_info()), env.Action(version_git_info_builder, "$GENCOMSTR"))
+env.NoCache(result)
+Default(result)
+
 # For the reference:
 # - CCFLAGS are compilation flags shared between C and C++
 # - CFLAGS are for C-specific compilation flags
