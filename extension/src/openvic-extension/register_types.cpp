@@ -1,6 +1,7 @@
 #include "register_types.hpp"
 
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/core/class_db.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 #include "openvic-extension/classes/GFXMaskedFlagTexture.hpp"
@@ -26,6 +27,7 @@
 #include "openvic-extension/singletons/Checksum.hpp"
 #include "openvic-extension/singletons/CursorSingleton.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/singletons/GitInfo.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MapItemSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
@@ -37,6 +39,7 @@ using namespace godot;
 using namespace OpenVic;
 
 static Checksum* _checksum_singleton = nullptr;
+static GitInfo* _git_info_singleton = nullptr;
 static CursorSingleton* _cursor_singleton = nullptr;
 static LoadLocalisation* _load_localisation = nullptr;
 static GameSingleton* _game_singleton = nullptr;
@@ -51,6 +54,10 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	ClassDB::register_class<GitInfo>();
+	_git_info_singleton = memnew(GitInfo);
+	Engine::get_singleton()->register_singleton("GitInfo", GitInfo::get_singleton());
 
 	ClassDB::register_class<Checksum>();
 	_checksum_singleton = memnew(Checksum);
@@ -130,6 +137,9 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	Engine::get_singleton()->unregister_singleton("GitInfo");
+	memdelete(_git_info_singleton);
 
 	Engine::get_singleton()->unregister_singleton("Checksum");
 	memdelete(_checksum_singleton);

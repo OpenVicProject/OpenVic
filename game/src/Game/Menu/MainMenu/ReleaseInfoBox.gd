@@ -15,10 +15,10 @@ var _checksum : String = "????"
 # * SS-104, SS-105, SS-106, SS-107
 # * UIFUN-97, UIFUN-297, UIFUN-299
 func _ready() -> void:
-	_version_label.text = tr("MAIMENU_LATEST_RELEASE_NAME").format({ "release_name": _GIT_INFO_.release_name })
-	_version_label.tooltip_text = _GIT_INFO_.tag
-	_commit_label.text = tr("MAIMENU_COMMIT").format({ "short_hash": _GIT_INFO_.short_hash })
-	_commit_label.tooltip_text = _GIT_INFO_.commit_hash
+	_version_label.text = tr("MAIMENU_LATEST_RELEASE_NAME").format({ "release_name": GitInfo.release_name })
+	_version_label.tooltip_text = GitInfo.tag
+	_commit_label.text = tr("MAIMENU_COMMIT").format({ "short_hash": GitInfo.short_hash })
+	_commit_label.tooltip_text = GitInfo.commit_hash
 	# UI-111
 	_checksum = Checksum.get_checksum_text()
 	_update_checksum_label_text()
@@ -33,18 +33,18 @@ func _update_checksum_label_text() -> void:
 	_checksum_label.text = tr("MAINMENU_CHECKSUM").format({ "short_checksum": _checksum.substr(0, 4) })
 
 func _on_version_label_pressed() -> void:
-	DisplayServer.clipboard_set(_GIT_INFO_.tag)
+	DisplayServer.clipboard_set(GitInfo.tag)
 
 func _on_commit_label_pressed() -> void:
-	DisplayServer.clipboard_set(_GIT_INFO_.commit_hash)
+	DisplayServer.clipboard_set(GitInfo.commit_hash)
 
 func _on_checksum_label_pressed() -> void:
 	DisplayServer.clipboard_set(_checksum)
 
 func _on_game_info_button_pressed() -> void:
 	var project_name := ProjectSettings.get_setting("application/config/name") as String
-	var tag_name := _GIT_INFO_.tag
-	var commit_sha := _GIT_INFO_.short_hash
+	var tag_name := GitInfo.tag
+	var commit_sha := GitInfo.short_hash
 	var godot_version := Engine.get_version_info().string as String
 	var os_name := OS.get_distribution_name()
 	var date_str := Time.get_datetime_string_from_system(true)
