@@ -289,8 +289,8 @@ func _parse_argument_list(dictionary : Dictionary, arg_list : PackedStringArray,
 
 func _print_help() -> void:
 	var project_name : StringName = ProjectSettings.get_setting_with_override(&"application/config/name")
-	var project_version : String = _GIT_INFO_.tag
-	var project_hash : String = _GIT_INFO_.short_hash
+	var project_version : String = GitInfo.tag
+	var project_hash : String = GitInfo.short_hash
 	var project_website : String = "https://openvic.com"
 	var project_description : String = ProjectSettings.get_setting_with_override(&"application/config/description")
 	print_rich(

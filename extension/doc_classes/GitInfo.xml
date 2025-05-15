@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GitInfo" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="commit_hash" type="StringName" setter="" getter="get_commit_hash">
+			The full Git commit hash the extension was compiled from as a [StringName].
+			If the Git commit hash was not found returns "0000000000000000000000000000000000000000"
+		</member>
+		<member name="commit_timestamp" type="int" setter="" getter="get_commit_timestamp">
+			The Git commit date UNIX timestamp the extension was compiled from, in seconds as an int, or 0 if unavailable.
+		</member>
+		<member name="release_name" type="StringName" setter="" getter="get_release_name">
+			The last Github release/prerelease name found on Github when the extension was compiled, or [member tag] if unavailable.
+			If [member tag] was not found, returns "&lt;release missing&gt;".
+		</member>
+		<member name="short_hash" type="StringName" setter="" getter="get_short_hash">
+			The 7 string short form of [member commit_hash].
+		</member>
+		<member name="tag" type="StringName" setter="" getter="get_tag">
+			The latest Git tag when the extension was compiled.
+			If the Git tag was not found returns "&lt;tag missing&gt;".
+		</member>
+	</members>
+</class>
