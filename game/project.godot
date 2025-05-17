@@ -184,3 +184,4 @@ settings/ips_file_path="user://ips.cfg"
 textures/vram_compression/import_etc2_astc=true
 textures/lossless_compression/force_png=true
 textures/default_filters/use_nearest_mipmap_filter=true
+limits/global_shader_variables/buffer_size=131072
