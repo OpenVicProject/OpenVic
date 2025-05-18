@@ -27,8 +27,8 @@ namespace OpenVic {
 
 	private:
 		struct image_asset_t {
-			std::optional<godot::Ref<godot::Image>> image;
-			std::optional<godot::Ref<godot::ImageTexture>> texture;
+			godot::Ref<godot::Image> image;
+			godot::Ref<godot::ImageTexture> texture;
 		};
 		/* deque_ordered_map to avoid the need to reallocate. */
 		using image_asset_map_t = deque_ordered_map<godot::StringName, image_asset_t>;

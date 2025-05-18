@@ -32,7 +32,7 @@ namespace OpenVic {
 
 		// define name, stream ref, volume for sound effects so we can get these properties with a simple call in godot
 		struct sound_asset_t {
-			std::optional<godot::Ref<godot::AudioStreamWAV>> audioStream;
+			godot::Ref<godot::AudioStreamWAV> audioStream;
 			std::optional<fixed_point_t> volume;
 		};
 		using sfx_define_map_t = deque_ordered_map<godot::StringName, sound_asset_t>;

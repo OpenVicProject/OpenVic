@@ -180,11 +180,12 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 
 // Get a sound by its define name
 Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
-	if (sfx_define[path].audioStream.has_value()) {
-		return sfx_define[path].audioStream.value();
-	}
+	sfx_define_map_t::iterator it = sfx_define.find(path);
+	ERR_FAIL_COND_V_MSG(
+		it == sfx_define.end(), nullptr, vformat("Attempted to retrieve sound stream at invalid index %s.", path)
+	);
 
-	ERR_FAIL_V_MSG(nullptr, vformat("Attempted to retrieve sound stream at invalid index ", path));
+	return it.value().audioStream;
 }
 
 // get the base volume of a sound from its define name
