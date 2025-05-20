@@ -8,17 +8,18 @@
 
 namespace OpenVic {
 	template<typename Container>
-	concept IsPieChartDistribution = (
+	concept IsPieChartDistribution = //
+		(
 			/* ordered_map<T const*, mapped_type>, T derived from HasIdentifierAndColour */
 			utility::specialization_of<Container, tsl::ordered_map>
 			/* IndexedMap<T, mapped_type>, T derived from HasIdentifierAndColour */
 			|| utility::specialization_of<Container, IndexedMap>
-		)
-		&& HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>>
-		&& std::convertible_to<typename Container::mapped_type, float>;
+		) &&
+		HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>> &&
+		std::convertible_to<typename Container::mapped_type, float>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
-		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
+		GDCLASS(GFXPieChartTexture, godot::ImageTexture);
 
 	public:
 		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
@@ -50,8 +51,9 @@ namespace OpenVic {
 			Container const& distribution,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::remove_pointer_t<typename Container::key_type> const*, godot::String const&, float, float
-			> auto make_tooltip,
+				godot::String, //
+				std::remove_pointer_t<typename Container::key_type> const*, godot::String const&, float, float> auto
+				make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
 			using namespace godot;

@@ -7,7 +7,7 @@
 
 namespace OpenVic {
 	class GFXCorneredTileSupportingTexture : public godot::AtlasTexture {
-		GDCLASS(GFXCorneredTileSupportingTexture, godot::AtlasTexture)
+		GDCLASS(GFXCorneredTileSupportingTexture, godot::AtlasTexture);
 
 	protected:
 		godot::Vector2i PROPERTY_ACCESS(cornered_tile_border_size, protected);
@@ -25,10 +25,10 @@ namespace OpenVic {
 	};
 
 	class GFXButtonStateTexture : public GFXCorneredTileSupportingTexture {
-		GDCLASS(GFXButtonStateTexture, GFXCorneredTileSupportingTexture)
+		GDCLASS(GFXButtonStateTexture, GFXCorneredTileSupportingTexture);
 
 	public:
-		enum ButtonState {
+		enum ButtonState { //
 			HOVER,
 			PRESSED,
 			DISABLED,
@@ -68,7 +68,7 @@ namespace OpenVic {
 	};
 
 	class GFXButtonStateHavingTexture : public GFXCorneredTileSupportingTexture {
-		GDCLASS(GFXButtonStateHavingTexture, GFXCorneredTileSupportingTexture)
+		GDCLASS(GFXButtonStateHavingTexture, GFXCorneredTileSupportingTexture);
 
 		std::array<godot::Ref<GFXButtonStateTexture>, GFXButtonStateTexture::BUTTON_STATE_COUNT> button_state_textures;
 
