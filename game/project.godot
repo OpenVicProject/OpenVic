@@ -60,7 +60,7 @@ window/size/window_height_override.editor=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/keychain/plugin.cfg")
 
 [filesystem]
 
