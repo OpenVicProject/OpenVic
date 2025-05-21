@@ -95,14 +95,14 @@ PackedFloat32Array CursorSingleton::get_display_rates(StringName const& name) co
 	const cursor_map_t::const_iterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
 
-	return it->second.display_rates.value_or(PackedFloat32Array());
+	return it->second.display_rates;
 }
 
 PackedInt32Array CursorSingleton::get_sequence(StringName const& name) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
 
-	return it->second.sequence.value_or(PackedInt32Array());
+	return it->second.sequence;
 }
 
 void CursorSingleton::generate_resolution(StringName const& name, int32_t base_res_index, Vector2 target_res) {

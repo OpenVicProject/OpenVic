@@ -64,15 +64,9 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 
 Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing image entry indicating a previous load attempt, whether successful or not. */
-	const image_asset_map_t::iterator it = image_assets.find(path);
-	if (it != image_assets.end()) {
-		std::optional<Ref<Image>> const& cached_image = it->second.image;
-
-		if (cached_image.has_value()) {
-			ERR_FAIL_NULL_V_MSG(*cached_image, nullptr, vformat("Failed to load image previously: %s", path));
-
-			return *cached_image;
-		}
+	const image_asset_map_t::const_iterator it = image_assets.find(path);
+	if (it != image_assets.end() && it.value().image.is_valid()) {
+		return it.value().image;
 	}
 
 	/* No load attempt has been made yet, so we try now. */
@@ -86,7 +80,7 @@ Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> l
 		return image;
 	} else {
 		/* Mark both image and texture as failures, regardless of cache flags, in case of future load/creation attempts. */
-		image_assets[path] = { nullptr, nullptr };
+		image_assets[path] = {};
 
 		ERR_FAIL_V_MSG(nullptr, vformat("Failed to load image: %s", path));
 	}
@@ -95,14 +89,8 @@ Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> l
 Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing texture entry indicating a previous creation attempt, whether successful or not. */
 	const image_asset_map_t::const_iterator it = image_assets.find(path);
-	if (it != image_assets.end()) {
-		std::optional<Ref<ImageTexture>> const& cached_texture = it->second.texture;
-
-		if (cached_texture.has_value()) {
-			ERR_FAIL_NULL_V_MSG(*cached_texture, nullptr, vformat("Failed to create texture previously: %s", path));
-
-			return *cached_texture;
-		}
+	if (it != image_assets.end() && it.value().texture.is_valid()) {
+		return it.value().texture;
 	}
 
 	/* No creation attempt has yet been made, so we try now starting by finding the corresponding image. */
@@ -119,7 +107,7 @@ Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<Loa
 		return texture;
 	} else {
 		/* Mark texture as a failure, regardless of cache flags, in case of future creation attempts. */
-		image_assets[path].texture = nullptr;
+		image_assets[path].texture = Ref<ImageTexture> {};
 
 		ERR_FAIL_V_MSG(nullptr, vformat("Failed to create texture: %s", path));
 	}
