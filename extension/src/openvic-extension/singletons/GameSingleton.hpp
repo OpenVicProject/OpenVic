@@ -70,7 +70,9 @@ namespace OpenVic {
 
 		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
-		godot::Error set_compatibility_mode_roots(godot::PackedStringArray const& file_paths);
+		godot::Error set_compatibility_mode_roots(
+			godot::PackedStringArray const& file_paths, godot::PackedStringArray const& replace_paths = {}
+		);
 		godot::Error load_defines_compatibility_mode();
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});

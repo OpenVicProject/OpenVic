@@ -154,8 +154,9 @@
 		<method name="set_compatibility_mode_roots">
 			<return type="int" enum="Error" />
 			<param index="0" name="file_paths" type="PackedStringArray" />
+			<param index="1" name="replace_paths" type="PackedStringArray" default="PackedStringArray()" />
 			<description>
-				Set the dataloading roots to those provided in [param file_paths], which should contain full filepaths to the base game's installation and to any mods that are to be loaded on top of it. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
+				Set the dataloading roots to those provided in [param file_paths], ignoring the filepaths in [param replace_paths] in favor of mods, which should contain full filepaths to the base game's installation and to any mods that are to be loaded on top of it. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="set_mapmode">

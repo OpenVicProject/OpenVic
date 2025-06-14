@@ -35,7 +35,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode);
-	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "file_paths" });
+	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "file_paths", "replace_paths" }, DEFVAL(PackedStringArray{}));
 
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
@@ -86,10 +86,7 @@ void GameSingleton::_on_gamestate_updated() {
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
-  : game_manager {
-		std::bind(&GameSingleton::_on_gamestate_updated, this)
-	},
-	mapmode { &Mapmode::ERROR_MAPMODE } {
+	: game_manager { std::bind(&GameSingleton::_on_gamestate_updated, this) }, mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -133,8 +130,9 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 }
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
-	Bookmark const* bookmark = game_manager.get_definition_manager().get_history_manager().get_bookmark_manager()
-		.get_bookmark_by_index(bookmark_index);
+	Bookmark const* bookmark =
+		game_manager.get_definition_manager().get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index
+		);
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.setup_instance(bookmark);
 
@@ -142,11 +140,9 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
-		province.set_crime(
-			get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-				(province.get_index() - 1) % get_definition_manager().get_crime_manager().get_crime_modifier_count()
-			)
-		);
+		province.set_crime(get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
+			(province.get_index() - 1) % get_definition_manager().get_crime_manager().get_crime_modifier_count()
+		));
 	}
 
 	ret &= MenuSingleton::get_singleton()->_population_menu_update_provinces() == OK;
@@ -160,10 +156,8 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ERR_FAIL_NULL_V(player_singleton.get_player_country(), FAILED);
 
 	// TODO - remove this test starting research
-	for (
-		Technology const& technology :
-			get_definition_manager().get_research_manager().get_technology_manager().get_technologies()
-	) {
+	for (Technology const& technology :
+		 get_definition_manager().get_research_manager().get_technology_manager().get_technologies()) {
 		if (starting_country->can_research_tech(technology, instance_manager->get_today())) {
 			starting_country->start_research(technology, *instance_manager);
 			break;
@@ -290,11 +284,11 @@ Error GameSingleton::_update_colour_image() {
 
 	InstanceManager const* instance_manager = get_instance_manager();
 	PlayerSingleton const& player_singleton = *PlayerSingleton::get_singleton();
-	if (instance_manager != nullptr && !get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
-		instance_manager->get_map_instance(), mapmode,
-		player_singleton.get_player_country(), player_singleton.get_selected_province(),
-		colour_data_array.ptrw()
-	)) {
+	if (instance_manager != nullptr &&
+		!get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
+			instance_manager->get_map_instance(), mapmode, player_singleton.get_player_country(),
+			player_singleton.get_selected_province(), colour_data_array.ptrw()
+		)) {
 		err = FAILED;
 	}
 
@@ -303,9 +297,7 @@ Error GameSingleton::_update_colour_image() {
 		ERR_FAIL_NULL_V_EDMSG(province_colour_image, FAILED, "Failed to create province colour image");
 	}
 	/* Width is doubled as each province has a (base, stripe) colour pair. */
-	province_colour_image->set_data(
-		colour_image_width, colour_image_height, false, Image::FORMAT_RGBA8, colour_data_array
-	);
+	province_colour_image->set_data(colour_image_width, colour_image_height, false, Image::FORMAT_RGBA8, colour_data_array);
 	if (province_colour_texture.is_null()) {
 		province_colour_texture = ImageTexture::create_from_image(province_colour_image);
 		ERR_FAIL_NULL_V_EDMSG(province_colour_texture, FAILED, "Failed to create province colour texture");
@@ -427,8 +419,7 @@ Error GameSingleton::_load_map_images() {
 			for (int32_t y = 0; y < divided_dims.y; ++y) {
 				memcpy(
 					index_data_array.ptrw() + y * subdivision_width,
-					province_shape_data + (v * divided_dims.y + y) * map_dims.x + u * divided_dims.x,
-					subdivision_width
+					province_shape_data + (v * divided_dims.y + y) * map_dims.x + u * divided_dims.x, subdivision_width
 				);
 			}
 
@@ -470,9 +461,10 @@ Error GameSingleton::_load_terrain_variants() {
 
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
 	ERR_FAIL_COND_V_MSG(
-		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED, vformat(
-			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)",
-			sheet_width, sheet_height, SHEET_DIMS
+		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED,
+		vformat(
+			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)", sheet_width,
+			sheet_height, SHEET_DIMS
 		)
 	);
 	const int32_t slice_size = sheet_width / SHEET_DIMS;
@@ -482,9 +474,8 @@ Error GameSingleton::_load_terrain_variants() {
 	{
 		/* This is a placeholder image so that we don't have to branch to avoid looking up terrain index 0 (water).
 		 * It should never appear in game, and so is bright red to to make it obvious if it slips through. */
-		const Ref<Image> water_image = Utilities::make_solid_colour_image(
-			{ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format()
-		);
+		const Ref<Image> water_image =
+			Utilities::make_solid_colour_image({ 1.0f, 0.0f, 0.0f }, slice_size, slice_size, terrain_sheet->get_format());
 		ERR_FAIL_NULL_V_EDMSG(water_image, FAILED, "Failed to create water terrain image");
 		terrain_images[0] = water_image;
 	}
@@ -493,9 +484,10 @@ Error GameSingleton::_load_terrain_variants() {
 		const Rect2i slice { idx % SHEET_DIMS * slice_size, idx / SHEET_DIMS * slice_size, slice_size, slice_size };
 		const Ref<Image> terrain_image = terrain_sheet->get_region(slice);
 
-		ERR_FAIL_COND_V_MSG(terrain_image.is_null() || terrain_image->is_empty(), FAILED, vformat(
-			"Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path
-		));
+		ERR_FAIL_COND_V_MSG(
+			terrain_image.is_null() || terrain_image->is_empty(), FAILED,
+			vformat("Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path)
+		);
 
 		terrain_images[idx + 1] = terrain_image;
 	}
@@ -588,7 +580,7 @@ Error GameSingleton::_load_flag_sheet() {
 	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil();
 
 	/* Calculated corresponding height (rounded up). */
-	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1 ) / flag_sheet_dims.x;
+	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1) / flag_sheet_dims.x;
 
 	const Vector2i sheet_dims = flag_sheet_dims * flag_dims;
 
@@ -618,13 +610,22 @@ Error GameSingleton::_load_flag_sheet() {
 	return ret;
 }
 
-Error GameSingleton::set_compatibility_mode_roots(PackedStringArray const& file_paths) {
+Error GameSingleton::set_compatibility_mode_roots(
+	PackedStringArray const& file_paths, godot::PackedStringArray const& replace_paths
+) {
 	Dataloader::path_vector_t roots;
+	roots.reserve(file_paths.size());
 	for (String const& path : file_paths) {
-		roots.push_back(Utilities::godot_to_std_string(path));
+		roots.emplace_back(Utilities::godot_to_std_string(path));
 	}
 
-	ERR_FAIL_COND_V_MSG(!game_manager.set_roots(roots), FAILED, "Failed to set dataloader roots!");
+	Dataloader::path_vector_t replace;
+	replace.reserve(replace_paths.size());
+	for (String const& path : replace_paths) {
+		replace.emplace_back(Utilities::godot_to_std_string(path));
+	}
+
+	ERR_FAIL_COND_V_MSG(!game_manager.set_roots(roots, replace), FAILED, "Failed to set dataloader roots!");
 	return OK;
 }
 
@@ -660,9 +661,7 @@ Error GameSingleton::load_defines_compatibility_mode() {
 }
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
-	return Utilities::std_to_godot_string(
-		Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string()
-	);
+	return Utilities::std_to_godot_string(Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string());
 }
 
 String GameSingleton::lookup_file_path(String const& path) const {
