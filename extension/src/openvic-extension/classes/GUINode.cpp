@@ -275,6 +275,7 @@ void GUINode::set_click_mask(Ref<BitMap> const& mask) {
 	if (_click_mask == mask) {
 		return;
 	}
+	_mask_controls.clear();
 	_click_mask = mask;
 	queue_redraw();
 	update_minimum_size();
