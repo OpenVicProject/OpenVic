@@ -1,10 +1,15 @@
 #pragma once
 
+#include <cstdint>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
+#include "godot_cpp/classes/global_constants.hpp"
+#include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/packed_string_array.hpp"
+#include "godot_cpp/variant/typed_array.hpp"
 
 namespace OpenVic {
 
@@ -77,6 +82,10 @@ namespace OpenVic {
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});
 		godot::String lookup_file_path(godot::String const& path) const;
+
+		/* Information and methods for the mod menu. */
+		godot::Dictionary get_mod_info() const;
+		godot::Error set_desired_mod_state(godot::PackedStringArray load_paths);
 
 		godot::TypedArray<godot::Dictionary> get_bookmark_info() const;
 

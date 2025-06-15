@@ -5,6 +5,7 @@ signal new_game_button_pressed
 signal credits_button_pressed
 signal multiplayer_button_pressed
 signal continue_button_pressed
+signal mods_button_pressed
 
 @export
 var _new_game_button : BaseButton
@@ -18,19 +19,15 @@ func _ready() -> void:
 # * SS-14
 # * UIFUN-32
 func _on_new_game_button_pressed() -> void:
-	print("Start a new game!")
 	new_game_button_pressed.emit()
 
 func _on_continue_button_pressed() -> void:
-	print("Continue last game!")
 	continue_button_pressed.emit()
 
 func _on_multi_player_button_pressed() -> void:
-	print("Have fun with friends!")
 	multiplayer_button_pressed.emit()
 
 func _on_options_button_pressed() -> void:
-	print("Check out some options!")
 	options_button_pressed.emit()
 
 # REQUIREMENTS
@@ -38,6 +35,9 @@ func _on_options_button_pressed() -> void:
 # * UIFUN-36
 func _on_credits_button_pressed() -> void:
 	credits_button_pressed.emit()
+
+func _on_mods_menu_button_pressed() -> void:
+	mods_button_pressed.emit()
 
 # REQUIREMENTS
 # * SS-4

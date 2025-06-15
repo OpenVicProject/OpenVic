@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8knthxkwj1uj"]
+[gd_scene load_steps=5 format=3 uid="uid://c8knthxkwj1uj"]
 
 [ext_resource type="Theme" uid="uid://stfxt4hpsify" path="res://assets/graphics/theme/credits_menu.tres" id="1_7pmpu"]
 [ext_resource type="Script" uid="uid://bc10eyal27ggd" path="res://src/Game/Menu/CreditsMenu/CreditsMenu.gd" id="1_csd7i"]
 [ext_resource type="PackedScene" uid="uid://ddjbee5gj6bkv" path="res://src/Game/Menu/CreditsMenu/GodotEngineButton.tscn" id="3_fl02a"]
+[ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://assets/graphics/loading_screen.png" id="4_s5vmo"]
 
 [node name="CreditsMenu" type="Control" node_paths=PackedStringArray("credits_list")]
 editor_description = "UI-34"
@@ -20,6 +21,16 @@ label_variants_project = &"ProjectLabel"
 label_variants_role = &"RoleLabel"
 label_variants_person = &"PersonLabel"
 credits_list = NodePath("Scroll/CreditsList")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_s5vmo")
+expand_mode = 1
 
 [node name="ControlMargin" type="MarginContainer" parent="."]
 layout_mode = 2

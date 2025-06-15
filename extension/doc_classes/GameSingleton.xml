@@ -22,6 +22,19 @@
 				Returns the current bookmark's starting map position as a normalized [Vector2] (so each component should be in the range [code]0.0[/code] to [code]1.0[/code]).
 			</description>
 		</method>
+		<method name="get_mod_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Returns a dictionary with information about loaded and available mods.
+			</description>
+		</method>
+		<method name="set_desired_mod_state">
+			<return type="int" enum="Error" />
+			<param index="0" name="load_paths" type="PackedStringArray" />
+			<description>
+				Sets the desired mod load list, writing it to disk. Applied on game restart.
+			</description>
+		</method>
 		<method name="get_current_mapmode_index" qualifiers="const">
 			<return type="int" />
 			<description>

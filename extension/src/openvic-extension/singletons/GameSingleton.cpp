@@ -1,6 +1,7 @@
 #include "GameSingleton.hpp"
 
 #include <functional>
+#include <string>
 
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -13,6 +14,9 @@
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "godot_cpp/variant/dictionary.hpp"
+#include "godot_cpp/variant/packed_string_array.hpp"
+#include "godot_cpp/variant/string.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -39,6 +43,9 @@ void GameSingleton::_bind_methods() {
 
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
+
+	OV_BIND_METHOD(GameSingleton::get_mod_info);
+	OV_BIND_METHOD(GameSingleton::set_desired_mod_state, { "load_paths" }, DEFVAL(PackedStringArray {}));
 
 	OV_BIND_METHOD(GameSingleton::get_bookmark_info);
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
@@ -106,6 +113,34 @@ void GameSingleton::setup_logger() {
 	Logger::set_error_func([](std::string&& str) {
 		UtilityFunctions::push_error(Utilities::std_to_godot_string(str));
 	});
+}
+
+Dictionary GameSingleton::get_mod_info() const {
+	static const StringName loaded_mod_count_key = "loaded_count";
+	static const StringName formatted_loaded_mods_list_key = "formatted_load_list";
+
+	Dictionary modinfo;
+	std::span<const Mod> mods = game_manager.get_mod_manager().get_mods();
+
+	modinfo[loaded_mod_count_key] = game_manager.get_mod_manager().get_mod_count();
+	
+	std::string formatted_loaded_mods_list = "";
+	if (game_manager.get_mod_manager().get_mod_count() > 0) {
+		for (const auto& mod : mods) {
+			formatted_loaded_mods_list.append(mod.get_identifier()).append(", ");
+		}
+		formatted_loaded_mods_list.erase(formatted_loaded_mods_list.size() - 3);
+	} else {
+		formatted_loaded_mods_list = "MAINMMENU_NO_MODS_LOADED";
+	}
+
+	modinfo[formatted_loaded_mods_list_key] = Utilities::std_to_godot_string(formatted_loaded_mods_list);
+
+	return modinfo;
+}
+
+Error GameSingleton::set_desired_mod_state(PackedStringArray load_paths) {
+	return OK;
 }
 
 TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {

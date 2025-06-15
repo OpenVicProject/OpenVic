@@ -4,10 +4,16 @@ MAINMENU_TITLE;OpenVic
 MAINMENU_NEW_GAME;Новая игра
 MAINMENU_CONTINUE;Продолжить
 MAINMENU_MULTIPLAYER;Сетевая игра
+MAINMENU_MODS;моды
 MAINMENU_OPTIONS;Настройки
 MAINMENU_CREDITS;Титры
 MAINMENU_EXIT;Выйти из игры
 MAINMENU_CHECKSUM;Контрольная сумма {checksum}
+MAINMENU_MOD_COUNT;[[mods loaded]]: {count}
+MAINMMENU_NO_MODS_LOADED;[[No Mods Loaded]]
+
+;; Mods Menu
+MODMENU_APPLY;[[Apply Changes]]
 
 ;; Options
 OPTIONS_RESET;R

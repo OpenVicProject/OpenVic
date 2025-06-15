@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://c0504bwq0jdlv"]
+
+[ext_resource type="Script" uid="uid://d1ago24wnntee" path="res://src/Game/Menu/ModsMenu/ModsMenu.gd" id="1_6ddhv"]
+[ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://assets/graphics/theme/options_menu.tres" id="1_mk0o2"]
+
+[node name="ModsMenu" type="PanelContainer" node_paths=PackedStringArray("_apply_changes_button", "_mods_listbox")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_mk0o2")
+theme_type_variation = &"BackgroundPanel"
+script = ExtResource("1_6ddhv")
+_apply_changes_button = NodePath("VBox/HBox/ApplyChangesButton")
+_mods_listbox = NodePath("VBox/ModsPanel/ModsListBox")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="ModsPanel" type="PanelContainer" parent="VBox"]
+custom_minimum_size = Vector2(600, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="ModsListBox" type="VBoxContainer" parent="VBox/ModsPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBox/ModsPanel/ModsListBox"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "MAINMENU_MODS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 16
+
+[node name="BackButton" type="Button" parent="VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "GAMELOBBY_BACK"
+
+[node name="ApplyChangesButton" type="Button" parent="VBox/HBox"]
+layout_mode = 2
+text = "MODMENU_APPLY"
+
+[connection signal="pressed" from="VBox/HBox/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="VBox/HBox/ApplyChangesButton" to="." method="_on_apply_changes_button_pressed"]

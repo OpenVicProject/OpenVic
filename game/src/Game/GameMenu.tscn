@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://o4u142w4qkln"]
+[gd_scene load_steps=9 format=3 uid="uid://o4u142w4qkln"]
 
 [ext_resource type="Script" uid="uid://bf36b41ip0jyu" path="res://src/Game/GameMenu.gd" id="1_cafwe"]
 [ext_resource type="PackedScene" uid="uid://bp5n3mlu45ygw" path="res://src/Game/Menu/MainMenu/MainMenu.tscn" id="2_2jbkh"]
@@ -7,8 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://do60kx0d3nrh4" path="res://src/Game/Menu/LobbyMenu/LobbyMenu.tscn" id="4_nofk1"]
 [ext_resource type="PackedScene" uid="uid://btri1i0hkhdsh" path="res://src/Game/Menu/MultiplayerMenu/MultiplayerMenu.tscn" id="4_s7nkl"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/Game/MusicConductor/MusicPlayer.tscn" id="6_lts1m"]
+[ext_resource type="PackedScene" uid="uid://c0504bwq0jdlv" path="res://src/Game/Menu/ModsMenu/ModsMenu.tscn" id="7_k2wgj"]
 
-[node name="GameMenu" type="Control" node_paths=PackedStringArray("_main_menu", "_options_menu", "_multiplayer_menu", "_lobby_menu", "_credits_menu")]
+[node name="GameMenu" type="Control" node_paths=PackedStringArray("_main_menu", "_options_menu", "_multiplayer_menu", "_mods_menu", "_lobby_menu", "_credits_menu", "_music_menu")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,8 +21,10 @@ script = ExtResource("1_cafwe")
 _main_menu = NodePath("MainMenu")
 _options_menu = NodePath("OptionsMenu")
 _multiplayer_menu = NodePath("MultiplayerMenu")
+_mods_menu = NodePath("ModsMenu")
 _lobby_menu = NodePath("LobbyMenu")
 _credits_menu = NodePath("CreditsMenu")
+_music_menu = NodePath("MusicPlayer")
 
 [node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]
 layout_mode = 1
@@ -43,6 +46,10 @@ layout_mode = 1
 visible = false
 layout_mode = 1
 
+[node name="ModsMenu" parent="." instance=ExtResource("7_k2wgj")]
+visible = false
+layout_mode = 1
+
 [node name="MusicPlayer" parent="." instance=ExtResource("6_lts1m")]
 layout_mode = 1
 anchors_preset = 1
@@ -53,6 +60,7 @@ offset_right = -34.0
 grow_horizontal = 0
 
 [connection signal="credits_button_pressed" from="MainMenu" to="." method="_on_main_menu_credits_button_pressed"]
+[connection signal="mods_button_pressed" from="MainMenu" to="." method="_on_main_menu_mods_button_pressed"]
 [connection signal="multiplayer_button_pressed" from="MainMenu" to="." method="_on_main_menu_multiplayer_button_pressed"]
 [connection signal="new_game_button_pressed" from="MainMenu" to="." method="_on_main_menu_new_game_button_pressed"]
 [connection signal="options_button_pressed" from="MainMenu" to="." method="_on_main_menu_options_button_pressed"]
@@ -60,3 +68,4 @@ grow_horizontal = 0
 [connection signal="back_button_pressed" from="MultiplayerMenu" to="." method="_on_multiplayer_menu_back_button_pressed"]
 [connection signal="back_button_pressed" from="LobbyMenu" to="." method="_on_lobby_menu_back_button_pressed"]
 [connection signal="back_button_pressed" from="CreditsMenu" to="." method="_on_credits_back_button_pressed"]
+[connection signal="back_button_pressed" from="ModsMenu" to="." method="_on_mods_menu_back_button_pressed"]

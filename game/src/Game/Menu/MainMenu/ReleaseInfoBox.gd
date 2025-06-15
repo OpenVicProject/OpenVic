@@ -9,7 +9,12 @@ var _commit_label : Button
 @export
 var _checksum_label : Button
 
+@export
+var _mod_count_label : Button
+
 var _checksum : String = "????"
+
+var mod_info : Dictionary = GameSingleton.get_mod_info()
 
 # REQUIREMENTS:
 # * SS-104, SS-105, SS-106, SS-107
@@ -22,6 +27,8 @@ func _ready() -> void:
 	# UI-111
 	_checksum = Checksum.get_checksum_text()
 	_update_checksum_label_text()
+	_mod_count_label.text = tr("MAINMENU_MOD_COUNT").format({ "count": mod_info.get("loaded_count") })
+	_mod_count_label.tooltip_text = mod_info.get("formatted_load_list")
 
 func _notification(what : int) -> void:
 	match what:
@@ -55,3 +62,6 @@ func _on_game_info_button_pressed() -> void:
 	var cpu_processor_count := OS.get_processor_count()
 	DisplayServer.clipboard_set("%s %s (%s) [Godot %s] - %s %s - %s - %s (API: %s) - %s (%s Threads)"
 	% [project_name, tag_name, commit_sha, godot_version, os_name, date_str, display_server, gpu_name, gpu_api_version, cpu_name, cpu_processor_count])
+
+func _on_mod_count_button_pressed() -> void:
+	DisplayServer.clipboard_set(_mod_count_label.tooltip_text)
