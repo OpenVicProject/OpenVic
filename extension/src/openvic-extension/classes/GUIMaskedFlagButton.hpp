@@ -5,7 +5,7 @@
 
 namespace OpenVic {
 	class GUIMaskedFlagButton : public GUIButton {
-		GDCLASS(GUIMaskedFlagButton, GUIButton)
+		GDCLASS(GUIMaskedFlagButton, GUIButton);
 
 		godot::Ref<GFXMaskedFlagTexture> gfx_masked_flag_texture;
 
@@ -21,7 +21,7 @@ namespace OpenVic {
 
 		godot::String get_gfx_masked_flag_name() const;
 
-		godot::Error set_flag_country_name_and_type(
+		godot::Error set_flag_country_name_and_type( //
 			godot::String const& flag_country_name, godot::StringName const& flag_type
 		) const;
 

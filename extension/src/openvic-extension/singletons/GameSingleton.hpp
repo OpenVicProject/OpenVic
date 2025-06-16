@@ -9,7 +9,7 @@
 namespace OpenVic {
 
 	class GameSingleton : public godot::Object {
-		GDCLASS(GameSingleton, godot::Object)
+		GDCLASS(GameSingleton, godot::Object);
 
 		static inline GameSingleton* singleton = nullptr;
 

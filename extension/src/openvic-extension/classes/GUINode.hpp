@@ -29,7 +29,7 @@
 
 namespace OpenVic {
 	class GUINode : public godot::Control {
-		GDCLASS(GUINode, godot::Control)
+		GDCLASS(GUINode, godot::Control);
 
 		godot::Ref<godot::BitMap> _click_mask;
 		godot::Vector<Control*> _mask_controls;
@@ -42,11 +42,11 @@ namespace OpenVic {
 	public:
 		GUINode();
 
-		static godot::Control* generate_gui_element(
+		static godot::Control* generate_gui_element( //
 			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
 		);
 
-		godot::Error add_gui_element(
+		godot::Error add_gui_element( //
 			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
 		);
 
@@ -68,7 +68,7 @@ namespace OpenVic {
 
 		// These expect a non-null node!
 		static GUIIconButton* get_gui_icon_button_from_node_and_path(godot::Node* node, godot::NodePath const& path);
-		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node_and_path(
+		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node_and_path( //
 			godot::Node* node, godot::NodePath const& path
 		);
 		static GUILabel* get_gui_label_from_node_and_path(godot::Node* node, godot::NodePath const& path);
@@ -77,7 +77,7 @@ namespace OpenVic {
 		static GUIIcon* get_gui_icon_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIMaskedFlag* get_gui_masked_flag_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIPieChart* get_gui_pie_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
-		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node_and_path(
+		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node_and_path( //
 			godot::Node* node, godot::NodePath const& path
 		);
 		static GUIScrollbar* get_gui_scrollbar_from_node_and_path(godot::Node* node, godot::NodePath const& path);

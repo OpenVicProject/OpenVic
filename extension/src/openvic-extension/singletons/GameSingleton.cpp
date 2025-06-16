@@ -35,7 +35,9 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
 	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode);
-	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "file_paths", "replace_paths" }, DEFVAL(PackedStringArray{}));
+	OV_BIND_METHOD(
+		GameSingleton::set_compatibility_mode_roots, { "file_paths", "replace_paths" }, DEFVAL(PackedStringArray {})
+	);
 
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });

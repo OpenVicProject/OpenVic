@@ -18,7 +18,7 @@ namespace OpenVic {
 		&& std::convertible_to<typename Container::mapped_type, float>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
-		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
+		GDCLASS(GFXPieChartTexture, godot::ImageTexture);
 
 	public:
 		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
@@ -50,8 +50,9 @@ namespace OpenVic {
 			Container const& distribution,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::remove_pointer_t<typename Container::key_type> const*, godot::String const&, float, float
-			> auto make_tooltip,
+				godot::String, std::remove_pointer_t<typename Container::key_type> const*, godot::String const&, float,
+				float //
+				> auto make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
 			using namespace godot;

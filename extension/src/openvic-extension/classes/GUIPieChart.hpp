@@ -8,7 +8,7 @@
 
 namespace OpenVic {
 	class GUIPieChart : public godot::TextureRect {
-		GDCLASS(GUIPieChart, godot::TextureRect)
+		GDCLASS(GUIPieChart, godot::TextureRect);
 
 		godot::Ref<GFXPieChartTexture> gfx_pie_chart_texture;
 
