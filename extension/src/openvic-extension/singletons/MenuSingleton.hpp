@@ -8,8 +8,8 @@
 
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
 #include <openvic-simulation/types/IndexedMap.hpp>
-#include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -33,19 +33,38 @@ namespace OpenVic {
 	struct GUIScrollbar;
 
 	class MenuSingleton : public godot::Object {
-		GDCLASS(MenuSingleton, godot::Object)
+		GDCLASS(MenuSingleton, godot::Object);
 
 		static inline MenuSingleton* singleton = nullptr;
 
 	public:
-		enum ProvinceListEntry {
-			LIST_ENTRY_NONE, LIST_ENTRY_COUNTRY, LIST_ENTRY_STATE, LIST_ENTRY_PROVINCE
+		enum ProvinceListEntry { //
+			LIST_ENTRY_NONE,
+			LIST_ENTRY_COUNTRY,
+			LIST_ENTRY_STATE,
+			LIST_ENTRY_PROVINCE
 		};
 
 		enum PopSortKey {
-			SORT_NONE, SORT_SIZE, SORT_TYPE, SORT_CULTURE, SORT_RELIGION, SORT_LOCATION, SORT_MILITANCY, SORT_CONSCIOUSNESS,
-			SORT_IDEOLOGY, SORT_ISSUES, SORT_UNEMPLOYMENT, SORT_CASH, SORT_LIFE_NEEDS, SORT_EVERYDAY_NEEDS,
-			SORT_LUXURY_NEEDS, SORT_REBEL_FACTION, SORT_SIZE_CHANGE, SORT_LITERACY, MAX_SORT_KEY
+			SORT_NONE,
+			SORT_SIZE,
+			SORT_TYPE,
+			SORT_CULTURE,
+			SORT_RELIGION,
+			SORT_LOCATION,
+			SORT_MILITANCY,
+			SORT_CONSCIOUSNESS,
+			SORT_IDEOLOGY,
+			SORT_ISSUES,
+			SORT_UNEMPLOYMENT,
+			SORT_CASH,
+			SORT_LIFE_NEEDS,
+			SORT_EVERYDAY_NEEDS,
+			SORT_LUXURY_NEEDS,
+			SORT_REBEL_FACTION,
+			SORT_SIZE_CHANGE,
+			SORT_LITERACY,
+			MAX_SORT_KEY
 		};
 
 		struct population_menu_t {
@@ -102,7 +121,10 @@ namespace OpenVic {
 		};
 
 		enum TradeSettingBit {
-			TRADE_SETTING_NONE = 0, TRADE_SETTING_AUTOMATED = 1, TRADE_SETTING_BUYING = 2, TRADE_SETTING_SELLING = 4
+			TRADE_SETTING_NONE = 0,
+			TRADE_SETTING_AUTOMATED = 1,
+			TRADE_SETTING_BUYING = 2,
+			TRADE_SETTING_SELLING = 4
 		};
 
 		ordered_map<LeaderInstance const*, godot::Dictionary> cached_leader_dicts;
@@ -138,7 +160,7 @@ namespace OpenVic {
 		godot::String _get_country_name(CountryInstance const& country) const;
 		godot::String _get_country_adjective(CountryInstance const& country) const;
 
-		godot::String _make_modifier_effect_value(
+		godot::String _make_modifier_effect_value( //
 			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 		) const;
 
@@ -176,7 +198,7 @@ namespace OpenVic {
 		godot::String get_country_adjective_from_identifier(godot::String const& country_identifier) const;
 
 		/* TOOLTIP */
-		void show_tooltip(
+		void show_tooltip( //
 			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
 		);
 		void show_control_tooltip(
@@ -238,29 +260,24 @@ namespace OpenVic {
 
 		/* TRADE MENU */
 		godot::Dictionary get_trade_menu_good_categories_info() const;
-		godot::Dictionary get_trade_menu_trade_details_info(
+		godot::Dictionary get_trade_menu_trade_details_info( //
 			int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
 
 		static constexpr int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
-			const fixed_point_t stockpile_cutoff,
-			const int32_t max_slider_value
+			const fixed_point_t stockpile_cutoff, const int32_t max_slider_value
 		) {
 			// Math.log(2)/Math.log(Math.exp(Math.log(2001)/2000)) = 182.37...
 			constexpr fixed_point_t DOUBLES_AFTER_STEPS = fixed_point_t::parse_raw(11952029);
 			int32_t times_halved = 0;
-			fixed_point_t copy_plus_one = stockpile_cutoff+1;
+			fixed_point_t copy_plus_one = stockpile_cutoff + 1;
 			while (copy_plus_one >= 2) {
 				copy_plus_one /= 2;
 				times_halved++;
 			}
-			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS; //truncated
-			while (
-				calculate_trade_menu_stockpile_cutoff_amount_fp(
-					slider_value
-				) < stockpile_cutoff
-			) {
+			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS; // truncated
+			while (calculate_trade_menu_stockpile_cutoff_amount_fp(slider_value) < stockpile_cutoff) {
 				if (slider_value >= max_slider_value) {
 					return max_slider_value;
 				}

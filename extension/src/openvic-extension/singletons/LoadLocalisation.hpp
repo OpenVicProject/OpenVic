@@ -6,7 +6,7 @@
 
 namespace OpenVic {
 	class LoadLocalisation : public godot::Object {
-		GDCLASS(LoadLocalisation, godot::Object)
+		GDCLASS(LoadLocalisation, godot::Object);
 
 		static inline LoadLocalisation* _singleton = nullptr;
 

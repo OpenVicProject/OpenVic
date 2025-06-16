@@ -142,8 +142,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
 			UtilityFunctions::push_warning(
-				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
-				old_localisation, "\" to \"", godot_localisation, "\""
+				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"", old_localisation,
+				"\" to \"", godot_localisation, "\""
 			);
 		}
 	}

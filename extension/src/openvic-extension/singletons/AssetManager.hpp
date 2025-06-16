@@ -13,16 +13,16 @@
 
 namespace OpenVic {
 	class AssetManager : public godot::Object {
-		GDCLASS(AssetManager, godot::Object)
+		GDCLASS(AssetManager, godot::Object);
 
 		static inline AssetManager* _singleton = nullptr;
 
 	public:
 		enum LoadFlags {
-			LOAD_FLAG_NONE          = 0,
-			LOAD_FLAG_CACHE_IMAGE   = 1 << 0,
+			LOAD_FLAG_NONE = 0,
+			LOAD_FLAG_CACHE_IMAGE = 1 << 0,
 			LOAD_FLAG_CACHE_TEXTURE = 1 << 1,
-			LOAD_FLAG_FLIP_Y        = 1 << 2
+			LOAD_FLAG_FLIP_Y = 1 << 2
 		};
 
 	private:
@@ -53,7 +53,9 @@ namespace OpenVic {
 		 * load flag is set then the loaded image will be stored in the AssetManager's image cache for future access; if the
 		 * flip y load flag is set then the image will be flipped vertically before being returned (if the image is already
 		 * in the cache then no flipping will occur, regardless of whether it was originally flipped or not). */
-		godot::Ref<godot::Image> get_image(godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_IMAGE);
+		godot::Ref<godot::Image> get_image( //
+			godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_IMAGE
+		);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking the
 		 * AssetManager's texture cache in case it has already been loaded, and returning nullptr if image loading or texture
@@ -62,11 +64,11 @@ namespace OpenVic {
 		 * AssetManager's texture cache for future access; if the flip y load flag is set then the image will be flipped
 		 * vertically before being used to create the texture (if the image is already in the cache then no flipping will
 		 * occur, regardless of whether it was originally flipped or not). */
-		godot::Ref<godot::ImageTexture> get_texture(
+		godot::Ref<godot::ImageTexture> get_texture( //
 			godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_TEXTURE
 		);
 
-		static godot::Ref<godot::StyleBoxTexture> make_stylebox_texture(
+		static godot::Ref<godot::StyleBoxTexture> make_stylebox_texture( //
 			godot::Ref<godot::Texture2D> const& texture, godot::Vector2 const& border = {}
 		);
 
@@ -75,9 +77,9 @@ namespace OpenVic {
 		godot::Ref<godot::FontFile> get_font(godot::StringName const& name);
 
 	private:
-		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_big);    // 32x32
+		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_big); // 32x32
 		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_medium); // 24x24
-		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_small);  // 16x16
+		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_small); // 16x16
 
 		godot::Ref<GFXSpriteTexture> PROPERTY(missing_leader_texture);
 

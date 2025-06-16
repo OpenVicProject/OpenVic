@@ -6,7 +6,7 @@
 
 namespace OpenVic {
 	class GUITextureRect : public godot::TextureRect {
-		GDCLASS(GUITextureRect, godot::TextureRect)
+		GDCLASS(GUITextureRect, godot::TextureRect);
 
 		GUI_TOOLTIP_DEFINITIONS
 

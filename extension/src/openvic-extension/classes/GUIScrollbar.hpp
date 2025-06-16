@@ -16,7 +16,7 @@ namespace OpenVic {
 	struct SliderValue;
 
 	class GUIScrollbar : public godot::Control {
-		GDCLASS(GUIScrollbar, godot::Control)
+		GDCLASS(GUIScrollbar, godot::Control);
 
 		GUI_TOOLTIP_DEFINITIONS
 
@@ -119,22 +119,14 @@ namespace OpenVic {
 		float get_value_scaled() const;
 
 		void set_step_count(const int32_t new_step_count);
-		void set_scale(
-			const fixed_point_t new_offset,
-			const int32_t new_scale_numerator,
-			const int32_t new_scale_denominator
-		);
+		void set_scale(const fixed_point_t new_offset, const int32_t new_scale_numerator, const int32_t new_scale_denominator);
 		void set_range_limits(
-			const std::optional<int32_t> new_lower_range_limit,
-			const std::optional<int32_t> new_upper_range_limit
+			const std::optional<int32_t> new_lower_range_limit, const std::optional<int32_t> new_upper_range_limit
 		);
 		void set_range_limits_fp(
-			const std::optional<fixed_point_t> new_lower_range_limit,
-			const std::optional<fixed_point_t> new_upper_range_limit
+			const std::optional<fixed_point_t> new_lower_range_limit, const std::optional<fixed_point_t> new_upper_range_limit
 		);
-		void set_range_limits_and_value_from_slider_value(
-			SliderValue const& slider_value
-		);
+		void set_range_limits_and_value_from_slider_value(SliderValue const& slider_value);
 
 		/* Override the main dimension of gui_scollbar's size with the specified length. */
 		void set_length_override(real_t new_length_override);

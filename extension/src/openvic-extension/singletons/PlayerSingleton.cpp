@@ -86,8 +86,7 @@ void PlayerSingleton::set_player_country(CountryInstance const* new_player_count
 
 	if (player_country != nullptr) {
 		instance_manager->queue_game_action(
-			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), true }
+			game_action_type_t::GAME_ACTION_SET_AI, std::pair<uint64_t, bool> { player_country->get_index(), true }
 		);
 	}
 
@@ -95,8 +94,7 @@ void PlayerSingleton::set_player_country(CountryInstance const* new_player_count
 
 	if (player_country != nullptr) {
 		instance_manager->queue_game_action(
-			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), false }
+			game_action_type_t::GAME_ACTION_SET_AI, std::pair<uint64_t, bool> { player_country->get_index(), false }
 		);
 	}
 
@@ -172,8 +170,7 @@ void PlayerSingleton::toggle_paused() const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_PAUSE,
-		!instance_manager->get_simulation_clock().is_paused()
+		game_action_type_t::GAME_ACTION_SET_PAUSE, !instance_manager->get_simulation_clock().is_paused()
 	);
 }
 
@@ -182,8 +179,7 @@ void PlayerSingleton::increase_speed() const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_SPEED,
-		instance_manager->get_simulation_clock().get_simulation_speed() + 1
+		game_action_type_t::GAME_ACTION_SET_SPEED, instance_manager->get_simulation_clock().get_simulation_speed() + 1
 	);
 }
 
@@ -192,8 +188,7 @@ void PlayerSingleton::decrease_speed() const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_SPEED,
-		instance_manager->get_simulation_clock().get_simulation_speed() - 1
+		game_action_type_t::GAME_ACTION_SET_SPEED, instance_manager->get_simulation_clock().get_simulation_speed() - 1
 	);
 }
 
@@ -239,9 +234,10 @@ void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, 
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_GOOD_TRADE_ORDER, std::tuple<uint64_t, uint64_t, bool, fixed_point_t> {
+		game_action_type_t::GAME_ACTION_SET_GOOD_TRADE_ORDER,
+		std::tuple<uint64_t, uint64_t, bool, fixed_point_t> {
 			player_country->get_index(), good_index, is_selling,
-			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
+			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp()) //
 		}
 	);
 }
@@ -256,8 +252,7 @@ void PlayerSingleton::create_leader(bool is_general) const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_CREATE_LEADER,
-		std::pair<uint64_t, bool> { player_country->get_index(), is_general }
+		game_action_type_t::GAME_ACTION_CREATE_LEADER, std::pair<uint64_t, bool> { player_country->get_index(), is_general }
 	);
 }
 
@@ -266,8 +261,7 @@ void PlayerSingleton::set_can_use_leader(uint64_t leader_id, bool can_use) const
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_USE_LEADER,
-		std::pair<uint64_t, bool> { leader_id, can_use }
+		game_action_type_t::GAME_ACTION_SET_USE_LEADER, std::pair<uint64_t, bool> { leader_id, can_use }
 	);
 }
 
@@ -302,7 +296,6 @@ void PlayerSingleton::set_mobilise(bool value) const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_MOBILISE,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		game_action_type_t::GAME_ACTION_SET_MOBILISE, std::pair<uint64_t, bool> { player_country->get_index(), value }
 	);
 }

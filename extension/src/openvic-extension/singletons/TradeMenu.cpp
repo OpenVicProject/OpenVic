@@ -1,5 +1,3 @@
-#include "MenuSingleton.hpp"
-
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
@@ -7,6 +5,8 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+
+#include "MenuSingleton.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -57,15 +57,18 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 				const fixed_point_t supply = good_instance.get_total_supply_yesterday();
 				const fixed_point_t demand = good_instance.get_total_demand_yesterday();
 
-				good_dict[demand_tooltip_key] = tr(
-					demand > supply ? in_demand_localisation_key : not_in_demand_localisation_key
-				) + get_tooltip_separator() + tr(supply_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(supply, 3)
-				) + "\n" + tr(demand_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(demand, 3)
-				) + "\n" + tr(actual_bought_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(good_instance.get_quantity_traded_yesterday(), 3)
-				);
+				good_dict[demand_tooltip_key] =
+					tr(demand > supply ? in_demand_localisation_key : not_in_demand_localisation_key) +
+					get_tooltip_separator() +
+					tr(supply_localisation_key).replace(val_replace_key, Utilities::fixed_point_to_string_dp(supply, 3)) +
+					"\n" +
+					tr(demand_localisation_key).replace(val_replace_key, Utilities::fixed_point_to_string_dp(demand, 3)) +
+					"\n" +
+					tr(actual_bought_localisation_key)
+						.replace(
+							val_replace_key,
+							Utilities::fixed_point_to_string_dp(good_instance.get_quantity_traded_yesterday(), 3)
+						);
 			}
 
 			if (country != nullptr) {
@@ -106,7 +109,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	return ret;
 }
 
-Dictionary MenuSingleton::get_trade_menu_trade_details_info(
+Dictionary MenuSingleton::get_trade_menu_trade_details_info( //
 	int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
 ) const {
 	static const StringName trade_detail_good_name_key = "trade_detail_good_name";
@@ -151,8 +154,8 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 			ret[trade_detail_price_history_key] = std::move(price_history);
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to resize price history array to the correct size (",
-				static_cast<int64_t>(good_price_history.size()), ")"
+				"Failed to resize price history array to the correct size (", static_cast<int64_t>(good_price_history.size()),
+				")"
 			);
 		}
 	}
@@ -167,8 +170,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	ret[trade_detail_is_selling_key] = good_data.is_selling;
 	if (stockpile_cutoff_slider != nullptr) {
 		const int32_t index = calculate_slider_value_from_trade_menu_stockpile_cutoff(
-			good_data.stockpile_cutoff,
-			stockpile_cutoff_slider->get_max_value_scaled()
+			good_data.stockpile_cutoff, stockpile_cutoff_slider->get_max_value_scaled()
 		);
 		stockpile_cutoff_slider->set_scaled_value(index);
 	}
@@ -220,8 +222,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			static const String top_producer_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: %s";
 
 			tooltip += vformat(
-				top_producer_template_string,
-				Utilities::std_to_godot_string(country->get_identifier()),
+				top_producer_template_string, Utilities::std_to_godot_string(country->get_identifier()),
 				_get_country_name(*country),
 				Utilities::fixed_point_to_string_dp(fixed_point_t::parse(1000) / static_cast<int32_t>(index + 1), 2)
 			);
@@ -264,54 +265,38 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 		}
 
 		good_trading_yesterday_tooltips.push_back(
-			tooltip.replace(
-				money_replace_key, Utilities::fixed_point_to_string_dp(stockpile_change_yesterday, 2)
-			).replace(
-				units_replace_key, Utilities::fixed_point_to_string_dp(stockpile_change_yesterday * good.get_price(), 2)
-			)
+			tooltip.replace(money_replace_key, Utilities::fixed_point_to_string_dp(stockpile_change_yesterday, 2))
+				.replace(
+					units_replace_key, Utilities::fixed_point_to_string_dp(stockpile_change_yesterday * good.get_price(), 2)
+				)
 		);
 
 		const float good_index = good.get_good_definition().get_index();
 
 		if (good_data.government_needs != fixed_point_t::_0) {
-			government_needs.push_back({
-				good_index,
-				good_data.government_needs.to_float()
-			});
+			government_needs.push_back({ good_index, good_data.government_needs.to_float() });
 		}
 
 		if (good_data.factory_demand != fixed_point_t::_0) {
-			factory_needs.push_back({
-				good_index,
-				good_data.factory_demand.to_float()
-			});
+			factory_needs.push_back({ good_index, good_data.factory_demand.to_float() });
 		}
 
 		if (good_data.pop_demand != fixed_point_t::_0) {
-			pop_needs.push_back({
-				good_index, good_data.pop_demand.to_float()
-			});
+			pop_needs.push_back({ good_index, good_data.pop_demand.to_float() });
 		}
 
 		market_activity.push_back({
-			good_index,
-			good_data.exported_amount.abs().to_float(),
-			(good_data.exported_amount * good.get_price()).to_float()
+			good_index, good_data.exported_amount.abs().to_float(),
+			(good_data.exported_amount * good.get_price()).to_float() //
 		});
 
 		stockpile.push_back({
-			good_index,
-			good_data.stockpile_amount.to_float(),
-			good_data.stockpile_change_yesterday.to_float()
+			good_index, good_data.stockpile_amount.to_float(),
+			good_data.stockpile_change_yesterday.to_float() //
 		});
 
 		// TODO - replace with actual common market data
-		common_market.push_back({
-			good_index,
-			good_index * 100,
-			-good_index,
-			good_index * 10
-		});
+		common_market.push_back({ good_index, good_index * 100, -good_index, good_index * 10 });
 	}
 
 	ret[good_trading_yesterday_tooltips_key] = std::move(good_trading_yesterday_tooltips);

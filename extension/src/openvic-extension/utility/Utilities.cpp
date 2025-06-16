@@ -15,10 +15,10 @@ using namespace OpenVic;
  * or normal integer string if less than the smallest suffix. */
 String Utilities::int_to_string_suffixed(int64_t val) {
 	static const std::vector<std::pair<int64_t, String>> suffixes {
-		{ 1'000'000'000'000, "T" },
+		{ 1'000'000'000'000, "T" }, //
 		{ 1'000'000'000, "B" },
 		{ 1'000'000, "M" },
-		{ 1'000, "k" }
+		{ 1'000, "k" } //
 	};
 	static constexpr int64_t decimal_places_multiplier = 100;
 	const bool negative = val < 0;
@@ -29,8 +29,8 @@ String Utilities::int_to_string_suffixed(int64_t val) {
 		if (val >= suffix_val) {
 			const int64_t whole = val / suffix_val;
 			const int64_t frac = (val * decimal_places_multiplier / suffix_val) % decimal_places_multiplier;
-			return (negative ? "-" : "") + String::num_int64(whole) + "." +
-				(frac < 10 ? "0" : "") + String::num_int64(frac) + suffix_str;
+			return (negative ? "-" : "") + String::num_int64(whole) + "." + (frac < 10 ? "0" : "") + String::num_int64(frac) +
+				suffix_str;
 		}
 	}
 	return (negative ? "-" : "") + String::num_int64(val);
@@ -107,8 +107,8 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 }
 
 String Utilities::date_to_string(Date date) {
-	static const String date_template_string = String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" +
-		Date::SEPARATOR_CHARACTER + "%d";
+	static const String date_template_string =
+		String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" + Date::SEPARATOR_CHARACTER + "%d";
 
 	return vformat(date_template_string, date.get_year(), date.get_month(), date.get_day());
 }
@@ -197,7 +197,9 @@ Ref<Image> Utilities::make_solid_colour_image(Color const& colour, int32_t width
 	return result;
 }
 
-Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int32_t width, int32_t height, Image::Format format) {
+Ref<ImageTexture> Utilities::make_solid_colour_texture( //
+	Color const& colour, int32_t width, int32_t height, Image::Format format
+) {
 	const Ref<Image> image = make_solid_colour_image(colour, width, height, format);
 	ERR_FAIL_NULL_V(image, nullptr);
 	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);

@@ -6,7 +6,7 @@
 
 namespace OpenVic {
 	class Checksum : public godot::Object {
-		GDCLASS(Checksum, godot::Object)
+		GDCLASS(Checksum, godot::Object);
 
 		static inline Checksum* _singleton = nullptr;
 

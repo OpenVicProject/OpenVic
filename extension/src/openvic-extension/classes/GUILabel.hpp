@@ -13,7 +13,7 @@
 
 namespace OpenVic {
 	class GUILabel : public godot::Control {
-		GDCLASS(GUILabel, godot::Control)
+		GDCLASS(GUILabel, godot::Control);
 
 		GUI_TOOLTIP_DEFINITIONS
 
@@ -76,7 +76,7 @@ namespace OpenVic {
 		/* Return the name of the GUI::Text, or an empty String if it's null. */
 		godot::String get_gui_text_name() const;
 		/* Set the GUI::Text. */
-		godot::Error set_gui_text(
+		godot::Error set_gui_text( //
 			GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes = nullptr
 		);
 
@@ -115,22 +115,16 @@ namespace OpenVic {
 		void _update_lines();
 
 		godot::String generate_substituted_text(godot::String const& base_text) const;
-		std::pair<godot::String, colour_instructions_t> generate_display_text_and_colour_instructions(
+		std::pair<godot::String, colour_instructions_t> generate_display_text_and_colour_instructions( //
 			godot::String const& substituted_text
 		) const;
-		std::vector<line_t> generate_lines_and_segments(
+		std::vector<line_t> generate_lines_and_segments( //
 			godot::String const& display_text, colour_instructions_t const& colour_instructions
 		) const;
-		void separate_lines(
-			godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines
-		) const;
-		void separate_currency_segments(
-			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		void separate_lines(godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines) const;
+		void separate_currency_segments(godot::String const& string, godot::Color const& colour, line_t& line) const;
 		static flag_segment_t make_flag_segment(godot::String const& identifier);
-		void separate_flag_segments(
-			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		void separate_flag_segments(godot::String const& string, godot::Color const& colour, line_t& line) const;
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;
 		void adjust_to_content_size();
 	};
