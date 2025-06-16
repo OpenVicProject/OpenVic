@@ -13,12 +13,11 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	 * and so can update it without creating and setting a new image, or not. */
-	bool can_update = button_image.is_valid() && button_image->get_size() == overlay_image->get_size()
-		&& button_image->get_format() == overlay_image->get_format();
+	bool can_update = button_image.is_valid() && button_image->get_size() == overlay_image->get_size() &&
+		button_image->get_format() == overlay_image->get_format();
 	if (!can_update) {
-		button_image = Image::create(
-			overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format()
-		);
+		button_image =
+			Image::create(overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format());
 		ERR_FAIL_NULL_V(button_image, FAILED);
 	}
 
@@ -33,10 +32,9 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 	if (mask_image.is_valid() && flag_image.is_valid() && flag_image_rect.has_area()) {
 		const Vector2i centre_translation = (mask_image->get_size() - button_image->get_size()) / 2;
 
-		for (
-			Vector2i combined_image_point { 0, 0 };
-			combined_image_point.y < button_image->get_height();
-			++combined_image_point.y
+		for (Vector2i combined_image_point { 0, 0 }; //
+			 combined_image_point.y < button_image->get_height(); //
+			 ++combined_image_point.y //
 		) {
 
 			for (combined_image_point.x = 0; combined_image_point.x < button_image->get_width(); ++combined_image_point.x) {
@@ -46,10 +44,8 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 				// Translate to mask_image coordinates, keeping the centres of each image aligned.
 				const Vector2i mask_image_point = combined_image_point + centre_translation;
 
-				if (
-					0 <= mask_image_point.x && mask_image_point.x < mask_image->get_width() &&
-					0 <= mask_image_point.y && mask_image_point.y < mask_image->get_height()
-				) {
+				if (0 <= mask_image_point.x && mask_image_point.x < mask_image->get_width() && 0 <= mask_image_point.y &&
+					mask_image_point.y < mask_image->get_height()) {
 					const Color mask_image_colour = mask_image->get_pixelv(mask_image_point);
 
 					// Rescale from mask_image to flag_image coordinates.
@@ -152,7 +148,8 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_fl
 
 	GFX::MaskedFlag const* new_masked_flag = sprite->cast_to<GFX::MaskedFlag>();
 	ERR_FAIL_NULL_V_MSG(
-		new_masked_flag, FAILED, vformat(
+		new_masked_flag, FAILED,
+		vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_masked_flag_name,
 			Utilities::std_to_godot_string(sprite->get_type()),
 			Utilities::std_to_godot_string(GFX::MaskedFlag::get_type_static())

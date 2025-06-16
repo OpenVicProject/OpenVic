@@ -48,9 +48,10 @@ void GUIScrollbar::_bind_methods() {
 	OV_BIND_METHOD(GUIScrollbar::get_range_limit_min);
 	OV_BIND_METHOD(GUIScrollbar::get_range_limit_max);
 	OV_BIND_METHOD(GUIScrollbar::set_range_limits, { "new_range_limit_min", "new_range_limit_max", "signal" }, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::set_range_limits_and_value, {
-		"new_range_limit_min", "new_range_limit_max", "new_value", "signal"
-	}, DEFVAL(true));
+	OV_BIND_METHOD(
+		GUIScrollbar::set_range_limits_and_value, { "new_range_limit_min", "new_range_limit_max", "new_value", "signal" },
+		DEFVAL(true)
+	);
 	OV_BIND_METHOD(GUIScrollbar::set_limits, { "new_min_value", "new_max_value", "signal" }, DEFVAL(true));
 
 	OV_BIND_METHOD(GUIScrollbar::get_length_override);
@@ -108,9 +109,7 @@ bool GUIScrollbar::_update_button_change() {
 }
 
 float GUIScrollbar::_value_to_ratio(int32_t val) const {
-	return min_value != max_value
-		? static_cast<float>(val - min_value) / (max_value - min_value)
-		: 0.0f;
+	return min_value != max_value ? static_cast<float>(val - min_value) / (max_value - min_value) : 0.0f;
 }
 
 void GUIScrollbar::_calculate_rects() {
@@ -187,8 +186,8 @@ void GUIScrollbar::_calculate_rects() {
 			 * They have a row of transparent pixels at the top to account for this, so we must also draw them
 			 * one pixel taller to avoid having a gap between the track and the more button. */
 			track_rect = {
-				{ (average_button_width - track_width) / 2.0f, slider_start - 1.0f },
-				{ track_width, slider_distance + 1.0f }
+				{ (average_button_width - track_width) / 2.0f, slider_start - 1.0f }, //
+				{ track_width, slider_distance + 1.0f } //
 			};
 		} else {
 			track_rect = {};
@@ -199,7 +198,7 @@ void GUIScrollbar::_calculate_rects() {
 
 			slider_rect = {
 				{ (average_button_width - slider_size.width) / 2.0f, 0.0f },
-				slider_size
+				slider_size //
 			};
 
 			slider_distance -= slider_rect.size.height;
@@ -247,8 +246,8 @@ Error GUIScrollbar::_constrain_range_limits() {
 
 		const int axis = orientation == HORIZONTAL ? 0 : 1;
 		range_limit_min_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_min);
-		range_limit_max_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_max)
-			+ slider_rect.size[axis] / 2.0f;
+		range_limit_max_rect.position[axis] =
+			slider_start + slider_distance * _value_to_ratio(range_limit_max) + slider_rect.size[axis] / 2.0f;
 
 		return err;
 	} else {
@@ -376,36 +375,47 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	/* _Element is either GUI::Button or GUI::Icon, both of which have their own
 	 * separately defined get_sprite(), hence the need for a template. */
 	const auto set_texture = [&gui_scrollbar_name]<typename _Element>(
-		String const& target, _Element const* element, Ref<GFXSpriteTexture>& texture
-	) -> bool {
-		ERR_FAIL_NULL_V_MSG(element, false, vformat(
-			"Invalid %s element for GUIScrollbar %s - null!", target, gui_scrollbar_name
-		));
+								 String const& target, _Element const* element, Ref<GFXSpriteTexture>& texture
+							 ) -> bool {
+		ERR_FAIL_NULL_V_MSG(
+			element, false, vformat("Invalid %s element for GUIScrollbar %s - null!", target, gui_scrollbar_name)
+		);
 		const String element_name = Utilities::std_to_godot_string(element->get_name());
 
 		/* Get Sprite, convert to TextureSprite, use to make a GFXSpriteTexture. */
 		GFX::Sprite const* sprite = element->get_sprite();
-		ERR_FAIL_NULL_V_MSG(sprite, false, vformat(
-			"Invalid %s element %s for GUIScrollbar %s - sprite is null!", target, element_name, gui_scrollbar_name
-		));
+		ERR_FAIL_NULL_V_MSG(
+			sprite, false,
+			vformat("Invalid %s element %s for GUIScrollbar %s - sprite is null!", target, element_name, gui_scrollbar_name)
+		);
 		GFX::TextureSprite const* texture_sprite = sprite->cast_to<GFX::TextureSprite>();
-		ERR_FAIL_NULL_V_MSG(texture_sprite, false, vformat(
-			"Invalid %s element %s for GUIScrollbar %s - sprite type is %s with base type %s, expected base %s!", target,
-			element_name, gui_scrollbar_name, Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(sprite->get_base_type()),
-			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())
-		));
+		ERR_FAIL_NULL_V_MSG(
+			texture_sprite, false,
+			vformat(
+				"Invalid %s element %s for GUIScrollbar %s - sprite type is %s with base type %s, expected base %s!", target,
+				element_name, gui_scrollbar_name, Utilities::std_to_godot_string(sprite->get_type()),
+				Utilities::std_to_godot_string(sprite->get_base_type()),
+				Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())
+			)
+		);
 		texture = GFXSpriteTexture::make_gfx_sprite_texture(texture_sprite);
-		ERR_FAIL_NULL_V_MSG(texture, false, vformat(
-			"Failed to make GFXSpriteTexture from %s element %s for GUIScrollbar %s!", target, element_name, gui_scrollbar_name
-		));
+		ERR_FAIL_NULL_V_MSG(
+			texture, false,
+			vformat(
+				"Failed to make GFXSpriteTexture from %s element %s for GUIScrollbar %s!", target, element_name,
+				gui_scrollbar_name
+			)
+		);
 		if constexpr (std::is_same_v<_Element, GUI::Button>) {
 			using enum GFXButtonStateTexture::ButtonState;
 			for (GFXButtonStateTexture::ButtonState state : { HOVER, PRESSED }) {
-				ERR_FAIL_NULL_V_MSG(texture->get_button_state_texture(state), false, vformat(
-					"Failed to generate %s texture for %s element %s for GUIScrollbar %s!",
-					GFXButtonStateTexture::button_state_to_name(state), target, element_name, gui_scrollbar_name
-				));
+				ERR_FAIL_NULL_V_MSG(
+					texture->get_button_state_texture(state), false,
+					vformat(
+						"Failed to generate %s texture for %s element %s for GUIScrollbar %s!",
+						GFXButtonStateTexture::button_state_to_name(state), target, element_name, gui_scrollbar_name
+					)
+				);
 			}
 		}
 		return true;
@@ -433,8 +443,8 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	_calculate_rects();
 
 	ret &= set_step_size_and_limits_fp(
-		gui_scrollbar->get_step_size(), gui_scrollbar->get_min_value(), gui_scrollbar->get_max_value()
-	) == OK;
+			   gui_scrollbar->get_step_size(), gui_scrollbar->get_min_value(), gui_scrollbar->get_max_value()
+		   ) == OK;
 
 	return ERR(ret);
 }
@@ -443,9 +453,7 @@ Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const
 	if (gui_scene.is_empty() && gui_scrollbar_name.is_empty()) {
 		return set_gui_scrollbar(nullptr);
 	}
-	ERR_FAIL_COND_V_MSG(
-		gui_scene.is_empty() || gui_scrollbar_name.is_empty(), FAILED, "GUI scene or scrollbar name is empty!"
-	);
+	ERR_FAIL_COND_V_MSG(gui_scene.is_empty() || gui_scrollbar_name.is_empty(), FAILED, "GUI scene or scrollbar name is empty!");
 
 	GUI::Element const* gui_element = UITools::get_gui_element(gui_scene, gui_scrollbar_name);
 	ERR_FAIL_NULL_V(gui_element, FAILED);
@@ -527,21 +535,13 @@ Error GUIScrollbar::set_range_limits_and_value_fp(
 	fixed_point_t new_range_limit_min, fixed_point_t new_range_limit_max, fixed_point_t new_value, bool signal
 ) {
 	return set_range_limits_and_value(
-		new_range_limit_min / step_size,
-		new_range_limit_max / step_size,
-		new_value / step_size,
-		signal
+		new_range_limit_min / step_size, new_range_limit_max / step_size, new_value / step_size, signal
 	);
 }
 
-Error GUIScrollbar::set_range_limits_and_value_from_slider_value(
-	SliderValue const& slider_value, int32_t scale, bool signal
-) {
+Error GUIScrollbar::set_range_limits_and_value_from_slider_value(SliderValue const& slider_value, int32_t scale, bool signal) {
 	return set_range_limits_and_value_fp(
-		slider_value.get_min() * scale,
-		slider_value.get_max() * scale,
-		slider_value.get_value() * scale,
-		signal
+		slider_value.get_min() * scale, slider_value.get_max() * scale, slider_value.get_value() * scale, signal
 	);
 }
 
@@ -551,8 +551,8 @@ Error GUIScrollbar::set_step_size_and_limits_fp(fixed_point_t new_step_size, int
 	step_size = new_step_size;
 	if (step_size <= 0) {
 		UtilityFunctions::push_error(
-			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
-			get_name(), " - not positive! Defaulting to 1."
+			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ", get_name(),
+			" - not positive! Defaulting to 1."
 		);
 		step_size = fixed_point_t::_1();
 		ret = false;
@@ -664,7 +664,7 @@ void GUIScrollbar::_notification(int what) {
 
 	switch (what) {
 	case NOTIFICATION_VISIBILITY_CHANGED:
-	case NOTIFICATION_MOUSE_EXIT: {
+	case NOTIFICATION_MOUSE_EXIT:		  {
 		hover_slider = false;
 		hover_track = false;
 		hover_less = false;

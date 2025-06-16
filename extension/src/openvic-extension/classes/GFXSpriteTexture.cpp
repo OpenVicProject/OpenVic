@@ -29,7 +29,7 @@ void GFXSpriteTexture::_bind_methods() {
 
 GFXSpriteTexture::GFXSpriteTexture() : icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
-Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(
+Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture( //
 	GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon
 ) {
 	Ref<GFXSpriteTexture> texture;
@@ -96,7 +96,8 @@ Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sp
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
-		new_texture_sprite, FAILED, vformat(
+		new_texture_sprite, FAILED,
+		vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
 			Utilities::std_to_godot_string(sprite->get_type()),
 			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())

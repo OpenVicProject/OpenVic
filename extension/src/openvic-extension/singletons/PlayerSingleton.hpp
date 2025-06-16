@@ -10,7 +10,7 @@ namespace OpenVic {
 	struct GUIScrollbar;
 
 	class PlayerSingleton : public godot::Object {
-		GDCLASS(PlayerSingleton, godot::Object)
+		GDCLASS(PlayerSingleton, godot::Object);
 
 		static inline PlayerSingleton* singleton = nullptr;
 

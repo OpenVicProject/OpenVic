@@ -8,7 +8,7 @@
 
 namespace OpenVic {
 	class GFXSpriteTexture : public GFXButtonStateHavingTexture {
-		GDCLASS(GFXSpriteTexture, GFXButtonStateHavingTexture)
+		GDCLASS(GFXSpriteTexture, GFXButtonStateHavingTexture);
 
 		/* PROPERTY automatically defines getter functions:
 		 * - get_gfx_texture_sprite
@@ -26,7 +26,7 @@ namespace OpenVic {
 
 		/* Create a GFXSpriteTexture using the specified GFX::TextureSprite and icon index. Returns nullptr if
 		 * set_gfx_texture_sprite fails. */
-		static godot::Ref<GFXSpriteTexture> make_gfx_sprite_texture(
+		static godot::Ref<GFXSpriteTexture> make_gfx_sprite_texture( //
 			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
@@ -35,13 +35,13 @@ namespace OpenVic {
 
 		/* Set the GFX::TextureSprite, load its texture as an atlas, check if it is an IconTextureSprite,
 		 * and if so set its icon count and the current displayed icon. */
-		godot::Error set_gfx_texture_sprite(
+		godot::Error set_gfx_texture_sprite( //
 			GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
 		/* Search for a GFX::TextureSprite with the specified name and,
 		 * if successful, call set_gfx_texture_sprite to set it and its icon. */
-		godot::Error set_gfx_texture_sprite_name(
+		godot::Error set_gfx_texture_sprite_name( //
 			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 

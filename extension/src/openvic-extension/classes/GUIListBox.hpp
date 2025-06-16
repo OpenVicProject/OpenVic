@@ -8,7 +8,7 @@
 
 namespace OpenVic {
 	class GUIListBox : public godot::Container {
-		GDCLASS(GUIListBox, godot::Container)
+		GDCLASS(GUIListBox, godot::Container);
 
 		GUI::ListBox const* PROPERTY(gui_listbox, nullptr);
 

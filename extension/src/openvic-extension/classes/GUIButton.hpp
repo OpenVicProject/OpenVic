@@ -9,7 +9,7 @@
 
 namespace OpenVic {
 	class GUIButton : public godot::Button {
-		GDCLASS(GUIButton, godot::Button)
+		GDCLASS(GUIButton, godot::Button);
 
 		GUI_TOOLTIP_DEFINITIONS
 
