@@ -444,10 +444,7 @@ MenuSingleton* MenuSingleton::get_singleton() {
 	return singleton;
 }
 
-MenuSingleton::MenuSingleton() : population_menu {
-	.pop_type_sort_cache { nullptr }, .culture_sort_cache { nullptr }, .religion_sort_cache { nullptr },
-	.province_sort_cache { nullptr }, .rebel_type_sort_cache { nullptr }
-} {
+MenuSingleton::MenuSingleton() {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }

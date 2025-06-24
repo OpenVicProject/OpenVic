@@ -557,7 +557,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 			}
 		);
 
-		cache.set_keys(&items);
+		cache.set_keys(items);
 		for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
 			cache[sorted_items[idx]] = idx;
 		}
