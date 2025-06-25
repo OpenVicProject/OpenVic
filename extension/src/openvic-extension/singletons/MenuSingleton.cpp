@@ -200,7 +200,7 @@ String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifi
 	String result;
 
 	for (auto const& [effect, value] : modifier.get_values()) {
-		if (value != fixed_point_t::_0()) {
+		if (value != fixed_point_t::_0) {
 			result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + ": " +
 				_make_modifier_effect_value_coloured(*effect, value, true);
 		}
@@ -663,14 +663,14 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			ret[province_info_rgo_employment_percentage_key] = 100.0f;
 		} else {
 			ret[province_info_rgo_employment_percentage_key] =
-				(rgo.get_total_employees_count_cache() * fixed_point_t::_100() / max_employee_count).to_float();
+				(rgo.get_total_employees_count_cache() * fixed_point_t::_100 / max_employee_count).to_float();
 		}
 
 		ModifierEffectCache const& modifier_effect_cache =
 			game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
 
-		fixed_point_t output_from_workers = fixed_point_t::_1(), throughput_from_workers = fixed_point_t::_0(),
-			output_multiplier = fixed_point_t::_1(), throughput_multiplier = fixed_point_t::_1();
+		fixed_point_t output_from_workers = 1, throughput_from_workers = 0,
+			output_multiplier = 1, throughput_multiplier = 1;
 		String size_string, output_string, throughput_string;
 
 		static const String employee_effect_template_string = "\n  -%s: " + GUILabel::get_colour_marker() + "Y%s" +
@@ -692,7 +692,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				fixed_point_t effect_value =
 					owner_job->get_effect_multiplier() * state->get_pop_type_distribution()[owner_pop_type];
 
-				if (effect_value != fixed_point_t::_0()) {
+				if (effect_value != fixed_point_t::_0) {
 					effect_value /= state->get_total_population();
 				}
 
@@ -750,7 +750,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 				const fixed_point_t effect_multiplier = job.get_effect_multiplier();
 				fixed_point_t relative_to_workforce = fixed_point_t::parse(employees_of_type) / max_employee_count;
-				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1()
+				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1
 					? relative_to_workforce
 					: effect_multiplier * std::min(relative_to_workforce, job.get_amount());
 
@@ -843,7 +843,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 			static const String size_modifier_template_string = "%s: %s\n";
 
-			if (size_from_terrain != fixed_point_t::_0()) {
+			if (size_from_terrain != fixed_point_t::_0) {
 				size_string = vformat(
 					size_modifier_template_string,
 					tr(Utilities::std_to_godot_string(province->get_terrain_type()->get_identifier())),
@@ -853,7 +853,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				);
 			}
 
-			if (size_from_province != fixed_point_t::_0()) {
+			if (size_from_province != fixed_point_t::_0) {
 				static const StringName rgo_size_localisation_key = "RGO_SIZE";
 
 				size_string += vformat(
@@ -896,7 +896,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				size_from_tech += province->get_modifier_effect_value(*modifier_effect_cache.get_mine_rgo_size_global());
 			}
 
-			if (size_from_tech != fixed_point_t::_0()) {
+			if (size_from_tech != fixed_point_t::_0) {
 				static const StringName from_technology_localisation_key = "employ_from_tech";
 
 				size_string += tr(from_technology_localisation_key) + _make_modifier_effect_value_coloured(
@@ -906,7 +906,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 			static const String tech_modifier_template_string = modifier_effect_contributions_prefix + String { "%s: %s" };
 
-			if (output_from_tech != fixed_point_t::_0()) {
+			if (output_from_tech != fixed_point_t::_0) {
 				output_multiplier += output_from_tech;
 
 				static const StringName rgo_output_tech_localisation_key = "RGO_OUTPUT_TECH";
@@ -920,7 +920,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				);
 			}
 
-			if (throughput_from_tech != fixed_point_t::_0()) {
+			if (throughput_from_tech != fixed_point_t::_0) {
 				throughput_multiplier += throughput_from_tech;
 
 				static const StringName rgo_throughput_tech_localisation_key = "RGO_THROUGHPUT_TECH";
@@ -1343,7 +1343,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		const fixed_point_t research_points_modifier_from_tech =
 			country->get_modifier_effect_value(*modifier_effect_cache.get_increase_research());
-		if (research_points_modifier_from_tech != fixed_point_t::_0()) {
+		if (research_points_modifier_from_tech != fixed_point_t::_0) {
 			static const StringName from_technology_localisation_key = "FROM_TECHNOLOGY";
 			research_points_tooltip += "\n" + tr(from_technology_localisation_key) + ": " +
 				_make_modifier_effect_value_coloured(

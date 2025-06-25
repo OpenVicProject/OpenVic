@@ -304,7 +304,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	UnitType const* unit_type = definition_manager.get_military_manager().get_unit_type_manager().get_unit_type_by_index(0);
 	ProvinceInstance const* location = PlayerSingleton::get_singleton()->get_player_country()->get_capital();
 	const Date eta { 1900 };
-	const fixed_point_t progress = fixed_point_t::_0_50();
+	const fixed_point_t progress = fixed_point_t::_0_50;
 	const ordered_map<GoodDefinition const*, std::pair<fixed_point_t, fixed_point_t>> required_goods {
 		{
 			good_definition_manager.get_good_definition_by_index(0),
@@ -425,7 +425,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	{
 		String organisation_regain_tooltip = base_value_percent_tooltip;
 		const fixed_point_t morale = country->get_modifier_effect_value(*modifier_effect_cache.get_morale_global());
-		if (morale != fixed_point_t::_0()) {
+		if (morale != fixed_point_t::_0) {
 			organisation_regain_tooltip += from_technology_tooltip + _make_modifier_effect_value_coloured(
 				*modifier_effect_cache.get_morale_global(), morale, true
 			);
@@ -452,7 +452,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		const fixed_point_t regular_experience_level = country->get_modifier_effect_value(
 			*modifier_effect_cache.get_regular_experience_level()
 		);
-		if (regular_experience_level != fixed_point_t::_0()) {
+		if (regular_experience_level != fixed_point_t::_0) {
 			unit_start_experience_tooltip += from_technology_tooltip + _make_modifier_effect_value_coloured(
 				*modifier_effect_cache.get_regular_experience_level(), regular_experience_level, true
 			);
@@ -488,7 +488,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		const fixed_point_t combat_width = country->get_modifier_effect_value(
 			*modifier_effect_cache.get_combat_width_additive()
 		);
-		if (combat_width != fixed_point_t::_0()) {
+		if (combat_width != fixed_point_t::_0) {
 			combat_width_tooltip += from_technology_tooltip + GUILabel::get_colour_marker() + "G" +
 				String::num_int64(combat_width.to_int64_t());
 		}
@@ -530,7 +530,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			)
 		);
 
-		if (mobilisation_size_from_tech != fixed_point_t::_0()) {
+		if (mobilisation_size_from_tech != fixed_point_t::_0) {
 			military_info_mobilisation_size_tooltip += "\n" + tr(mobilisation_size_tech_tooltip_localisation_key).replace(
 				mobilisation_size_tooltip_replace_value_key, _make_modifier_effect_value_coloured(
 					*modifier_effect_cache.get_mobilisation_size_country(), mobilisation_size_from_tech, false
@@ -560,13 +560,13 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			*modifier_effect_cache.get_mobilisation_economy_impact_tech()
 		);
 
-		if (research_contribution != fixed_point_t::_0()) {
+		if (research_contribution != fixed_point_t::_0) {
 			static const StringName research_contribution_negative_key = "MOB_ECO_IMPACT";
 			static const StringName research_contribution_positive_key = "MOB_ECO_PENALTY";
 			static const String replace_value_key = "$VALUE$";
 
 			mobilisation_economy_impact_tooltip = tr(
-				research_contribution < fixed_point_t::_0()
+				research_contribution < fixed_point_t::_0
 					? research_contribution_negative_key
 					: research_contribution_positive_key
 			).replace(

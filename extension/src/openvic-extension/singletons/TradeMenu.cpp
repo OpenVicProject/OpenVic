@@ -279,21 +279,21 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 
 		const float good_index = good.get_good_definition().get_index();
 
-		if (good_data.government_needs != fixed_point_t::_0()) {
+		if (good_data.government_needs != fixed_point_t::_0) {
 			government_needs.push_back({
 				good_index,
 				good_data.government_needs.to_float()
 			});
 		}
 
-		if (good_data.factory_demand != fixed_point_t::_0()) {
+		if (good_data.factory_demand != fixed_point_t::_0) {
 			factory_needs.push_back({
 				good_index,
 				good_data.factory_demand.to_float()
 			});
 		}
 
-		if (good_data.pop_demand != fixed_point_t::_0()) {
+		if (good_data.pop_demand != fixed_point_t::_0) {
 			pop_needs.push_back({
 				good_index, good_data.pop_demand.to_float()
 			});
