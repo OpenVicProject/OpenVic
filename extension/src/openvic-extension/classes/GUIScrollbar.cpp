@@ -554,7 +554,7 @@ Error GUIScrollbar::set_step_size_and_limits_fp(fixed_point_t new_step_size, int
 			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
 			get_name(), " - not positive! Defaulting to 1."
 		);
-		step_size = fixed_point_t::_1();
+		step_size = 1;
 		ret = false;
 	}
 
