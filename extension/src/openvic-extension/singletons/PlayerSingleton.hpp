@@ -2,6 +2,8 @@
 
 #include <godot_cpp/classes/object.hpp>
 
+#include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/utility/Getters.hpp>
 
 namespace OpenVic {
@@ -48,6 +50,15 @@ namespace OpenVic {
 		void expand_selected_province_building(int32_t building_index) const;
 
 		// Budget
+		void set_administration_spending_slider_value(fixed_point_t const value) const;
+		void set_education_spending_slider_value(fixed_point_t const value) const;
+		void set_military_spending_slider_value(fixed_point_t const value) const;
+		void set_social_spending_slider_value(fixed_point_t const value) const;
+		void set_national_stockpile_army_spending_slider_value(fixed_point_t const value) const;
+		void set_national_stockpile_navy_spending_slider_value(fixed_point_t const value) const;
+		void set_national_stockpile_construction_spending_slider_value(fixed_point_t const value) const;
+		void set_strata_tax_rate_slider_value(Strata const& strata, fixed_point_t const value) const;
+		void set_tariff_rate_slider_value(fixed_point_t const value) const;
 
 		// Technology
 

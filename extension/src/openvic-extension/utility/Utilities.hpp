@@ -38,6 +38,8 @@ namespace OpenVic::Utilities {
 
 	// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 	godot::String float_to_string_dp_dynamic(float val);
+	godot::String cash_to_string_dp_dynamic(fixed_point_t val);
+	godot::String format_with_currency(godot::String const& text);
 
 	constexpr real_t to_real_t(std::floating_point auto val) {
 		return static_cast<real_t>(val);
