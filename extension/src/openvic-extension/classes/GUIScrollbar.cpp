@@ -295,6 +295,7 @@ Vector2 GUIScrollbar::_get_minimum_size() const {
 
 void GUIScrollbar::emit_value_changed() {
 	emit_signal(signal_value_changed(), value);
+	value_changed();
 }
 
 Error GUIScrollbar::reset() {

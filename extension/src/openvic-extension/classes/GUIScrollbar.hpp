@@ -7,6 +7,7 @@
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include "openvic-simulation/types/Signal.hpp"
 
 namespace OpenVic {
 	struct SliderValue;
@@ -85,6 +86,7 @@ namespace OpenVic {
 
 	public:
 		static godot::StringName const& signal_value_changed();
+		mutable signal_property<GUIScrollbar> value_changed;
 
 		GUIScrollbar();
 
