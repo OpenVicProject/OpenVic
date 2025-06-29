@@ -4,10 +4,12 @@
 
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
+#include <openvic-simulation/pop/PopType.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/components/budget/BudgetMenu.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -429,6 +431,9 @@ void MenuSingleton::_bind_methods() {
 
 	/* MILITARY MENU */
 	OV_BIND_METHOD(MenuSingleton::get_military_menu_info);
+
+	/* BUDGET MENU */
+	OV_BIND_METHOD(MenuSingleton::link_budget_menu_to_cpp, { "godot_budget_menu" });
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1513,6 +1518,20 @@ String MenuSingleton::get_longform_date() const {
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	return Utilities::date_to_formatted_string(instance_manager->get_today(), true);
+}
+
+/* BUDGET MENU */
+void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_menu) {
+	ERR_FAIL_NULL(godot_budget_menu);
+	GameSingleton& game_singleton = *GameSingleton::get_singleton();
+	BudgetMenu* old_instance = budget_menu.get();
+	if (old_instance != nullptr) {
+		game_singleton.gamestate_updated.disconnect(&BudgetMenu::update, old_instance);
+	}
+
+	std::vector<Strata> const& strata_keys = game_singleton.get_definition_manager().get_pop_manager().get_stratas();
+	budget_menu = std::make_unique<BudgetMenu>(*godot_budget_menu, strata_keys);
+	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
 }
 
 /* Find/Search Panel */

@@ -211,6 +211,37 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 }
 
 // Budget
+#define SET_SLIDER_GAME_ACTION(value_name, game_action_name) \
+void PlayerSingleton::set_##value_name##_slider_value(fixed_point_t const value) const { \
+	if (player_country == nullptr) { \
+		return; \
+	} \
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action( \
+		game_action_type_t::GAME_ACTION_SET_##game_action_name, \
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value } \
+	); \
+}
+
+SET_SLIDER_GAME_ACTION(administration_spending, ADMINISTRATION_SPENDING)
+SET_SLIDER_GAME_ACTION(education_spending, EDUCATION_SPENDING)
+SET_SLIDER_GAME_ACTION(military_spending, MILITARY_SPENDING)
+SET_SLIDER_GAME_ACTION(social_spending, SOCIAL_SPENDING)
+SET_SLIDER_GAME_ACTION(national_stockpile_army_spending, ARMY_SPENDING)
+SET_SLIDER_GAME_ACTION(national_stockpile_navy_spending, NAVY_SPENDING)
+SET_SLIDER_GAME_ACTION(national_stockpile_construction_spending, CONSTRUCTION_SPENDING)
+SET_SLIDER_GAME_ACTION(tariff_rate, TARIFF_RATE)
+
+#undef SET_SLIDER_GAME_ACTION
+
+void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
+		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->get_index(), strata.get_index(), value }
+	);
+}
 
 // Technology
 
