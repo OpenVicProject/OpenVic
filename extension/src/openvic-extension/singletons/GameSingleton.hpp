@@ -36,16 +36,12 @@ namespace OpenVic {
 		godot::Error _load_terrain_variants();
 		godot::Error _load_flag_sheet();
 
-	public:
-		/* Generate the province_colour_texture from the current mapmode. */
-		godot::Error _update_colour_image();
-		void _on_gamestate_updated();
-
 	protected:
 		static void _bind_methods();
 
 	public:
 		static GameSingleton* get_singleton();
+		signal_property<GameSingleton> gamestate_updated;
 
 		GameSingleton();
 		~GameSingleton();
@@ -129,5 +125,8 @@ namespace OpenVic {
 		bool is_parchment_mapmode_allowed() const;
 
 		godot::Error update_clock();
+		/* Generate the province_colour_texture from the current mapmode. */
+		godot::Error _update_colour_image();
+		void _on_gamestate_updated();
 	};
 }

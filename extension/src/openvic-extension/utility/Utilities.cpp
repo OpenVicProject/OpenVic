@@ -106,6 +106,15 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 	return float_to_string_dp(val, abs_val < 2.0f ? 3 : abs_val < 10.0f ? 2 : 1);
 }
 
+String Utilities::cash_to_string_dp_dynamic(fixed_point_t val) {
+	return godot::vformat(
+		String::utf8("%s¤"),
+		Utilities::float_to_string_dp_dynamic(
+			val.to_float()
+		)
+	);
+}
+
 String Utilities::date_to_string(Date date) {
 	static const String date_template_string = String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" +
 		Date::SEPARATOR_CHARACTER + "%d";

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <variant>
 
 #include <godot_cpp/classes/control.hpp>
@@ -13,6 +14,7 @@
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
+#include "openvic-extension/components/budget/BudgetMenu.hpp"
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -117,6 +119,7 @@ namespace OpenVic {
 		};
 
 	private:
+		std::unique_ptr<BudgetMenu> budget_menu { nullptr };
 		population_menu_t population_menu;
 		search_panel_t search_panel;
 
@@ -280,6 +283,9 @@ namespace OpenVic {
 		godot::Dictionary make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group);
 		godot::Dictionary make_in_progress_unit_dict() const;
 		godot::Dictionary get_military_menu_info();
+
+		/* BUDGET MENU */
+		void link_budget_menu_to_cpp(GUINode const* const godot_budget_menu);
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction
