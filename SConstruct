@@ -39,6 +39,13 @@ Default(
         env.Run(env.git_builder), name_prefix="game"
     )
 )
+Default(
+    env.CommandNoCache(
+        "extension/src/gen/license_info.gen.hpp",
+        ["#COPYRIGHT", "#LICENSE.md"],
+        env.Run(env.license_builder), name_prefix="game"
+    )
+)
 
 # For the reference:
 # - CCFLAGS are compilation flags shared between C and C++
