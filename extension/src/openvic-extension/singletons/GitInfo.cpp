@@ -7,7 +7,7 @@
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
-#include "gen/git_info.gen.hpp"
+#include "gen/commit_info.gen.hpp"
 
 using namespace godot;
 using namespace OpenVic;
