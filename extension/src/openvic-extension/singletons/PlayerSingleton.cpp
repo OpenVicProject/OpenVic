@@ -211,6 +211,87 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 }
 
 // Budget
+void PlayerSingleton::set_administration_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_ADMINISTRATION_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_education_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_EDUCATION_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_military_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_MILITARY_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_social_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_SOCIAL_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_national_stockpile_army_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_LAND_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_national_stockpile_navy_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_NAVAL_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_national_stockpile_construction_spending_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_CONSTRUCTION_SPENDING,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
+void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
+		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->get_index(), strata.get_index(), value }
+	);
+}
+void PlayerSingleton::set_tariff_rate_slider_value(fixed_point_t const value) const {
+	if (player_country == nullptr) {
+		return;
+	}
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
+		game_action_type_t::GAME_ACTION_SET_TARIFF_RATE,
+		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value }
+	);
+}
 
 // Technology
 
