@@ -1,5 +1,7 @@
 #include "ModelSingleton.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <numbers>
 
 #include <godot_cpp/variant/utility_functions.hpp>
@@ -9,6 +11,12 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-extension/utility/XSMLoader.hpp"
+#include "godot_cpp/classes/global_constants.hpp"
+#include "godot_cpp/classes/node3d.hpp"
+#include "godot_cpp/classes/resource_loader.hpp"
+#include "godot_cpp/classes/shader_material.hpp"
+#include "godot_cpp/variant/string_name.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -19,6 +27,11 @@ void ModelSingleton::_bind_methods() {
 	OV_BIND_METHOD(ModelSingleton::get_cultural_helmet_model, { "culture" });
 	OV_BIND_METHOD(ModelSingleton::get_flag_model, { "floating" });
 	OV_BIND_METHOD(ModelSingleton::get_buildings);
+	OV_BIND_METHOD(ModelSingleton::get_xsm_animation,{ "animation_name" });
+	OV_BIND_METHOD(ModelSingleton::get_xac_model,{ "model_name", "is_unit" });
+	OV_BIND_METHOD(ModelSingleton::setup_flag_shader);
+	OV_BIND_METHOD(ModelSingleton::set_scroll_material_texture, {"texture_name"});
+	OV_BIND_METHOD(ModelSingleton::set_unit_material_texture, {"type", "texture_name"});
 }
 
 ModelSingleton* ModelSingleton::get_singleton() {
@@ -480,4 +493,144 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() {
 	}
 
 	return ret;
+}
+
+Ref<Animation> ModelSingleton::get_xsm_animation(String source_file) {
+	const xsm_map_t::const_iterator it = xsm_cache.find(source_file);
+	if(it != xsm_cache.end()) {
+		return it->second;
+	}
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	
+	String path = game_singleton->lookup_file_path(source_file);
+
+	Ref<Animation> anim = XsmLoader().load_xsm_animation(FileAccess::open(path, FileAccess::READ));
+	xsm_cache.emplace(source_file,anim);
+	return anim;
+}
+
+Node3D* ModelSingleton::get_xac_model(String source_file, bool is_unit) {
+	const xac_map_t::const_iterator it = xac_cache.find(source_file);
+	if(it != xac_cache.end()) {
+		Node3D* unit = (Node3D*)it->second->duplicate();
+		if(unit->has_method("unit_init")){
+			unit->call("unit_init", true);
+		}
+		return unit;
+	}
+
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+
+	String path = game_singleton->lookup_file_path(source_file);
+	Node3D* node = XacLoader().load_xac_model(FileAccess::open(path, FileAccess::READ),is_unit);
+	xac_cache.emplace(source_file,node);
+
+	//if we return the "prototype" in the cache, then it will get scale by 1/256, and then all subsequent units
+	//duplicated from the cache will get effectively scaled by 1/256*1/256, among other problems.
+	Node3D* unit = (Node3D*)node->duplicate();
+	if(unit->has_method("unit_init")){
+		unit->call("unit_init", true);
+	}
+	return unit;
+}
+
+Error ModelSingleton::setup_flag_shader() {
+	Error result = OK;
+	GameSingleton const* game_singleton = GameSingleton::get_singleton();
+	ERR_FAIL_NULL_V(game_singleton, {});
+	
+	static const StringName Param_flag_dimensions = "flag_dims";
+	static const StringName Param_flag_texture_sheet = "texture_flag_sheet_diffuse";
+	ResourceLoader* loader = ResourceLoader::get_singleton();
+	static const Ref<ShaderMaterial> flag_shader = loader->load("res://src/Game/Model/flag_mat.tres");
+
+	flag_shader->set_shader_parameter(Param_flag_dimensions, game_singleton->get_flag_dims());
+	flag_shader->set_shader_parameter(Param_flag_texture_sheet, game_singleton->get_flag_sheet_texture());
+	return result;
+}
+
+static void pushback_shader_array(Ref<ShaderMaterial> shader, String property, Variant value) {
+	Array arr = shader->get_shader_parameter(property);
+	arr.push_back(value);
+	shader->set_shader_parameter(property, arr);
+}
+
+Ref<ShaderMaterial> ModelSingleton::get_unit_shader() {
+	if(unit_shader.is_null()) {
+		ResourceLoader* loader = ResourceLoader::get_singleton();	
+		unit_shader = loader->load("res://src/Game/Model/unit_colours_mat.tres");
+	}
+	return unit_shader;
+}
+
+Ref<ShaderMaterial> ModelSingleton::get_scroll_shader() {
+	if(scroll_shader.is_null()) {
+		ResourceLoader* loader = ResourceLoader::get_singleton();	
+		scroll_shader = loader->load("res://src/Game/Model/scrolling_mat.tres");
+	}
+	return scroll_shader;
+}
+
+//TODO: put this back, 64 is likely needed because of names being added twice
+// (due to 2 loaders operating)
+static constexpr uint32_t MAX_UNIT_TEXTURES = 64;
+
+int32_t ModelSingleton::set_unit_material_texture(int32_t type, String texture_name) {//MAP_TYPE::Values
+	shader_array_index_map_t& map = type==2 ? diffuse_texture_index_map : specular_texture_index_map; //OpenVic::MAP_TYPE::DIFFUSE
+	const shader_array_index_map_t::const_iterator it = map.find(texture_name);
+	if(it != map.end()) {
+		//UtilityFunctions::print(
+		//	vformat("cached texture: %s type: %d, index %d", texture_name, type, it->second)
+		//);
+		return it->second; //return the index
+	}
+
+	int32_t index = map.size();
+	map.emplace(texture_name,index);
+	if (map.size() >= MAX_UNIT_TEXTURES) {
+		Logger::error("Number of textures exceeded max supported by a shader!");
+		return 0;
+	}
+
+	// Parameters for the default model shader
+	static const StringName Param_texture_diffuse = "texture_diffuse";
+	//red channel is specular, green and blue are nation colours
+	static const StringName Param_texture_nation_colors_mask = "texture_nation_colors_mask";
+	//static const StringName Param_texture_shadow = "texture_shadow";
+	String shader_param = type==2 ? Param_texture_diffuse : Param_texture_nation_colors_mask; //OpenVic::MAP_TYPE::DIFFUSE
+
+	pushback_shader_array(get_unit_shader(), shader_param, XacLoader::get_model_texture(texture_name));
+
+	return index;
+}
+
+int32_t ModelSingleton::set_scroll_material_texture(String texture_name) {
+	const shader_array_index_map_t::const_iterator it = scroll_index_map.find(texture_name);
+	if(it != scroll_index_map.end()) {
+		return it->second; //return the index
+	}
+
+	scroll_index_map.emplace(texture_name,scroll_index_map.size());
+	if (scroll_index_map.size() >= MAX_UNIT_TEXTURES) {
+		Logger::error("Number of textures exceeded max supported by a shader!");
+		return 0;
+	}
+
+	static const StringName Param_Scroll_texture_diffuse = "scroll_texture_diffuse";
+	static const StringName Param_Scroll_factor = "scroll_factor";
+
+	pushback_shader_array(get_scroll_shader(), Param_Scroll_texture_diffuse, XacLoader::get_model_texture(texture_name));
+	
+	float scroll_factor = 0.0;
+	static const StringName tracks = "TexAnim";
+	static const StringName smoke = "Smoke";
+	if(texture_name == tracks) { scroll_factor = 2.5; }
+	else if(texture_name == smoke) { scroll_factor = 0.3; }
+	
+	pushback_shader_array(get_scroll_shader(), Param_Scroll_factor, scroll_factor);
+
+	return scroll_index_map[texture_name];
 }

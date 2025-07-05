@@ -35,5 +35,41 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_xac_model">
+			<return type="Node3D" />
+			<param index="0" name="model_name" type="String" />
+			<param index="1" name="is_unit" type="bool" />
+			<description>
+				Gets the animation from an internal cache or file system using the provided file path.
+			</description>
+		</method>
+		<method name="get_xsm_animation">
+			<return type="Animation" />
+			<param index="0" name="animation_name" type="String" />
+			<description>
+				Gets the animation from an internal cache or file system using the provided file path.
+			</description>
+		</method>
+		<method name="set_scroll_material_texture">
+			<return type="int" />
+			<param index="0" name="texture_name" type="String" />
+			<description>
+				Adds the texture from the [code]gfx/anims[/code] folder to the scrolling textures shader's texture array and returns the index of the texture.
+			</description>
+		</method>
+		<method name="set_unit_material_texture">
+			<return type="int" />
+			<param index="0" name="type" type="int" />
+			<param index="1" name="texture_name" type="String" />
+			<description>
+				Adds the texture from the [code]gfx/anims[/code] folder to the unit shader's texture array and returns the index of the texture. [param type] specifies whether this is being inserted as a specular texture, or a diffuse texture.
+			</description>
+		</method>
+		<method name="setup_flag_shader">
+			<return type="int" enum="Error" />
+			<description>
+				Initializes the flag shader with the flags texture sheet and flags dimensions.
+			</description>
+		</method>
 	</methods>
 </class>
