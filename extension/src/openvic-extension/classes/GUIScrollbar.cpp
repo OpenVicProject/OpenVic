@@ -1,10 +1,15 @@
 #include "GUIScrollbar.hpp"
 
+#include <cstdint>
+
+#include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/SliderValue.hpp>
+#include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/UITools.hpp"
@@ -36,22 +41,14 @@ void GUIScrollbar::_bind_methods() {
 
 	OV_BIND_METHOD(GUIScrollbar::get_value);
 	OV_BIND_METHOD(GUIScrollbar::get_value_as_ratio);
-	OV_BIND_METHOD(GUIScrollbar::get_min_value);
-	OV_BIND_METHOD(GUIScrollbar::get_max_value);
-	OV_BIND_METHOD(GUIScrollbar::set_value, { "new_value", "signal" }, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::increment_value, { "signal" }, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::decrement_value, { "signal" }, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::set_value_as_ratio, { "new_ratio", "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::set_value, { "new_value" });
+	OV_BIND_METHOD(GUIScrollbar::increment_value);
+	OV_BIND_METHOD(GUIScrollbar::decrement_value);
+	OV_BIND_METHOD(GUIScrollbar::set_value_as_ratio, { "new_ratio" });
 	OV_BIND_METHOD(GUIScrollbar::get_value_scaled);
 
 	OV_BIND_METHOD(GUIScrollbar::is_range_limited);
-	OV_BIND_METHOD(GUIScrollbar::get_range_limit_min);
-	OV_BIND_METHOD(GUIScrollbar::get_range_limit_max);
-	OV_BIND_METHOD(GUIScrollbar::set_range_limits, { "new_range_limit_min", "new_range_limit_max", "signal" }, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::set_range_limits_and_value, {
-		"new_range_limit_min", "new_range_limit_max", "new_value", "signal"
-	}, DEFVAL(true));
-	OV_BIND_METHOD(GUIScrollbar::set_limits, { "new_min_value", "new_max_value", "signal" }, DEFVAL(true));
+	OV_BIND_METHOD(GUIScrollbar::set_step_count, { "new_step_count" });
 
 	OV_BIND_METHOD(GUIScrollbar::get_length_override);
 	OV_BIND_METHOD(GUIScrollbar::set_length_override, { "new_length_override" });
@@ -67,7 +64,7 @@ GUIScrollbar::GUIScrollbar() {
 void GUIScrollbar::_start_button_change(bool shift_pressed, bool control_pressed) {
 	if (shift_pressed) {
 		if (control_pressed) {
-			button_change_value_base = max_value - min_value;
+			button_change_value_base = step_count;
 		} else {
 			button_change_value_base = 10;
 		}
@@ -108,9 +105,17 @@ bool GUIScrollbar::_update_button_change() {
 }
 
 float GUIScrollbar::_value_to_ratio(int32_t val) const {
-	return min_value != max_value
-		? static_cast<float>(val - min_value) / (max_value - min_value)
-		: 0.0f;
+	return step_count == 0
+		? 0.0f
+		: static_cast<float>(val) / step_count;
+}
+
+int32_t GUIScrollbar::_fp_to_value(const fixed_point_t val) const {
+	return (val - offset) * scale_denominator / scale_numerator;
+}
+
+fixed_point_t GUIScrollbar::_get_scaled_value(const int32_t val) const {
+	return offset + fixed_point_t::parse(val) * scale_numerator / scale_denominator;
 }
 
 void GUIScrollbar::_calculate_rects() {
@@ -222,53 +227,49 @@ void GUIScrollbar::_calculate_rects() {
 }
 
 void GUIScrollbar::_constrain_value() {
-	/* Clamp using range limits, as even when range limiting is disabled the limits will be set to min/max values. */
-	value = std::clamp(value, range_limit_min, range_limit_max);
+	const int32_t lower_limit = lower_range_limit.value_or(0);
+	const int32_t upper_limit = upper_range_limit.value_or(step_count);
 
+	// Special case to mimic SliderValue.hpp
+	if (lower_limit > upper_limit){
+		if (value > upper_limit) {
+			value = lower_limit;
+		} else {
+			value = upper_limit;
+		}
+	} else {
+		value = std::clamp(
+			value,
+			lower_limit,
+			upper_limit
+		);
+	}
 	slider_rect.position[orientation == HORIZONTAL ? 0 : 1] = slider_start + slider_distance * get_value_as_ratio();
 
 	queue_redraw();
 }
 
 /* _constrain_value() should be called sometime after this. */
-Error GUIScrollbar::_constrain_range_limits() {
-	if (range_limited) {
-		range_limit_min = std::clamp(range_limit_min, min_value, max_value);
-		range_limit_max = std::clamp(range_limit_max, min_value, max_value);
-
-		Error err = OK;
-		if (range_limit_min > range_limit_max) {
-			UtilityFunctions::push_error(
-				"GUIScrollbar range max ", range_limit_max, " is less than range min ", range_limit_min, " - swapping values."
-			);
-			std::swap(range_limit_min, range_limit_max);
-			err = FAILED;
-		}
-
-		const int axis = orientation == HORIZONTAL ? 0 : 1;
-		range_limit_min_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_min);
-		range_limit_max_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(range_limit_max)
-			+ slider_rect.size[axis] / 2.0f;
-
-		return err;
-	} else {
-		range_limit_min = min_value;
-		range_limit_max = max_value;
-		return OK;
+void GUIScrollbar::_constrain_range_limits() {
+	if (!range_limited) {
+		lower_range_limit = upper_range_limit = {};
+		return;
 	}
-}
-
-/* _constrain_range_limits() should be called sometime after this. */
-Error GUIScrollbar::_constrain_limits() {
-	if (min_value <= max_value) {
-		return OK;
-	} else {
-		UtilityFunctions::push_error(
-			"GUIScrollbar max value ", max_value, " is less than min value ", min_value, " - swapping values."
-		);
-		std::swap(min_value, max_value);
-		return FAILED;
+	
+	if (lower_range_limit.has_value()) {
+		lower_range_limit = std::clamp(lower_range_limit.value(), 0, step_count);
 	}
+	if (upper_range_limit.has_value()) {
+		upper_range_limit = std::clamp(upper_range_limit.value(), 0, step_count);
+	}
+
+	const int axis = orientation == HORIZONTAL ? 0 : 1;
+	range_limit_min_rect.position[axis] = slider_start + slider_distance * _value_to_ratio(lower_range_limit.value_or(0));
+	range_limit_max_rect.position[axis] = slider_start
+		+ slider_distance * _value_to_ratio(upper_range_limit.value_or(step_count))
+		+ slider_rect.size[axis] / 2.0f;
+
+	return;
 }
 
 Vector2 GUIScrollbar::_get_minimum_size() const {
@@ -294,10 +295,14 @@ Vector2 GUIScrollbar::_get_minimum_size() const {
 }
 
 void GUIScrollbar::emit_value_changed() {
+	if (is_blocking_signals()) {
+		return;
+	}
 	emit_signal(signal_value_changed(), value);
+	value_changed();
 }
 
-Error GUIScrollbar::reset() {
+void GUIScrollbar::reset() {
 	set_physics_process_internal(false);
 	button_change_accelerate_timer = 0.0;
 	button_change_timer = 0.0;
@@ -313,14 +318,13 @@ Error GUIScrollbar::reset() {
 	pressed_less = false;
 	pressed_more = false;
 
-	value = min_value;
-	range_limit_min = min_value;
-	range_limit_max = max_value;
+	value = 0;
+	step_count = 1;
+	lower_range_limit = upper_range_limit = {};
 
-	const Error err = _constrain_range_limits();
+	_constrain_range_limits();
 	_constrain_value();
 	emit_value_changed();
-	return err;
 }
 
 void GUIScrollbar::clear() {
@@ -344,13 +348,9 @@ void GUIScrollbar::clear() {
 
 	orientation = HORIZONTAL;
 	length_override = 0.0f;
-	min_value = 0;
-	max_value = 100;
 	range_limited = false;
 
 	_calculate_rects();
-
-	_constrain_limits();
 	reset();
 }
 
@@ -432,9 +432,40 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	_calculate_rects();
 
-	ret &= set_step_size_and_limits_fp(
-		gui_scrollbar->get_step_size(), gui_scrollbar->get_min_value(), gui_scrollbar->get_max_value()
-	) == OK;
+	auto adjust_for_min_and_step_size = [
+		min_value = gui_scrollbar->get_min_value(),
+		step_size = gui_scrollbar->get_step_size()
+	](const int32_t val)->int32_t {
+		return (val - min_value) / step_size;
+	};
+
+	const bool was_blocking_signals = is_blocking_signals();
+	if (!was_blocking_signals) {
+		set_block_signals(true); //only emit 1 signal via set_value
+	}
+
+	set_step_count(
+		adjust_for_min_and_step_size(gui_scrollbar->get_max_value())
+	);
+
+	set_scale(
+		gui_scrollbar->get_min_value(),
+		gui_scrollbar->get_step_size(),
+		1
+	);
+	
+	set_range_limits(
+		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
+		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
+	);
+
+	if (!was_blocking_signals) {
+		set_block_signals(false);
+	}
+
+	set_value(
+		adjust_for_min_and_step_size(gui_scrollbar->get_start_value())
+	);
 
 	return ERR(ret);
 }
@@ -458,113 +489,115 @@ String GUIScrollbar::get_gui_scrollbar_name() const {
 	return gui_scrollbar != nullptr ? Utilities::std_to_godot_string(gui_scrollbar->get_name()) : String {};
 }
 
-void GUIScrollbar::set_value(int32_t new_value, bool signal) {
+void GUIScrollbar::set_value(int32_t new_value) {
 	const int32_t old_value = value;
 	value = new_value;
 	_constrain_value();
-	if (signal && value != old_value) {
+	if (value != old_value) {
 		emit_value_changed();
 	}
 }
 
-void GUIScrollbar::set_value_fp(fixed_point_t new_value, bool signal) {
-	return set_value(new_value / step_size, signal);
+void GUIScrollbar::set_scaled_value(fixed_point_t new_scaled_value) {
+	return set_value(_fp_to_value(new_scaled_value));
 }
 
-void GUIScrollbar::set_value_from_slider_value(SliderValue const& slider_value, int32_t scale, bool signal) {
-	set_value_fp(slider_value.get_value() * scale, signal);
+fixed_point_t GUIScrollbar::get_max_value_scaled() const {
+	return _get_scaled_value(step_count);
 }
 
-void GUIScrollbar::increment_value(bool signal) {
-	set_value(value + 1, signal);
+void GUIScrollbar::increment_value() {
+	set_value(value + 1);
 }
 
-void GUIScrollbar::decrement_value(bool signal) {
-	set_value(value - 1, signal);
+void GUIScrollbar::decrement_value() {
+	set_value(value - 1);
 }
 
 float GUIScrollbar::get_value_as_ratio() const {
 	return _value_to_ratio(value);
 }
 
-void GUIScrollbar::set_value_as_ratio(float new_ratio, bool signal) {
-	set_value(min_value + (max_value - min_value) * new_ratio, signal);
+void GUIScrollbar::set_value_as_ratio(float new_ratio) {
+	set_value(step_count * new_ratio);
 }
 
 fixed_point_t GUIScrollbar::get_value_scaled_fp() const {
-	return value * step_size;
+	return _get_scaled_value(value);
 }
 
 float GUIScrollbar::get_value_scaled() const {
 	return get_value_scaled_fp().to_float();
 }
 
-Error GUIScrollbar::set_range_limits(int32_t new_range_limit_min, int32_t new_range_limit_max, bool signal) {
-	return set_range_limits_and_value(new_range_limit_min, new_range_limit_max, value, signal);
+void GUIScrollbar::set_step_count(const int32_t new_step_count) {
+	if (new_step_count < 0) {
+		Logger::warning(fmt::format("Ignoring set_step_count to {} on GUIScrollbar {}", new_step_count, gui_scrollbar->get_name()));
+		return;
+	}
+	step_count = new_step_count;
+	_constrain_range_limits();
+	const int32_t old_value = value;
+	_constrain_value();
+	if (value != old_value) {
+		emit_value_changed();
+	}
 }
-
-Error GUIScrollbar::set_range_limits_and_value(
-	int32_t new_range_limit_min, int32_t new_range_limit_max, int32_t new_value, bool signal
+void GUIScrollbar::set_scale(
+	const fixed_point_t new_offset,
+	const int32_t new_scale_numerator,
+	const int32_t new_scale_denominator
 ) {
-	ERR_FAIL_COND_V_MSG(!range_limited, FAILED, "Cannot set range limits of non-range-limited GUIScrollbar!");
-	range_limit_min = new_range_limit_min;
-	range_limit_max = new_range_limit_max;
-	const Error err = _constrain_range_limits();
-	set_value(new_value, signal);
-	return err;
+	if (new_scale_numerator == 0) {
+		Logger::warning(fmt::format("Ignoring set_scale with numerator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		return;
+	}
+	if (new_scale_denominator == 0) {
+		Logger::warning(fmt::format("Ignoring set_scale with denominator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		return;
+	}
+	offset = new_offset;
+	scale_numerator = new_scale_numerator;
+	scale_denominator = new_scale_denominator;
+	emit_value_changed();
 }
-
-Error GUIScrollbar::set_limits(int32_t new_min_value, int32_t new_max_value, bool signal) {
-	min_value = new_min_value;
-	max_value = new_max_value;
-	bool ret = _constrain_limits() == OK;
-	ret &= _constrain_range_limits() == OK;
-	set_value(value, signal);
-	return ERR(ret);
-}
-
-Error GUIScrollbar::set_range_limits_and_value_fp(
-	fixed_point_t new_range_limit_min, fixed_point_t new_range_limit_max, fixed_point_t new_value, bool signal
+void GUIScrollbar::set_range_limits(
+	const std::optional<int32_t> new_lower_range_limit,
+	const std::optional<int32_t> new_upper_range_limit
 ) {
-	return set_range_limits_and_value(
-		new_range_limit_min / step_size,
-		new_range_limit_max / step_size,
-		new_value / step_size,
-		signal
-	);
-}
-
-Error GUIScrollbar::set_range_limits_and_value_from_slider_value(
-	SliderValue const& slider_value, int32_t scale, bool signal
-) {
-	return set_range_limits_and_value_fp(
-		slider_value.get_min() * scale,
-		slider_value.get_max() * scale,
-		slider_value.get_value() * scale,
-		signal
-	);
-}
-
-Error GUIScrollbar::set_step_size_and_limits_fp(fixed_point_t new_step_size, int32_t new_min_value, int32_t new_max_value) {
-	bool ret = true;
-
-	step_size = new_step_size;
-	if (step_size <= 0) {
-		UtilityFunctions::push_error(
-			"Invalid step size ", Utilities::fixed_point_to_string_dp(step_size, -1), " for GUIScrollbar ",
-			get_name(), " - not positive! Defaulting to 1."
-		);
-		step_size = 1;
-		ret = false;
+	if (!range_limited) {
+		Logger::warning(fmt::format("Ignoring set_range_limits of non-range-limited GUIScrollbar {}", gui_scrollbar->get_name()));
+		return;
 	}
 
-	min_value = new_min_value / step_size;
-	max_value = new_max_value / step_size;
-
-	ret &= _constrain_limits() == OK;
-	ret &= reset() == OK;
-
-	return ERR(ret);
+	lower_range_limit = new_lower_range_limit;
+	upper_range_limit = new_upper_range_limit;
+	_constrain_range_limits();
+	const int32_t old_value = value;
+	_constrain_value();
+	if (value != old_value) {
+		emit_value_changed();
+	}
+}
+void GUIScrollbar::set_range_limits_fp(
+	const std::optional<fixed_point_t> new_lower_range_limit,
+	const std::optional<fixed_point_t> new_upper_range_limit
+) {
+	set_range_limits(
+		new_lower_range_limit.has_value()
+			? _fp_to_value(new_lower_range_limit.value())
+			: std::optional<fixed_point_t>{},
+		new_upper_range_limit.has_value()
+			? _fp_to_value(new_upper_range_limit.value())
+			: std::optional<fixed_point_t>{}
+	);
+}
+void GUIScrollbar::set_range_limits_and_value_from_slider_value(SliderValue const& slider_value) {
+	set_range_limits_fp(
+		slider_value.get_min(),
+		slider_value.get_max()
+	);
+	set_scaled_value(slider_value.get_value());
 }
 
 void GUIScrollbar::set_length_override(real_t new_length_override) {
@@ -575,7 +608,6 @@ void GUIScrollbar::set_length_override(real_t new_length_override) {
 	length_override = new_length_override;
 
 	_calculate_rects();
-	_constrain_limits();
 	_constrain_range_limits();
 	_constrain_value();
 }
@@ -753,11 +785,11 @@ void GUIScrollbar::_notification(int what) {
 		}
 
 		if (range_limited) {
-			if (range_limit_min != min_value && range_limit_min_texture.is_valid()) {
+			if (lower_range_limit != 0 && range_limit_min_texture.is_valid()) {
 				range_limit_min_texture->draw_rect(ci, range_limit_min_rect, false);
 			}
 
-			if (range_limit_max != max_value && range_limit_max_texture.is_valid()) {
+			if (upper_range_limit != step_count && range_limit_max_texture.is_valid()) {
 				range_limit_max_texture->draw_rect(ci, range_limit_max_rect, false);
 			}
 		}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <variant>
 
 #include <godot_cpp/classes/control.hpp>
@@ -9,6 +10,7 @@
 #include <openvic-simulation/types/IndexedMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 
@@ -240,6 +242,33 @@ namespace OpenVic {
 			int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
+
+		static constexpr int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
+			const fixed_point_t stockpile_cutoff,
+			const int32_t max_slider_value
+		) {
+			// Math.log(2)/Math.log(Math.exp(Math.log(2001)/2000)) = 182.37...
+			constexpr fixed_point_t DOUBLES_AFTER_STEPS = fixed_point_t::parse_raw(11952029);
+			int32_t times_halved = 0;
+			fixed_point_t copy_plus_one = stockpile_cutoff+1;
+			while (copy_plus_one >= 2) {
+				copy_plus_one /= 2;
+				times_halved++;
+			}
+			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS; //truncated
+			while (
+				calculate_trade_menu_stockpile_cutoff_amount_fp(
+					slider_value
+				) < stockpile_cutoff
+			) {
+				if (slider_value >= max_slider_value) {
+					return max_slider_value;
+				}
+				++slider_value;
+			}
+
+			return slider_value;
+		}
 		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
 			return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1;
 		}

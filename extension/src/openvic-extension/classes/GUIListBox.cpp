@@ -63,7 +63,11 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 
 	ERR_FAIL_NULL_V(scrollbar, FAILED);
 
-	scrollbar->set_limits(0, max_scroll_index, false);
+	const bool was_blocking_signals = scrollbar->is_blocking_signals();
+	scrollbar->set_block_signals(true);
+	scrollbar->set_step_count(max_scroll_index);
+	scrollbar->set_block_signals(was_blocking_signals);
+
 	scrollbar->set_visible(max_scroll_index > 0);
 
 	set_scroll_index(scrollbar->get_value(), signal);
@@ -209,7 +213,10 @@ void GUIListBox::set_scroll_index(int32_t new_scroll_index, bool signal) {
 	scroll_index = std::clamp(new_scroll_index, 0, max_scroll_index);
 
 	if (scrollbar != nullptr && scrollbar->get_value() != scroll_index) {
-		scrollbar->set_value(scroll_index, false);
+		const bool was_blocking_signals = scrollbar->is_blocking_signals();
+		scrollbar->set_block_signals(true);
+		scrollbar->set_value(scroll_index);
+		scrollbar->set_block_signals(was_blocking_signals);
 	}
 
 	if (signal && scroll_index != old_scroll_index) {
