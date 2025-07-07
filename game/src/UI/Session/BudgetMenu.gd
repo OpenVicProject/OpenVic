@@ -236,7 +236,6 @@ func _update_info() -> void:
 			_balance_label.text = "§%s%s¤" % ["G+" if balance > 0.0 else "R" if balance < 0.0 else "Y+", GUINode.float_to_string_dp_dynamic(balance)]
 
 		# TODO - set strata tax and debt charts
-		# TODO - update sliders to reflect changes in limits
 		# TODO - update loans taken/given list and enable/disable take/give loan buttons
 
 		show()

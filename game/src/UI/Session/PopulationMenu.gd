@@ -530,10 +530,10 @@ func _update_pop_list() -> void:
 	if _pop_list_scrollbar:
 		var max_scroll_index : int = MenuSingleton.get_population_menu_pop_row_count() - _pop_list_rows.size()
 		if max_scroll_index > 0:
-			_pop_list_scrollbar.set_limits(0, max_scroll_index)
+			_pop_list_scrollbar.set_step_count(max_scroll_index)
 			_pop_list_scrollbar.show()
 		else:
-			_pop_list_scrollbar.set_limits(0, 0)
+			_pop_list_scrollbar.set_step_count(0)
 			_pop_list_scrollbar.hide()
 
 	var pop_rows = MenuSingleton.get_population_menu_pop_rows(_pop_list_scroll_index, _pop_list_rows.size())
