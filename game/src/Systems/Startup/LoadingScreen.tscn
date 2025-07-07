@@ -1,0 +1,158 @@
+[gd_scene load_steps=11 format=3 uid="uid://3kktdpfnc0sn"]
+
+[ext_resource type="Script" uid="uid://b4kd4qvtrpdkb" path="res://src/Systems/Startup/LoadingScreen.gd" id="1_b0p3w"]
+[ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://assets/graphics/loading_screen.png" id="2_ny153"]
+[ext_resource type="Texture2D" uid="uid://hlouxrjm7pqy" path="res://assets/graphics/ovgear.png" id="3_avohi"]
+[ext_resource type="Texture2D" uid="uid://oirhxlyiogv8" path="res://assets/graphics/globe.png" id="4_eyeeb"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3fggo"]
+texture = ExtResource("2_ny153")
+
+[sub_resource type="Theme" id="Theme_f5c3e"]
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_3fggo")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yaf7e"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.129412, 0.129412, 0.129412, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="Animation" id="Animation_wsrst"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Gear:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_3ktkq"]
+resource_name = "loadingscreen_gear"
+length = 5.0
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Gear:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0, 0, 6.28319, 0, 0, 0, 0),
+"times": PackedFloat32Array(0, 5)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wo8l0"]
+_data = {
+&"RESET": SubResource("Animation_wsrst"),
+&"loadingscreen_gear": SubResource("Animation_3ktkq")
+}
+
+[node name="LoadingScreen" type="Control" node_paths=PackedStringArray("progress_bar", "quote_label", "animation_player")]
+editor_description = "UI-24"
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 5
+script = ExtResource("1_b0p3w")
+progress_bar = NodePath("PanelContainer/MarginContainer/ProgressBar")
+quote_label = NodePath("PanelContainer/MarginContainer/PanelContainer/QuoteLabel")
+animation_player = NodePath("AnimationPlayer")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 5
+theme = SubResource("Theme_f5c3e")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 5
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+mouse_default_cursor_shape = 5
+step = 1.0
+rounded = true
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+mouse_default_cursor_shape = 5
+theme_override_styles/panel = SubResource("StyleBoxFlat_yaf7e")
+
+[node name="QuoteLabel" type="Label" parent="PanelContainer/MarginContainer/PanelContainer"]
+custom_minimum_size = Vector2(700, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+mouse_default_cursor_shape = 5
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+text_overrun_behavior = 3
+
+[node name="Gear" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -128.0
+offset_right = 128.0
+offset_bottom = 128.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(128, 128)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_default_cursor_shape = 5
+texture = ExtResource("3_avohi")
+expand_mode = 1
+
+[node name="Globe" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.0
+offset_top = -87.0
+offset_right = 86.0
+offset_bottom = 86.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 5
+texture = ExtResource("4_eyeeb")
+expand_mode = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_wo8l0")
+}

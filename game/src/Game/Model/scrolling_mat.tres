@@ -1,9 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://5utra6tpdqag"]
-
-[ext_resource type="Shader" uid="uid://17t03jge6626" path="res://src/Game/Model/scrolling.gdshader" id="1_oqkkj"]
-
-[resource]
-render_priority = 0
-shader = ExtResource("1_oqkkj")
-shader_parameter/scroll_texture_diffuse = []
-shader_parameter/scroll_factor = []

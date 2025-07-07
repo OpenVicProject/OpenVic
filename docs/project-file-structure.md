@@ -98,28 +98,50 @@ Example:
 ```
 root/
 |- src/
-    |- Theme/
-    |   |- ButtonNormal.tres
-    |   |- ButtonHover.tres
-    |   |- ButtonDisabled.tres
-    |- Utility/
-    |   |- Math.gd
-    |- Menu/
-    |   |- MenuManager.tscn
-    |   |- MenuManager.gd
-    |   |- MainMenu/
-    |   |   |- MainMenu.tscn
-    |   |   |- MainMenu.gd
-    |   |   |- MainMenuFont.ttf
-    |   |   |- MainMenuLabel.tres
-    |   |- SettingsMenu/
-    |   |   |- Settings.tscn
-    |   |   |- Settings.gd
-    |   |   |- Resolution/
-    |   |   |   |- ResolutionSelector.gd
-    |   |   |- Volume/
-    |   |   |   |- VolumeGrid.tscn
-    |   |   |   |- VolumeGrid.gd
+    |- Autoload/
+    |   |- Argument/
+    |   |   |- ArgumentParser.gd
+    |   |   |- ArgumentParser.tscn
+    |   |- GameLoader.gd
+    |   |- WindowOverride.gd
+    |   |- ...
+    |- Model/
+    |   |- ...
+    |- Systems/
+    |   |- Session/
+    |   |   |- Map/
+    |   |   |   |- MapView.tscn
+    |   |   |   |- ...
+    |   |   |- GameSession.gd
+    |   |   |- ...
+    |   |- Startup/
+    |       |- GameStart.gd
+    |       |- GameStart.tscn
+    |       |- ...
+    |- UI/
+    |   |- Shared/
+    |   |   |- Tooltip.gd
+    |   |   |- ...
+    |   |- GameMenu/
+    |   |   |- MainMenu/
+    |   |   |   |- MainMenu.tscn
+    |   |   |   |- MainMenu.gd
+    |   |   |- LobbyMenu/
+    |   |   |   |- LobbyMenu.tscn
+    |   |   |   |- LobbyMenu.gd
+    |   |   |   |- LobbyPanelButton.tscn
+    |   |   |   |- LobbyPanelButton.gd
+    |   |   |- ...
+    |   |- Session/
+    |       |- ProvinceOverviewPanel.gd
+    |       |- Menubar.gd
+    |       |- DiplomacyMenu.gd
+    |       |- ...
+    |- Utilities/
+        |- ShaderManager.gd
+        |- GameDebug.gd
+        |- Localisation.gd
+        |- ...
 ```
 
 #### Naming Convention
