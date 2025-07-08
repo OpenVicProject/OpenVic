@@ -166,17 +166,11 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	ret[trade_detail_is_automated_key] = good_data.is_automated;
 	ret[trade_detail_is_selling_key] = good_data.is_selling;
 	if (stockpile_cutoff_slider != nullptr) {
-		int32_t index = 0;
-
-		while (index < stockpile_cutoff_slider->get_max_value() && calculate_trade_menu_stockpile_cutoff_amount_fp(
-			index * stockpile_cutoff_slider->get_step_size()
-		) < good_data.stockpile_cutoff) {
-			++index;
-		}
-
-		// TODO - use a more efficient algorithm, e.g. some kind of binary search
-
-		stockpile_cutoff_slider->set_value(index, false);
+		const int32_t index = calculate_slider_value_from_trade_menu_stockpile_cutoff(
+			good_data.stockpile_cutoff,
+			stockpile_cutoff_slider->get_max_value_scaled()
+		);
+		stockpile_cutoff_slider->set_scaled_value(index);
 	}
 	ret[trade_detail_slider_amount_key] = good_data.stockpile_cutoff.to_float();
 	ret[trade_detail_government_needs_key] = good_data.government_needs.to_float();
