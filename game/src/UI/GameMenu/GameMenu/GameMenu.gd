@@ -5,6 +5,7 @@ extends Control
 @export var _multiplayer_menu : Control
 @export var _lobby_menu : Control
 @export var _credits_menu : Control
+@export var _mod_menu : Control
 
 # REQUIREMENTS
 # * SS-10
@@ -51,3 +52,13 @@ func _on_multiplayer_menu_back_button_pressed() -> void:
 func _on_main_menu_multiplayer_button_pressed() -> void:
 	_multiplayer_menu.show()
 	_main_menu.hide()
+
+
+func _on_main_menu_mod_button_pressed() -> void:
+	_mod_menu.show()
+	_main_menu.hide()
+
+
+func _on_mod_menu_back_button_pressed() -> void:
+	_mod_menu.hide()
+	_main_menu.show()

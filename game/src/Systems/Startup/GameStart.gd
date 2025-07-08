@@ -13,7 +13,8 @@ const GameMenuScene := preload("res://src/UI/GameMenu/GameMenu/GameMenu.tscn")
 @export var setting_name : String = "base_defines_path"
 
 var _settings_base_path : String = ""
-var _compatibility_path_list : PackedStringArray = []
+var actual_base_path : String = ""
+var mod_names : PackedStringArray = []
 
 func _enter_tree() -> void:
 	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
@@ -77,12 +78,8 @@ func _save_setting(file : ConfigFile) -> void:
 	file.set_value(section_name, setting_name, _settings_base_path)
 
 func _setup_compatibility_mode_paths() -> void:
-	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
-
 	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
 	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
-
-	var actual_base_path : String = ""
 
 	if arg_base_path:
 		if arg_search_path:
@@ -127,21 +124,22 @@ func _setup_compatibility_mode_paths() -> void:
 		# Save the path found in the search
 		Events.Options.save_settings_to_file()
 
-	_compatibility_path_list = [actual_base_path]
-
 	# Add mod paths
-	var settings_mod_names : PackedStringArray = ArgumentParser.get_argument(&"mod", "")
-	for mod_name : String in settings_mod_names:
-		_compatibility_path_list.push_back(actual_base_path + "/mod/" + mod_name)
+	var mod_status_file := ConfigFile.new()
+	mod_status_file.load("user://mods.cfg")
+	mod_names = mod_status_file.get_value("mods", "load_list", [])
+	for mod in ArgumentParser.get_argument(&"mod", ""):
+		if mod not in mod_names and mod != "":
+			mod_names.push_back(mod)
 
 func _load_compatibility_mode() -> void:
-	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
+	if GameSingleton.set_compatibility_mode_base_path(actual_base_path) != OK:
 		push_error("Errors setting game roots!")
 	
 	CursorManager.initial_cursor_setup()
 	setup_title_theme()
 
-	if GameSingleton.load_defines_compatibility_mode() != OK:
+	if GameSingleton.load_defines_compatibility_mode(actual_base_path, mod_names) != OK:
 		push_error("Errors loading game defines!")
 
 	SoundSingleton.load_sounds()

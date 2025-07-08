@@ -2,6 +2,9 @@
 
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
+#include <godot_cpp/classes/control.hpp>
+#include <godot_cpp/classes/global_constants.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
@@ -70,15 +73,14 @@ namespace OpenVic {
 
 		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
-		godot::Error set_compatibility_mode_roots(
-			godot::PackedStringArray const& file_paths, godot::PackedStringArray const& replace_paths = {}
-		);
-		godot::Error load_defines_compatibility_mode();
+		godot::Error set_compatibility_mode_base_path(godot::String const& base_path);
+		godot::Error load_defines_compatibility_mode(godot::String const& base_path, godot::PackedStringArray const& mods);
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});
 		godot::String lookup_file_path(godot::String const& path) const;
 
 		godot::TypedArray<godot::Dictionary> get_bookmark_info() const;
+		godot::TypedArray<godot::Dictionary> get_mod_info() const;
 
 		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
 		godot::Error setup_game(int32_t bookmark_index);

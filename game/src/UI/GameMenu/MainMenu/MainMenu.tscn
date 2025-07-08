@@ -54,11 +54,10 @@ alignment = 1
 editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
-focus_neighbor_left = NodePath("../ExitButton")
-focus_neighbor_top = NodePath("../ExitButton")
+focus_neighbor_left = NodePath("../../../BottomMargin/HBoxContainer/LocaleButton")
 focus_neighbor_right = NodePath("../ContinueButton")
 focus_next = NodePath("../ContinueButton")
-focus_previous = NodePath("../ExitButton")
+focus_previous = NodePath("../../../BottomMargin/HBoxContainer/LocaleButton")
 theme_type_variation = &"TitleButton"
 text = "MAINMENU_NEW_GAME"
 clip_text = true
@@ -80,35 +79,34 @@ editor_description = "UI-27"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../ContinueButton")
-focus_neighbor_right = NodePath("../OptionsButton")
-focus_next = NodePath("../OptionsButton")
+focus_neighbor_right = NodePath("../ModButton")
+focus_next = NodePath("../ModButton")
 focus_previous = NodePath("../ContinueButton")
 theme_type_variation = &"TitleButton"
 text = "MAINMENU_MULTIPLAYER"
+clip_text = true
+
+[node name="ModButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../MultiplayerButton")
+focus_neighbor_right = NodePath("../OptionsButton")
+focus_next = NodePath("../OptionsButton")
+focus_previous = NodePath("../MultiplayerButton")
+theme_type_variation = &"TitleButton"
+text = "MAINMENU_MODS"
 clip_text = true
 
 [node name="OptionsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
 editor_description = "UI-5"
 layout_mode = 2
 size_flags_horizontal = 3
-focus_neighbor_left = NodePath("../MultiplayerButton")
-focus_neighbor_right = NodePath("../CreditsButton")
-focus_next = NodePath("../CreditsButton")
-focus_previous = NodePath("../MultiplayerButton")
-theme_type_variation = &"TitleButton"
-text = "MAINMENU_OPTIONS"
-clip_text = true
-
-[node name="CreditsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
-editor_description = "UI-32"
-layout_mode = 2
-size_flags_horizontal = 3
-focus_neighbor_left = NodePath("../OptionsButton")
+focus_neighbor_left = NodePath("../ModButton")
 focus_neighbor_right = NodePath("../ExitButton")
 focus_next = NodePath("../ExitButton")
-focus_previous = NodePath("../OptionsButton")
+focus_previous = NodePath("../ModButton")
 theme_type_variation = &"TitleButton"
-text = "MAINMENU_CREDITS"
+text = "MAINMENU_OPTIONS"
 clip_text = true
 
 [node name="ExitButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
@@ -116,8 +114,8 @@ editor_description = "UI-3"
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../OptionsButton")
-focus_neighbor_right = NodePath("../NewGameButton")
-focus_next = NodePath("../NewGameButton")
+focus_neighbor_right = NodePath("../../../BottomMargin/HBoxContainer/CreditsButton")
+focus_next = NodePath("../../../BottomMargin/HBoxContainer/CreditsButton")
 focus_previous = NodePath("../OptionsButton")
 theme_type_variation = &"TitleButton"
 text = "MAINMENU_EXIT"
@@ -132,13 +130,37 @@ size_flags_stretch_ratio = 0.35
 layout_mode = 2
 theme_type_variation = &"BottomMargin"
 
-[node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_km0er")]
+[node name="HBoxContainer" type="HBoxContainer" parent="MenuPanel/MenuList/BottomMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin/HBoxContainer" instance=ExtResource("3_km0er")]
 layout_mode = 2
 
-[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_amonp")]
+[node name="Spacer" type="Control" parent="MenuPanel/MenuList/BottomMargin/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CreditsButton" type="Button" parent="MenuPanel/MenuList/BottomMargin/HBoxContainer"]
+editor_description = "UI-32"
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+focus_neighbor_left = NodePath("../../../ButtonListMargin/ButtonList/ExitButton")
+focus_neighbor_right = NodePath("../LocaleButton")
+focus_next = NodePath("../LocaleButton")
+focus_previous = NodePath("../../../ButtonListMargin/ButtonList/ExitButton")
+theme_type_variation = &"TitleButton"
+text = "MAINMENU_CREDITS"
+clip_text = true
+
+[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin/HBoxContainer" instance=ExtResource("3_amonp")]
 editor_description = "SS-87"
 layout_mode = 2
 size_flags_horizontal = 8
+focus_neighbor_left = NodePath("../CreditsButton")
+focus_neighbor_right = NodePath("../../../ButtonListMargin/ButtonList/NewGameButton")
+focus_next = NodePath("../../../ButtonListMargin/ButtonList/NewGameButton")
+focus_previous = NodePath("../CreditsButton")
 alignment = 0
 text_overrun_behavior = 4
 
@@ -146,6 +168,7 @@ text_overrun_behavior = 4
 [connection signal="visibility_changed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton" to="." method="_on_new_game_button_visibility_changed"]
 [connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/MultiplayerButton" to="." method="_on_multi_player_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/ModButton" to="." method="_on_mod_button_pressed"]
 [connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/CreditsButton" to="." method="_on_credits_button_pressed"]
 [connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="MenuPanel/MenuList/BottomMargin/HBoxContainer/CreditsButton" to="." method="_on_credits_button_pressed"]
