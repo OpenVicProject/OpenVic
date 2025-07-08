@@ -84,6 +84,12 @@
 				Returns the localization key [String] of the mapmode with the specified [param index].
 			</description>
 		</method>
+		<method name="get_mod_info" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+				Returns an array of [Dictionary] containing information about available and loaded mods.
+			</description>
+		</method>
 		<method name="get_province_colour_texture" qualifiers="const">
 			<return type="ImageTexture" />
 			<description>
@@ -133,6 +139,8 @@
 		</method>
 		<method name="load_defines_compatibility_mode">
 			<return type="int" enum="Error" />
+			<param index="0" name="base_path" type="String" />
+			<param index="1" name="mods " type="PackedStringArray" />
 			<description>
 				Load compatibility mode text defines, localization string and map and flag images. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
 			</description>
@@ -151,12 +159,11 @@
 				Searches for the base game's install path, checking the [param hint_path] if it's provided as well as the Steam install folder as identified by the [code]"libraryfolders.vdf"[/code] file. This function will return an empty [String] should it fail to find the base game's install path.
 			</description>
 		</method>
-		<method name="set_compatibility_mode_roots">
+		<method name="set_compatibility_mode_base_path">
 			<return type="int" enum="Error" />
-			<param index="0" name="file_paths" type="PackedStringArray" />
-			<param index="1" name="replace_paths" type="PackedStringArray" default="PackedStringArray()" />
+			<param index="0" name="base_path" type="String" />
 			<description>
-				Set the dataloading roots to those provided in [param file_paths], ignoring the filepaths in [param replace_paths] in favor of mods, which should contain full filepaths to the base game's installation and to any mods that are to be loaded on top of it. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
+				Sets the root dataloader path to [param base_path]. Returns [code]FAILED[/code] if the path is invalid, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="set_mapmode">

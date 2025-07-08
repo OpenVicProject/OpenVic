@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3 uid="uid://bh7otkxuf17sg"]
+
+[ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://assets/graphics/theme/options_menu.tres" id="1_8in6e"]
+[ext_resource type="Script" uid="uid://daf0wi7bbaf3n" path="res://src/UI/GameMenu/ModMenu/ModMenu.gd" id="1_ahk3j"]
+
+[node name="ModMenu" type="PanelContainer" node_paths=PackedStringArray("mod_list_box")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_8in6e")
+theme_type_variation = &"BackgroundPanel"
+script = ExtResource("1_ahk3j")
+mod_list_box = NodePath("Margin/PanelContainer/Margin/VBox/ModListBox")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 256
+theme_override_constants/margin_top = 180
+theme_override_constants/margin_right = 256
+theme_override_constants/margin_bottom = 180
+
+[node name="PanelContainer" type="PanelContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin/PanelContainer/Margin"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Margin/PanelContainer/Margin/VBox"]
+layout_mode = 2
+text = "Mod Menu"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ModListBox" type="VBoxContainer" parent="Margin/PanelContainer/Margin/VBox"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Margin/PanelContainer/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBox" type="HBoxContainer" parent="Margin/PanelContainer/Margin/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="SaveButton" type="Button" parent="Margin/PanelContainer/Margin/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = " Save (Reloads Game)"
+
+[node name="Spacer" type="Control" parent="Margin/PanelContainer/Margin/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="Margin/PanelContainer/Margin/VBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = " Back "
+
+[connection signal="pressed" from="Margin/PanelContainer/Margin/VBox/HBox/SaveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="Margin/PanelContainer/Margin/VBox/HBox/BackButton" to="." method="_on_back_button_pressed"]
