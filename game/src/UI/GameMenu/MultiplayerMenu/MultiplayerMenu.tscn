@@ -1,0 +1,90 @@
+[gd_scene load_steps=8 format=3 uid="uid://btri1i0hkhdsh"]
+
+[ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://assets/graphics/theme/options_menu.tres" id="1_5k2lj"]
+[ext_resource type="Script" uid="uid://d2fflsmlplgvo" path="res://src/UI/GameMenu/MultiplayerMenu/MultiplayerMenu.gd" id="2_2x2qh"]
+[ext_resource type="PackedScene" uid="uid://28ummh3fgokc" path="res://src/UI/GameMenu/MultiplayerMenu/DirectConnectionTab.tscn" id="3_4iwik"]
+[ext_resource type="PackedScene" uid="uid://b4cu0p1wlux3s" path="res://src/UI/GameMenu/MultiplayerMenu/HostTab.tscn" id="3_ha6kl"]
+[ext_resource type="Script" uid="uid://271hnyya7nha" path="res://src/UI/GameMenu/MultiplayerMenu/PasswordDialog.gd" id="5_t64eu"]
+[ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/UI/GameMenu/MultiplayerMenu/SecretEdit.tscn" id="6_34d2n"]
+[ext_resource type="Script" uid="uid://cgd6n1okjdink" path="res://src/UI/GameMenu/MultiplayerMenu/ConnectionFailDialog.gd" id="7_cd4lp"]
+
+[node name="MultiplayerMenu" type="PanelContainer" node_paths=PackedStringArray("_tab_container", "_password_dialog", "_connection_fail_dialog", "_host_tab", "_direct_connection_tab")]
+editor_description = "UI-25"
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_5k2lj")
+theme_type_variation = &"BackgroundPanel"
+script = ExtResource("2_2x2qh")
+_tab_container = NodePath("Margin/Tab")
+_password_dialog = NodePath("PasswordDialog")
+_connection_fail_dialog = NodePath("ConnectionFailDialog")
+_host_tab = NodePath("Margin/Tab/HostTab")
+_direct_connection_tab = NodePath("Margin/Tab/DirectConnectionTab")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_type_variation = &"TabMargin"
+
+[node name="Tab" type="TabContainer" parent="Margin"]
+editor_description = "UI-45"
+layout_mode = 2
+tab_alignment = 1
+current_tab = 0
+use_hidden_tabs_for_min_size = true
+
+[node name="DirectConnectionTab" parent="Margin/Tab" instance=ExtResource("3_4iwik")]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="HostTab" parent="Margin/Tab" instance=ExtResource("3_ha6kl")]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="PasswordDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("secret")]
+auto_translate_mode = 1
+title = "MP_CONNECT_PASSWORD_ENTRY"
+position = Vector2i(0, 36)
+ok_button_text = "MP_CONNECT_PASSWORD_OK"
+cancel_button_text = "MP_CONNECT_PASSWORD_CANCEL"
+script = ExtResource("5_t64eu")
+secret = NodePath("SecretEdit")
+
+[node name="SecretEdit" parent="PasswordDialog" instance=ExtResource("6_34d2n")]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 51.0
+
+[node name="ConnectionFailDialog" type="AcceptDialog" parent="." node_paths=PackedStringArray("label")]
+auto_translate_mode = 1
+title = "MP_CONNECT_FAIL"
+position = Vector2i(0, 36)
+size = Vector2i(352, 100)
+ok_button_text = "MP_CONNECT_FAIL_OK"
+script = ExtResource("7_cd4lp")
+reason_text = "MP_CONNECT_FAIL_REASON"
+no_server_fail_text = "MP_CONNECT_FAIL_NO_SERVER"
+bad_password_fail_text = "MP_CONNECT_FAIL_PASSWORD"
+bad_ip_text = "MP_CONNECT_FAIL_BAD_IP"
+label = NodePath("Label")
+
+[node name="Label" type="Label" parent="ConnectionFailDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 344.0
+offset_bottom = 51.0
+text = "MP_CONNECT_FAIL_REASON"
+
+[connection signal="tab_changed" from="Margin/Tab" to="." method="_on_tab_changed"]
+[connection signal="connect" from="Margin/Tab/DirectConnectionTab" to="." method="join_game"]
+[connection signal="player_name_changed" from="Margin/Tab/DirectConnectionTab" to="." method="update_player_name"]
+[connection signal="revert_ips" from="Margin/Tab/DirectConnectionTab" to="." method="_on_direct_connection_tab_revert_ips"]
+[connection signal="save_ips" from="Margin/Tab/DirectConnectionTab" to="." method="_save_ips"]
+[connection signal="host" from="Margin/Tab/HostTab" to="." method="host_game"]
+[connection signal="player_name_changed" from="Margin/Tab/HostTab" to="." method="update_player_name"]
+[connection signal="confirmed" from="PasswordDialog" to="PasswordDialog" method="_on_confirmed"]
+[connection signal="pword_confirmed" from="PasswordDialog" to="." method="connect_to_game"]

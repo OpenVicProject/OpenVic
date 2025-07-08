@@ -1,0 +1,74 @@
+[gd_scene load_steps=3 format=3 uid="uid://b4cu0p1wlux3s"]
+
+[ext_resource type="Script" uid="uid://gashq75jn3c6" path="res://src/UI/GameMenu/MultiplayerMenu/HostTab.gd" id="1_23sa3"]
+[ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/UI/GameMenu/MultiplayerMenu/SecretEdit.tscn" id="2_j4o6c"]
+
+[node name="HostTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus", "player_name_entry", "game_name_entry", "password_entry", "is_lan")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+alignment = 1
+script = ExtResource("1_23sa3")
+initial_focus = NodePath("VBoxContainer/GridContainer/PlayerNameEntry")
+player_name_entry = NodePath("VBoxContainer/GridContainer/PlayerNameEntry")
+game_name_entry = NodePath("VBoxContainer/GridContainer/GameNameEntry")
+password_entry = NodePath("VBoxContainer/GridContainer/SecretEdit")
+is_lan = NodePath("VBoxContainer/GridContainer/IsLanOnlyCheck")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="UsernameLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_USERNAME_ENTRY"
+
+[node name="PlayerNameEntry" type="LineEdit" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Player1"
+
+[node name="GameNameLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_HOST_GAME_NAME_ENTRY"
+
+[node name="GameNameEntry" type="LineEdit" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "My Game"
+
+[node name="GamePasswordLabel" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_CONNECT_PASSWORD_ENTRY"
+
+[node name="SecretEdit" parent="VBoxContainer/GridContainer" instance=ExtResource("2_j4o6c")]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="IsLanOnly" type="Label" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_HOST_IS_LAN_ONLY"
+
+[node name="IsLanOnlyCheck" type="CheckButton" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Host" type="Button" parent="VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MP_HOST_HOST"
+
+[connection signal="text_changed" from="VBoxContainer/GridContainer/PlayerNameEntry" to="." method="_on_player_name_entry_text_changed"]
+[connection signal="pressed" from="VBoxContainer/GridContainer/Host" to="." method="_on_host_pressed"]
