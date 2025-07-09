@@ -2,13 +2,13 @@
 
 #include <concepts>
 
+#include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
 #include <openvic-simulation/types/Vector.hpp>
-#include "godot_cpp/classes/file_access.hpp"
 
 #define ERR(x) ((x) ? OK : FAILED)
 
@@ -85,6 +85,8 @@ namespace OpenVic::Utilities {
 	);
 
 	namespace literals {
-		constexpr real_t operator""_real(long double val) { return to_real_t(val); }
+		constexpr real_t operator""_real(long double val) {
+			return to_real_t(val);
+		}
 	}
 }

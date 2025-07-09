@@ -7,7 +7,7 @@
 
 namespace OpenVic {
 	class GUILineChart : public godot::Control {
-		GDCLASS(GUILineChart, godot::Control)
+		GDCLASS(GUILineChart, godot::Control);
 
 		GFX::LineChart const* gfx_line_chart = nullptr;
 

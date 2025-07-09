@@ -2,14 +2,15 @@
 
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
+
 #include <openvic-simulation/interface/GFXObject.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 
-//billboards, projections, and progress bar (no progress bar yet)
+// billboards, projections, and progress bar (no progress bar yet)
 
 namespace OpenVic {
 	class MapItemSingleton : public godot::Object {
-		GDCLASS(MapItemSingleton, godot::Object)
+		GDCLASS(MapItemSingleton, godot::Object);
 
 		static inline MapItemSingleton* singleton = nullptr;
 
@@ -23,11 +24,15 @@ namespace OpenVic {
 		~MapItemSingleton();
 
 	private:
-		void add_billboard_dict(GFX::Billboard const& billboard, godot::TypedArray<godot::Dictionary>& billboard_dict_array) const;
+		void add_billboard_dict( //
+			GFX::Billboard const& billboard, godot::TypedArray<godot::Dictionary>& billboard_dict_array
+		) const;
 		godot::TypedArray<godot::Dictionary> get_billboards() const;
 
-		void add_projection_dict(GFX::Projection const& projection, godot::TypedArray<godot::Dictionary>& projection_dict_array) const;
-		godot::TypedArray<godot::Dictionary> get_projections() const;		
+		void add_projection_dict( //
+			GFX::Projection const& projection, godot::TypedArray<godot::Dictionary>& projection_dict_array
+		) const;
+		godot::TypedArray<godot::Dictionary> get_projections() const;
 
 		godot::PackedVector2Array get_province_positions() const;
 		int32_t get_max_capital_count() const;

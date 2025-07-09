@@ -4,7 +4,7 @@
 
 namespace OpenVic {
 	class MapMesh : public godot::PrimitiveMesh {
-		GDCLASS(MapMesh, godot::PrimitiveMesh)
+		GDCLASS(MapMesh, godot::PrimitiveMesh);
 
 		float aspect_ratio = 2.0f, repeat_proportion = 0.5f;
 		int32_t subdivide_w = 0, subdivide_d = 0;

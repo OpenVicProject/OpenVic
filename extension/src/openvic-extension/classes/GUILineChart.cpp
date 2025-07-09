@@ -78,7 +78,8 @@ Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_nam
 
 	GFX::LineChart const* new_gfx_line_chart = sprite->cast_to<GFX::LineChart>();
 	ERR_FAIL_NULL_V_MSG(
-		new_gfx_line_chart, FAILED, vformat(
+		new_gfx_line_chart, FAILED,
+		vformat(
 			"Invalid type for GFX sprite %s: %s (expected %s)", new_gfx_line_chart_name,
 			Utilities::std_to_godot_string(sprite->get_type()),
 			Utilities::std_to_godot_string(GFX::LineChart::get_type_static())
@@ -181,10 +182,13 @@ Error GUILineChart::add_coloured_line(PackedFloat32Array const& line_values, Col
 	if (point_count <= 0) {
 		point_count = line_values.size();
 	} else {
-		ERR_FAIL_COND_V_MSG(point_count != line_values.size(), FAILED, vformat(
-			"Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d",
-			line_values.size(), point_count
-		));
+		ERR_FAIL_COND_V_MSG(
+			point_count != line_values.size(), FAILED,
+			vformat(
+				"Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d", line_values.size(),
+				point_count
+			)
+		);
 	}
 
 	Line2D* line = memnew(Line2D);

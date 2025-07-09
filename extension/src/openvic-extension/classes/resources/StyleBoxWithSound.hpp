@@ -11,7 +11,7 @@
 
 namespace OpenVic {
 	class StyleBoxWithSound : public godot::StyleBox {
-		GDCLASS(StyleBoxWithSound, godot::StyleBox)
+		GDCLASS(StyleBoxWithSound, godot::StyleBox);
 
 		godot::Ref<godot::StyleBox> style_box;
 		godot::StringName audio_bus;

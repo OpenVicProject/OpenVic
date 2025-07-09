@@ -167,9 +167,8 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 		);
 		const Ref<StyleBoxTexture> stylebox_texture = stylebox;
 		ERR_FAIL_NULL_V_MSG(
-			stylebox_texture, nullptr, vformat(
-				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
-			)
+			stylebox_texture, nullptr,
+			vformat("Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name())
 		);
 		const Ref<Texture2D> result = stylebox_texture->get_texture();
 		ERR_FAIL_NULL_V_MSG(
@@ -179,9 +178,7 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 		return result;
 	}
 	ERR_FAIL_V_MSG(
-		nullptr, vformat(
-			"Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
-		)
+		nullptr, vformat("Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class())
 	);
 }
 
