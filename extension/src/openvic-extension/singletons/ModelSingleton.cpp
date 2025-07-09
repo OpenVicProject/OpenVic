@@ -1,10 +1,12 @@
 #include "ModelSingleton.hpp"
 
 #include <numbers>
+#include <span>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/utility/Containers.hpp>
 
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -62,7 +64,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 		)
 	);
 
-	std::string actor_name = StringUtils::append_string_views(culture, name);
+	memory::string actor_name = StringUtils::append_string_views(culture, name);
 
 	GFX::Actor const* actor = get_actor(actor_name, false);
 
@@ -141,7 +143,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 	set_animation(move_key, actor.get_move_animation());
 	set_animation(attack_key, actor.get_attack_animation());
 
-	std::vector<GFX::Actor::Attachment> const& attachments = actor.get_attachments();
+	std::span<const GFX::Actor::Attachment> attachments = actor.get_attachments();
 
 	if (!attachments.empty()) {
 		static const StringName attachment_node_key = "node";
@@ -195,7 +197,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
 template<UnitType::branch_t Branch>
 bool ModelSingleton::add_unit_dict(
-	std::vector<UnitInstanceGroupBranched<Branch>*> const& units, TypedArray<Dictionary>& unit_array
+	std::span<UnitInstanceGroupBranched<Branch>* const> units, TypedArray<Dictionary>& unit_array
 ) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 
@@ -332,13 +334,13 @@ TypedArray<Dictionary> ModelSingleton::get_units() {
 
 	for (ProvinceInstance const& province : instance_manager->get_map_instance().get_province_instances()) {
 		if (province.get_province_definition().is_water()) {
-			if (!add_unit_dict(province.get_navies(), ret)) {
+			if (!add_unit_dict(std::span { province.get_navies() }, ret)) {
 				UtilityFunctions::push_error(
 					"Error adding navy to province \"", Utilities::std_to_godot_string(province.get_identifier()), "\""
 				);
 			}
 		} else {
-			if (!add_unit_dict(province.get_armies(), ret)) {
+			if (!add_unit_dict(std::span { province.get_armies() }, ret)) {
 				UtilityFunctions::push_error(
 					"Error adding army to province \"", Utilities::std_to_godot_string(province.get_identifier()), "\""
 				);
@@ -429,7 +431,7 @@ bool ModelSingleton::add_building_dict(
 	fvec2_t const* position_ptr = province_definition.get_building_position(&building.get_building_type());
 	const float rotation = province_definition.get_building_rotation(&building.get_building_type());
 
-	const std::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
+	const memory::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(

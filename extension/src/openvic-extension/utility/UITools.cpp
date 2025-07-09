@@ -26,6 +26,8 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
+#include <openvic-simulation/utility/Containers.hpp>
+
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
@@ -706,7 +708,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 	}
 	godot_panel->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
-	for (std::unique_ptr<GUI::Element> const& element : window.get_window_elements()) {
+	for (memory::unique_base_ptr<GUI::Element> const& element : window.get_window_elements()) {
 		Control* node = nullptr;
 		const bool element_ret = generate_element(element.get(), "", args.asset_manager, node);
 		if (node != nullptr) {

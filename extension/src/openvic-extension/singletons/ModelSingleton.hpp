@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #include <godot_cpp/classes/object.hpp>
 
 #include <openvic-simulation/interface/GFXObject.hpp>
@@ -40,7 +42,7 @@ namespace OpenVic {
 
 		template<UnitType::branch_t Branch>
 		bool add_unit_dict(
-			std::vector<UnitInstanceGroupBranched<Branch>*> const& units, godot::TypedArray<godot::Dictionary>& unit_array
+			std::span<UnitInstanceGroupBranched<Branch>* const> units, godot::TypedArray<godot::Dictionary>& unit_array
 		);
 
 		bool add_building_dict(
