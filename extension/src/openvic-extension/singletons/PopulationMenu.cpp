@@ -1,5 +1,7 @@
 #include "MenuSingleton.hpp"
 
+#include <span>
+
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/DefinitionManager.hpp>
@@ -537,7 +539,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<size_t> sorted_items;
 
 	const auto generate_sort_cache = [this, &localised_items, &sorted_items]<HasGetIdentifier T>(
-		IndexedMap<T, size_t>& cache, std::vector<T> const& items
+		IndexedMap<T, size_t>& cache, std::span<const T> items
 	) {
 		localised_items.resize(items.size());
 		sorted_items.resize(items.size());
@@ -565,23 +567,23 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 
 	generate_sort_cache(
 		population_menu.pop_type_sort_cache,
-		game_singleton->get_definition_manager().get_pop_manager().get_pop_types()
+		{ game_singleton->get_definition_manager().get_pop_manager().get_pop_types() }
 	);
 	generate_sort_cache(
 		population_menu.culture_sort_cache,
-		game_singleton->get_definition_manager().get_pop_manager().get_culture_manager().get_cultures()
+		{ game_singleton->get_definition_manager().get_pop_manager().get_culture_manager().get_cultures() }
 	);
 	generate_sort_cache(
 		population_menu.religion_sort_cache,
-		game_singleton->get_definition_manager().get_pop_manager().get_religion_manager().get_religions()
+		{ game_singleton->get_definition_manager().get_pop_manager().get_religion_manager().get_religions() }
 	);
 	generate_sort_cache(
 		population_menu.province_sort_cache,
-		instance_manager->get_map_instance().get_province_instances()
+		{ instance_manager->get_map_instance().get_province_instances() }
 	);
 	generate_sort_cache(
 		population_menu.rebel_type_sort_cache,
-		game_singleton->get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types()
+		{ game_singleton->get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types() }
 	);
 
 	return OK;

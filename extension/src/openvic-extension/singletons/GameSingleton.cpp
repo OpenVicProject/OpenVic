@@ -5,6 +5,7 @@
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/utility/Containers.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/singletons/AssetManager.hpp"
@@ -97,13 +98,13 @@ GameSingleton::~GameSingleton() {
 }
 
 void GameSingleton::setup_logger() {
-	Logger::set_info_func([](std::string&& str) {
+	Logger::set_info_func([](memory::string&& str) {
 		UtilityFunctions::print(Utilities::std_to_godot_string(str));
 	});
-	Logger::set_warning_func([](std::string&& str) {
+	Logger::set_warning_func([](memory::string&& str) {
 		UtilityFunctions::push_warning(Utilities::std_to_godot_string(str));
 	});
-	Logger::set_error_func([](std::string&& str) {
+	Logger::set_error_func([](memory::string&& str) {
 		UtilityFunctions::push_error(Utilities::std_to_godot_string(str));
 	});
 }
@@ -522,7 +523,7 @@ Error GameSingleton::_load_flag_sheet() {
 
 	/* Generate flag type - index lookup map */
 	flag_type_index_map.clear();
-	for (std::string const& type : government_type_manager.get_flag_types()) {
+	for (std::string_view const& type : government_type_manager.get_flag_types()) {
 		flag_type_index_map.emplace(Utilities::std_to_godot_string(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
