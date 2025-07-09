@@ -111,7 +111,7 @@ float GUIScrollbar::_value_to_ratio(int32_t val) const {
 }
 
 int32_t GUIScrollbar::_fp_to_value(const fixed_point_t val) const {
-	return (val - offset) * scale_denominator / scale_numerator;
+	return ((val - offset) * scale_denominator / scale_numerator).to_int32_t_rounded();
 }
 
 fixed_point_t GUIScrollbar::_get_scaled_value(const int32_t val) const {
