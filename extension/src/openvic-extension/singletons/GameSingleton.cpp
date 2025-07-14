@@ -81,6 +81,7 @@ GameSingleton* GameSingleton::get_singleton() {
 void GameSingleton::_on_gamestate_updated() {
 	_update_colour_image();
 	emit_signal(_signal_gamestate_updated());
+	gamestate_updated();
 }
 
 /* REQUIREMENTS:

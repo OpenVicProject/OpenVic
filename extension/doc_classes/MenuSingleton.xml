@@ -186,6 +186,12 @@
 			<description>
 			</description>
 		</method>
+		<method name="link_budget_menu_to_cpp">
+			<return type="void" />
+			<param index="0" name="godot_budget_menu" type="GUINode" />
+			<description>
+			</description>
+		</method>
 		<method name="population_menu_deselect_all_pop_filters">
 			<return type="int" enum="Error" />
 			<description>
