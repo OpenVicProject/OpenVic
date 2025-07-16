@@ -3,8 +3,11 @@
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/node_path.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -45,6 +48,24 @@ String const& GUILabel::get_substitution_marker() {
 String const& GUILabel::get_flag_marker() {
 	static const String FLAG_MARKER = String::chr(0x40); // @
 	return FLAG_MARKER;
+}
+
+void GUILabel::set_text_and_tooltip(
+	GUINode const& parent,
+	godot::NodePath const& path,
+	godot::StringName const& text_localisation_key,
+	godot::StringName const& tooltip_localisation_key
+) {
+	GUILabel* label_nullable = parent.get_gui_label_from_nodepath(path);
+	if (label_nullable != nullptr) {
+		GUILabel& label = *label_nullable;
+		label.set_text(
+			label.tr(text_localisation_key)
+		);
+		label.set_tooltip_string(
+			label.tr(tooltip_localisation_key)
+		);
+	}
 }
 
 void GUILabel::_bind_methods() {

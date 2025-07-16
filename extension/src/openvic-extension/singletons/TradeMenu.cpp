@@ -52,7 +52,6 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 				static const StringName supply_localisation_key = "SUPPLY";
 				static const StringName demand_localisation_key = "DEMAND";
 				static const StringName actual_bought_localisation_key = "ACTUAL_BOUGHT";
-				static const String val_replace_key = "$VAL$";
 
 				const fixed_point_t supply = good_instance.get_total_supply_yesterday();
 				const fixed_point_t demand = good_instance.get_total_demand_yesterday();
@@ -60,11 +59,11 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 				good_dict[demand_tooltip_key] = tr(
 					demand > supply ? in_demand_localisation_key : not_in_demand_localisation_key
 				) + get_tooltip_separator() + tr(supply_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(supply, 3)
+					Utilities::get_short_value_placeholder(), Utilities::fixed_point_to_string_dp(supply, 3)
 				) + "\n" + tr(demand_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(demand, 3)
+					Utilities::get_short_value_placeholder(), Utilities::fixed_point_to_string_dp(demand, 3)
 				) + "\n" + tr(actual_bought_localisation_key).replace(
-					val_replace_key, Utilities::fixed_point_to_string_dp(good_instance.get_quantity_traded_yesterday(), 3)
+					Utilities::get_short_value_placeholder(), Utilities::fixed_point_to_string_dp(good_instance.get_quantity_traded_yesterday(), 3)
 				);
 			}
 

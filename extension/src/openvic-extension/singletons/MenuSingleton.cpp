@@ -947,7 +947,6 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 		static const StringName rgo_production_localisation_key = "PROVINCEVIEW_GOODSINCOME";
 		static const String rgo_good_replace_key = "$GOODS$";
-		static const String value_replace_key = "$VALUE$";
 		static const StringName max_output_localisation_key = "PRODUCTION_OUTPUT_GOODS_TOOLTIP2";
 		static const String curr_replace_key = "$CURR$";
 		static const StringName output_explanation_localisation_key = "PRODUCTION_OUTPUT_EXPLANATION";
@@ -968,7 +967,10 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			rgo_production_template_string,
 			tr(rgo_production_localisation_key).replace(
 				rgo_good_replace_key, tr(Utilities::std_to_godot_string(rgo_good.get_identifier()))
-			).replace(value_replace_key, Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)),
+			).replace(
+				Utilities::get_long_value_placeholder(),
+				Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)
+			),
 			tr(max_output_localisation_key).replace(curr_replace_key, Utilities::fixed_point_to_string_dp(max_output, 2)),
 			tr(output_explanation_localisation_key),
 			tr(base_output_localisation_key).replace(base_replace_key, Utilities::fixed_point_to_string_dp(base_output, 2)),
@@ -994,7 +996,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 		ret[province_info_rgo_employment_tooltip_key] = vformat(
 			rgo_employment_template_string,
-			tr(employment_localisation_key).replace(value_replace_key, {}),
+			tr(employment_localisation_key).replace(Utilities::get_long_value_placeholder(), {}),
 			tr(employee_count_localisation_key).replace(
 				employee_replace_key, String::num_int64(rgo.get_total_employees_count_cache())
 			).replace(
@@ -1307,8 +1309,6 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		fixed_point_t daily_base_research_points;
 
-		static const String value_replace_key = "$VALUE$";
-
 		for (auto const& [pop_type, research_points] : country->get_research_points_from_pop_types()) {
 			static const StringName pop_type_research_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOOLTIP";
 			static const String pop_type_replace_key = "$POPTYPE$";
@@ -1320,7 +1320,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			research_points_tooltip += tr(pop_type_research_localisation_key).replace(
 				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
 			).replace(
-				value_replace_key, Utilities::fixed_point_to_string_dp(research_points, 2)
+				Utilities::get_long_value_placeholder(),
+				Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
 					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
@@ -1341,7 +1342,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// potential (and some guaranteed) lines below start with them.
 		static const StringName daily_base_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_BASE_TOOLTIP";
 		research_points_tooltip += tr(daily_base_research_points_localisation_key).replace(
-			value_replace_key, Utilities::fixed_point_to_string_dp(daily_base_research_points, 2)
+			Utilities::get_long_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(daily_base_research_points, 2)
 		);
 
 		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
@@ -1360,16 +1362,17 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		static const StringName daily_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOTAL_TOOLTIP";
 		research_points_tooltip += "\n" + tr(daily_research_points_localisation_key).replace(
-			value_replace_key, Utilities::fixed_point_to_string_dp(country->get_daily_research_points(), 2)
+			Utilities::get_long_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(country->get_daily_research_points(), 2)
 		);
 
 		// In the base game this section is only shown when no research is set, but it's useful to show it always
 		research_points_tooltip += "\n" + get_tooltip_separator();
 
 		static const StringName accumulated_research_points_localisation_key = "RP_ACCUMULATED";
-		static const String val_replace_key = "$VAL$";
 		research_points_tooltip += tr(accumulated_research_points_localisation_key).replace(
-			val_replace_key, Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile(), 1)
+			Utilities::get_short_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile(), 1)
 		);
 
 		ret[research_points_tooltip_key] = std::move(research_points_tooltip);
@@ -1411,8 +1414,6 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		fixed_point_t monthly_base_leadership_points;
 
-		static const String value_replace_key = "$VALUE$";
-
 		for (auto const& [pop_type, leadership_points] : country->get_leadership_points_from_pop_types()) {
 			static const StringName pop_type_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_TOOLTIP";
 			static const String pop_type_replace_key = "$POPTYPE$";
@@ -1424,7 +1425,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			leadership_tooltip += tr(pop_type_leadership_localisation_key).replace(
 				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
 			).replace(
-				value_replace_key, Utilities::fixed_point_to_string_dp(leadership_points, 2)
+				Utilities::get_long_value_placeholder(),
+				Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
 					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
@@ -1445,7 +1447,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// potential (and some guaranteed) lines below start with them.
 		static const StringName monthly_base_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_BASE_TOOLTIP";
 		leadership_tooltip += tr(monthly_base_leadership_localisation_key).replace(
-			value_replace_key, Utilities::fixed_point_to_string_dp(monthly_base_leadership_points, 2)
+			Utilities::get_long_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(monthly_base_leadership_points, 2)
 		);
 
 		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
@@ -1454,7 +1457,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		static const StringName monthly_leadership_points_localisation_key = "TECH_DAILY_LEADERSHIP_TOTAL_TOOLTIP";
 		leadership_tooltip += "\n" + tr(monthly_leadership_points_localisation_key).replace(
-			value_replace_key, Utilities::fixed_point_to_string_dp(country->get_monthly_leadership_points(), 2)
+			Utilities::get_long_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(country->get_monthly_leadership_points(), 2)
 		);
 
 		const fixed_point_t max_leadership_point_stockpile =
@@ -1532,7 +1536,14 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 	}
 
 	auto const& strata_keys = game_singleton.get_definition_manager().get_pop_manager().get_stratas();
-	budget_menu = memory::make_unique<BudgetMenu>(*godot_budget_menu, strata_keys);
+	ModifierEffectCache const& modifier_effect_cache = game_singleton.get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
+	CountryDefines const& country_defines = game_singleton.get_definition_manager().get_define_manager().get_country_defines();
+	budget_menu = memory::make_unique<BudgetMenu>(
+		*godot_budget_menu,
+		strata_keys,
+		modifier_effect_cache,
+		country_defines
+	);
 	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
 }
 

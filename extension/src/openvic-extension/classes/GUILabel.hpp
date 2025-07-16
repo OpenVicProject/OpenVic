@@ -11,6 +11,11 @@
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
+namespace godot {
+	struct NodePath;
+	struct StringName;
+}
+
 namespace OpenVic {
 	class GUILabel : public godot::Control {
 		GDCLASS(GUILabel, godot::Control)
@@ -68,6 +73,12 @@ namespace OpenVic {
 		static godot::String const& get_currency_marker();
 		static godot::String const& get_substitution_marker();
 		static godot::String const& get_flag_marker();
+		static void set_text_and_tooltip(
+			GUINode const& parent,
+			godot::NodePath const& path,
+			godot::StringName const& text_localisation_key,
+			godot::StringName const& tooltip_localisation_key
+		);
 
 		GUILabel();
 

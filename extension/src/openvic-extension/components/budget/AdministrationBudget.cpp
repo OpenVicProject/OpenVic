@@ -2,6 +2,7 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 
+#include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 
@@ -10,15 +11,36 @@ using namespace OpenVic;
 AdministrationBudget::AdministrationBudget(GUINode const& parent):
 	SliderBudgetComponent(
 		parent,
+		"BUDGET_SLIDER_ADMINISTRATION",
 		EXPENSES,
 		"./country_budget/exp_1_slider",
 		"./country_budget/exp_val_1"
-	)
+	),
+	BudgetExpenseComponent("BUDGET_SLIDER_ADMINISTRATION")
 {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
 	slider.set_block_signals(false);
+	
+	GUILabel::set_text_and_tooltip(
+		parent, "./country_budget/admin_desc",
+		"ADMINISTRATION","ADM_DESC"
+	);
+
+	if (budget_label != nullptr) {
+		budget_label->set_tooltip_string(
+			godot::vformat(
+				"%s\n--------------\n%s",
+				budget_label->tr("DIST_ADMINISTRATION"),
+				budget_label->tr("ADM_DESC")
+			)
+		);
+	}
+}
+
+fixed_point_t AdministrationBudget::get_expenses() const {
+	return std::max(fixed_point_t::_0, -get_balance());
 }
 
 fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
