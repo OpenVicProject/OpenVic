@@ -164,7 +164,7 @@ void BudgetMenu::update() {
 		godot::vformat(
 			"%s%%",
 			Utilities::fixed_point_to_string_dp(
-				100 * country.get_administrative_efficiency(),
+				100 * country.get_administrative_efficiency_from_administrators(),
 				1
 			)
 		)
