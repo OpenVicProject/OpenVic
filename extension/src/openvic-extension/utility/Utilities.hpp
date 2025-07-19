@@ -2,18 +2,17 @@
 
 #include <concepts>
 
+#include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
 #include <openvic-simulation/types/Vector.hpp>
-#include "godot_cpp/classes/file_access.hpp"
 
 #define ERR(x) ((x) ? OK : FAILED)
 
 namespace OpenVic::Utilities {
-
 	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
 		return str.utf8().get_data();
 	}
@@ -26,6 +25,11 @@ namespace OpenVic::Utilities {
 		return file->get_buffer(size).get_string_from_ascii();
 	}
 
+	godot::StringName const& get_short_value_placeholder();
+	godot::StringName const& get_long_value_placeholder();
+	godot::StringName const& get_percentage_value_placeholder();
+	godot::StringName const& get_colour_and_sign(const fixed_point_t value);
+
 	godot::String int_to_string_suffixed(int64_t val);
 
 	godot::String int_to_string_commas(int64_t val);
@@ -35,6 +39,8 @@ namespace OpenVic::Utilities {
 	godot::String float_to_string_dp(float val, int32_t decimal_places);
 
 	godot::String fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_places);
+
+	godot::String percentage_to_string_dp(fixed_point_t val, int32_t decimal_places);
 
 	// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 	godot::String float_to_string_dp_dynamic(float val);

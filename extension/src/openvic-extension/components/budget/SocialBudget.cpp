@@ -13,10 +13,12 @@ using namespace OpenVic;
 SocialBudget::SocialBudget(GUINode const& parent):
 	SliderBudgetComponent(
 		parent,
+		"BUDGET_SLIDER_SOCIAL_SPENDING",
 		EXPENSES,
 		"./country_budget/exp_2_slider",
 		"./country_budget/exp_val_2"
 	),
+	BudgetExpenseComponent("BUDGET_SLIDER_SOCIAL_SPENDING"),
 	pensions_label{*parent.get_gui_label_from_nodepath("./country_budget/exp_val_2")}, //TODO figure out how to get their path
 	unemployment_subsidies_label{*parent.get_gui_label_from_nodepath("./country_budget/exp_val_2")}
 {
@@ -24,6 +26,25 @@ SocialBudget::SocialBudget(GUINode const& parent):
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
 	slider.set_block_signals(false);
+
+	GUILabel::set_text_and_tooltip(
+		parent, "./country_budget/soc_stand_desc",
+		"SOCIAL_SPENDING","SOCIAL_DESC2"
+	);
+
+	if (budget_label != nullptr) {
+		budget_label->set_tooltip_string(
+			godot::vformat(
+				"%s\n--------------\n%s",
+				budget_label->tr("DIST_SOCIAL"),
+				budget_label->tr("SOCIAL_DESC2")
+			)
+		);
+	}
+}
+
+fixed_point_t SocialBudget::get_expenses() const {
+	return std::max(fixed_point_t::_0, -get_balance());
 }
 
 fixed_point_t SocialBudget::calculate_budget_and_update_custom(
