@@ -1,13 +1,12 @@
 #pragma once
 
-#include <vector>
-
 #include <godot_cpp/classes/object.hpp>
 
 #include <openvic-simulation/types/Signal.hpp>
 #include <openvic-simulation/utility/ForwardableSpan.hpp>
 
 #include "openvic-extension/components/budget/AdministrationBudget.hpp"
+#include "openvic-extension/components/budget/DiplomaticBudget.hpp"
 #include "openvic-extension/components/budget/EducationBudget.hpp"
 #include "openvic-extension/components/budget/MilitaryBudget.hpp"
 #include "openvic-extension/components/budget/NationalStockpileBudget.hpp"
@@ -22,14 +21,20 @@ namespace OpenVic {
 
 	struct BudgetMenu {
 	private:
+		static godot::StringName generate_projected_income_template(const size_t tax_budgets_size);
+
+		const godot::StringName projected_income_template;
+		godot::Array projected_income_args;
+		godot::Array projected_expenses_args;
 		memory::vector<connection> connections;
-		GUILabel* administrative_efficiency_label = nullptr;
-		GUILabel* cash_stockpile_label = nullptr;
-		GUILabel* gold_income_label = nullptr;
-		GUILabel* projected_balance_label = nullptr;
-		GUILabel* projected_expenses_label = nullptr;
-		GUILabel* projected_income_label = nullptr;
+		GUILabel& administrative_efficiency_label;
+		GUILabel& cash_stockpile_label;
+		GUILabel& gold_income_label;
+		GUILabel& projected_balance_label;
+		GUILabel& projected_expenses_label;
+		GUILabel& projected_income_label;
 		AdministrationBudget administration_budget;
+		DiplomaticBudget diplomatic_budget;
 		EducationBudget education_budget;
 		MilitaryBudget military_budget;
 		NationalStockpileBudget national_stockpile_budget;
@@ -44,7 +49,12 @@ namespace OpenVic {
 		void update_projected_income_and_balance();
 		void update_all_projections();
 	public:
-		BudgetMenu(GUINode const& parent, utility::forwardable_span<const Strata> strata_keys);
+		BudgetMenu(
+			GUINode const& parent,
+			utility::forwardable_span<const Strata> strata_keys,
+			ModifierEffectCache const& modifier_effect_cache,
+			CountryDefines const& country_defines
+		);
 		void update();
 	};
 }

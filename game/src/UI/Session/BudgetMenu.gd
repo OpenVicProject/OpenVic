@@ -12,9 +12,6 @@ var _interest_val_label : GUILabel
 var _overseas_cost_val_label : GUILabel
 var _ind_sub_val_label : GUILabel
 
-# others
-var _diplomatic_balance_label : GUILabel
-
 var _lower_class_chart : GUIPieChart
 var _middle_class_chart : GUIPieChart
 var _upper_class_chart : GUIPieChart
@@ -46,8 +43,6 @@ func _ready() -> void:
 	_interest_val_label = get_gui_label_from_nodepath(^"./country_budget/interest_val")
 	# costs
 	_ind_sub_val_label = get_gui_label_from_nodepath(^"./country_budget/ind_sub_val")
-	# others
-	_diplomatic_balance_label = get_gui_label_from_nodepath(^"./country_budget/diplomatic_balance")
 
 	# debt buttons
 	var _tab_takenloans_button : GUIIconButton = get_gui_icon_button_from_nodepath(^"./country_budget/tab_takenloans")
@@ -104,10 +99,6 @@ func _update_info() -> void:
 
 		if _ind_sub_val_label:
 			_ind_sub_val_label.text = "%s¤" % GUINode.float_to_string_dp(_incVal * 6, 1)
-
-		if _diplomatic_balance_label:
-			# TODO - check colours and +/- when non-zero
-			_diplomatic_balance_label.text = "§Y%s¤" % GUINode.float_to_string_dp(_incVal * 8, 1)
 
 		# TODO - set strata tax and debt charts
 		# TODO - update loans taken/given list and enable/disable take/give loan buttons

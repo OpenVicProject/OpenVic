@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/translation_server.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <gli/convert.hpp>
@@ -10,6 +11,30 @@
 
 using namespace godot;
 using namespace OpenVic;
+
+godot::StringName const& Utilities::get_short_value_placeholder() {
+	static const godot::StringName value_placeholder = "$VAL$";
+	return value_placeholder;
+}
+godot::StringName const& Utilities::get_long_value_placeholder() {
+	static const godot::StringName value_placeholder = "$VALUE$";
+	return value_placeholder;
+}
+godot::StringName const& Utilities::get_percentage_value_placeholder() {
+	static const godot::StringName value_placeholder = "$PERC$";
+	return value_placeholder;
+}
+godot::StringName const& Utilities::get_colour_and_sign(const fixed_point_t value) {
+	static const godot::StringName green_plus = "G+";
+	static const godot::StringName red = "R";
+	static const godot::StringName yellow = "Y";
+
+	return value > 0
+		? green_plus
+		: value < 0
+			? red
+			: yellow;
+}
 
 /* Int to 2 decimal place string in terms of the largest suffix less than or equal to it,
  * or normal integer string if less than the smallest suffix. */
@@ -99,6 +124,16 @@ String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_pl
 	// We could use fixed point's own to_string method, but that allocates an intermediate string so better to go via float
 	// return Utilities::std_to_godot_string(val.to_string(decimal_places));
 	return Utilities::float_to_string_dp(val.to_float(), decimal_places);
+}
+
+String Utilities::percentage_to_string_dp(fixed_point_t val, int32_t decimal_places) {
+	return godot::vformat(
+		"%s%%",
+		Utilities::float_to_string_dp(
+			(100 * val).to_float(),
+			decimal_places
+		)
+	);
 }
 
 String Utilities::float_to_string_dp_dynamic(float val) {

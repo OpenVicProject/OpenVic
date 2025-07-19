@@ -119,10 +119,9 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 			definition_manager.get_military_manager().get_leader_trait_manager().get_leader_prestige_modifier() * prestige;
 
 		static const StringName prestige_localisation_key = "PRESTIGE_SCORE";
-		static const String value_replace_key = "$VAL$";
 
 		String prestige_tooltip = tr(prestige_localisation_key).replace(
-			value_replace_key, Utilities::fixed_point_to_string_dp(prestige * 100, 2) + "%"
+			Utilities::get_short_value_placeholder(), Utilities::fixed_point_to_string_dp(prestige * 100, 2) + "%"
 		);
 
 		tooltip += "\n" + prestige_tooltip;
@@ -137,10 +136,10 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		static const StringName organisation_localisation_key = "PRESTIGE_MAX_ORG_BONUS";
 
 		prestige_tooltip += "\n" + tr(morale_localisation_key).replace(
-			value_replace_key,
+			Utilities::get_short_value_placeholder(),
 			_make_modifier_effect_value_coloured(morale_effect, modifier_value.get_effect(morale_effect), true)
 		) + "\n" + tr(organisation_localisation_key).replace(
-			value_replace_key,
+			Utilities::get_short_value_placeholder(),
 			_make_modifier_effect_value_coloured(organisation_effect, modifier_value.get_effect(organisation_effect), true)
 		);
 
@@ -397,15 +396,20 @@ Dictionary MenuSingleton::get_military_menu_info() {
 
 	static const StringName war_exhaution_localisation_key = "MILITARY_WAR_EXHAUSTION_TOOLTIP";
 	static const StringName max_war_exhaution_localisation_key = "MILITARY_MAX_WAR_EXHAUSTION_TOOLTIP";
-	static const StringName value_replace_key = "$VALUE$";
 	static const String current_effects_localisation_key = "WEX_EFFECTS";
 	static const String war_exhaustion_tooltip_template_string = "%s%s\n\n%s%s" + get_tooltip_separator() + "%s%s";
 
 	ret[military_info_war_exhaustion_tooltip_key] = vformat(
 		war_exhaustion_tooltip_template_string,
-		tr(war_exhaution_localisation_key).replace(value_replace_key, war_exhaustion_string),
+		tr(war_exhaution_localisation_key).replace(
+			Utilities::get_long_value_placeholder(),
+			war_exhaustion_string
+		),
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_war_exhaustion_monthly()),
-		tr(max_war_exhaution_localisation_key).replace(value_replace_key, max_war_exhaustion_string),
+		tr(max_war_exhaution_localisation_key).replace(
+			Utilities::get_long_value_placeholder(),
+			max_war_exhaustion_string
+		),
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_max_war_exhaustion()),
 		tr(current_effects_localisation_key),
 		_make_modifier_effects_tooltip(static_modifier_cache.get_war_exhaustion() * country->get_war_exhaustion())
@@ -479,9 +483,8 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	ret[military_info_combat_width_key] = country->get_combat_width();
 	{
 		static const StringName base_value_combat_width_localisation_key = "COMWID_BASE";
-		static const String val_replace_key = "$VAL$";
 		String combat_width_tooltip = tr(base_value_combat_width_localisation_key).replace(
-			val_replace_key, String::num_uint64(
+			Utilities::get_short_value_placeholder(), String::num_uint64(
 				definition_manager.get_define_manager().get_military_defines().get_base_combat_width()
 			)
 		);
@@ -515,14 +518,14 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	{
 		static const StringName mobilisation_size_tooltip_localisation_key = "MOB_SIZE_IRO";
 		static const StringName mobilisation_size_tech_tooltip_localisation_key = "MOB_FROM_TECH";
-		static const String mobilisation_size_tooltip_replace_value_key = "$VALUE$";
 
 		const fixed_point_t mobilisation_size_from_tech = country->get_modifier_effect_value(
 			*modifier_effect_cache.get_mobilisation_size_tech()
 		);
 
 		String military_info_mobilisation_size_tooltip = tr(mobilisation_size_tooltip_localisation_key).replace(
-			mobilisation_size_tooltip_replace_value_key, Utilities::fixed_point_to_string_dp(
+			Utilities::get_long_value_placeholder(),
+			Utilities::fixed_point_to_string_dp(
 				(
 					country->get_modifier_effect_value(*modifier_effect_cache.get_mobilisation_size_country()) +
 					mobilisation_size_from_tech
@@ -532,7 +535,8 @@ Dictionary MenuSingleton::get_military_menu_info() {
 
 		if (mobilisation_size_from_tech != fixed_point_t::_0) {
 			military_info_mobilisation_size_tooltip += "\n" + tr(mobilisation_size_tech_tooltip_localisation_key).replace(
-				mobilisation_size_tooltip_replace_value_key, _make_modifier_effect_value_coloured(
+				Utilities::get_long_value_placeholder(),
+				_make_modifier_effect_value_coloured(
 					*modifier_effect_cache.get_mobilisation_size_country(), mobilisation_size_from_tech, false
 				)
 			);
@@ -563,14 +567,14 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		if (research_contribution != fixed_point_t::_0) {
 			static const StringName research_contribution_negative_key = "MOB_ECO_IMPACT";
 			static const StringName research_contribution_positive_key = "MOB_ECO_PENALTY";
-			static const String replace_value_key = "$VALUE$";
 
 			mobilisation_economy_impact_tooltip = tr(
 				research_contribution < fixed_point_t::_0
 					? research_contribution_negative_key
 					: research_contribution_positive_key
 			).replace(
-				replace_value_key, _make_modifier_effect_value(
+				Utilities::get_long_value_placeholder(),
+				_make_modifier_effect_value(
 					*modifier_effect_cache.get_mobilisation_economy_impact_tech(), research_contribution.abs(), false
 				)
 			) + mobilisation_economy_impact_tooltip;

@@ -10,14 +10,20 @@ using namespace OpenVic;
 NavyStockpileBudget::NavyStockpileBudget(GUINode const& parent):
 	SliderBudgetComponent(
 		parent,
+		"MILITARY_SPENDINGS_NAVAL",
 		EXPENSES,
 		"./country_budget/naval_stockpile_slider"
-	)
+	),
+	BudgetExpenseComponent("MILITARY_SPENDINGS_NAVAL")
 {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
 	slider.set_block_signals(false);
+}
+
+fixed_point_t NavyStockpileBudget::get_expenses() const {
+	return std::max(fixed_point_t::_0, -get_balance());
 }
 
 fixed_point_t NavyStockpileBudget::calculate_budget_and_update_custom(
