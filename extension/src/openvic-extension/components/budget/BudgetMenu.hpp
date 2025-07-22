@@ -27,7 +27,6 @@ namespace OpenVic {
 		godot::Array projected_income_args;
 		godot::Array projected_expenses_args;
 		memory::vector<connection> connections;
-		GUILabel& administrative_efficiency_label;
 		GUILabel& cash_stockpile_label;
 		GUILabel& gold_income_label;
 		GUILabel& projected_balance_label;

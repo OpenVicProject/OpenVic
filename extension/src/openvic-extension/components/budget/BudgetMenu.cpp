@@ -18,13 +18,12 @@ BudgetMenu::BudgetMenu(
 	utility::forwardable_span<const Strata> strata_keys,
 	ModifierEffectCache const& modifier_effect_cache,
 	CountryDefines const& country_defines
-) : administrative_efficiency_label{*parent.get_gui_label_from_nodepath("./country_budget/admin_efficiency")},
-	cash_stockpile_label{*parent.get_gui_label_from_nodepath("./country_budget/total_funds_val")},
+) : cash_stockpile_label{*parent.get_gui_label_from_nodepath("./country_budget/total_funds_val")},
 	gold_income_label{*parent.get_gui_label_from_nodepath("./country_budget/gold_inc")},
 	projected_balance_label{*parent.get_gui_label_from_nodepath("./country_budget/balance")},
 	projected_expenses_label{*parent.get_gui_label_from_nodepath("./country_budget/total_exp")},
 	projected_income_label{*parent.get_gui_label_from_nodepath("./country_budget/total_inc")},
-	administration_budget{parent},
+	administration_budget{parent,country_defines},
 	diplomatic_budget{parent},
 	education_budget{parent},
 	military_budget{parent},
@@ -210,15 +209,6 @@ void BudgetMenu::update() {
 	};
 	update_all_projections();
 
-	administrative_efficiency_label.set_text(
-		godot::vformat(
-			"%s%%",
-			Utilities::fixed_point_to_string_dp(
-				100 * country.get_administrative_efficiency_from_administrators(),
-				1
-			)
-		)
-	);
 	const fixed_point_t gold_income = country.get_gold_income();
 	gold_income_label.set_text(
 		Utilities::format_with_currency(
