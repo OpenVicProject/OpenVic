@@ -89,7 +89,7 @@ void SliderBudgetComponent::update_slider_tooltip(
 	);
 	const godot::String localised = slider.tr(slider_tooltip_localisation_key);
 	if (localised.contains(Utilities::get_short_value_placeholder())) {
-		tooltip = godot::vformat(
+		tooltip = Utilities::format(
 			"%s%%",
 			localised.replace(
 				Utilities::get_short_value_placeholder(),
@@ -97,7 +97,7 @@ void SliderBudgetComponent::update_slider_tooltip(
 			)
 		);
 	} else {
-		tooltip = godot::vformat(
+		tooltip = Utilities::format(
 			"%s%s%%",
 			localised,
 			percentage_text

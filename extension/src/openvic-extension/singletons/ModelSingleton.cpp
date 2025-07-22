@@ -45,7 +45,7 @@ GFX::Actor const* ModelSingleton::get_actor(std::string_view name, bool error_on
 		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
 
 	if (error_on_fail) {
-		ERR_FAIL_NULL_V_MSG(actor, nullptr, vformat("Failed to find actor \"%s\"", Utilities::std_to_godot_string(name)));
+		ERR_FAIL_NULL_V_MSG(actor, nullptr, Utilities::format("Failed to find actor \"%s\"", Utilities::std_to_godot_string(name)));
 	}
 
 	return actor;
@@ -58,7 +58,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	ERR_FAIL_COND_V_MSG(
-		culture.empty() || name.empty(), nullptr, vformat(
+		culture.empty() || name.empty(), nullptr, Utilities::format(
 			"Failed to find actor \"%s\" for culture \"%s\" - neither can be empty",
 			Utilities::std_to_godot_string(name), Utilities::std_to_godot_string(culture)
 		)
@@ -87,7 +87,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	}
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, nullptr, vformat(
+		actor, nullptr, Utilities::format(
 			"Failed to find actor \"%s\" for culture \"%s\"", Utilities::std_to_godot_string(name),
 			Utilities::std_to_godot_string(culture)
 		)
@@ -160,7 +160,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				GFX::Actor const* attachment_actor = get_actor(attachment.get_actor_name());
 
 				ERR_CONTINUE_MSG(
-					attachment_actor == nullptr, vformat(
+					attachment_actor == nullptr, Utilities::format(
 						"Failed to find \"%s\" attachment actor for actor \"%s\"",
 						Utilities::std_to_godot_string(attachment.get_actor_name()),
 						Utilities::std_to_godot_string(actor.get_name())
@@ -224,14 +224,14 @@ bool ModelSingleton::add_unit_dict(
 
 	/* Last unit to enter the province is shown on top. */
 	_UnitInstanceGroup const& unit = *units.back();
-	ERR_FAIL_COND_V_MSG(unit.empty(), false, vformat("Empty unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())));
+	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())));
 
 	CountryDefinition const* country = unit.get_country()->get_country_definition();
 
 	GraphicalCultureType const& graphical_culture_type = country->get_graphical_culture();
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
-		display_unit_type, false, vformat(
+		display_unit_type, false, Utilities::format(
 			"Failed to get display unit type for unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())
 		)
 	);
@@ -269,7 +269,7 @@ bool ModelSingleton::add_unit_dict(
 	);
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, vformat(
+		actor, false, Utilities::format(
 			"Failed to find \"%s\" actor of graphical culture type \"%s\" for unit \"%s\"",
 			Utilities::std_to_godot_string(display_unit_type->get_sprite()),
 			Utilities::std_to_godot_string(graphical_culture_type.get_identifier()),
@@ -290,7 +290,7 @@ bool ModelSingleton::add_unit_dict(
 			dict[mount_model_key] = get_model_dict(*mount_actor);
 			dict[mount_attach_node_key] = Utilities::std_to_godot_string(mount_attach_node_name);
 		} else {
-			UtilityFunctions::push_error(vformat(
+			UtilityFunctions::push_error(Utilities::format(
 				"Failed to find \"%s\" mount actor of graphical culture type \"%s\" for unit \"%s\"",
 				Utilities::std_to_godot_string(mount_actor_name),
 				Utilities::std_to_godot_string(graphical_culture_type.get_identifier()),
@@ -435,7 +435,7 @@ bool ModelSingleton::add_building_dict(
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, vformat(
+		actor, false, Utilities::format(
 			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"",
 			Utilities::std_to_godot_string(actor_name), Utilities::std_to_godot_string(building.get_identifier()),
 			Utilities::std_to_godot_string(province.get_identifier())

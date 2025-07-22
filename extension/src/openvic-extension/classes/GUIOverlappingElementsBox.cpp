@@ -101,7 +101,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 		return OK;
 	} else {
 		ERR_FAIL_NULL_V_MSG(
-			gui_child_element, FAILED, vformat(
+			gui_child_element, FAILED, Utilities::format(
 				"GUIOverlappingElementsBox child element is null (child_count = %d, new_count = %d)", child_count, new_count
 			)
 		);
@@ -115,7 +115,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 				err = FAILED;
 			}
 			ERR_FAIL_NULL_V_MSG(
-				child, FAILED, vformat(
+				child, FAILED, Utilities::format(
 					"Failed to generate GUIOverlappingElementsBox child element %s (child_count = %d, new_count = %d)",
 					name, child_count, new_count
 				)
@@ -172,11 +172,11 @@ Error GUIOverlappingElementsBox::set_gui_child_element_name(
 	}
 	ERR_FAIL_COND_V_MSG(
 		gui_child_element_file.is_empty(), FAILED,
-		vformat("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
+		Utilities::format("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
 	);
 	ERR_FAIL_COND_V_MSG(
 		gui_child_element_name.is_empty(), FAILED,
-		vformat("GUI child element name is empty but file name is not: %s", gui_child_element_file)
+		Utilities::format("GUI child element name is empty but file name is not: %s", gui_child_element_file)
 	);
 	GUI::Element const* const new_gui_child_element = UITools::get_gui_element(gui_child_element_file, gui_child_element_name);
 	ERR_FAIL_NULL_V(new_gui_child_element, FAILED);

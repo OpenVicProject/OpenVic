@@ -218,7 +218,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 
 			static const String top_producer_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: %s";
 
-			tooltip += vformat(
+			tooltip += Utilities::format(
 				top_producer_template_string,
 				Utilities::std_to_godot_string(country->get_identifier()),
 				_get_country_name(*country),

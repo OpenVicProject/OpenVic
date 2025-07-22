@@ -390,7 +390,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	static const String war_exhaustion_template_string = "%s/%s";
 	const String war_exhaustion_string = Utilities::fixed_point_to_string_dp(country->get_war_exhaustion(), 2);
 	const String max_war_exhaustion_string = Utilities::fixed_point_to_string_dp(country->get_war_exhaustion_max(), 2);
-	ret[military_info_war_exhaustion_key] = vformat(
+	ret[military_info_war_exhaustion_key] = Utilities::format(
 		war_exhaustion_template_string, war_exhaustion_string, max_war_exhaustion_string
 	);
 
@@ -399,7 +399,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	static const String current_effects_localisation_key = "WEX_EFFECTS";
 	static const String war_exhaustion_tooltip_template_string = "%s%s\n\n%s%s" + get_tooltip_separator() + "%s%s";
 
-	ret[military_info_war_exhaustion_tooltip_key] = vformat(
+	ret[military_info_war_exhaustion_tooltip_key] = Utilities::format(
 		war_exhaustion_tooltip_template_string,
 		tr(war_exhaution_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),

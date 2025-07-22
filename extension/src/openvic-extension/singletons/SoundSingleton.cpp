@@ -81,7 +81,7 @@ Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
 
 	const Ref<AudioStreamMP3> song = AudioStreamMP3::load_from_file(path);
 
-	ERR_FAIL_NULL_V_MSG(song, nullptr, vformat("Failed to load music file: %s", path));
+	ERR_FAIL_NULL_V_MSG(song, nullptr, Utilities::format("Failed to load music file: %s", path));
 	tracks.emplace(std::move(name), song);
 
 	return song;
@@ -91,7 +91,7 @@ Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
 // playing the whole time. Solution: load it first and separately
 bool SoundSingleton::load_title_theme() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
+	ERR_FAIL_NULL_V_MSG(game_singleton, false, Utilities::format("Error retrieving GameSingleton"));
 
 	static constexpr std::string_view music_directory = "music";
 	bool ret = false;
@@ -110,7 +110,7 @@ bool SoundSingleton::load_title_theme() {
 		String file_stem = to_define_file_name(file, music_folder);
 
 		if (file_stem == title_theme_name.data()) {
-			ERR_BREAK_MSG(!get_song(file).is_valid(), vformat("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
+			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
 
 			String name = to_define_file_name(file, music_folder);
 			title_theme = name;
@@ -128,7 +128,7 @@ bool SoundSingleton::load_title_theme() {
 
 bool SoundSingleton::load_music() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
+	ERR_FAIL_NULL_V_MSG(game_singleton, false, Utilities::format("Error retrieving GameSingleton"));
 
 	static constexpr std::string_view music_directory = "music";
 	bool ret = true;
@@ -149,7 +149,7 @@ bool SoundSingleton::load_music() {
 		}
 
 		if (!get_song(file).is_valid()) {
-			ERR_PRINT(vformat("Failed to load song at path %s.", std_to_godot_string(file_name.string())));
+			ERR_PRINT(Utilities::format("Failed to load song at path %s.", std_to_godot_string(file_name.string())));
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}
@@ -171,7 +171,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 	const Ref<AudioStreamWAV> sound = AudioStreamWAV::load_from_file(path);
 
 	ERR_FAIL_NULL_V_MSG(
-		sound, nullptr, vformat("Failed to load sound file %s", path) // named %s, path
+		sound, nullptr, Utilities::format("Failed to load sound file %s", path) // named %s, path
 	);
 
 	sfx.emplace(std::move(name), sound);
@@ -182,7 +182,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
 	sfx_define_map_t::iterator it = sfx_define.find(path);
 	ERR_FAIL_COND_V_MSG(
-		it == sfx_define.end(), nullptr, vformat("Attempted to retrieve sound stream at invalid index %s.", path)
+		it == sfx_define.end(), nullptr, Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
 	);
 
 	return it.value().audioStream;
@@ -203,7 +203,7 @@ bool SoundSingleton::load_sounds() {
 	bool ret = true;
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V_MSG(game_singleton, false, vformat("Error retrieving GameSingleton"));
+	ERR_FAIL_NULL_V_MSG(game_singleton, false, Utilities::format("Error retrieving GameSingleton"));
 
 	SoundEffectManager const& sound_manager = game_singleton->get_definition_manager().get_sound_effect_manager();
 
@@ -218,13 +218,13 @@ bool SoundSingleton::load_sounds() {
 		// UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		// the define its associated with also isn't used in game
 		if (full_path.empty()) {
-			WARN_PRINT(vformat("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier())));
+			WARN_PRINT(Utilities::format("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier())));
 			continue;
 		}
 
 		Ref<AudioStreamWAV> stream = get_sound(std_to_godot_string(full_path.string()));
 		if (stream.is_null()) {
-			ERR_PRINT(vformat("Failed to load sound %s at path %s.", std_to_godot_string(sound_inst.get_identifier()), std_to_godot_string(full_path.string())));
+			ERR_PRINT(Utilities::format("Failed to load sound %s at path %s.", std_to_godot_string(sound_inst.get_identifier()), std_to_godot_string(full_path.string())));
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}

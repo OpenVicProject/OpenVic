@@ -273,7 +273,7 @@ Vector2 MapItemSingleton::get_unit_position_by_province_index(int32_t province_i
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
 		.get_province_definition_by_index(province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get unit position - invalid province index: %d", province_index));
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get unit position - invalid province index: %d", province_index));
 
 	return game_singleton->normalise_map_position(province->get_unit_position());
 }
@@ -283,8 +283,8 @@ Vector2 MapItemSingleton::get_port_position_by_province_index(int32_t province_i
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
 		.get_province_definition_by_index(province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get port position - invalid province index: %d", province_index));
-	ERR_FAIL_COND_V_MSG(!province->has_port(), {},vformat("Cannot get port position, province has no port, index: %d", province_index) ); 
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province index: %d", province_index));
+	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, index: %d", province_index) ); 
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	fvec2_t const* port_position = province->get_building_position(port_building_type);
@@ -303,7 +303,7 @@ int32_t MapItemSingleton::get_clicked_port_province_index(Vector2 click_position
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
 		.get_province_definition_by_index(initial_province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, vformat("Cannot get port position - invalid province index: %d", initial_province_index));
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province index: %d", initial_province_index));
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	

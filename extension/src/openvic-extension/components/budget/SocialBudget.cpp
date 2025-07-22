@@ -34,7 +34,7 @@ SocialBudget::SocialBudget(GUINode const& parent):
 
 	if (budget_label != nullptr) {
 		budget_label->set_tooltip_string(
-			godot::vformat(
+			Utilities::format(
 				"%s\n--------------\n%s",
 				budget_label->tr("DIST_SOCIAL"),
 				budget_label->tr("SOCIAL_DESC2")

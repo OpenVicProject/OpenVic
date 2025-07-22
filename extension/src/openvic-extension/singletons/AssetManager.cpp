@@ -44,12 +44,12 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 	const String lookedup_path = Utilities::std_to_godot_string(
 		game_singleton->get_dataloader().lookup_image_file(Utilities::godot_to_std_string(path)).string()
 	);
-	ERR_FAIL_COND_V_MSG(lookedup_path.is_empty(), nullptr, vformat("Failed to look up image: %s", path));
+	ERR_FAIL_COND_V_MSG(lookedup_path.is_empty(), nullptr, Utilities::format("Failed to look up image: %s", path));
 
 	const Ref<Image> image = Utilities::load_godot_image(lookedup_path);
 	ERR_FAIL_COND_V_MSG(
 		image.is_null() || image->is_empty(), nullptr,
-		vformat("Failed to load image: %s (looked up: %s)", path, lookedup_path)
+		Utilities::format("Failed to load image: %s (looked up: %s)", path, lookedup_path)
 	);
 	if (image->detect_alpha() != Image::ALPHA_NONE) {
 		image->fix_alpha_edges();
@@ -82,7 +82,7 @@ Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> l
 		/* Mark both image and texture as failures, regardless of cache flags, in case of future load/creation attempts. */
 		image_assets[path] = {};
 
-		ERR_FAIL_V_MSG(nullptr, vformat("Failed to load image: %s", path));
+		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to load image: %s", path));
 	}
 }
 
@@ -95,7 +95,7 @@ Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<Loa
 
 	/* No creation attempt has yet been made, so we try now starting by finding the corresponding image. */
 	const Ref<Image> image = get_image(path, load_flags);
-	ERR_FAIL_NULL_V_MSG(image, nullptr, vformat("Failed to load image for texture: %s", path));
+	ERR_FAIL_NULL_V_MSG(image, nullptr, Utilities::format("Failed to load image for texture: %s", path));
 
 	const Ref<ImageTexture> texture = ImageTexture::create_from_image(image);
 
@@ -109,7 +109,7 @@ Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<Loa
 		/* Mark texture as a failure, regardless of cache flags, in case of future creation attempts. */
 		image_assets[path].texture = Ref<ImageTexture> {};
 
-		ERR_FAIL_V_MSG(nullptr, vformat("Failed to create texture: %s", path));
+		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to create texture: %s", path));
 	}
 }
 
@@ -139,7 +139,7 @@ Ref<StyleBoxTexture> AssetManager::make_stylebox_texture(Ref<Texture2D> const& t
 Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	const font_map_t::const_iterator it = fonts.find(name);
 	if (it != fonts.end()) {
-		ERR_FAIL_NULL_V_MSG(it->second, nullptr, vformat("Failed to load font previously: %s", name));
+		ERR_FAIL_NULL_V_MSG(it->second, nullptr, Utilities::format("Failed to load font previously: %s", name));
 
 		return it->second;
 	}
@@ -153,7 +153,7 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	if (image.is_null()) {
 		fonts.emplace(name, nullptr);
 
-		ERR_FAIL_V_MSG(nullptr, vformat("Failed to load font image %s for the font named %s", image_path, name));
+		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to load font image %s for the font named %s", image_path, name));
 	}
 
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
@@ -166,7 +166,7 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	if (lookedup_font_path.is_empty()) {
 		fonts.emplace(name, nullptr);
 
-		ERR_FAIL_V_MSG(nullptr, vformat("Failed to look up font: %s", font_path));
+		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to look up font: %s", font_path));
 	}
 
 	const Ref<FontFile> font = Utilities::load_godot_font(lookedup_font_path, image);
@@ -175,7 +175,7 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 
 		ERR_FAIL_V_MSG(
 			nullptr,
-			vformat("Failed to load font file %s (looked up: %s) for the font named %s", font_path, lookedup_font_path, name)
+			Utilities::format("Failed to load font file %s (looked up: %s) for the font named %s", font_path, lookedup_font_path, name)
 		);
 	}
 

@@ -127,7 +127,7 @@ String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_pl
 }
 
 String Utilities::percentage_to_string_dp(fixed_point_t val, int32_t decimal_places) {
-	return godot::vformat(
+	return Utilities::format(
 		"%s%%",
 		Utilities::float_to_string_dp(
 			(100 * val).to_float(),
@@ -151,14 +151,14 @@ String Utilities::cash_to_string_dp_dynamic(fixed_point_t val) {
 
 String Utilities::format_with_currency(godot::String const& text) {
 	static const String currency_format = String::utf8("%s¤");
-	return godot::vformat(currency_format, text);
+	return Utilities::format(currency_format, text);
 }
 
 String Utilities::date_to_string(Date date) {
 	static const String date_template_string = String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" +
 		Date::SEPARATOR_CHARACTER + "%d";
 
-	return vformat(date_template_string, date.get_year(), date.get_month(), date.get_day());
+	return Utilities::format(date_template_string, date.get_year(), date.get_month(), date.get_day());
 }
 
 /* Date formatted like one of these, with the month localised if possible:
@@ -188,13 +188,13 @@ Ref<Resource> Utilities::load_resource(String const& path, String const& type_hi
 
 static Ref<Image> load_dds_image(String const& path) {
 	gli::texture2d texture { gli::load_dds(Utilities::godot_to_std_string(path)) };
-	ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, vformat("Failed to load DDS file: %s", path));
+	ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, Utilities::format("Failed to load DDS file: %s", path));
 
 	static constexpr gli::format expected_format = gli::FORMAT_BGRA8_UNORM_PACK8;
 	const bool needs_bgr_to_rgb = texture.format() == expected_format;
 	if (!needs_bgr_to_rgb) {
 		texture = gli::convert(texture, expected_format);
-		ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, vformat("Failed to convert DDS file: %s", path));
+		ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, Utilities::format("Failed to convert DDS file: %s", path));
 	}
 
 	const gli::texture2d::extent_type extent { texture.extent() };
@@ -203,7 +203,7 @@ static Ref<Image> load_dds_image(String const& path) {
 	/* Only fail if there aren't enough bytes, everything seems to work fine if there are extra bytes and we ignore them */
 	ERR_FAIL_COND_V_MSG(
 		size > texture.size(), nullptr,
-		vformat("Texture size %d mismatched with dims-based size %d for %s", static_cast<int64_t>(texture.size()), size, path)
+		Utilities::format("Texture size %d mismatched with dims-based size %d for %s", static_cast<int64_t>(texture.size()), size, path)
 	);
 
 	PackedByteArray pixels;
@@ -233,7 +233,7 @@ Ref<FontFile> Utilities::load_godot_font(String const& fnt_path, Ref<Image> cons
 	ERR_FAIL_NULL_V(image, nullptr);
 	Ref<FontFile> font;
 	font.instantiate();
-	ERR_FAIL_COND_V_MSG(font->load_bitmap_font(fnt_path) != OK, nullptr, vformat("Failed to load font: %s", fnt_path));
+	ERR_FAIL_COND_V_MSG(font->load_bitmap_font(fnt_path) != OK, nullptr, Utilities::format("Failed to load font: %s", fnt_path));
 	font->set_texture_image(0, { font->get_fixed_size(), 0 }, 0, image);
 	return font;
 }
@@ -251,4 +251,11 @@ Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int3
 	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);
 	ERR_FAIL_NULL_V(result, nullptr);
 	return result;
+}
+
+namespace OpenVic::Utilities {
+	thread_local memory::vector<godot::Array> _formatting_array_pool_1;
+	thread_local memory::vector<godot::Array> _formatting_array_pool_2;
+	thread_local memory::vector<godot::Array> _formatting_array_pool_3;
+	thread_local memory::vector<godot::Array> _formatting_array_pool_4;
 }
