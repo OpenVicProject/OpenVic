@@ -77,7 +77,7 @@ void BudgetMenu::update_projected_balance() {
 	}
 
 	projected_balance_label.set_text(
-		godot::vformat(
+		Utilities::format(
 			godot::String::utf8("§%s%s§W"),
 			Utilities::get_colour_and_sign(projected_balance),
 			Utilities::cash_to_string_dp_dynamic(projected_balance)

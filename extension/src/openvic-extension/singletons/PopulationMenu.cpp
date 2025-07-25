@@ -73,9 +73,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 	ERR_FAIL_INDEX_V_MSG(
 		start, population_menu.visible_province_list_entries, {},
-		vformat("Invalid start for population menu province list rows: %d", start)
+		Utilities::format("Invalid start for population menu province list rows: %d", start)
 	);
-	ERR_FAIL_COND_V_MSG(count <= 0, {}, vformat("Invalid count for population menu province list rows: %d", count));
+	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for population menu province list rows: %d", count));
 
 	static const StringName type_key = "type";
 	static const StringName index_key = "index";
@@ -315,7 +315,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 
 	ERR_FAIL_COND_V_MSG(
 		entry_visitor.index >= population_menu.province_list_entries.size(), FAILED,
-		vformat("Cannot select province index %d - not found in population menu province list!", province_index)
+		Utilities::format("Cannot select province index %d - not found in population menu province list!", province_index)
 	);
 
 	return ERR(entry_visitor.ret);
@@ -327,7 +327,7 @@ Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool 
 	population_menu_t::state_entry_t* state_entry =
 		std::get_if<population_menu_t::state_entry_t>(&population_menu.province_list_entries[toggle_index]);
 
-	ERR_FAIL_NULL_V_MSG(state_entry, FAILED, vformat("Cannot toggle expansion of a non-state entry! (%d)", toggle_index));
+	ERR_FAIL_NULL_V_MSG(state_entry, FAILED, Utilities::format("Cannot toggle expansion of a non-state entry! (%d)", toggle_index));
 
 	int32_t provinces = 0;
 
@@ -593,7 +593,7 @@ Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 	/* sort_key must be cast here to avoid causing clang to segfault during compilation. */
 	ERR_FAIL_INDEX_V_MSG(
 		static_cast<int32_t>(sort_key), static_cast<int32_t>(MAX_SORT_KEY), FAILED,
-		vformat("Invalid population menu sort key: %d (must be under %d)", sort_key, MAX_SORT_KEY)
+		Utilities::format("Invalid population menu sort key: %d (must be under %d)", sort_key, MAX_SORT_KEY)
 	);
 
 	if (sort_key == population_menu.sort_key) {
@@ -634,7 +634,7 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 			} else {
 				key_ptr = &key_ref_or_ptr;
 			}
-			String tooltip = vformat(
+			String tooltip = Utilities::format(
 				pie_chart_tooltip_format_key,
 				tr(Utilities::std_to_godot_string(key_ptr->get_identifier()) + identifier_suffix),
 				Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
@@ -660,9 +660,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		return {};
 	}
 	ERR_FAIL_INDEX_V_MSG(
-		start, population_menu.filtered_pops.size(), {}, vformat("Invalid start for population menu pop rows: %d", start)
+		start, population_menu.filtered_pops.size(), {}, Utilities::format("Invalid start for population menu pop rows: %d", start)
 	);
-	ERR_FAIL_COND_V_MSG(count <= 0, {}, vformat("Invalid count for population menu pop rows: %d", count));
+	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for population menu pop rows: %d", count));
 
 	if (start + count > population_menu.filtered_pops.size()) {
 		count = population_menu.filtered_pops.size() - start;
@@ -814,7 +814,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 
 Error MenuSingleton::population_menu_toggle_pop_filter(int32_t index) {
 	ERR_FAIL_COND_V_MSG(
-		index < 0 || index >= population_menu.pop_filters.size(), FAILED, vformat("Invalid pop filter index: %d", index)
+		index < 0 || index >= population_menu.pop_filters.size(), FAILED, Utilities::format("Invalid pop filter index: %d", index)
 	);
 
 	population_menu_t::pop_filter_t& filter = mutable_iterator(population_menu.pop_filters).begin()[index].second;
@@ -889,7 +889,7 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	) -> String {
 		static const String format_key =
 			GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
-		return  vformat(
+		return  Utilities::format(
 			format_key,
 			tr(identifier),
 			Utilities::float_to_string_dp(100.0f * weight / total_weight, 2)

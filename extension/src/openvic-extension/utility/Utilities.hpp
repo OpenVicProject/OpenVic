@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/variant/variant.hpp>
 
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
@@ -91,6 +92,75 @@ namespace OpenVic::Utilities {
 		godot::Color const& colour, int32_t width, int32_t height,
 		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
+
+#define OPTIMISED_FORMAT_CONCAT(a, b) a##b
+#define OPTIMISED_FORMAT_EXPAND(a, b) OPTIMISED_FORMAT_CONCAT(a, b)
+
+#define FOR_LOOP_0()
+#define FOR_LOOP_1(BODY) BODY(0)
+#define FOR_LOOP_2(BODY) FOR_LOOP_1(BODY) BODY(1)
+#define FOR_LOOP_3(BODY) FOR_LOOP_2(BODY) BODY(2)
+#define FOR_LOOP_4(BODY) FOR_LOOP_3(BODY) BODY(3)
+
+#define OPTIMISED_FORMAT_COPY(n) args_array.set(n, p_arg##n);
+#define OPTIMISED_FORMAT_ARRAY_INIT(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_COPY)
+
+#define OPTIMISED_FORMAT_SET_NULL(n) args_array.set(n, godot::Variant{});
+#define OPTIMISED_FORMAT_ARRAY_CLEAR(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_SET_NULL)
+
+#define OPTIMISED_FORMAT_ARG(n) , const auto p_arg##n
+#define OPTIMISED_FORMAT_GET_ARGS(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_ARG)
+
+#define OPTIMISED_FORMAT(count) \
+	[[nodiscard]] godot::String format( \
+		godot::String const& text_template \
+		OPTIMISED_FORMAT_GET_ARGS(count) \
+	) { \
+		extern thread_local memory::vector<godot::Array> _formatting_array_pool_##count; \
+		memory::vector<godot::Array>& array_pool = _formatting_array_pool_##count; \
+		const bool was_empty = array_pool.empty(); \
+		godot::Array args_array = was_empty \
+			? godot::Array{} \
+			: std::move(array_pool.back()); \
+		if (was_empty) { \
+			args_array.resize(count); \
+		} else { \
+			array_pool.pop_back(); \
+		} \
+		OPTIMISED_FORMAT_ARRAY_INIT(count) \
+		const godot::String result = text_template % args_array; \
+		OPTIMISED_FORMAT_ARRAY_CLEAR(count) \
+		array_pool.push_back(std::move(args_array)); \
+		return result; \
+	}
+
+	OPTIMISED_FORMAT(1)
+	OPTIMISED_FORMAT(2)
+	OPTIMISED_FORMAT(3)
+	OPTIMISED_FORMAT(4)
+
+#undef OPTIMISED_FORMAT_CONCAT
+#undef OPTIMISED_FORMAT_EXPAND
+
+#undef FOR_LOOP_0
+#undef FOR_LOOP_1
+#undef FOR_LOOP_2
+#undef FOR_LOOP_3
+#undef FOR_LOOP_4
+
+#undef OPTIMISED_FORMAT_COPY
+#undef OPTIMISED_FORMAT_ARRAY_INIT
+
+#undef OPTIMISED_FORMAT_SET_NULL
+#undef OPTIMISED_FORMAT_ARRAY_CLEAR
+
+#undef OPTIMISED_FORMAT_ARG
+#undef OPTIMISED_FORMAT_GET_ARGS
+
+	template <typename... VarArgs>
+	[[nodiscard]] godot::String format(godot::String const& text_template, const VarArgs... p_args) {
+		return godot::vformat(text_template, p_args...);
+	}
 
 	namespace literals {
 		constexpr real_t operator""_real(long double val) { return to_real_t(val); }

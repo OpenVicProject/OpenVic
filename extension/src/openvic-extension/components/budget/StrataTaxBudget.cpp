@@ -22,8 +22,8 @@ StrataTaxBudget::StrataTaxBudget(
 		parent,
 		generate_slider_tooltip_localisation_key(new_strata),
 		BALANCE,
-		godot::vformat("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata.get_index())),
-		godot::vformat("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata.get_index()))
+		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata.get_index())),
+		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata.get_index()))
 	),
 	BudgetIncomeComponent(generate_summary_localisation_key(new_strata), 1),
 	strata{new_strata},
@@ -36,9 +36,9 @@ StrataTaxBudget::StrataTaxBudget(
 
 	GUILabel::set_text_and_tooltip(
 		parent,
-		godot::vformat("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.get_index())),
+		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.get_index())),
 		generate_slider_tooltip_localisation_key(new_strata),
-		godot::vformat(
+		Utilities::format(
 			"TAX_%s_DESC",
 			(godot::String::utf8(
 				strata.get_identifier().data(),
@@ -83,7 +83,7 @@ godot::StringName StrataTaxBudget::generate_slider_tooltip_localisation_key(Stra
 }
 
 godot::StringName StrataTaxBudget::generate_summary_localisation_key(Strata const& strata) {
-	return godot::vformat(
+	return Utilities::format(
 		"TAXES_%s",
 		(godot::StringName(
 			strata.get_identifier().data(),
@@ -114,7 +114,7 @@ void StrataTaxBudget::update_slider_tooltip(
 	const fixed_point_t tax_efficiency_from_tech = country.get_modifier_effect_value(*modifier_effect_cache.get_tax_eff());
 	const godot::String tax_efficiency_from_tech_text = slider.tr(tax_efficiency_from_tech_localisation_key).replace(
 		Utilities::get_short_value_placeholder(),
-		godot::vformat(
+		Utilities::format(
 			"%s%%",
 			Utilities::float_to_string_dp(
 				tax_efficiency_from_tech.to_float(), //tax_efficiency_from_tech is already * 100
@@ -129,7 +129,7 @@ void StrataTaxBudget::update_slider_tooltip(
 		Utilities::float_to_string_dp(100 * effective_tax_rate, 2)
 	);
 
-	const godot::String tooltip = godot::vformat(
+	const godot::String tooltip = Utilities::format(
 		godot::String::utf8("%s: §Y%s§W\n%s\n%s\n%s"),
 		localised_strata_tax,
 		Utilities::percentage_to_string_dp(scaled_value, 1),

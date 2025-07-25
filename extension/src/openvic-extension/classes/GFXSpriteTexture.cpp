@@ -60,10 +60,10 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 
 		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will re-use this image from its internal cache. */
 		const Ref<Image> image = asset_manager->get_image(texture_file);
-		ERR_FAIL_NULL_V_MSG(image, FAILED, vformat("Failed to load image: %s", texture_file));
+		ERR_FAIL_NULL_V_MSG(image, FAILED, Utilities::format("Failed to load image: %s", texture_file));
 
 		const Ref<ImageTexture> texture = asset_manager->get_texture(texture_file);
-		ERR_FAIL_NULL_V_MSG(texture, FAILED, vformat("Failed to load texture: %s", texture_file));
+		ERR_FAIL_NULL_V_MSG(texture, FAILED, Utilities::format("Failed to load texture: %s", texture_file));
 
 		button_image = image;
 		gfx_texture_sprite = new_gfx_texture_sprite;
@@ -96,7 +96,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sp
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
-		new_texture_sprite, FAILED, vformat(
+		new_texture_sprite, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
 			Utilities::std_to_godot_string(sprite->get_type()),
 			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())

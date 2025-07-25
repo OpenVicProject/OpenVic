@@ -50,7 +50,7 @@ void DiplomaticBudget::full_update(CountryInstance const& country) {
 	set_balance(diplomatic_balance);
 
 	balance_label.set_text(
-		godot::vformat(
+		Utilities::format(
 			godot::String::utf8("§%s%s§W"),
 			Utilities::get_colour_and_sign(diplomatic_balance),
 			Utilities::format_with_currency(
@@ -60,7 +60,7 @@ void DiplomaticBudget::full_update(CountryInstance const& country) {
 	);
 
 	balance_label.set_tooltip_string(
-		godot::vformat(
+		Utilities::format(
 			"%s%s%s%s", //no new lines in Victoria 2 here
 			TOOLTIP_TEXT_PART(war_subsidies_expenses, "WARSUBSIDIES_EXPENSE"),
 			TOOLTIP_TEXT_PART(war_subsidies_income, "WARSUBSIDIES_INCOME"),

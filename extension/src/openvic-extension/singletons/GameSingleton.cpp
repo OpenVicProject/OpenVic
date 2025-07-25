@@ -135,7 +135,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	Bookmark const* bookmark =
 		game_manager.get_definition_manager().get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index
 		);
-	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, vformat("Failed to get bookmark with index: %d", bookmark_index));
+	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, Utilities::format("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.setup_instance(bookmark);
 
 	// TODO - remove this temporary crime assignment
@@ -230,18 +230,18 @@ int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, StringName co
 	ERR_FAIL_COND_V_MSG(
 		country_index < 0 ||
 			country_index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(),
-		-1, vformat("Invalid country index: %d", country_index)
+		-1, Utilities::format("Invalid country index: %d", country_index)
 	);
 
 	const typename decltype(flag_type_index_map)::const_iterator it = flag_type_index_map.find(flag_type);
-	ERR_FAIL_COND_V_MSG(it == flag_type_index_map.end(), -1, vformat("Invalid flag type %s", flag_type));
+	ERR_FAIL_COND_V_MSG(it == flag_type_index_map.end(), -1, Utilities::format("Invalid flag type %s", flag_type));
 
 	return flag_type_index_map.size() * country_index + it->second;
 }
 
 Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
 	ERR_FAIL_COND_V_MSG(
-		flag_index < 0 || flag_index >= flag_sheet_count, {}, vformat("Invalid flag sheet index: %d", flag_index)
+		flag_index < 0 || flag_index >= flag_sheet_count, {}, Utilities::format("Invalid flag sheet index: %d", flag_index)
 	);
 
 	return { Vector2i { flag_index % flag_sheet_dims.x, flag_index / flag_sheet_dims.x } * flag_dims, flag_dims };
@@ -370,7 +370,7 @@ int32_t GameSingleton::get_current_mapmode_index() const {
 
 Error GameSingleton::set_mapmode(int32_t index) {
 	Mapmode const* new_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
-	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, vformat("Failed to find mapmode with index: %d", index));
+	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, Utilities::format("Failed to find mapmode with index: %d", index));
 	mapmode = new_mapmode;
 	const Error err = _update_colour_image();
 	emit_signal(_signal_mapmode_changed(), mapmode->get_index());
@@ -457,14 +457,14 @@ Error GameSingleton::_load_terrain_variants() {
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 	// Load the terrain texture sheet and prepare to slice it up
 	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path, AssetManager::LOAD_FLAG_NONE);
-	ERR_FAIL_NULL_V_MSG(terrain_sheet, FAILED, vformat("Failed to load terrain texture sheet: %s", terrain_texturesheet_path));
+	ERR_FAIL_NULL_V_MSG(terrain_sheet, FAILED, Utilities::format("Failed to load terrain texture sheet: %s", terrain_texturesheet_path));
 
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
 	const int32_t sheet_width = terrain_sheet->get_width(), sheet_height = terrain_sheet->get_height();
 	ERR_FAIL_COND_V_MSG(
 		sheet_width < 1 || sheet_width % SHEET_DIMS != 0 || sheet_width != sheet_height, FAILED,
-		vformat(
+		Utilities::format(
 			"Invalid terrain texture sheet dims: %dx%d (must be square with dims positive multiples of %d)", sheet_width,
 			sheet_height, SHEET_DIMS
 		)
@@ -488,7 +488,7 @@ Error GameSingleton::_load_terrain_variants() {
 
 		ERR_FAIL_COND_V_MSG(
 			terrain_image.is_null() || terrain_image->is_empty(), FAILED,
-			vformat("Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path)
+			Utilities::format("Failed to extract terrain texture slice %s from %s", slice, terrain_texturesheet_path)
 		);
 
 		terrain_images[idx + 1] = terrain_image;

@@ -630,7 +630,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		static const String terrain_type_template_string = "%s" + get_tooltip_separator() + "%s" +
 			GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!%s";
 
-		ret[province_info_terrain_type_tooltip_key] = vformat(
+		ret[province_info_terrain_type_tooltip_key] = Utilities::format(
 			terrain_type_template_string,
 			tr(terrain_type_localisation_key).replace(terrain_type_replace_key, tr(terrain_type_string)),
 			tr(movement_cost_localisation_key),
@@ -649,7 +649,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 		static const StringName controller_localisation_key = "PV_CONTROLLER";
 		static const String controller_template_string = "%s %s";
-		ret[province_info_controller_tooltip_key] = vformat(
+		ret[province_info_controller_tooltip_key] = Utilities::format(
 			controller_template_string, tr(controller_localisation_key), _get_country_name(*controller)
 		);
 	}
@@ -708,7 +708,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				switch (owner_job->get_effect_type()) {
 				case OUTPUT:
 					output_multiplier += effect_value;
-					output_string += vformat(
+					output_string += Utilities::format(
 						employee_effect_template_string,
 						tr(owners_localisation_key),
 						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
@@ -719,7 +719,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 					break;
 				case THROUGHPUT:
 					throughput_multiplier += effect_value;
-					throughput_string += vformat(
+					throughput_string += Utilities::format(
 						employee_effect_template_string,
 						tr(owners_localisation_key),
 						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
@@ -744,7 +744,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			static const String amount_of_employees_by_pop_type_template_string = "\n  -" + GUILabel::get_colour_marker() +
 				"Y%s" + GUILabel::get_colour_marker() + "!:%d";
 
-			amount_of_employees_by_pop_type += vformat(
+			amount_of_employees_by_pop_type += Utilities::format(
 				amount_of_employees_by_pop_type_template_string,
 				tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
 				employees_of_type
@@ -766,7 +766,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 				switch (job.get_effect_type()) {
 					case OUTPUT:
 						output_from_workers += effect_value;
-						output_string += vformat(
+						output_string += Utilities::format(
 							employee_effect_template_string,
 							tr(workers_localisation_key),
 							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
@@ -777,7 +777,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 						break;
 					case THROUGHPUT:
 						throughput_from_workers += effect_value;
-						throughput_string += vformat(
+						throughput_string += Utilities::format(
 							employee_effect_template_string,
 							tr(workers_localisation_key),
 							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
@@ -851,7 +851,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			static const String size_modifier_template_string = "%s: %s\n";
 
 			if (size_from_terrain != fixed_point_t::_0) {
-				size_string = vformat(
+				size_string = Utilities::format(
 					size_modifier_template_string,
 					tr(Utilities::std_to_godot_string(province->get_terrain_type()->get_identifier())),
 					_make_modifier_effect_value_coloured(
@@ -863,7 +863,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 			if (size_from_province != fixed_point_t::_0) {
 				static const StringName rgo_size_localisation_key = "RGO_SIZE";
 
-				size_string += vformat(
+				size_string += Utilities::format(
 					size_modifier_template_string,
 					tr(rgo_size_localisation_key),
 					_make_modifier_effect_value_coloured(
@@ -918,7 +918,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 				static const StringName rgo_output_tech_localisation_key = "RGO_OUTPUT_TECH";
 
-				output_string += vformat(
+				output_string += Utilities::format(
 					tech_modifier_template_string,
 					tr(rgo_output_tech_localisation_key),
 					_make_modifier_effect_value_coloured(
@@ -932,7 +932,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 
 				static const StringName rgo_throughput_tech_localisation_key = "RGO_THROUGHPUT_TECH";
 
-				throughput_string += vformat(
+				throughput_string += Utilities::format(
 					tech_modifier_template_string,
 					tr(rgo_throughput_tech_localisation_key),
 					_make_modifier_effect_value_coloured(
@@ -963,7 +963,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		const fixed_point_t base_output = production_type.get_base_output_quantity();
 		const fixed_point_t max_output = base_output * throughput_efficiency * output_efficiency;
 
-		ret[province_info_rgo_production_tooltip_key] = vformat(
+		ret[province_info_rgo_production_tooltip_key] = Utilities::format(
 			rgo_production_template_string,
 			tr(rgo_production_localisation_key).replace(
 				rgo_good_replace_key, tr(Utilities::std_to_godot_string(rgo_good.get_identifier()))
@@ -994,7 +994,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		static const String rgo_employment_template_string = "%s" + get_tooltip_separator() + "%s%s\n%s%d\n%s\n%s" +
 			GUILabel::get_colour_marker() + "G%d";
 
-		ret[province_info_rgo_employment_tooltip_key] = vformat(
+		ret[province_info_rgo_employment_tooltip_key] = Utilities::format(
 			rgo_employment_template_string,
 			tr(employment_localisation_key).replace(Utilities::get_long_value_placeholder(), {}),
 			tr(employee_count_localisation_key).replace(
@@ -1023,7 +1023,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 		HasGetIdentifierAndGetColour auto const* key, String const& identifier, float weight, float total_weight
 	) -> String {
 		static const String format_key = "%d%% %s";
-		return vformat(
+		return Utilities::format(
 			format_key,
 			static_cast<int32_t>(100.0f * weight / total_weight),
 			tr(identifier)
@@ -1088,7 +1088,7 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 		.get_economy_manager().get_building_type_manager().get_province_building_types();
 	ERR_FAIL_COND_V_MSG(
 		building_index < 0 || building_index >= province_building_types.size(), {},
-		vformat("Invalid province building index: %d", building_index)
+		Utilities::format("Invalid province building index: %d", building_index)
 	);
 	return Utilities::std_to_godot_string(province_building_types[building_index]->get_identifier());
 }
@@ -1175,7 +1175,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			static const String state_power_template_string =
 				"\n%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
 
-			industrial_power_tooltip += vformat(
+			industrial_power_tooltip += Utilities::format(
 				state_power_template_string,
 				state_name,
 				Utilities::fixed_point_to_string_dp(power, 3)
@@ -1200,7 +1200,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			static const String investment_power_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: " +
 				GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
 
-			industrial_power_tooltip += vformat(
+			industrial_power_tooltip += Utilities::format(
 				investment_power_template_string,
 				country_identifier,
 				country_name,
@@ -1633,9 +1633,9 @@ PackedStringArray MenuSingleton::get_search_result_rows(int32_t start, int32_t c
 
 	ERR_FAIL_INDEX_V_MSG(
 		start, search_panel.result_indices.size(), {},
-		vformat("Invalid start for search panel result rows: %d", start)
+		Utilities::format("Invalid start for search panel result rows: %d", start)
 	);
-	ERR_FAIL_COND_V_MSG(count <= 0, {}, vformat("Invalid count for search panel result rows: %d", count));
+	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for search panel result rows: %d", count));
 
 	if (start + count > search_panel.result_indices.size()) {
 		UtilityFunctions::push_warning(

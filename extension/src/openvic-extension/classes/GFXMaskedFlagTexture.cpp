@@ -129,11 +129,11 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_m
 
 	const StringName overlay_file = Utilities::std_to_godot_string(new_gfx_masked_flag->get_overlay_file());
 	const Ref<Image> new_overlay_image = asset_manager->get_image(overlay_file);
-	ERR_FAIL_NULL_V_MSG(new_overlay_image, FAILED, vformat("Failed to load flag overlay image: %s", overlay_file));
+	ERR_FAIL_NULL_V_MSG(new_overlay_image, FAILED, Utilities::format("Failed to load flag overlay image: %s", overlay_file));
 
 	const StringName mask_file = Utilities::std_to_godot_string(new_gfx_masked_flag->get_mask_file());
 	const Ref<Image> new_mask_image = asset_manager->get_image(mask_file);
-	ERR_FAIL_NULL_V_MSG(new_mask_image, FAILED, vformat("Failed to load flag mask image: %s", mask_file));
+	ERR_FAIL_NULL_V_MSG(new_mask_image, FAILED, Utilities::format("Failed to load flag mask image: %s", mask_file));
 
 	gfx_masked_flag = new_gfx_masked_flag;
 	overlay_image = new_overlay_image;
@@ -152,7 +152,7 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_fl
 
 	GFX::MaskedFlag const* new_masked_flag = sprite->cast_to<GFX::MaskedFlag>();
 	ERR_FAIL_NULL_V_MSG(
-		new_masked_flag, FAILED, vformat(
+		new_masked_flag, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_masked_flag_name,
 			Utilities::std_to_godot_string(sprite->get_type()),
 			Utilities::std_to_godot_string(GFX::MaskedFlag::get_type_static())
@@ -207,7 +207,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
 			Utilities::godot_to_std_string(new_flag_country_name)
 		);
-	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
+	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, Utilities::format("Country not found: %s", new_flag_country_name));
 
 	return set_flag_country_and_type(new_flag_country, new_flag_type);
 }
@@ -241,7 +241,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country
 		instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
 			Utilities::godot_to_std_string(new_flag_country_name)
 		);
-	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, vformat("Country not found: %s", new_flag_country_name));
+	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, Utilities::format("Country not found: %s", new_flag_country_name));
 
 	return set_flag_country(new_flag_country);
 }
