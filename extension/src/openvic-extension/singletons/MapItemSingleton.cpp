@@ -34,9 +34,9 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_rgo_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_national_focus_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_projections);
-	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_index,{"index"});
-	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_index,{"index"});
-	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_index, {"position"});
+	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_number,{"province_number"});
+	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_number,{"province_number"});
+	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_number, {"position"});
 	
 }
 
@@ -268,23 +268,23 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 }
 
 
-Vector2 MapItemSingleton::get_unit_position_by_province_index(int32_t province_index) const { 
+Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_number) const { 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_by_index(province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get unit position - invalid province index: %d", province_index));
+		.get_province_definition_from_number(province_number);
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get unit position - invalid province number: %d", province_number));
 
 	return game_singleton->normalise_map_position(province->get_unit_position());
 }
 
-Vector2 MapItemSingleton::get_port_position_by_province_index(int32_t province_index) const { 
+Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_number) const { 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_by_index(province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province index: %d", province_index));
-	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, index: %d", province_index) ); 
+		.get_province_definition_from_number(province_number);
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number));
+	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, number: %d", province_number) ); 
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	fvec2_t const* port_position = province->get_building_position(port_building_type);
@@ -296,21 +296,21 @@ Vector2 MapItemSingleton::get_port_position_by_province_index(int32_t province_i
 static constexpr real_t port_radius = 0.0006_real; //how close we have to click for a detection
 
 //Searches provinces near the one clicked and attempts to find a port within the port_radius of the click position
-int32_t MapItemSingleton::get_clicked_port_province_index(Vector2 click_position) const {
+int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_position) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
-	int32_t initial_province_index = game_singleton->get_province_index_from_uv_coords(click_position);
+	int32_t initial_province_number = game_singleton->get_province_number_from_uv_coords(click_position);
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_by_index(initial_province_index);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province index: %d", initial_province_index));
+		.get_province_definition_from_number(initial_province_number);
+	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number));
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	
 	if(province->has_port()){
 		Vector2 port_position = game_singleton->normalise_map_position(*province->get_building_position(port_building_type));
 		if(click_position.distance_to(port_position) <= port_radius){
-			return province->get_index();
+			return province->get_province_number();
 		}
 	}
 	else if(province->is_water()){
@@ -322,7 +322,7 @@ int32_t MapItemSingleton::get_clicked_port_province_index(Vector2 click_position
 			}
 			Vector2 port_position = game_singleton->normalise_map_position(*adjacent_province->get_building_position(port_building_type));
 			if(click_position.distance_to(port_position) <= port_radius){
-				return adjacent_province->get_index();
+				return adjacent_province->get_province_number();
 			}
 		}
 	}

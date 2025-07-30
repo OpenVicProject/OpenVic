@@ -32,14 +32,14 @@ namespace OpenVic {
 
 		// Player country
 		void set_player_country(CountryInstance const* new_player_country);
-		void set_player_country_by_province_index(int32_t province_index);
+		void set_player_country_by_province_number(int32_t province_number);
 		godot::Vector2 get_player_country_capital_position() const;
 
 		// Selected province
 		void set_selected_province(ProvinceInstance const* new_selected_province);
-		void set_selected_province_by_index(int32_t province_index);
+		void set_selected_province_by_number(int32_t province_number);
 		void unset_selected_province();
-		int32_t get_selected_province_index() const;
+		int32_t get_selected_province_number() const;
 
 		// Core
 		void toggle_paused() const;

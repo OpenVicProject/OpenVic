@@ -350,7 +350,7 @@ void MenuSingleton::_bind_methods() {
 	));
 
 	/* PROVINCE OVERVIEW PANEL */
-	OV_BIND_METHOD(MenuSingleton::get_province_info_from_index, { "index" });
+	OV_BIND_METHOD(MenuSingleton::get_province_info_from_number, { "province_number" });
 	OV_BIND_METHOD(MenuSingleton::get_province_building_count);
 	OV_BIND_METHOD(MenuSingleton::get_province_building_identifier, { "building_index" });
 	OV_BIND_METHOD(MenuSingleton::get_slave_pop_icon_index);
@@ -373,7 +373,7 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(
 		MenuSingleton::population_menu_select_province_list_entry, { "select_index", "set_scroll_index" }, DEFVAL(false)
 	);
-	OV_BIND_METHOD(MenuSingleton::population_menu_select_province, { "province_index" });
+	OV_BIND_METHOD(MenuSingleton::population_menu_select_province, { "province_number" });
 	OV_BIND_METHOD(MenuSingleton::population_menu_toggle_expanded, { "toggle_index", "emit_selected_changed" }, DEFVAL(true));
 
 	OV_BIND_METHOD(MenuSingleton::population_menu_update_locale_sort_cache);
@@ -572,7 +572,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 	return buildings_array;
 }
 
-Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
+Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -603,7 +603,7 @@ Dictionary MenuSingleton::get_province_info_from_index(int32_t index) const {
 	static const StringName province_info_cores_key = "cores";
 	static const StringName province_info_buildings_key = "buildings";
 
-	ProvinceInstance const* province = instance_manager->get_map_instance().get_province_instance_by_index(index);
+	ProvinceInstance const* province = instance_manager->get_map_instance().get_province_instance_from_number(province_number);
 	if (province == nullptr) {
 		return {};
 	}

@@ -45,7 +45,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 	OV_BIND_METHOD(GameSingleton::start_game_session);
 
-	OV_BIND_METHOD(GameSingleton::get_province_index_from_uv_coords, { "coords" });
+	OV_BIND_METHOD(GameSingleton::get_province_number_from_uv_coords, { "coords" });
 
 	OV_BIND_METHOD(GameSingleton::get_map_width);
 	OV_BIND_METHOD(GameSingleton::get_map_height);
@@ -143,7 +143,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
 		province.set_crime(get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-			(province.get_index() - 1) % get_definition_manager().get_crime_manager().get_crime_modifier_count()
+			province.get_index() % get_definition_manager().get_crime_manager().get_crime_modifier_count()
 		));
 	}
 
@@ -173,9 +173,9 @@ Error GameSingleton::start_game_session() {
 	return ERR(game_manager.start_game_session());
 }
 
-int32_t GameSingleton::get_province_index_from_uv_coords(Vector2 const& coords) const {
+int32_t GameSingleton::get_province_number_from_uv_coords(Vector2 const& coords) const {
 	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();
-	return get_definition_manager().get_map_definition().get_province_index_at(Utilities::from_godot_ivec2(pos));
+	return get_definition_manager().get_map_definition().get_province_number_at(Utilities::from_godot_ivec2(pos));
 }
 
 int32_t GameSingleton::get_map_width() const {

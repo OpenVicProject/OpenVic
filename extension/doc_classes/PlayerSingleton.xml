@@ -29,7 +29,7 @@
 			<description>
 			</description>
 		</method>
-		<method name="get_selected_province_index" qualifiers="const">
+		<method name="get_selected_province_number" qualifiers="const">
 			<return type="int" />
 			<description>
 			</description>
@@ -79,15 +79,15 @@
 			<description>
 			</description>
 		</method>
-		<method name="set_player_country_by_province_index">
+		<method name="set_player_country_by_province_number">
 			<return type="void" />
-			<param index="0" name="province_index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>
-		<method name="set_selected_province_by_index">
+		<method name="set_selected_province_by_number">
 			<return type="void" />
-			<param index="0" name="province_index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>

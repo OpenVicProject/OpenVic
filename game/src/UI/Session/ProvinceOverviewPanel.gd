@@ -109,10 +109,10 @@ class BuildingSlot:
 		if _expanding_label:
 			_expanding_label.visible = expansion_in_progress
 
-var _selected_index : int:
-	get: return _selected_index
+var _selected_province_number : int:
+	get: return _selected_province_number
 	set(v):
-		_selected_index = v
+		_selected_province_number = v
 		_update_info()
 var _province_info : Dictionary
 
@@ -176,7 +176,7 @@ func _ready() -> void:
 	if population_menu_button:
 		population_menu_button.pressed.connect(
 			func() -> void:
-				MenuSingleton.population_menu_select_province(_selected_index)
+				MenuSingleton.population_menu_select_province(_selected_province_number)
 				_on_close_button_pressed()
 				Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.POPULATION)
 		)
@@ -258,7 +258,7 @@ func _update_info() -> void:
 
 	const _missing_suffix : String = "_MISSING"
 
-	_province_info = MenuSingleton.get_province_info_from_index(_selected_index)
+	_province_info = MenuSingleton.get_province_info_from_number(_selected_province_number)
 	if _province_info:
 		# Header
 		if _province_name_label:
@@ -390,8 +390,8 @@ func _update_info() -> void:
 		hide()
 		mouse_exited.emit()
 
-func _on_province_selected(index : int) -> void:
-	_selected_index = index
+func _on_province_selected(province_number : int) -> void:
+	_selected_province_number = province_number
 
 func _on_close_button_pressed() -> void:
 	PlayerSingleton.unset_selected_province()

@@ -189,7 +189,7 @@ namespace OpenVic {
 
 		/* PROVINCE OVERVIEW PANEL */
 		/* Get info to display in Province Overview Panel, packaged in a Dictionary using StringName constants as keys. */
-		godot::Dictionary get_province_info_from_index(int32_t index) const;
+		godot::Dictionary get_province_info_from_number(int32_t province_number) const;
 		int32_t get_province_building_count() const;
 		godot::String get_province_building_identifier(int32_t building_index) const;
 		int32_t get_slave_pop_icon_index() const;
@@ -211,7 +211,7 @@ namespace OpenVic {
 		int32_t get_population_menu_province_list_row_count() const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_province_list_rows(int32_t start, int32_t count) const;
 		godot::Error population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index = false);
-		godot::Error population_menu_select_province(int32_t province_index);
+		godot::Error population_menu_select_province(int32_t province_number);
 		godot::Error population_menu_toggle_expanded(int32_t toggle_index, bool emit_selected_changed = true);
 
 		godot::Error _population_menu_update_pops();
