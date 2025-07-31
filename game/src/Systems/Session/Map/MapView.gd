@@ -70,7 +70,7 @@ var _viewport_dims : Vector2 = Vector2(1, 1)
 
 # ??? Strange Godot/GDExtension Bug ???
 # Upon first opening a clone of this repo with the Godot Editor,
-# if GameSingleton.get_province_index_image is called before MapMesh
+# if GameSingleton.get_province_number_image is called before MapMesh
 # is referenced in the script below, then the editor will crash due
 # to a failed HashMap lookup. I'm not sure if this is a bug in the
 # editor, GDExtension, my own extension, or a combination of them.
@@ -174,16 +174,16 @@ func zoom_out() -> void:
 	# cursor location. I'm not sure if we want to preserve this behavior.
 	_zoom_position = Vector2()
 
-func set_hovered_province_index(hover_index : int) -> void:
+func set_hovered_province_number(province_number : int) -> void:
 	if _map_shader_material:
-		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, hover_index)
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_hover_index, province_number)
 
 func set_hovered_province_at(pos : Vector2) -> void:
-	var hover_index := GameSingleton.get_province_index_from_uv_coords(pos)
-	set_hovered_province_index(hover_index)
+	var province_number := GameSingleton.get_province_number_from_uv_coords(pos)
+	set_hovered_province_number(province_number)
 
 func unset_hovered_province() -> void:
-	set_hovered_province_index(0)
+	set_hovered_province_number(0)
 
 var _province_hover_dirty := false
 func queue_province_hover_update() -> void:
@@ -194,12 +194,12 @@ func _update_province_hover() -> void:
 	if not _province_hover_dirty: return
 	_province_hover_dirty = false
 	if _mouse_over_viewport:
-		province_hovered.emit(GameSingleton.get_province_index_from_uv_coords(_viewport_to_map_coords(_mouse_pos_viewport)))
+		province_hovered.emit(GameSingleton.get_province_number_from_uv_coords(_viewport_to_map_coords(_mouse_pos_viewport)))
 
-func _on_province_selected(index : int) -> void:
+func _on_province_selected(province_number : int) -> void:
 	if _map_shader_material:
-		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, index)
-		print("Province selected with index: ", index)
+		_map_shader_material.set_shader_parameter(GameLoader.ShaderManager.param_selected_index, province_number)
+		print("Province selected with number: ", province_number)
 
 func _input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -228,40 +228,40 @@ func _unhandled_input(event : InputEvent) -> void:
 	elif event.is_action_pressed(_action_select_add):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				PlayerSingleton.set_selected_province_by_index(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
-				var province_index : int = GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
+				var province_number : int = GameSingleton.get_province_number_from_uv_coords(_mouse_pos_map)
+				PlayerSingleton.set_selected_province_by_number(province_number)
 				# TODO: Proper unit selection logic should replace this temporary behaviour
-				var port_province_index : int = MapItemSingleton.get_clicked_port_province_index(_mouse_pos_map)
-				if port_province_index != 0:
-					var port_pos : Vector2 = MapItemSingleton.get_port_position_by_province_index(port_province_index)
-					selectionMarkers.toggle_id_selected(5000 + port_province_index, _map_to_world_coords(port_pos))
+				var port_province_number : int = MapItemSingleton.get_clicked_port_province_number(_mouse_pos_map)
+				if port_province_number != 0:
+					var port_pos : Vector2 = MapItemSingleton.get_port_position_by_province_number(port_province_number)
+					selectionMarkers.toggle_id_selected(5000 + port_province_number, _map_to_world_coords(port_pos))
 				else:
-					var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_index(province_index)
-					selectionMarkers.toggle_id_selected(province_index,_map_to_world_coords(unit_position))
+					var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_number(province_number)
+					selectionMarkers.toggle_id_selected(province_number,_map_to_world_coords(unit_position))
 
 	elif event.is_action_pressed(_action_click):
 		if _mouse_over_viewport:
 			# Check if the mouse is outside of bounds
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				province_clicked.emit(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
+				province_clicked.emit(GameSingleton.get_province_number_from_uv_coords(_mouse_pos_map))
 				selectionMarkers.clear_selection_markers()
 			else:
 				print("Clicked outside the map!")
 	elif event.is_action_pressed(_action_right_click):
 		if _mouse_over_viewport:
 			if _map_mesh.is_valid_uv_coord(_mouse_pos_map):
-				province_right_clicked.emit(GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map))
-				var province_index : int = GameSingleton.get_province_index_from_uv_coords(_mouse_pos_map)
-				var port_province_index : int = MapItemSingleton.get_clicked_port_province_index(_mouse_pos_map)
-				if port_province_index != 0:
-					var port_pos : Vector2 = MapItemSingleton.get_port_position_by_province_index(port_province_index)
+				var province_number : int = GameSingleton.get_province_number_from_uv_coords(_mouse_pos_map)
+				province_right_clicked.emit(province_number)
+				var port_province_number : int = MapItemSingleton.get_clicked_port_province_number(_mouse_pos_map)
+				if port_province_number != 0:
+					var port_pos : Vector2 = MapItemSingleton.get_port_position_by_province_number(port_province_number)
 					validMoveMarkers.add_move_marker(_map_to_world_coords(port_pos), randi_range(0,1))
 				else:
-					var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_index(province_index)
+					var unit_position : Vector2 = MapItemSingleton.get_unit_position_by_province_number(province_number)
 					validMoveMarkers.add_move_marker(_map_to_world_coords(unit_position), randi_range(0,1))
 				# TODO - open diplomacy screen on province owner or viewed country if province has no owner
 				#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-				PlayerSingleton.set_player_country_by_province_index(province_index)
+				PlayerSingleton.set_player_country_by_province_number(province_number)
 			else:
 				print("Right-clicked outside the map!")
 	elif event.is_action_pressed(_action_drag):

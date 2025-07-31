@@ -90,13 +90,6 @@
 				Returns an [ImageTexture] containing the current province color data, that is each province's base and stripe colors.
 			</description>
 		</method>
-		<method name="get_province_index_from_uv_coords" qualifiers="const">
-			<return type="int" />
-			<param index="0" name="coords" type="Vector2" />
-			<description>
-				Returns the index [int] of the province at the specified position on the map. The [param coords] are expected to be normalised with respect to the map's dimensions, and they'll be modulo'd to ensure they lie in the [code]0.0[/code] to [code]1.0[/code] range (meaning they can wrap around the map).
-			</description>
-		</method>
 		<method name="get_province_names" qualifiers="const">
 			<return type="Dictionary[]" />
 			<description>
@@ -105,6 +98,13 @@
 				- [code]&amp;"position"[/code] - the province label's normalised [Vector2] position on the map
 				- [code]&amp;"rotation"[/code] - the province label's [float] rotation in radians ([code]0.0[/code] if not explicitly given)
 				- [code]&amp;"scale"[/code] - the province label's [float] scale factor ([code]1.0[/code] if not explicitly given)
+			</description>
+		</method>
+		<method name="get_province_number_from_uv_coords" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="coords" type="Vector2" />
+			<description>
+				Returns the province number [int] of the province at the specified position on the map. The [param coords] are expected to be normalised with respect to the map's dimensions, and they'll be modulo'd to ensure they lie in the [code]0.0[/code] to [code]1.0[/code] range (meaning they can wrap around the map).
 			</description>
 		</method>
 		<method name="get_province_shape_image_subdivisions" qualifiers="const">

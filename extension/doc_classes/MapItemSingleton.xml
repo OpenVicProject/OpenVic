@@ -20,11 +20,11 @@
 				Returns an array of the positions of country capital billboards for all existing countries. The capital billboard position is the [code]city[/code] property of a province which is a capital in the game defines.
 			</description>
 		</method>
-		<method name="get_clicked_port_province_index" qualifiers="const">
+		<method name="get_clicked_port_province_number" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="position" type="Vector2" />
 			<description>
-				Searches the mouse map coordinate for any port within a radius. Returns the province index of a found port, or [code]0[/code] if no port was found within the radius of the click.
+				Searches the mouse map coordinate for any port within a radius. Returns the province number of a found port, or [code]0[/code] if no port was found within the radius of the click.
 			</description>
 		</method>
 		<method name="get_crime_icons" qualifiers="const">
@@ -45,11 +45,10 @@
 				TODO: WIP Function awaiting implementation of national focuses. Returns an array of icon indices used with the national focus icons texture for every province. For provinces which aren't state capitals, or don't have have a national focus applied, this will be [code]0[/code].
 			</description>
 		</method>
-		<method name="get_port_position_by_province_index" qualifiers="const">
+		<method name="get_port_position_by_province_number" qualifiers="const">
 			<return type="Vector2" />
-			<param index="0" name="index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
-				Given a province [param index], returns the position of the province's port. Emits an error and returns [code]0,0[/code] if the province does not have a port.
 			</description>
 		</method>
 		<method name="get_projections" qualifiers="const">
@@ -70,11 +69,10 @@
 				Returns an array of icon indices used with the trade goods (RGO) icons texture for every land province. If the province the province does not have an RGO, it will be 0.
 			</description>
 		</method>
-		<method name="get_unit_position_by_province_index" qualifiers="const">
+		<method name="get_unit_position_by_province_number" qualifiers="const">
 			<return type="Vector2" />
-			<param index="0" name="index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
-				Given a province [param index], returns the province's unit position.
 			</description>
 		</method>
 	</methods>

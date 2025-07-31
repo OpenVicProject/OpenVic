@@ -110,9 +110,9 @@
 			<description>
 			</description>
 		</method>
-		<method name="get_province_info_from_index" qualifiers="const">
+		<method name="get_province_info_from_number" qualifiers="const">
 			<return type="Dictionary" />
-			<param index="0" name="index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>
@@ -204,7 +204,7 @@
 		</method>
 		<method name="population_menu_select_province">
 			<return type="int" enum="Error" />
-			<param index="0" name="province_index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>

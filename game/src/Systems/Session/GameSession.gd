@@ -31,16 +31,16 @@ func _on_map_view_ready() -> void:
 		PlayerSingleton.get_player_country_capital_position()
 	)
 
-func _on_map_view_province_hovered(index: int) -> void:
-	_map_view.set_hovered_province_index(index)
+func _on_map_view_province_hovered(province_number: int) -> void:
+	_map_view.set_hovered_province_number(province_number)
 
 func _on_map_view_province_unhovered() -> void:
 	_map_view.unset_hovered_province()
 
-func _on_map_view_province_clicked(index: int) -> void:
-	PlayerSingleton.set_selected_province_by_index(index)
+func _on_map_view_province_clicked(province_number: int) -> void:
+	PlayerSingleton.set_selected_province_by_number(province_number)
 
-func _on_map_view_province_right_clicked(index: int) -> void:
+func _on_map_view_province_right_clicked(province_number: int) -> void:
 	# TODO - open diplomacy screen on province owner or viewed country if province has no owner
 	#Events.NationManagementScreens.open_nation_management_screen(NationManagement.Screen.DIPLOMACY)
-	PlayerSingleton.set_player_country_by_province_index(index)
+	PlayerSingleton.set_player_country_by_province_number(province_number)

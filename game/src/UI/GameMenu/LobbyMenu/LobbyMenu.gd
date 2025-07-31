@@ -182,6 +182,6 @@ func _on_map_view_ready() -> void:
 	# GameSingleton.get_bookmark_start_position()
 	pass
 
-func _on_map_view_province_clicked(_index: int) -> void:
-	# TODO: need to be able to call something like PlayerSingleton.set_player_country_by_province_index(index) here
+func _on_map_view_province_clicked(province_number: int) -> void:
+	# TODO: need to be able to call something like PlayerSingleton.set_player_country_by_province_number(province_number) here
 	pass

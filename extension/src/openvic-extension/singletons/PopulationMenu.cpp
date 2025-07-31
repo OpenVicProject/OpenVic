@@ -255,21 +255,21 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 	return _population_menu_update_pops();
 }
 
-Error MenuSingleton::population_menu_select_province(int32_t province_index) {
+Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V(
-		province_index <= 0 || province_index > instance_manager->get_map_instance().get_province_instance_count(), FAILED
+		province_number <= 0 || province_number > instance_manager->get_map_instance().get_province_instance_count(), FAILED
 	);
 
 	struct entry_visitor_t {
 
 		MenuSingleton& menu_singleton;
 
-		const int32_t _province_index = 0;
+		const int32_t _province_number = 0;
 
 		int32_t index = 0;
 
@@ -293,7 +293,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 		}
 
 		bool operator()(population_menu_t::province_entry_t& province_entry) {
-			if (province_entry.province.get_index() == _province_index) {
+			if (province_entry.province.get_province_definition().get_province_number() == _province_number) {
 
 				if (state_entry_to_expand >= 0) {
 					ret &= menu_singleton.population_menu_toggle_expanded(state_entry_to_expand, false) == OK;
@@ -306,7 +306,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 			return true;
 		}
 
-	} entry_visitor { *this, province_index };
+	} entry_visitor { *this, province_number };
 
 	while (entry_visitor.index < population_menu.province_list_entries.size()
 		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
@@ -315,7 +315,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_index) {
 
 	ERR_FAIL_COND_V_MSG(
 		entry_visitor.index >= population_menu.province_list_entries.size(), FAILED,
-		Utilities::format("Cannot select province index %d - not found in population menu province list!", province_index)
+		Utilities::format("Cannot select province number %d - not found in population menu province list!", province_number)
 	);
 
 	return ERR(entry_visitor.ret);

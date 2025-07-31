@@ -37,8 +37,8 @@ namespace OpenVic {
 		godot::PackedByteArray get_rgo_icons() const;
 		godot::PackedByteArray get_national_focus_icons() const;
 
-		godot::Vector2 get_unit_position_by_province_index(int32_t province_index) const;
-		godot::Vector2 get_port_position_by_province_index(int32_t province_index) const;
-		int32_t get_clicked_port_province_index(godot::Vector2 click_position) const;
+		godot::Vector2 get_unit_position_by_province_number(int32_t province_number) const;
+		godot::Vector2 get_port_position_by_province_number(int32_t province_number) const;
+		int32_t get_clicked_port_province_number(godot::Vector2 click_position) const;
 	};
 }

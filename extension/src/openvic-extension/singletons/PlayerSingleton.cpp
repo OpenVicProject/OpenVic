@@ -20,13 +20,13 @@ StringName const& PlayerSingleton::_signal_province_selected() {
 
 void PlayerSingleton::_bind_methods() {
 	// Player country
-	OV_BIND_METHOD(PlayerSingleton::set_player_country_by_province_index, { "province_index" });
+	OV_BIND_METHOD(PlayerSingleton::set_player_country_by_province_number, { "province_number" });
 	OV_BIND_METHOD(PlayerSingleton::get_player_country_capital_position);
 
 	// Selected province
-	OV_BIND_METHOD(PlayerSingleton::set_selected_province_by_index, { "province_index" });
+	OV_BIND_METHOD(PlayerSingleton::set_selected_province_by_number, { "province_number" });
 	OV_BIND_METHOD(PlayerSingleton::unset_selected_province);
-	OV_BIND_METHOD(PlayerSingleton::get_selected_province_index);
+	OV_BIND_METHOD(PlayerSingleton::get_selected_province_number);
 
 	// Core
 	OV_BIND_METHOD(PlayerSingleton::toggle_paused);
@@ -105,11 +105,11 @@ void PlayerSingleton::set_player_country(CountryInstance const* new_player_count
 	game_singleton._on_gamestate_updated();
 }
 
-void PlayerSingleton::set_player_country_by_province_index(int32_t province_index) {
+void PlayerSingleton::set_player_country_by_province_number(int32_t province_number) {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	ProvinceInstance* province_instance = instance_manager->get_map_instance().get_province_instance_by_index(province_index);
+	ProvinceInstance* province_instance = instance_manager->get_map_instance().get_province_instance_from_number(province_number);
 	ERR_FAIL_NULL(province_instance);
 
 	set_player_country(province_instance->get_owner());
@@ -134,12 +134,12 @@ void PlayerSingleton::set_selected_province(ProvinceInstance const* new_selected
 
 		GameSingleton::get_singleton()->_update_colour_image();
 
-		emit_signal(_signal_province_selected(), get_selected_province_index());
+		emit_signal(_signal_province_selected(), get_selected_province_number());
 	}
 }
 
-void PlayerSingleton::set_selected_province_by_index(int32_t province_index) {
-	if (province_index == ProvinceDefinition::NULL_INDEX) {
+void PlayerSingleton::set_selected_province_by_number(int32_t province_number) {
+	if (province_number == ProvinceDefinition::NULL_INDEX) {
 		unset_selected_province();
 	} else {
 		InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
@@ -147,11 +147,11 @@ void PlayerSingleton::set_selected_province_by_index(int32_t province_index) {
 
 		MapInstance const& map_instance = instance_manager->get_map_instance();
 
-		set_selected_province(map_instance.get_province_instance_by_index(province_index));
+		set_selected_province(map_instance.get_province_instance_from_number(province_number));
 
 		if (selected_province == nullptr) {
 			Logger::error(
-				"Trying to set selected province to an invalid index ", province_index, " (max index is ",
+				"Trying to set selected province to an invalid number ", province_number, " (max number is ",
 				map_instance.get_province_instance_count(), ")"
 			);
 		}
@@ -162,8 +162,8 @@ void PlayerSingleton::unset_selected_province() {
 	set_selected_province(nullptr);
 }
 
-int32_t PlayerSingleton::get_selected_province_index() const {
-	return selected_province != nullptr ? selected_province->get_index() : ProvinceDefinition::NULL_INDEX;
+int32_t PlayerSingleton::get_selected_province_number() const {
+	return selected_province != nullptr ? selected_province->get_province_definition().get_province_number() : ProvinceDefinition::NULL_INDEX;
 }
 
 // Core
