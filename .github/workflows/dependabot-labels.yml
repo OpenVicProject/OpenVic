@@ -1,0 +1,38 @@
+name: Dependabot Auto-Label
+on:
+  pull_request:
+    types: [opened, labeled]
+    branches: [master]
+    paths:
+      - extension/deps/openvic-simulation
+      - scripts
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Add custom labels based on dependency name
+        run: |
+          DEPENDENCY_NAME="${{ steps.metadata.outputs.dependency-names }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          if [[ "$DEPENDENCY_NAME" == "extension/deps/openvic-simulation" ]]; then
+            gh pr edit "$PR_URL" --add-label "topic:simulation"
+          elif [[ "$DEPENDENCY_NAME" == "scripts" ]]; then
+            gh pr edit "$PR_URL" --add-label "topic:buildsystem"
+          fi
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
