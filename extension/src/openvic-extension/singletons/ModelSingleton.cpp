@@ -195,7 +195,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 
 /* Returns false if an error occurs while trying to add a unit model for the province, true otherwise.
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
-template<UnitType::branch_t Branch>
+template<unit_branch_t Branch>
 bool ModelSingleton::add_unit_dict(
 	std::span<UnitInstanceGroupBranched<Branch>* const> units, TypedArray<Dictionary>& unit_array
 ) {
@@ -239,7 +239,7 @@ bool ModelSingleton::add_unit_dict(
 	std::string_view actor_name = display_unit_type->get_sprite();
 	std::string_view mount_actor_name, mount_attach_node_name;
 
-	if constexpr (Branch == UnitType::branch_t::LAND) {
+	if constexpr (Branch == unit_branch_t::LAND) {
 		RegimentType const* regiment_type = reinterpret_cast<RegimentType const*>(display_unit_type);
 
 		if (!regiment_type->get_sprite_override().empty()) {

@@ -3,19 +3,21 @@
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+#include <openvic-simulation/types/IndexedFlatMap.hpp>
 
+#include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 namespace OpenVic {
-	template<typename Container>
+	template<typename MapType>
 	concept IsPieChartDistribution = (
-			/* ordered_map<T const*, mapped_type>, T derived from HasIdentifierAndColour */
-			utility::specialization_of<Container, tsl::ordered_map>
-			/* IndexedMap<T, mapped_type>, T derived from HasIdentifierAndColour */
-			|| utility::specialization_of<Container, IndexedMap>
+			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
+			utility::specialization_of<MapType, tsl::ordered_map>
+			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
+			|| utility::specialization_of<MapType, IndexedFlatMap>
 		)
-		&& HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>>
-		&& std::convertible_to<typename Container::mapped_type, float>;
+		&& HasGetIdentifierAndGetColour<std::remove_pointer_t<map_key_t<MapType>>>
+		&& std::convertible_to<map_value_t<MapType>, float>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
@@ -45,22 +47,26 @@ namespace OpenVic {
 	public:
 		/* Generate slice data from a distribution of objects satisfying HasGetIdentifierAndGetColour, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
-		template<IsPieChartDistribution Container>
+		template<IsPieChartDistribution MapType>
 		static godot_pie_chart_data_t distribution_to_slices_array(
-			Container const& distribution,
+			MapType const& distribution,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::remove_pointer_t<typename Container::key_type> const*, godot::String const&, float, float
+				godot::String, std::remove_pointer_t<map_key_t<MapType>> const*, godot::String const&, float, float
 			> auto make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
 			using namespace godot;
 
-			using key_type = std::remove_pointer_t<typename Container::key_type>;
+			using key_type = std::remove_pointer_t<map_key_t<MapType>>;
 			using entry_t = std::pair<key_type const*, float>;
 
 			std::vector<entry_t> sorted_distribution;
-			sorted_distribution.reserve(distribution.size());
+			if constexpr (utility::is_specialization_of_v<MapType, IndexedFlatMap>) {
+				sorted_distribution.reserve(distribution.get_count());
+			} else {
+				sorted_distribution.reserve(distribution.size());
+			}
 
 			float total_weight = 0.0f;
 

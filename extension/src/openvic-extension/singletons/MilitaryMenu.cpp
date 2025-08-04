@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
+#include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
@@ -77,7 +78,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 	{
 		// Title
-		using enum UnitType::branch_t;
+		using enum unit_branch_t;
 
 		switch (leader.get_branch()) {
 		case LAND: {
@@ -206,7 +207,7 @@ static inline int32_t _scale_land_unit_strength(fixed_point_t strength) {
 	return (strength * LAND_UNIT_STRENGTH_FACTOR).to_int32_t();
 }
 
-template<UnitType::branch_t Branch>
+template<unit_branch_t Branch>
 Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group) {
 	static const StringName military_info_unit_group_leader_picture_key = "unit_group_leader_picture";
 	static const StringName military_info_unit_group_leader_tooltip_key = "unit_group_leader_tooltip";
@@ -221,7 +222,7 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 	static const StringName military_info_unit_group_dig_in_tooltip_key  = "unit_group_dig_in_tooltip"; // armies only
 	static const StringName military_info_unit_group_combat_key         = "unit_group_combat";
 
-	using enum UnitType::branch_t;
+	using enum unit_branch_t;
 
 	Dictionary unit_group_dict;
 

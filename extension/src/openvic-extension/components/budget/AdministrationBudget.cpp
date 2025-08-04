@@ -2,6 +2,7 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/defines/CountryDefines.hpp>
+#include <openvic-simulation/politics/Reform.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -113,7 +114,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 
 	godot::String reforms_part = "";
 	for (auto const& [group, reform] : country.get_reforms()) {
-		if (!group.is_administrative() || reform == nullptr) {
+		if (!group.get_is_administrative() || reform == nullptr) {
 			continue;
 		}
 

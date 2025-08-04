@@ -1,17 +1,17 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <variant>
 
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
-#include <openvic-simulation/types/IndexedMap.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/PopSize.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
@@ -25,7 +25,7 @@ namespace OpenVic {
 	struct Religion;
 	struct Ideology;
 	struct Culture;
-	struct Issue;
+	struct BaseIssue;
 	struct CountryParty;
 	struct RebelType;
 	struct ModifierValue;
@@ -89,18 +89,19 @@ namespace OpenVic {
 			fixed_point_map_t<Religion const*> religion_distribution;
 			fixed_point_map_t<Ideology const*> ideology_distribution;
 			fixed_point_map_t<Culture const*> culture_distribution;
-			fixed_point_map_t<Issue const*> issue_distribution;
+			fixed_point_map_t<BaseIssue const*> issue_distribution;
 			fixed_point_map_t<CountryParty const*> vote_distribution;
 
 			PopSortKey sort_key = SORT_NONE;
 			bool sort_descending = true;
-			IndexedMap<PopType, size_t> pop_type_sort_cache;
-			IndexedMap<Culture, size_t> culture_sort_cache;
-			IndexedMap<Religion, size_t> religion_sort_cache;
-			IndexedMap<ProvinceInstance, size_t> province_sort_cache;
-			IndexedMap<RebelType, size_t> rebel_type_sort_cache;
+			IndexedFlatMap<PopType, size_t> pop_type_sort_cache;
+			ordered_map<Culture const*, size_t> culture_sort_cache;
+			ordered_map<Religion const*, size_t> religion_sort_cache;
+			IndexedFlatMap<ProvinceInstance, size_t> province_sort_cache;
+			IndexedFlatMap<RebelType, size_t> rebel_type_sort_cache;
 
 			std::vector<Pop const*> pops, filtered_pops;
+			population_menu_t();
 		};
 
 		enum TradeSettingBit {
@@ -279,7 +280,7 @@ namespace OpenVic {
 
 		/* MILITARY MENU */
 		godot::Dictionary make_leader_dict(LeaderInstance const& leader);
-		template<UnitType::branch_t Branch>
+		template<unit_branch_t Branch>
 		godot::Dictionary make_unit_group_dict(UnitInstanceGroupBranched<Branch> const& unit_group);
 		godot::Dictionary make_in_progress_unit_dict() const;
 		godot::Dictionary get_military_menu_info();
