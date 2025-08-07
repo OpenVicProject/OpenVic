@@ -7,6 +7,7 @@
 #include <openvic-simulation/interface/GFXObject.hpp>
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/UnitBranchType.hpp>
 
 namespace OpenVic {
 	struct BuildingInstance;
@@ -40,7 +41,7 @@ namespace OpenVic {
 		godot::Dictionary get_animation_dict(GFX::Actor::Animation const& animation);
 		godot::Dictionary get_model_dict(GFX::Actor const& actor);
 
-		template<UnitType::branch_t Branch>
+		template<unit_branch_t Branch>
 		bool add_unit_dict(
 			std::span<UnitInstanceGroupBranched<Branch>* const> units, godot::TypedArray<godot::Dictionary>& unit_array
 		);

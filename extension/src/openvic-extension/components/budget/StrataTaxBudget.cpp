@@ -57,12 +57,12 @@ fixed_point_t StrataTaxBudget::calculate_budget_and_update_custom(
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value
-		* country.get_strata_taxable_income(strata)
+		* country.get_taxable_income_by_strata(strata)
 		* country.get_tax_efficiency();
 }
 
 SliderValue const& StrataTaxBudget::get_slider_value(CountryInstance const& country) const {
-	return country.get_tax_rate_slider_value_by_strata()[strata];
+	return country.get_tax_rate_slider_value_by_strata(strata);
 }
 
 void StrataTaxBudget::on_slider_value_changed(const fixed_point_t scaled_value) {

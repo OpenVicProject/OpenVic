@@ -621,13 +621,14 @@ Error GameSingleton::set_compatibility_mode_roots(
 		roots.emplace_back(Utilities::godot_to_std_string(path));
 	}
 
-	Dataloader::path_vector_t replace;
-	replace.reserve(replace_paths.size());
-	for (String const& path : replace_paths) {
-		replace.emplace_back(Utilities::godot_to_std_string(path));
-	}
+	// TODO @BrickPI https://github.com/OpenVicProject/OpenVic/pull/512
+	// Dataloader::path_vector_t replace;
+	// replace.reserve(replace_paths.size());
+	// for (String const& path : replace_paths) {
+	// 	replace.emplace_back(Utilities::godot_to_std_string(path));
+	// }
 
-	ERR_FAIL_COND_V_MSG(!game_manager.set_roots(roots, replace), FAILED, "Failed to set dataloader roots!");
+	ERR_FAIL_COND_V_MSG(!game_manager.set_base_path(roots), FAILED, "Failed to set dataloader roots!");
 	return OK;
 }
 

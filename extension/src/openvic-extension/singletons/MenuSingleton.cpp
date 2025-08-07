@@ -7,7 +7,9 @@
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/types/PopSprite.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -19,6 +21,11 @@
 
 using namespace godot;
 using namespace OpenVic;
+
+MenuSingleton::population_menu_t::population_menu_t()
+: pop_type_sort_cache { decltype(pop_type_sort_cache)::create_empty() },
+province_sort_cache { decltype(province_sort_cache)::create_empty() },
+rebel_type_sort_cache { decltype(rebel_type_sort_cache)::create_empty() } {}
 
 StringName const& MenuSingleton::_signal_population_menu_province_list_changed() {
 	static const StringName signal_population_menu_province_list_changed = "population_menu_province_list_changed";
@@ -306,9 +313,10 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 
 	static const StringName no_issue = "noIssue";
 
-	IssueGroup const* war_policy_issue_group = issue_manager.get_issue_group_by_identifier("war_policy");
-	Issue const* war_policy_issue =
-		war_policy_issue_group != nullptr ? country->get_ruling_party()->get_policies()[*war_policy_issue_group] : nullptr;
+	PartyPolicyGroup const* war_policy_issue_group = issue_manager.get_party_policy_group_by_identifier("war_policy");
+	PartyPolicy const* war_policy_issue = war_policy_issue_group == nullptr
+		? nullptr
+		: country->get_ruling_party()->get_policies(*war_policy_issue_group);
 
 	const String impact_string = Utilities::fixed_point_to_string_dp(country->get_mobilisation_impact() * 100, 1) + "%";
 
@@ -696,8 +704,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 					"population proportion of RGO owner pop type \"", owner_pop_type.get_identifier(), "\""
 				);
 			} else {
-				fixed_point_t effect_value =
-					owner_job->get_effect_multiplier() * state->get_pop_type_distribution()[owner_pop_type];
+				fixed_point_t effect_value = owner_job->get_effect_multiplier() * state->get_population_by_type(owner_pop_type);
 
 				if (effect_value != fixed_point_t::_0) {
 					effect_value /= state->get_total_population();
@@ -873,7 +880,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			}
 
 			ModifierEffectCache::good_effects_t const& good_effects =
-				modifier_effect_cache.get_good_effects()[production_type.get_output_good()];
+				modifier_effect_cache.get_good_effects(production_type.get_output_good());
 
 			fixed_point_t output_from_tech =
 				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_output_tech()) +
@@ -1031,19 +1038,19 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	};
 
 	GFXPieChartTexture::godot_pie_chart_data_t pop_types =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_pop_type_distribution(), make_pie_chart_tooltip);
+		GFXPieChartTexture::distribution_to_slices_array(province->get_population_by_type(), make_pie_chart_tooltip);
 	if (!pop_types.is_empty()) {
 		ret[province_info_pop_types_key] = std::move(pop_types);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t ideologies =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_ideology_distribution(), make_pie_chart_tooltip);
+		GFXPieChartTexture::distribution_to_slices_array(province->get_supporter_equivalents_by_ideology(), make_pie_chart_tooltip);
 	if (!ideologies.is_empty()) {
 		ret[province_info_pop_ideologies_key] = std::move(ideologies);
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t cultures =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_culture_distribution(), make_pie_chart_tooltip);
+		GFXPieChartTexture::distribution_to_slices_array(province->get_population_by_culture(), make_pie_chart_tooltip);
 	if (!cultures.is_empty()) {
 		ret[province_info_pop_cultures_key] = std::move(cultures);
 	}
@@ -1097,7 +1104,7 @@ int32_t MenuSingleton::get_slave_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_slave_sprite();
+	const pop_sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_slave_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Slave sprite unset!");
 	return sprite;
 }
@@ -1106,7 +1113,7 @@ int32_t MenuSingleton::get_administrative_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_administrative_sprite();
+	const pop_sprite_t sprite = game_singleton->get_definition_manager().get_pop_manager().get_administrative_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "Administrative sprite unset!");
 	return sprite;
 }
@@ -1115,7 +1122,7 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const PopType::sprite_t sprite = game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
+	const pop_sprite_t sprite = game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
 }
@@ -1299,7 +1306,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			ret[research_tooltip_key] = tr(uncivilised_no_research_tooltip_localisation_key);
 		}
 
-		ret[literacy_key] = country->get_national_literacy().to_float();
+		ret[literacy_key] = country->get_average_literacy().to_float();
 		// TODO - set monthly literacy change (test for precision issues)
 		ret[literacy_change_key] = 0.0f;
 
@@ -1324,7 +1331,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
@@ -1429,7 +1436,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					100 * country->get_pop_type_proportion(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
