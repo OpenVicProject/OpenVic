@@ -33,7 +33,6 @@ Error MenuSingleton::_population_menu_update_provinces() {
 	ERR_FAIL_COND_V(_population_menu_generate_pop_filters() != OK, FAILED);
 
 	MapInstance const& map_instance = instance_manager->get_map_instance();
-	ERR_FAIL_COND_V(!map_instance.province_instances_are_locked(), FAILED);
 
 	for (CountryInstance const* country : {
 		// Example country
@@ -266,7 +265,8 @@ Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V(
-		province_number <= 0 || province_number > instance_manager->get_map_instance().get_province_instance_count(), FAILED
+		province_number <= 0 || province_number > instance_manager->get_map_instance().get_province_instance_by_definition().get_count(),
+		FAILED
 	);
 
 	struct entry_visitor_t {

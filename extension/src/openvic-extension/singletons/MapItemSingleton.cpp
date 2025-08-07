@@ -1,5 +1,4 @@
 #include "MapItemSingleton.hpp"
-#include <string_view>
 
 #include <openvic-simulation/utility/Containers.hpp>
 
@@ -162,7 +161,7 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 
 	PackedVector2Array billboard_pos {};
 
-	billboard_pos.resize(country_instance_manager.get_country_instance_count());
+	billboard_pos.resize(country_instance_manager.get_country_instance_by_definition().get_count());
 
 	int64_t index = 0;
 

@@ -701,7 +701,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 			);
 
 		if (country_instance != nullptr) {
-			country_index = country_instance->get_country_definition()->get_index();
+			country_index = country_instance->get_country_definition().get_index();
 
 			GovernmentType const* government_type = country_instance->get_flag_government_type();
 			if (government_type == nullptr) {

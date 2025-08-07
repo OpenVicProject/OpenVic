@@ -226,9 +226,9 @@ bool ModelSingleton::add_unit_dict(
 	_UnitInstanceGroup const& unit = *units.back();
 	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())));
 
-	CountryDefinition const* country = unit.get_country()->get_country_definition();
+	CountryDefinition const& country_definition = unit.get_country()->get_country_definition();
 
-	GraphicalCultureType const& graphical_culture_type = country->get_graphical_culture();
+	GraphicalCultureType const& graphical_culture_type = country_definition.get_graphical_culture();
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
 		display_unit_type, false, Utilities::format(
@@ -301,7 +301,7 @@ bool ModelSingleton::add_unit_dict(
 	}
 
 	// TODO - government type based flag type
-	dict[flag_index_key] = game_singleton->get_flag_sheet_index(country->get_index(), {});
+	dict[flag_index_key] = game_singleton->get_flag_sheet_index(country_definition.get_index(), {});
 
 	if (display_unit_type->has_floating_flag()) {
 		dict[flag_floating_key] = true;
@@ -314,9 +314,9 @@ bool ModelSingleton::add_unit_dict(
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
 	}
 
-	dict[primary_colour_key] = Utilities::to_godot_color(country->get_primary_unit_colour());
-	dict[secondary_colour_key] = Utilities::to_godot_color(country->get_secondary_unit_colour());
-	dict[tertiary_colour_key] = Utilities::to_godot_color(country->get_tertiary_unit_colour());
+	dict[primary_colour_key] = Utilities::to_godot_color(country_definition.get_primary_unit_colour());
+	dict[secondary_colour_key] = Utilities::to_godot_color(country_definition.get_secondary_unit_colour());
+	dict[tertiary_colour_key] = Utilities::to_godot_color(country_definition.get_tertiary_unit_colour());
 
 	// TODO - move dict into unit_array ?
 	unit_array.push_back(dict);

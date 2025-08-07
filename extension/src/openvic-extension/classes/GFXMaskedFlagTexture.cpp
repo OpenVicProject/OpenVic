@@ -203,8 +203,9 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 
-	CountryDefinition const* new_flag_country =
-		game_singleton->get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
+	CountryDefinition const* new_flag_country = game_singleton->get_definition_manager()
+		.get_country_definition_manager()
+		.get_country_definition_by_identifier(
 			Utilities::godot_to_std_string(new_flag_country_name)
 		);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, Utilities::format("Country not found: %s", new_flag_country_name));
@@ -213,7 +214,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 }
 
 Error GFXMaskedFlagTexture::set_flag_country(CountryInstance const* new_flag_country) {
-	if (new_flag_country == nullptr || new_flag_country->get_country_definition() == nullptr) {
+	if (new_flag_country == nullptr) {
 		return set_flag_country_and_type(nullptr, {});
 	}
 
@@ -223,7 +224,7 @@ Error GFXMaskedFlagTexture::set_flag_country(CountryInstance const* new_flag_cou
 		? StringName { Utilities::std_to_godot_string(government_type->get_flag_type()) }
 		: StringName {};
 
-	return set_flag_country_and_type(new_flag_country->get_country_definition(), new_flag_type);
+	return set_flag_country_and_type(&new_flag_country->get_country_definition(), new_flag_type);
 }
 
 Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country_name) {

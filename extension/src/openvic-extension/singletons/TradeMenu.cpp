@@ -34,7 +34,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 		TypedArray<Dictionary> array;
 
 		for (GoodDefinition const* good_definition : good_category.get_good_definitions()) {
-			GoodInstance const& good_instance = good_instance_manager.get_good_instance_from_definition(*good_definition);
+			GoodInstance const& good_instance = good_instance_manager.get_good_instance_by_definition(*good_definition);
 
 			if (!good_instance.is_trading_good()) {
 				continue;
