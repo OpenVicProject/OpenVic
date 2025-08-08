@@ -219,7 +219,7 @@ void BudgetMenu::update() {
 		gold_income_label.tr("BUDGET_GOLD_INCOME_DESC")
 		//TODO add separator & list all province names + income if gold_income > 0
 	);
-	const fixed_point_t cash_stockpile = country.get_cash_stockpile().get_copy_of_value();
+	const fixed_point_t cash_stockpile = country.get_cash_stockpile();
 	cash_stockpile_label.set_text(
 		Utilities::format_with_currency(
 			Utilities::float_to_string_suffixed(cash_stockpile)

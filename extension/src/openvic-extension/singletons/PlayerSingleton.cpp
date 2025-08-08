@@ -152,7 +152,7 @@ void PlayerSingleton::set_selected_province_by_number(int32_t province_number) {
 		if (selected_province == nullptr) {
 			Logger::error(
 				"Trying to set selected province to an invalid number ", province_number, " (max number is ",
-				map_instance.get_province_instance_count(), ")"
+				map_instance.get_province_instance_by_definition().get_count(), ")"
 			);
 		}
 	}
