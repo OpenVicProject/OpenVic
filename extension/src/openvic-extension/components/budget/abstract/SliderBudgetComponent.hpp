@@ -3,7 +3,9 @@
 #include <godot_cpp/variant/node_path.hpp>
 #include <godot_cpp/variant/string.hpp>
 
-#include "openvic-extension/components/budget/abstract/BudgetComponent.hpp"
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+
+#include "openvic-extension/components/ReactiveComponent.hpp"
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -17,13 +19,19 @@ namespace OpenVic {
 		EXPENSES
 	};
 
-	struct SliderBudgetComponent : public BudgetComponent {
+	struct SliderBudgetComponent : public ReactiveComponent {
 	private:
-		//multiplies balance by -1 for balance_label
-		const BudgetType budget_type;
+		const BudgetType budget_type; //multiplies balance by -1 for balance_label
 		GUILabel* const percent_label;
-		void _on_slider_value_changed();
-		void update_labels(CountryInstance& country, const fixed_point_t scaled_value);
+		fixed_point_t _balance;
+
+		scoped_connection player_country_connection;
+		CountryInstance* player_country_cached;
+		void _on_player_country_changed(CountryInstance* const player_country);
+
+		scoped_connection slider_scaled_value_connection;
+		fixed_point_t slider_scaled_value_cached;
+		void _on_slider_scaled_value_changed(const fixed_point_t scaled_value);
 	protected:
 		const godot::String slider_tooltip_localisation_key;
 		GUIScrollbar& slider;
@@ -38,18 +46,26 @@ namespace OpenVic {
 			godot::NodePath const& percent_label_path = {}
 		);
 
+		void initialise() override;
+		virtual void update_slider_tooltip(
+			CountryInstance& country,
+			const fixed_point_t scaled_value
+		);		
+
 		virtual fixed_point_t calculate_budget_and_update_custom(
 			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) = 0;
 		virtual ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const = 0;
-		virtual void on_slider_value_changed(const fixed_point_t scaled_value) = 0;
-		virtual void update_slider_tooltip(
-			CountryInstance& country,
-			const fixed_point_t scaled_value
-		);
-
+		virtual void on_slider_scaled_value_changed(const fixed_point_t scaled_value) = 0;
+		void update() override;
 	public:
-		void full_update(CountryInstance& country) override;
+		template<typename ConnectTemplateType>
+		requires std::invocable<ConnectTemplateType, signal_property<ReactiveComponent>&>
+		[[nodiscard]] fixed_point_t get_balance(ConnectTemplateType&& connect) {
+			connect(marked_dirty);
+			update_if_dirty();
+			return _balance;
+		}
 	};
 }

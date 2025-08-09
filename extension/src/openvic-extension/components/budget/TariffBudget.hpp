@@ -21,15 +21,12 @@ namespace OpenVic {
 			const fixed_point_t scaled_value
 		) override;
 		ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const override;
-		void on_slider_value_changed(const fixed_point_t scaled_value) override;
-
+		void on_slider_scaled_value_changed(const fixed_point_t scaled_value) override;
 	public:
 		TariffBudget(
 			GUINode const& parent,
 			CountryDefines const& country_defines
 		);
-		fixed_point_t get_expenses() const override;
-		fixed_point_t get_income() const override;
 		void update_slider_tooltip(
 			CountryInstance& country,
 			const fixed_point_t scaled_value

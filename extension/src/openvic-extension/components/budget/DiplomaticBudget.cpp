@@ -6,6 +6,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
@@ -37,17 +38,26 @@ fixed_point_t DiplomaticBudget::get_expenses() const {
 		) \
 		: ""
 
-void DiplomaticBudget::full_update(CountryInstance& country) {
+void DiplomaticBudget::update() {
+	CountryInstance* const player_country_ptr = PlayerSingleton::get_singleton()->get_player_country(
+		connect_to_mark_dirty<CountryInstance*>()
+	);
+	if (player_country_ptr == nullptr) {
+		return;
+	}
+	CountryInstance& country = *player_country_ptr;
+	const CountryInstance::index_t index = country.get_index();
+
 	//TODO get from sim once sim has it
-	reparations_income = fixed_point_t::_0_50;
-	war_subsidies_income = fixed_point_t::_1;
-	reparations_expenses = fixed_point_t::_1;
-	war_subsidies_expenses = fixed_point_t::_0_50;
+	reparations_income = index+fixed_point_t::_0_50;
+	war_subsidies_income = index+fixed_point_t::_1;
+	reparations_expenses = index+fixed_point_t::_1;
+	war_subsidies_expenses = index+fixed_point_t::_0_50;
 	const fixed_point_t diplomatic_balance = reparations_income
 		+ war_subsidies_income
 		- reparations_expenses
 		- war_subsidies_expenses;
-	set_balance(diplomatic_balance);
+	_balance = diplomatic_balance;
 
 	balance_label.set_text(
 		Utilities::format(
@@ -72,7 +82,10 @@ void DiplomaticBudget::full_update(CountryInstance& country) {
 
 #undef TOOLTIP_TEXT_PART
 
-godot::String DiplomaticBudget::generate_income_summary_text(godot::Object const& translation_object) const {
+godot::String DiplomaticBudget::generate_income_summary_text(
+	const fixed_point_t income, //ignored as this is special
+	godot::Object const& translation_object
+) const {
 	//war_subsidies_income are excluded here in Victoria 2
 	return reparations_income > 0
 		? "\n"+translation_object.tr(
@@ -84,7 +97,10 @@ godot::String DiplomaticBudget::generate_income_summary_text(godot::Object const
 		: "";
 }
 
-godot::String DiplomaticBudget::generate_expenses_summary_text(godot::Object const& translation_object) const {
+godot::String DiplomaticBudget::generate_expenses_summary_text(
+	const fixed_point_t expenses, //ignored as this is special
+	godot::Object const& translation_object
+) const {
 	//war_subsidies_expenses are excluded here in Victoria 2
 	return reparations_expenses > 0
 		? "\n"+translation_object.tr(

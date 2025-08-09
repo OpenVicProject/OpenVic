@@ -39,21 +39,17 @@ EducationBudget::EducationBudget(GUINode const& parent):
 	}
 }
 
-fixed_point_t EducationBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t EducationBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	return scaled_value * country.get_projected_education_spending_unscaled_by_slider_untracked();
+	return scaled_value * country.get_projected_education_spending_unscaled_by_slider(connect_to_mark_dirty<fixed_point_t>());
 }
 
 ReadOnlyClampedValue& EducationBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_education_spending_slider_value();
 }
 
-void EducationBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void EducationBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_education_spending_slider_value(scaled_value);
 }

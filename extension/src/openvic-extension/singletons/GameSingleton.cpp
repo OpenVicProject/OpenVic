@@ -155,7 +155,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 
 	PlayerSingleton& player_singleton = *PlayerSingleton::get_singleton();
 	player_singleton.set_player_country(starting_country);
-	ERR_FAIL_NULL_V(player_singleton.get_player_country(), FAILED);
+	ERR_FAIL_NULL_V(player_singleton.get_player_country_untracked(), FAILED);
 
 	// TODO - remove this test starting research
 	for (Technology const& technology :
@@ -288,7 +288,7 @@ Error GameSingleton::_update_colour_image() {
 	PlayerSingleton const& player_singleton = *PlayerSingleton::get_singleton();
 	if (instance_manager != nullptr &&
 		!get_definition_manager().get_mapmode_manager().generate_mapmode_colours(
-			instance_manager->get_map_instance(), mapmode, player_singleton.get_player_country(),
+			instance_manager->get_map_instance(), mapmode, player_singleton.get_player_country_untracked(),
 			player_singleton.get_selected_province(), colour_data_array.ptrw()
 		)) {
 		err = FAILED;

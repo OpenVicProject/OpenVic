@@ -5,6 +5,7 @@
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
+#include "openvic-simulation/types/fixed_point/FixedPoint.hpp"
 
 using namespace OpenVic;
 
@@ -39,21 +40,17 @@ MilitaryBudget::MilitaryBudget(GUINode const& parent):
 	}
 }
 
-fixed_point_t MilitaryBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t MilitaryBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	return scaled_value * country.get_projected_military_spending_unscaled_by_slider_untracked();
+	return scaled_value * country.get_projected_military_spending_unscaled_by_slider(connect_to_mark_dirty<fixed_point_t>());
 }
 
 ReadOnlyClampedValue& MilitaryBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_military_spending_slider_value();
 }
 
-void MilitaryBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void MilitaryBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_military_spending_slider_value(scaled_value);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+#include <openvic-simulation/types/Signal.hpp>
 
 #include "openvic-extension/classes/GFXButtonStateTexture.hpp"
 
@@ -9,7 +10,10 @@ namespace OpenVic {
 	struct CountryInstance;
 
 	class GFXMaskedFlagTexture : public GFXButtonStateHavingTexture {
+	private:
 		GDCLASS(GFXMaskedFlagTexture, GFXButtonStateHavingTexture)
+
+		scoped_connection flag_government_type_connection;
 
 		GFX::MaskedFlag const* PROPERTY(gfx_masked_flag, nullptr);
 		CountryDefinition const* PROPERTY(flag_country, nullptr);
