@@ -63,7 +63,7 @@ void BudgetMenu::update_projected_balance() {
 	CountryInstance const* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 	ERR_FAIL_NULL(country_ptr);
 	CountryInstance const& country = *country_ptr;
-	fixed_point_t projected_balance = country.get_gold_income()
+	fixed_point_t projected_balance = country.get_gold_income_untracked()
 		+ administration_budget.get_balance()
 		+ diplomatic_budget.get_balance()
 		+ education_budget.get_balance()
@@ -148,7 +148,7 @@ void BudgetMenu::update_projected_income() {
 		Utilities::float_to_string_dp(stockpile_income, 1)
 	);
 
-	const fixed_point_t gold_income = country.get_gold_income();
+	const fixed_point_t gold_income = country.get_gold_income_untracked();
 	projected_income_excluding_tariffs += gold_income;
 	projected_income_args[i++] = projected_income_label.tr("BUDGET_GOLD").replace(
 		Utilities::get_short_value_placeholder(),
@@ -195,9 +195,9 @@ void BudgetMenu::update_all_projections() {
 	}
 
 void BudgetMenu::update() {
-	CountryInstance const* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 	ERR_FAIL_NULL(country_ptr);
-	CountryInstance const& country = *country_ptr;
+	CountryInstance& country = *country_ptr;
 
 	//this will trigger a lot of signals we should ignore
 	for (connection& c : connections) {
@@ -209,7 +209,7 @@ void BudgetMenu::update() {
 	};
 	update_all_projections();
 
-	const fixed_point_t gold_income = country.get_gold_income();
+	const fixed_point_t gold_income = country.get_gold_income_untracked();
 	gold_income_label.set_text(
 		Utilities::format_with_currency(
 			Utilities::float_to_string_dp(gold_income, 1)

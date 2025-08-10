@@ -55,15 +55,15 @@ fixed_point_t TariffBudget::get_income() const {
 }
 
 fixed_point_t TariffBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value
-		* country.get_yesterdays_import_value()
-		* country.get_tariff_efficiency();
+		* country.get_yesterdays_import_value_untracked()
+		* country.tariff_efficiency.get_untracked();
 }
 
-SliderValue const& TariffBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& TariffBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_tariff_rate_slider_value();
 }
 
@@ -72,7 +72,7 @@ void TariffBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
 }
 
 void TariffBudget::update_slider_tooltip(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	static const godot::StringName tooltip_template = "%s\n%s\n--------------\n%s\n%s";
@@ -95,7 +95,7 @@ void TariffBudget::update_slider_tooltip(
 		"Y"+Utilities::get_percentage_value_placeholder(),
 		//not percentage_to_string_dp as localisation text contains the %
 		prefix+Utilities::fixed_point_to_string_dp(
-			100 * scaled_value * country.get_tariff_efficiency(),
+			100 * scaled_value * country.tariff_efficiency.get_untracked(),
 			1
 		)
 	);
@@ -104,7 +104,7 @@ void TariffBudget::update_slider_tooltip(
 		Utilities::get_percentage_value_placeholder(),
 		//not percentage_to_string_dp as localisation text contains the %
 		Utilities::fixed_point_to_string_dp(
-			100 * country.get_administrative_efficiency_from_administrators(),
+			100 * country.get_administrative_efficiency_from_administrators_untracked(),
 			1
 		)
 	);

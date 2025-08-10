@@ -53,15 +53,15 @@ fixed_point_t StrataTaxBudget::get_income() const {
 }
 
 fixed_point_t StrataTaxBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value
 		* country.get_taxable_income_by_strata(strata)
-		* country.get_tax_efficiency();
+		* country.get_tax_efficiency_untracked();
 }
 
-SliderValue const& StrataTaxBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& StrataTaxBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_tax_rate_slider_value_by_strata(strata);
 }
 
@@ -93,7 +93,7 @@ godot::StringName StrataTaxBudget::generate_summary_localisation_key(Strata cons
 }
 
 void StrataTaxBudget::update_slider_tooltip(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	//these use $VALUE$%
@@ -105,7 +105,7 @@ void StrataTaxBudget::update_slider_tooltip(
 
 	const godot::String localised_strata_tax = slider.tr(slider_tooltip_localisation_key);
 
-	const fixed_point_t tax_efficiency = country.get_tax_efficiency();
+	const fixed_point_t tax_efficiency = country.get_tax_efficiency_untracked();
 	const godot::String tax_efficiency_text = slider.tr(tax_efficiency_localisation_key).replace(
 		Utilities::get_long_value_placeholder(),
 		Utilities::float_to_string_dp(100 * tax_efficiency, 2)

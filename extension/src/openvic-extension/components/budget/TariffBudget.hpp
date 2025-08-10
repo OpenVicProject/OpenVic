@@ -17,10 +17,10 @@ namespace OpenVic {
 		godot::Array slider_tooltip_args;
 
 		fixed_point_t calculate_budget_and_update_custom(
-			CountryInstance const& country,
+			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) override;
-		SliderValue const& get_slider_value(CountryInstance const& country) const override;
+		ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const override;
 		void on_slider_value_changed(const fixed_point_t scaled_value) override;
 
 	public:
@@ -31,7 +31,7 @@ namespace OpenVic {
 		fixed_point_t get_expenses() const override;
 		fixed_point_t get_income() const override;
 		void update_slider_tooltip(
-			CountryInstance const& country,
+			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) override;
 	};

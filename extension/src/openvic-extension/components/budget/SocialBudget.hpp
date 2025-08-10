@@ -9,10 +9,10 @@ namespace OpenVic {
 		GUILabel& pensions_label;
 		GUILabel& unemployment_subsidies_label;
 		fixed_point_t calculate_budget_and_update_custom(
-			CountryInstance const& country,
+			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) override;
-		SliderValue const& get_slider_value(CountryInstance const& country) const override;
+		ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const override;
 		void on_slider_value_changed(const fixed_point_t scaled_value) override;
 
 	public:

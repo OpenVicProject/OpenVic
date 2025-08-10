@@ -27,13 +27,13 @@ fixed_point_t ConstructionStockpileBudget::get_expenses() const {
 }
 
 fixed_point_t ConstructionStockpileBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value * 3; //TODO connect with sim once sim has this
 }
 
-SliderValue const& ConstructionStockpileBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& ConstructionStockpileBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_construction_spending_slider_value();
 }
 
