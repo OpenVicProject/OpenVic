@@ -10,7 +10,7 @@ namespace OpenVic {
 	struct GUILabel;
 	struct GUINode;
 	struct GUIScrollbar;
-	struct SliderValue;
+	struct ReadOnlyClampedValue;
 
 	enum BudgetType {
 		BALANCE,
@@ -23,7 +23,7 @@ namespace OpenVic {
 		const BudgetType budget_type;
 		GUILabel* const percent_label;
 		void _on_slider_value_changed();
-		void update_labels(CountryInstance const& country, const fixed_point_t scaled_value);
+		void update_labels(CountryInstance& country, const fixed_point_t scaled_value);
 	protected:
 		const godot::String slider_tooltip_localisation_key;
 		GUIScrollbar& slider;
@@ -39,17 +39,17 @@ namespace OpenVic {
 		);
 
 		virtual fixed_point_t calculate_budget_and_update_custom(
-			CountryInstance const& country,
+			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) = 0;
-		virtual SliderValue const& get_slider_value(CountryInstance const& country) const = 0;
+		virtual ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const = 0;
 		virtual void on_slider_value_changed(const fixed_point_t scaled_value) = 0;
 		virtual void update_slider_tooltip(
-			CountryInstance const& country,
+			CountryInstance& country,
 			const fixed_point_t scaled_value
 		);
 
 	public:
-		void full_update(CountryInstance const& country) override;
+		void full_update(CountryInstance& country) override;
 	};
 }

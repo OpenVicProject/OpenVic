@@ -9,6 +9,7 @@
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/types/fixed_point/FixedPoint.hpp"
 
 using namespace OpenVic;
 
@@ -57,15 +58,17 @@ fixed_point_t AdministrationBudget::get_expenses() const {
 }
 
 fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	static const godot::StringName administrative_efficiency_template = "%s\n%s%s\n--------------\n%s%s%s%s";
+
+	const fixed_point_t administrative_efficiency_from_administrators = country.get_administrative_efficiency_from_administrators_untracked();
 	administrative_efficiency_label.set_text(
 		Utilities::format(
 			"%s%%",
 			Utilities::fixed_point_to_string_dp(
-				100 * country.get_administrative_efficiency_from_administrators(),
+				100 * administrative_efficiency_from_administrators,
 				1
 			)
 		)
@@ -75,7 +78,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		"BUDGET_ADMIN_EFFICIENCY2"
 	).replace(
 		Utilities::get_percentage_value_placeholder(),
-		Utilities::fixed_point_to_string_dp(100 * country.get_administrative_efficiency_from_administrators(), 1)
+		Utilities::fixed_point_to_string_dp(100 * administrative_efficiency_from_administrators, 1)
 	);
 
 	if (scaled_value == 0) {
@@ -100,10 +103,10 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		"BUDGET_ADMIN_EFFICIENCY_DESC"
 	).replace(
 		Utilities::get_percentage_value_placeholder(),
-		Utilities::fixed_point_to_string_dp(100 * country.get_administrator_percentage(), 1)
+		Utilities::fixed_point_to_string_dp(100 * country.get_administrator_percentage_untracked(), 1)
 	).replace(
 		"MAX",
-		Utilities::fixed_point_to_string_dp(100 * country.get_desired_administrator_percentage(), 1)
+		Utilities::fixed_point_to_string_dp(100 * country.desired_administrator_percentage.get_untracked(), 1)
 	);
 	administrative_efficiency_tooltip_args[5] = administrative_efficiency_label.tr(
 		"COMWID_BASE"
@@ -143,10 +146,10 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		administrative_efficiency_template % administrative_efficiency_tooltip_args
 	);
 
-	return scaled_value * country.get_projected_administration_spending_unscaled_by_slider();
+	return scaled_value * country.get_projected_administration_spending_unscaled_by_slider_untracked();
 }
 
-SliderValue const& AdministrationBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& AdministrationBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_administration_spending_slider_value();
 }
 

@@ -48,21 +48,21 @@ fixed_point_t SocialBudget::get_expenses() const {
 }
 
 fixed_point_t SocialBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	const fixed_point_t pensions = scaled_value * country.get_projected_pensions_spending_unscaled_by_slider();
+	const fixed_point_t pensions = scaled_value * country.get_projected_pensions_spending_unscaled_by_slider_untracked();
 	pensions_label.set_text(
 		Utilities::cash_to_string_dp_dynamic(pensions)
 	);
-	const fixed_point_t unemployment_subsidies = scaled_value * country.get_projected_unemployment_subsidies_spending_unscaled_by_slider();
+	const fixed_point_t unemployment_subsidies = scaled_value * country.get_projected_unemployment_subsidies_spending_unscaled_by_slider_untracked();
 	unemployment_subsidies_label.set_text(
 		Utilities::cash_to_string_dp_dynamic(unemployment_subsidies)
 	);
 	return pensions + unemployment_subsidies;
 }
 
-SliderValue const& SocialBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& SocialBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_social_spending_slider_value();
 }
 

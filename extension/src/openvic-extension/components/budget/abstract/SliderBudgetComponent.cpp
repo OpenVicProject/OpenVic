@@ -42,21 +42,21 @@ SliderBudgetComponent::SliderBudgetComponent(
 void SliderBudgetComponent::_on_slider_value_changed() {
 	const fixed_point_t scaled_value = slider.get_value_scaled_fp();
 	on_slider_value_changed(scaled_value);
-	CountryInstance const* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 	ERR_FAIL_NULL(country_ptr);
 	update_labels(*country_ptr, scaled_value);
 }
 
-void SliderBudgetComponent::full_update(CountryInstance const& country) {
-	SliderValue const& slider_value = get_slider_value(country);
+void SliderBudgetComponent::full_update(CountryInstance& country) {
+	ReadOnlyClampedValue& clamped_value = get_clamped_value(country);
 
 	slider.set_block_signals(true);
-	slider.set_range_limits_and_value_from_slider_value(slider_value);
+	slider.set_range_limits_and_value_from_slider_value(clamped_value);
 	slider.set_block_signals(false);
-	update_labels(country, slider_value.get_value());
+	update_labels(country, clamped_value.get_value_untracked());
 }
 
-void SliderBudgetComponent::update_labels(CountryInstance const& country, const fixed_point_t scaled_value) {
+void SliderBudgetComponent::update_labels(CountryInstance& country, const fixed_point_t scaled_value) {
 	const fixed_point_t budget = calculate_budget_and_update_custom(country, scaled_value);
 	if (budget_label != nullptr) {
 		budget_label->set_text(
@@ -79,7 +79,7 @@ void SliderBudgetComponent::update_labels(CountryInstance const& country, const 
 }
 
 void SliderBudgetComponent::update_slider_tooltip(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	godot::String tooltip;

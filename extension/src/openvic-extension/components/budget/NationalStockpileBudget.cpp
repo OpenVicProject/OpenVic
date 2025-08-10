@@ -37,12 +37,12 @@ fixed_point_t NationalStockpileBudget::get_expenses() const {
 }
 
 void NationalStockpileBudget::on_slider_value_changed() {
-	CountryInstance const* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 	ERR_FAIL_NULL(country_ptr);
 	update_labels(*country_ptr);
 }
 
-void NationalStockpileBudget::full_update(CountryInstance const& country) {\
+void NationalStockpileBudget::full_update(CountryInstance& country) {\
 	for (connection& c : connections) {
 		c.block();
 	};
@@ -56,7 +56,7 @@ void NationalStockpileBudget::full_update(CountryInstance const& country) {\
 	update_labels(country);
 }
 
-void NationalStockpileBudget::update_labels(CountryInstance const& country) {
+void NationalStockpileBudget::update_labels(CountryInstance& country) {
 	const fixed_point_t military_balance = army_stockpile_budget.get_balance()
 		+ navy_stockpile_budget.get_balance();
 	const fixed_point_t balance = military_balance

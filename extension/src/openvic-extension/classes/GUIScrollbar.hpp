@@ -133,7 +133,7 @@ namespace OpenVic {
 			const std::optional<fixed_point_t> new_upper_range_limit
 		);
 		void set_range_limits_and_value_from_slider_value(
-			SliderValue const& slider_value
+			ReadOnlyClampedValue& slider_value
 		);
 
 		/* Override the main dimension of gui_scollbar's size with the specified length. */

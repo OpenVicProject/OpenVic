@@ -37,7 +37,7 @@ fixed_point_t DiplomaticBudget::get_expenses() const {
 		) \
 		: ""
 
-void DiplomaticBudget::full_update(CountryInstance const& country) {
+void DiplomaticBudget::full_update(CountryInstance& country) {
 	//TODO get from sim once sim has it
 	reparations_income = fixed_point_t::_0_50;
 	war_subsidies_income = fixed_point_t::_1;

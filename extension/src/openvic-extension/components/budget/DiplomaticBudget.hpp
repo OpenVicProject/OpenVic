@@ -28,7 +28,7 @@ namespace OpenVic {
 
 		DiplomaticBudget(GUINode const& parent);
 
-		void full_update(CountryInstance const& country) override;
+		void full_update(CountryInstance& country) override;
 		godot::String generate_income_summary_text(godot::Object const& translation_object) const override;
 		godot::String generate_expenses_summary_text(godot::Object const& translation_object) const override;
 

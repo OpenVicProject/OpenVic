@@ -88,9 +88,10 @@ String MenuSingleton::_get_state_name(State const& state) const {
 }
 
 String MenuSingleton::_get_country_name(CountryInstance const& country) const {
-	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
 		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
-			country.get_identifier(), "_", country.get_government_type()->get_identifier()
+			country.get_identifier(), "_", government_type->get_identifier()
 		));
 
 		String government_name = tr(government_name_key);
@@ -106,9 +107,10 @@ String MenuSingleton::_get_country_name(CountryInstance const& country) const {
 String MenuSingleton::_get_country_adjective(CountryInstance const& country) const {
 	static constexpr std::string_view adjective = "_ADJ";
 
-	if (country.get_government_type() != nullptr && !country.get_government_type()->get_identifier().empty()) {
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
 		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
-			country.get_identifier(), "_", country.get_government_type()->get_identifier(), adjective
+			country.get_identifier(), "_", government_type->get_identifier(), adjective
 		));
 
 		String government_adjective = tr(government_adjective_key);
@@ -316,7 +318,7 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 	PartyPolicyGroup const* war_policy_issue_group = issue_manager.get_party_policy_group_by_identifier("war_policy");
 	PartyPolicy const* war_policy_issue = war_policy_issue_group == nullptr
 		? nullptr
-		: country->get_ruling_party()->get_policies(*war_policy_issue_group);
+		: country->get_ruling_party_untracked()->get_policies(*war_policy_issue_group);
 
 	const String impact_string = Utilities::fixed_point_to_string_dp(country->get_mobilisation_impact() * 100, 1) + "%";
 
@@ -1130,7 +1132,7 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TOPBAR */
 
 Dictionary MenuSingleton::get_topbar_info() const {
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* country = PlayerSingleton::get_singleton()->get_player_country();
 	if (country == nullptr) {
 		return {};
 	}
@@ -1153,7 +1155,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName prestige_rank_key = "prestige_rank";
 	static const StringName prestige_tooltip_key = "prestige_tooltip";
 
-	ret[prestige_key] = country->get_prestige().to_int32_t();
+	ret[prestige_key] = country->get_prestige_untracked().to_int32_t();
 	ret[prestige_rank_key] = static_cast<uint64_t>(country->get_prestige_rank());
 	ret[prestige_tooltip_key] = String {}; // TODO - list prestige sources (e.g. power status)
 
@@ -1161,7 +1163,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName industrial_rank_key = "industrial_rank";
 	static const StringName industrial_power_tooltip_key = "industrial_power_tooltip";
 
-	ret[industrial_power_key] = country->get_industrial_power().to_int32_t();
+	ret[industrial_power_key] = country->get_industrial_power_untracked().to_int32_t();
 	ret[industrial_rank_key] = static_cast<uint64_t>(country->get_industrial_rank());
 	{
 		String industrial_power_tooltip;
@@ -1222,7 +1224,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName military_rank_key = "military_rank";
 	static const StringName military_power_tooltip_key = "military_power_tooltip";
 
-	ret[military_power_key] = country->get_military_power().to_int32_t();
+	ret[military_power_key] = country->military_power.get_untracked().to_int32_t();
 	ret[military_rank_key] = static_cast<uint64_t>(country->get_military_rank());
 	{
 		String military_power_tooltip;
@@ -1233,9 +1235,9 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 		for (auto const& [source, power] : {
 			std::pair
-			{ military_power_from_land_key, country->get_military_power_from_land() },
-			{ military_power_from_sea_key, country->get_military_power_from_sea() },
-			{ military_power_from_leaders_key, country->get_military_power_from_leaders() }
+			{ military_power_from_land_key, country->get_military_power_from_land_untracked() },
+			{ military_power_from_sea_key, country->get_military_power_from_sea_untracked() },
+			{ military_power_from_leaders_key, country->get_military_power_from_leaders_untracked() }
 		}) {
 			if (power != 0) {
 				military_power_tooltip += "\n" + tr(source) + ": " + GUILabel::get_colour_marker() + "Y"
@@ -1268,7 +1270,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName research_points_key = "research_points";
 		static const StringName research_points_tooltip_key = "research_points_tooltip";
 
-		Technology const* current_research = country->get_current_research();
+		Technology const* current_research = country->get_current_research_untracked();
 		if (current_research != nullptr) {
 			static const StringName research_localisation_key = "TECHNOLOGYVIEW_RESEARCH_TOOLTIP";
 			static const String tech_replace_key = "$TECH$";
@@ -1282,14 +1284,14 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			ret[research_tooltip_key] = tr(research_localisation_key).replace(
 				tech_replace_key, current_tech_localised
 			).replace(
-				date_replace_key, Utilities::date_to_formatted_string(country->get_expected_research_completion_date(), false)
+				date_replace_key, Utilities::date_to_formatted_string(country->get_expected_research_completion_date_untracked(), false)
 			) + "\n" + tr(research_invested_localisation_key).replace(
-				invested_replace_key, String::num_uint64(country->get_invested_research_points().to_int64_t())
-			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost().to_int64_t()));
+				invested_replace_key, String::num_uint64(country->get_invested_research_points_untracked().to_int64_t())
+			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost_untracked().to_int64_t()));
 
 			ret[research_key] = std::move(current_tech_localised);
 
-			ret[research_progress_key] = country->get_research_progress().to_float();
+			ret[research_progress_key] = country->research_progress.get_untracked().to_float();
 		} else if (country->is_civilised()) {
 			static const StringName civilised_no_research_localisation_key = "TB_TECH_NO_CURRENT";
 			static const StringName civilised_no_research_tooltip_localisation_key = "TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP";
@@ -1310,7 +1312,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// TODO - set monthly literacy change (test for precision issues)
 		ret[literacy_change_key] = 0.0f;
 
-		ret[research_points_key] = country->get_daily_research_points().to_float();
+		ret[research_points_key] = country->get_daily_research_points_untracked().to_float();
 
 		String research_points_tooltip;
 
@@ -1370,7 +1372,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName daily_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOTAL_TOOLTIP";
 		research_points_tooltip += "\n" + tr(daily_research_points_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country->get_daily_research_points(), 2)
+			Utilities::fixed_point_to_string_dp(country->get_daily_research_points_untracked(), 2)
 		);
 
 		// In the base game this section is only shown when no research is set, but it's useful to show it always
@@ -1379,7 +1381,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName accumulated_research_points_localisation_key = "RP_ACCUMULATED";
 		research_points_tooltip += tr(accumulated_research_points_localisation_key).replace(
 			Utilities::get_short_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile(), 1)
+			Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile_untracked(), 1)
 		);
 
 		ret[research_points_tooltip_key] = std::move(research_points_tooltip);

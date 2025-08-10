@@ -687,15 +687,15 @@ void GUILabel::separate_currency_segments(
 }
 
 GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
-	GameSingleton const& game_singleton = *GameSingleton::get_singleton();
+	GameSingleton& game_singleton = *GameSingleton::get_singleton();
 
 	int32_t country_index = -1;
 	StringName flag_type;
 
-	InstanceManager const* instance_manager = game_singleton.get_instance_manager();
+	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 
 	if (instance_manager != nullptr) {
-		CountryInstance const* country_instance =
+		CountryInstance* country_instance =
 			instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
 				Utilities::godot_to_std_string(identifier)
 			);
@@ -703,10 +703,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 		if (country_instance != nullptr) {
 			country_index = country_instance->get_country_definition().get_index();
 
-			GovernmentType const* government_type = country_instance->get_flag_government_type();
-			if (government_type == nullptr) {
-				government_type = country_instance->get_government_type();
-			}
+			GovernmentType const* government_type = country_instance->flag_government_type.get_untracked();
 			if (government_type != nullptr) {
 				flag_type = Utilities::std_to_godot_string(government_type->get_flag_type());
 			}

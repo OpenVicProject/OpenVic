@@ -44,13 +44,13 @@ fixed_point_t MilitaryBudget::get_expenses() const {
 }
 
 fixed_point_t MilitaryBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	return scaled_value * country.get_projected_military_spending_unscaled_by_slider();
+	return scaled_value * country.get_projected_military_spending_unscaled_by_slider_untracked();
 }
 
-SliderValue const& MilitaryBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& MilitaryBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_military_spending_slider_value();
 }
 

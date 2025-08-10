@@ -7,8 +7,8 @@
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/types/ClampedValue.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
-#include <openvic-simulation/types/SliderValue.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/utility/ClassBindings.hpp"
@@ -230,7 +230,7 @@ void GUIScrollbar::_constrain_value() {
 	const int32_t lower_limit = lower_range_limit.value_or(0);
 	const int32_t upper_limit = upper_range_limit.value_or(step_count);
 
-	// Special case to mimic SliderValue.hpp
+	// Special case to mimic ClampedValue.hpp
 	if (lower_limit > upper_limit){
 		if (value > upper_limit) {
 			value = lower_limit;
@@ -592,12 +592,12 @@ void GUIScrollbar::set_range_limits_fp(
 			: std::optional<fixed_point_t>{}
 	);
 }
-void GUIScrollbar::set_range_limits_and_value_from_slider_value(SliderValue const& slider_value) {
+void GUIScrollbar::set_range_limits_and_value_from_slider_value(ReadOnlyClampedValue& slider_value) {
 	set_range_limits_fp(
 		slider_value.get_min(),
 		slider_value.get_max()
 	);
-	set_scaled_value(slider_value.get_value());
+	set_scaled_value(slider_value.get_value_untracked());
 }
 
 void GUIScrollbar::set_length_override(real_t new_length_override) {

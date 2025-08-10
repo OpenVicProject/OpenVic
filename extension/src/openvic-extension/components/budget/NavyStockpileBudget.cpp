@@ -27,13 +27,13 @@ fixed_point_t NavyStockpileBudget::get_expenses() const {
 }
 
 fixed_point_t NavyStockpileBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value * 2; //TODO connect with sim once sim has this
 }
 
-SliderValue const& NavyStockpileBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& NavyStockpileBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_navy_spending_slider_value();
 }
 

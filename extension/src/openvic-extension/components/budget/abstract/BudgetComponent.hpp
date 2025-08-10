@@ -16,6 +16,6 @@ namespace OpenVic {
 	public:
 		signal_property<BudgetComponent> balance_changed;
 		fixed_point_t get_balance() const;
-		virtual void full_update(CountryInstance const& country) = 0;
+		virtual void full_update(CountryInstance& country) = 0;
 	};
 }

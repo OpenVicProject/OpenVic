@@ -44,13 +44,13 @@ fixed_point_t EducationBudget::get_expenses() const {
 }
 
 fixed_point_t EducationBudget::calculate_budget_and_update_custom(
-	CountryInstance const& country,
+	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	return scaled_value * country.get_projected_education_spending_unscaled_by_slider();
+	return scaled_value * country.get_projected_education_spending_unscaled_by_slider_untracked();
 }
 
-SliderValue const& EducationBudget::get_slider_value(CountryInstance const& country) const {
+ReadOnlyClampedValue& EducationBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_education_spending_slider_value();
 }
 

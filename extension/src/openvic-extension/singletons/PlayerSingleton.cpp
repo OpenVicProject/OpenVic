@@ -75,7 +75,7 @@ PlayerSingleton::~PlayerSingleton() {
 }
 
 // Player country
-void PlayerSingleton::set_player_country(CountryInstance const* new_player_country) {
+void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	if (OV_unlikely(player_country == new_player_country)) {
 		return;
 	}

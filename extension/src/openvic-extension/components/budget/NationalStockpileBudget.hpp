@@ -21,11 +21,11 @@ namespace OpenVic {
 		NavyStockpileBudget navy_stockpile_budget;
 		ConstructionStockpileBudget construction_stockpile_budget;
 		void on_slider_value_changed();
-		void update_labels(CountryInstance const& country);
+		void update_labels(CountryInstance& country);
 
 	public:
 		NationalStockpileBudget(GUINode const& parent);
 		fixed_point_t get_expenses() const override;
-		void full_update(CountryInstance const& country) override;
+		void full_update(CountryInstance& country) override;
 	};
 }
