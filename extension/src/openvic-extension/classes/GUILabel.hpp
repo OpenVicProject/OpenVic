@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <godot_cpp/classes/atlas_texture.hpp>
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/font.hpp>
@@ -10,6 +12,7 @@
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 namespace godot {
 	struct NodePath;
@@ -94,6 +97,20 @@ namespace OpenVic {
 		void force_update_lines();
 
 		void set_text(godot::String const& new_text);
+
+		template<typename T>
+		requires requires (T&& to_stringable) {
+			{ std::to_string(to_stringable) } -> std::same_as<std::string>;
+		}
+		void set_text_via_to_string(T&& to_stringable) {
+			set_text(
+				Utilities::std_to_godot_string(
+					std::to_string(
+						std::forward<T>(to_stringable)
+					)
+				)
+			);
+		}
 
 		void add_substitution(godot::String const& key, godot::String const& value);
 		void set_substitution_dict(godot::Dictionary const& new_substitution_dict);
