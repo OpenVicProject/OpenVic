@@ -4,6 +4,8 @@
 #include "openvic-extension/classes/GUIButton.hpp"
 
 namespace OpenVic {
+	struct CountryInstance;
+
 	class GUIMaskedFlagButton : public GUIButton {
 		GDCLASS(GUIMaskedFlagButton, GUIButton)
 
@@ -26,6 +28,7 @@ namespace OpenVic {
 		) const;
 
 		godot::Error set_flag_country_name(godot::String const& flag_country_name) const;
+		godot::Error set_flag_country(CountryInstance* flag_country) const;
 
 		godot::String get_flag_country_name() const;
 

@@ -115,7 +115,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				country_dict[type_key] = LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
-				country_dict[name_key] = menu_singleton._get_country_name(country_entry.country);
+				country_dict[name_key] = Utilities::get_country_name(menu_singleton, country_entry.country);
 				country_dict[size_key] = country_entry.country.get_total_population();
 				country_dict[change_key] = 0;
 				country_dict[selected_key] = country_entry.selected;
@@ -136,7 +136,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				state_dict[type_key] = LIST_ENTRY_STATE;
 				state_dict[index_key] = index;
-				state_dict[name_key] = menu_singleton._get_state_name(state_entry.state);
+				state_dict[name_key] = Utilities::get_state_name(menu_singleton, state_entry.state);
 				state_dict[size_key] = state_entry.state.get_total_population();
 				state_dict[change_key] = 0;
 				state_dict[selected_key] = state_entry.selected;

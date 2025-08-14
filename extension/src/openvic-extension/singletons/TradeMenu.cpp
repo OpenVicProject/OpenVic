@@ -221,7 +221,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			tooltip += Utilities::format(
 				top_producer_template_string,
 				Utilities::std_to_godot_string(country->get_identifier()),
-				_get_country_name(*country),
+				Utilities::get_country_name(*this, *country),
 				Utilities::fixed_point_to_string_dp(fixed_point_t::parse(1000) / static_cast<int32_t>(index + 1), 2)
 			);
 		}
