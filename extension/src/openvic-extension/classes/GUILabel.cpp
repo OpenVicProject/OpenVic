@@ -692,12 +692,10 @@ void GUILabel::separate_currency_segments(
 
 GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	GameSingleton& game_singleton = *GameSingleton::get_singleton();
-	GameSingleton& game_singleton = *GameSingleton::get_singleton();
 
 	int32_t country_index = -1;
 	StringName flag_type;
 
-	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 
 	if (instance_manager == nullptr) {
