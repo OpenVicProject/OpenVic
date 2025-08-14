@@ -214,7 +214,6 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 }
 
 Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) {
-Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) {
 	if (new_flag_country == nullptr) {
 		flag_government_type_connection = {};
 		return set_flag_country_and_type(nullptr, {});
