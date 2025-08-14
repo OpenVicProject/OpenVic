@@ -6,14 +6,14 @@
 #include <godot_cpp/classes/input_event.hpp>
 
 #include <openvic-simulation/interface/GUI.hpp>
-#include <openvic-simulation/types/Signal.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/utility/reactive/MutableState.hpp>
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
-	struct SliderValue;
+	struct ReadOnlyClampedValue;
 
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
@@ -47,6 +47,9 @@ namespace OpenVic {
 		int32_t scale_denominator = 1;
 		int32_t PROPERTY(step_count, 1);
 		int32_t PROPERTY(value, 0);
+		STATE_PROPERTY(fixed_point_t, scaled_value);
+
+		scoped_connection clamped_value_connection;
 
 		bool PROPERTY_CUSTOM_PREFIX(range_limited, is, false);
 		std::optional<int32_t> upper_range_limit;
@@ -91,7 +94,6 @@ namespace OpenVic {
 
 	public:
 		static godot::StringName const& signal_value_changed();
-		mutable signal_property<GUIScrollbar> value_changed;
 
 		GUIScrollbar();
 
@@ -114,8 +116,6 @@ namespace OpenVic {
 
 		float get_value_as_ratio() const;
 		void set_value_as_ratio(float new_ratio);
-
-		fixed_point_t get_value_scaled_fp() const;
 		float get_value_scaled() const;
 
 		void set_step_count(const int32_t new_step_count);
@@ -132,9 +132,10 @@ namespace OpenVic {
 			const std::optional<fixed_point_t> new_lower_range_limit,
 			const std::optional<fixed_point_t> new_upper_range_limit
 		);
-		void set_range_limits_and_value_from_slider_value(
+		void link_to(
 			ReadOnlyClampedValue& slider_value
 		);
+		void unlink();
 
 		/* Override the main dimension of gui_scollbar's size with the specified length. */
 		void set_length_override(real_t new_length_override);

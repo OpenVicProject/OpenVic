@@ -15,19 +15,19 @@
 using namespace OpenVic;
 
 StrataTaxBudget::StrataTaxBudget(
-	GUINode const& parent,
-	Strata const& new_strata,
-	ModifierEffectCache const& new_modifier_effect_cache
+	GUINode const* parent,
+	Strata const* new_strata,
+	ModifierEffectCache const* new_modifier_effect_cache
 ): SliderBudgetComponent(
-		parent,
-		generate_slider_tooltip_localisation_key(new_strata),
+		*parent,
+		generate_slider_tooltip_localisation_key(*new_strata),
 		BALANCE,
-		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata.get_index())),
-		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata.get_index()))
+		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata->get_index())),
+		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata->get_index()))
 	),
-	BudgetIncomeComponent(generate_summary_localisation_key(new_strata), 1),
-	strata{new_strata},
-	modifier_effect_cache{new_modifier_effect_cache}
+	BudgetIncomeComponent(generate_summary_localisation_key(*new_strata), 1),
+	strata{*new_strata},
+	modifier_effect_cache{*new_modifier_effect_cache}
 {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
@@ -35,9 +35,9 @@ StrataTaxBudget::StrataTaxBudget(
 	slider.set_block_signals(false);
 
 	GUILabel::set_text_and_tooltip(
-		parent,
-		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.get_index())),
-		generate_slider_tooltip_localisation_key(new_strata),
+		*parent,
+		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata->get_index())),
+		generate_slider_tooltip_localisation_key(*new_strata),
 		Utilities::format(
 			"TAX_%s_DESC",
 			(godot::String::utf8(
@@ -48,24 +48,20 @@ StrataTaxBudget::StrataTaxBudget(
 	);
 }
 
-fixed_point_t StrataTaxBudget::get_income() const {
-	return std::max(fixed_point_t::_0, get_balance());
-}
-
 fixed_point_t StrataTaxBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value
 		* country.get_taxable_income_by_strata(strata)
-		* country.get_tax_efficiency_untracked();
+		* country.get_tax_efficiency(connect_to_mark_dirty<fixed_point_t>());
 }
 
 ReadOnlyClampedValue& StrataTaxBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_tax_rate_slider_value_by_strata(strata);
 }
 
-void StrataTaxBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void StrataTaxBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_strata_tax_rate_slider_value(
 		strata,
 		scaled_value
@@ -105,7 +101,7 @@ void StrataTaxBudget::update_slider_tooltip(
 
 	const godot::String localised_strata_tax = slider.tr(slider_tooltip_localisation_key);
 
-	const fixed_point_t tax_efficiency = country.get_tax_efficiency_untracked();
+	const fixed_point_t tax_efficiency = country.get_tax_efficiency(connect_to_mark_dirty<fixed_point_t>());
 	const godot::String tax_efficiency_text = slider.tr(tax_efficiency_localisation_key).replace(
 		Utilities::get_long_value_placeholder(),
 		Utilities::float_to_string_dp(100 * tax_efficiency, 2)

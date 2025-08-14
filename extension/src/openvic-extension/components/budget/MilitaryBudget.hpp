@@ -11,10 +11,8 @@ namespace OpenVic {
 			const fixed_point_t scaled_value
 		) override;
 		ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const override;
-		void on_slider_value_changed(const fixed_point_t scaled_value) override;
-
+		void on_slider_scaled_value_changed(const fixed_point_t scaled_value) override;
 	public:
 		MilitaryBudget(GUINode const& parent);
-		fixed_point_t get_expenses() const override;
 	};
 }

@@ -7,6 +7,7 @@
 #include <godot_cpp/classes/style_box_texture.hpp>
 
 #include <openvic-simulation/interface/GUI.hpp>
+#include <openvic-simulation/types/Signal.hpp>
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
@@ -17,7 +18,9 @@ namespace godot {
 }
 
 namespace OpenVic {
-	class GUILabel : public godot::Control {
+	struct GovernmentType;
+
+	class GUILabel : public godot::Control, public observer {
 		GDCLASS(GUILabel, godot::Control)
 
 		GUI_TOOLTIP_DEFINITIONS
@@ -81,6 +84,7 @@ namespace OpenVic {
 		);
 
 		GUILabel();
+		~GUILabel() override;
 
 		/* Reset gui_text to nullptr and reset current text. */
 		void clear();
@@ -124,6 +128,7 @@ namespace OpenVic {
 
 		void _queue_line_update();
 		void _update_lines();
+		void on_flag_government_type_changed();
 
 		godot::String generate_substituted_text(godot::String const& base_text) const;
 		std::pair<godot::String, colour_instructions_t> generate_display_text_and_colour_instructions(
@@ -131,17 +136,17 @@ namespace OpenVic {
 		) const;
 		std::vector<line_t> generate_lines_and_segments(
 			godot::String const& display_text, colour_instructions_t const& colour_instructions
-		) const;
+		);
 		void separate_lines(
 			godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines
-		) const;
+		);
 		void separate_currency_segments(
 			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
-		static flag_segment_t make_flag_segment(godot::String const& identifier);
+		);
+		flag_segment_t make_flag_segment(godot::String const& identifier);
 		void separate_flag_segments(
 			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		);
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;
 		void adjust_to_content_size();
 	};

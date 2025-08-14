@@ -18,6 +18,10 @@ using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
+GUILabel::~GUILabel() {
+	disconnect_all();
+}
+
 GUILabel::string_segment_t::string_segment_t(String&& new_text, Color const& new_colour, real_t new_width)
 	: text { std::move(new_text) }, colour { new_colour }, width { new_width } {}
 
@@ -594,7 +598,7 @@ std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_te
 
 std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 	String const& display_text, colour_instructions_t const& colour_instructions
-) const {
+) {
 	static constexpr char RESET_COLOUR_CODE = '!';
 
 	std::vector<line_t> unwrapped_lines;
@@ -641,7 +645,7 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 
 void GUILabel::separate_lines(
 	String const& string, Color const& colour, std::vector<line_t>& unwrapped_lines
-) const {
+) {
 	static const String NEWLINE_MARKER = "\n";
 
 	int64_t start_pos = 0;
@@ -664,7 +668,7 @@ void GUILabel::separate_lines(
 
 void GUILabel::separate_currency_segments(
 	String const& string, Color const& colour, line_t& line
-) const {
+) {
 	int64_t start_pos = 0;
 	int64_t marker_pos;
 
@@ -694,21 +698,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 
-	if (instance_manager != nullptr) {
-		CountryInstance* country_instance =
-			instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-				Utilities::godot_to_std_string(identifier)
-			);
-
-		if (country_instance != nullptr) {
-			country_index = country_instance->get_country_definition().get_index();
-
-			GovernmentType const* government_type = country_instance->flag_government_type.get_untracked();
-			if (government_type != nullptr) {
-				flag_type = Utilities::std_to_godot_string(government_type->get_flag_type());
-			}
-		}
-	} else {
+	if (instance_manager == nullptr) {
 		CountryDefinition const* country_definition =
 			game_singleton.get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
 				Utilities::godot_to_std_string(identifier)
@@ -716,6 +706,22 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 
 		if (country_definition != nullptr) {
 			country_index = country_definition->get_index();
+		}
+	} else {
+		CountryInstance* const country_instance = instance_manager->get_country_instance_manager()
+			.get_country_instance_by_identifier(
+				Utilities::godot_to_std_string(identifier)
+			);
+
+		if (country_instance != nullptr) {
+			country_index = country_instance->get_country_definition().get_index();
+			DerivedState<GovernmentType const*>& flag_government_type_state = country_instance->flag_government_type;
+			GovernmentType const* const flag_government_type = flag_government_type_state.get([this](signal<>& changed) mutable -> void {
+				changed.connect(&GUILabel::on_flag_government_type_changed, this);
+			});
+			if (flag_government_type != nullptr) {
+				flag_type = Utilities::std_to_godot_string(flag_government_type->get_flag_type());
+			}
 		}
 	}
 
@@ -740,9 +746,14 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	return flag_segment;
 }
 
+void GUILabel::on_flag_government_type_changed() {
+	disconnect_all();
+	_queue_line_update();
+}
+
 void GUILabel::separate_flag_segments(
 	String const& string, Color const& colour, line_t& line
-) const {
+) {
 	const auto push_string_segment = [this, &string, &colour, &line](int64_t start, int64_t end) -> void {
 		String substring = string.substr(start, end - start);
 		const real_t width = get_string_width(substring);

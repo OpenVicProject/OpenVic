@@ -2,6 +2,7 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/defines/CountryDefines.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -46,28 +47,20 @@ TariffBudget::TariffBudget(
 	);
 }
 
-fixed_point_t TariffBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
-fixed_point_t TariffBudget::get_income() const {
-	return std::max(fixed_point_t::_0, get_balance());
-}
-
 fixed_point_t TariffBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	return scaled_value
-		* country.get_yesterdays_import_value_untracked()
-		* country.tariff_efficiency.get_untracked();
+		* country.get_yesterdays_import_value(connect_to_mark_dirty<fixed_point_t>())
+		* country.tariff_efficiency.get(connect_to_mark_dirty());
 }
 
 ReadOnlyClampedValue& TariffBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_tariff_rate_slider_value();
 }
 
-void TariffBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void TariffBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_tariff_rate_slider_value(scaled_value);
 }
 
@@ -95,7 +88,7 @@ void TariffBudget::update_slider_tooltip(
 		"Y"+Utilities::get_percentage_value_placeholder(),
 		//not percentage_to_string_dp as localisation text contains the %
 		prefix+Utilities::fixed_point_to_string_dp(
-			100 * scaled_value * country.tariff_efficiency.get_untracked(),
+			100 * scaled_value * country.tariff_efficiency.get(connect_to_mark_dirty()),
 			1
 		)
 	);
@@ -104,7 +97,7 @@ void TariffBudget::update_slider_tooltip(
 		Utilities::get_percentage_value_placeholder(),
 		//not percentage_to_string_dp as localisation text contains the %
 		Utilities::fixed_point_to_string_dp(
-			100 * country.get_administrative_efficiency_from_administrators_untracked(),
+			100 * country.get_administrative_efficiency_from_administrators(connect_to_mark_dirty<fixed_point_t>()),
 			1
 		)
 	);

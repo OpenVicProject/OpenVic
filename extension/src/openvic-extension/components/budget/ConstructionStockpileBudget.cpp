@@ -22,10 +22,6 @@ ConstructionStockpileBudget::ConstructionStockpileBudget(GUINode const& parent):
 	slider.set_block_signals(false);
 }
 
-fixed_point_t ConstructionStockpileBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t ConstructionStockpileBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
@@ -37,6 +33,6 @@ ReadOnlyClampedValue& ConstructionStockpileBudget::get_clamped_value(CountryInst
 	return country.get_construction_spending_slider_value();
 }
 
-void ConstructionStockpileBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void ConstructionStockpileBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_national_stockpile_construction_spending_slider_value(scaled_value);
 }

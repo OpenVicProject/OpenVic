@@ -3,10 +3,12 @@
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/defines/CountryDefines.hpp>
 #include <openvic-simulation/politics/Reform.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/types/fixed_point/FixedPoint.hpp"
@@ -53,17 +55,14 @@ AdministrationBudget::AdministrationBudget(
 	administrative_efficiency_tooltip_args[4] = administrative_efficiency_label.tr("ADM_EXPLAIN_DESC");
 }
 
-fixed_point_t AdministrationBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
 	static const godot::StringName administrative_efficiency_template = "%s\n%s%s\n--------------\n%s%s%s%s";
-
-	const fixed_point_t administrative_efficiency_from_administrators = country.get_administrative_efficiency_from_administrators_untracked();
+	const fixed_point_t administrative_efficiency_from_administrators = country.get_administrative_efficiency_from_administrators(
+		connect_to_mark_dirty<fixed_point_t>()
+	);
 	administrative_efficiency_label.set_text(
 		Utilities::format(
 			"%s%%",
@@ -103,10 +102,10 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		"BUDGET_ADMIN_EFFICIENCY_DESC"
 	).replace(
 		Utilities::get_percentage_value_placeholder(),
-		Utilities::fixed_point_to_string_dp(100 * country.get_administrator_percentage_untracked(), 1)
+		Utilities::fixed_point_to_string_dp(100 * country.get_administrator_percentage(connect_to_mark_dirty<fixed_point_t>()), 1)
 	).replace(
 		"MAX",
-		Utilities::fixed_point_to_string_dp(100 * country.desired_administrator_percentage.get_untracked(), 1)
+		Utilities::fixed_point_to_string_dp(100 * country.desired_administrator_percentage.get(connect_to_mark_dirty()), 1)
 	);
 	administrative_efficiency_tooltip_args[5] = administrative_efficiency_label.tr(
 		"COMWID_BASE"
@@ -115,6 +114,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		Utilities::percentage_to_string_dp(country_defines.get_max_bureaucracy_percentage(), 1)
 	);
 
+	add_connection(GameSingleton::get_singleton()->gamestate_updated.connect(&BudgetMenu::mark_dirty, this)); //for reforms
 	godot::String reforms_part = "";
 	for (auto const& [group, reform] : country.get_reforms()) {
 		if (!group.get_is_administrative() || reform == nullptr) {
@@ -146,13 +146,13 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		administrative_efficiency_template % administrative_efficiency_tooltip_args
 	);
 
-	return scaled_value * country.get_projected_administration_spending_unscaled_by_slider_untracked();
+	return scaled_value * country.get_projected_administration_spending_unscaled_by_slider(connect_to_mark_dirty<fixed_point_t>());
 }
 
 ReadOnlyClampedValue& AdministrationBudget::get_clamped_value(CountryInstance& country) const {
 	return country.get_administration_spending_slider_value();
 }
 
-void AdministrationBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void AdministrationBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_administration_spending_slider_value(scaled_value);
 }

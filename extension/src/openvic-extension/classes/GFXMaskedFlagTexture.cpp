@@ -215,10 +215,19 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 
 Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) {
 	if (new_flag_country == nullptr) {
+		flag_government_type_connection = {};
 		return set_flag_country_and_type(nullptr, {});
 	}
 
-	GovernmentType const* government_type = new_flag_country->flag_government_type.get_untracked();
+	GovernmentType const* const government_type = new_flag_country->flag_government_type.get(
+		[this,new_flag_country](signal<>& changed) mutable -> void {
+			flag_government_type_connection = changed.connect_scoped(
+				[this,new_flag_country]() -> void {
+					set_flag_country(new_flag_country);
+				}
+			);
+		}
+	);
 
 	const StringName new_flag_type = government_type != nullptr
 		? StringName { Utilities::std_to_godot_string(government_type->get_flag_type()) }
@@ -232,13 +241,13 @@ Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country
 		return set_flag_country(nullptr);
 	}
 
-	GameSingleton* game_singleton = GameSingleton::get_singleton();
+	GameSingleton* const game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 
-	InstanceManager* instance_manager = game_singleton->get_instance_manager();
+	InstanceManager* const instance_manager = game_singleton->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
-	CountryInstance* new_flag_country = instance_manager->get_country_instance_manager()
+	CountryInstance* const new_flag_country = instance_manager->get_country_instance_manager()
 		.get_country_instance_by_identifier(
 			Utilities::godot_to_std_string(new_flag_country_name)
 		);

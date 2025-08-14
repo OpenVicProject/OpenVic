@@ -26,7 +26,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
 	GoodDefinitionManager const& good_definition_manager = good_instance_manager.get_good_definition_manager();
 
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country_untracked();
 
 	Dictionary ret;
 
@@ -130,7 +130,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 		instance_manager->get_good_instance_manager().get_good_instance_by_index(trade_detail_good_index);
 	ERR_FAIL_NULL_V(good_instance, {});
 
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country_untracked();
 
 	Dictionary ret;
 
@@ -197,7 +197,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ERR_FAIL_NULL_V(instance_manager, {});
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
 
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country_untracked();
 
 	Dictionary ret;
 
@@ -327,5 +327,5 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
 	ERR_FAIL_NULL_V(slider, 0.0f);
 
-	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp());
+	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_scaled_value_untracked());
 }

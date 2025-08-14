@@ -74,6 +74,10 @@ func _ready() -> void:
 
 	_update_info()
 
+func _process(_delta : float) -> void:
+	if visible:
+		MenuSingleton.update_budget_menu_cpp()
+
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:

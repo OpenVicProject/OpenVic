@@ -43,22 +43,24 @@ SocialBudget::SocialBudget(GUINode const& parent):
 	}
 }
 
-fixed_point_t SocialBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t SocialBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	const fixed_point_t pensions = scaled_value * country.get_projected_pensions_spending_unscaled_by_slider_untracked();
+	const fixed_point_t pensions = scaled_value * country.get_projected_pensions_spending_unscaled_by_slider(
+		connect_to_mark_dirty<fixed_point_t>()
+	);
 	pensions_label.set_text(
 		Utilities::cash_to_string_dp_dynamic(pensions)
 	);
-	const fixed_point_t unemployment_subsidies = scaled_value * country.get_projected_unemployment_subsidies_spending_unscaled_by_slider_untracked();
+
+	const fixed_point_t unemployment_subsidies = scaled_value * country.get_projected_unemployment_subsidies_spending_unscaled_by_slider(
+		connect_to_mark_dirty<fixed_point_t>()
+	);
 	unemployment_subsidies_label.set_text(
 		Utilities::cash_to_string_dp_dynamic(unemployment_subsidies)
 	);
+	
 	return pensions + unemployment_subsidies;
 }
 
@@ -66,6 +68,6 @@ ReadOnlyClampedValue& SocialBudget::get_clamped_value(CountryInstance& country) 
 	return country.get_social_spending_slider_value();
 }
 
-void SocialBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void SocialBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_social_spending_slider_value(scaled_value);
 }

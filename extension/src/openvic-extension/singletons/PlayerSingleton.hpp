@@ -5,6 +5,7 @@
 #include <openvic-simulation/pop/PopType.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/utility/Getters.hpp>
+#include <openvic-simulation/utility/reactive/MutableState.hpp>
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -16,7 +17,7 @@ namespace OpenVic {
 
 		static inline PlayerSingleton* singleton = nullptr;
 
-		CountryInstance* player_country = nullptr;
+		STATE_PROPERTY(CountryInstance*, player_country);
 		ProvinceInstance const* PROPERTY(selected_province, nullptr);
 
 		static godot::StringName const& _signal_province_selected();
@@ -31,12 +32,6 @@ namespace OpenVic {
 		~PlayerSingleton();
 
 		// Player country
-		[[nodiscard]] constexpr CountryInstance* get_player_country() {
-			return player_country;
-		}
-		[[nodiscard]] constexpr CountryInstance const* get_player_country() const {
-			return player_country;
-		}
 		void set_player_country(CountryInstance* new_player_country);
 		void set_player_country_by_province_number(int32_t province_number);
 		godot::Vector2 get_player_country_capital_position() const;

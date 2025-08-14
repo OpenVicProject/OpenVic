@@ -20,19 +20,16 @@ namespace OpenVic {
 			const fixed_point_t scaled_value
 		) override;
 		ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const override;
-		void on_slider_value_changed(const fixed_point_t scaled_value) override;
+		void on_slider_scaled_value_changed(const fixed_point_t scaled_value) override;
 		void update_slider_tooltip(
 			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) override;
-
 	public:
 		StrataTaxBudget(
-			GUINode const& parent,
-			Strata const& new_strata,
-			ModifierEffectCache const& new_modifier_effect_cache
+			GUINode const* parent,
+			Strata const* new_strata,
+			ModifierEffectCache const* new_modifier_effect_cache
 		);
-		StrataTaxBudget(StrataTaxBudget&&) = default;
-		fixed_point_t get_income() const override;
 	};
 }

@@ -22,10 +22,6 @@ NavyStockpileBudget::NavyStockpileBudget(GUINode const& parent):
 	slider.set_block_signals(false);
 }
 
-fixed_point_t NavyStockpileBudget::get_expenses() const {
-	return std::max(fixed_point_t::_0, -get_balance());
-}
-
 fixed_point_t NavyStockpileBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
@@ -37,6 +33,6 @@ ReadOnlyClampedValue& NavyStockpileBudget::get_clamped_value(CountryInstance& co
 	return country.get_navy_spending_slider_value();
 }
 
-void NavyStockpileBudget::on_slider_value_changed(const fixed_point_t scaled_value) {
+void NavyStockpileBudget::on_slider_scaled_value_changed(const fixed_point_t scaled_value) {
 	PlayerSingleton::get_singleton()->set_national_stockpile_navy_spending_slider_value(scaled_value);
 }

@@ -2,6 +2,7 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
@@ -64,7 +65,7 @@ PlayerSingleton* PlayerSingleton::get_singleton() {
 	return singleton;
 }
 
-PlayerSingleton::PlayerSingleton() {
+PlayerSingleton::PlayerSingleton() : player_country{nullptr} {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -76,7 +77,8 @@ PlayerSingleton::~PlayerSingleton() {
 
 // Player country
 void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
-	if (OV_unlikely(player_country == new_player_country)) {
+	CountryInstance* const old_player_country = player_country.get_untracked();
+	if (OV_unlikely(old_player_country == new_player_country)) {
 		return;
 	}
 
@@ -84,23 +86,23 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	if (player_country != nullptr) {
+	if (old_player_country != nullptr) {
 		instance_manager->queue_game_action(
 			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), true }
+			std::pair<uint64_t, bool> { old_player_country->get_index(), true }
 		);
 	}
 
-	player_country = new_player_country;
-
-	if (player_country != nullptr) {
+	if (new_player_country != nullptr) {
 		instance_manager->queue_game_action(
 			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), false }
+			std::pair<uint64_t, bool> { new_player_country->get_index(), false }
 		);
 	}
 
-	Logger::info("Set player country to: ", player_country != nullptr ? player_country->get_identifier() : "<NULL>");
+	player_country.set(new_player_country);
+
+	Logger::info("Set player country to: ", new_player_country != nullptr ? new_player_country->get_identifier() : "<NULL>");
 
 	game_singleton._on_gamestate_updated();
 }
@@ -116,8 +118,9 @@ void PlayerSingleton::set_player_country_by_province_number(int32_t province_num
 }
 
 Vector2 PlayerSingleton::get_player_country_capital_position() const {
-	if (player_country != nullptr) {
-		ProvinceInstance const* capital = player_country->get_capital();
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	if (current_player_country != nullptr) {
+		ProvinceInstance const* capital = current_player_country->get_capital();
 
 		if (capital != nullptr) {
 			return GameSingleton::get_singleton()->get_billboard_pos(capital->get_province_definition());
@@ -213,12 +216,13 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 // Budget
 #define SET_SLIDER_GAME_ACTION(value_name, game_action_name) \
 void PlayerSingleton::set_##value_name##_slider_value(fixed_point_t const value) const { \
-	if (player_country == nullptr) { \
+	CountryInstance const* const current_player_country = player_country.get_untracked(); \
+	if (current_player_country == nullptr) { \
 		return; \
 	} \
 	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action( \
 		game_action_type_t::GAME_ACTION_SET_##game_action_name, \
-		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value } \
+		std::pair<uint64_t, fixed_point_t> { current_player_country->get_index(), value } \
 	); \
 }
 
@@ -234,12 +238,11 @@ SET_SLIDER_GAME_ACTION(tariff_rate, TARIFF_RATE)
 #undef SET_SLIDER_GAME_ACTION
 
 void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fixed_point_t const value) const {
-	if (player_country == nullptr) {
-		return;
-	}
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
-		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->get_index(), strata.get_index(), value }
+		std::tuple<uint64_t, uint64_t, fixed_point_t> { current_player_country->get_index(), strata.get_index(), value }
 	);
 }
 
@@ -251,28 +254,30 @@ void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fix
 
 // Trade
 void PlayerSingleton::set_good_automated(int32_t good_index, bool is_automated) const {
-	ERR_FAIL_NULL(player_country);
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_GOOD_AUTOMATED,
-		std::tuple<uint64_t, uint64_t, bool> { player_country->get_index(), good_index, is_automated }
+		std::tuple<uint64_t, uint64_t, bool> { current_player_country->get_index(), good_index, is_automated }
 	);
 }
 
 void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, GUIScrollbar const* amount_slider) const {
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 	ERR_FAIL_NULL(amount_slider);
-	ERR_FAIL_NULL(player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_GOOD_TRADE_ORDER, std::tuple<uint64_t, uint64_t, bool, fixed_point_t> {
-			player_country->get_index(), good_index, is_selling,
-			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
+			current_player_country->get_index(), good_index, is_selling,
+			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_scaled_value_untracked())
 		}
 	);
 }
@@ -281,14 +286,15 @@ void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, 
 
 // Military
 void PlayerSingleton::create_leader(bool is_general) const {
-	ERR_FAIL_NULL(player_country);
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_CREATE_LEADER,
-		std::pair<uint64_t, bool> { player_country->get_index(), is_general }
+		std::pair<uint64_t, bool> { current_player_country->get_index(), is_general }
 	);
 }
 
@@ -303,37 +309,40 @@ void PlayerSingleton::set_can_use_leader(uint64_t leader_id, bool can_use) const
 }
 
 void PlayerSingleton::set_auto_create_leaders(bool value) const {
-	ERR_FAIL_NULL(player_country);
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_AUTO_CREATE_LEADERS,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { current_player_country->get_index(), value }
 	);
 }
 
 void PlayerSingleton::set_auto_assign_leaders(bool value) const {
-	ERR_FAIL_NULL(player_country);
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_AUTO_ASSIGN_LEADERS,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { current_player_country->get_index(), value }
 	);
 }
 
 void PlayerSingleton::set_mobilise(bool value) const {
-	ERR_FAIL_NULL(player_country);
+	CountryInstance const* const current_player_country = player_country.get_untracked();
+	ERR_FAIL_NULL(current_player_country);
 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_MOBILISE,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { current_player_country->get_index(), value }
 	);
 }

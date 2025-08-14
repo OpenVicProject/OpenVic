@@ -88,8 +88,8 @@ String MenuSingleton::_get_state_name(State const& state) const {
 }
 
 String MenuSingleton::_get_country_name(CountryInstance const& country) const {
-	GovernmentType const* government_type = country.get_government_type_untracked();
-	if (government_type != nullptr) {
+	GovernmentType const* const government_type = country.get_government_type_untracked();
+	if (government_type != nullptr && !government_type->get_identifier().empty()) {
 		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier()
 		));
@@ -106,9 +106,9 @@ String MenuSingleton::_get_country_name(CountryInstance const& country) const {
 
 String MenuSingleton::_get_country_adjective(CountryInstance const& country) const {
 	static constexpr std::string_view adjective = "_ADJ";
+	GovernmentType const* const government_type = country.get_government_type_untracked();
 
-	GovernmentType const* government_type = country.get_government_type_untracked();
-	if (government_type != nullptr) {
+	if (government_type != nullptr && !government_type->get_identifier().empty()) {
 		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier(), adjective
 		));
@@ -295,7 +295,7 @@ String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 }
 
 String MenuSingleton::_make_mobilisation_impact_tooltip() const {
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance const* const country = PlayerSingleton::get_singleton()->get_player_country_untracked();
 
 	if (country == nullptr) {
 		return {};
@@ -446,6 +446,7 @@ void MenuSingleton::_bind_methods() {
 
 	/* BUDGET MENU */
 	OV_BIND_METHOD(MenuSingleton::link_budget_menu_to_cpp, { "godot_budget_menu" });
+	OV_BIND_METHOD(MenuSingleton::update_budget_menu_cpp);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1132,7 +1133,7 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TOPBAR */
 
 Dictionary MenuSingleton::get_topbar_info() const {
-	CountryInstance* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* const country = PlayerSingleton::get_singleton()->get_player_country_untracked();
 	if (country == nullptr) {
 		return {};
 	}
@@ -1270,7 +1271,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName research_points_key = "research_points";
 		static const StringName research_points_tooltip_key = "research_points_tooltip";
 
-		Technology const* current_research = country->get_current_research_untracked();
+		Technology const* const current_research = country->get_current_research_untracked();
 		if (current_research != nullptr) {
 			static const StringName research_localisation_key = "TECHNOLOGYVIEW_RESEARCH_TOOLTIP";
 			static const String tech_replace_key = "$TECH$";
@@ -1539,11 +1540,6 @@ String MenuSingleton::get_longform_date() const {
 void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_menu) {
 	ERR_FAIL_NULL(godot_budget_menu);
 	GameSingleton& game_singleton = *GameSingleton::get_singleton();
-	BudgetMenu* old_instance = budget_menu.get();
-	if (old_instance != nullptr) {
-		game_singleton.gamestate_updated.disconnect(&BudgetMenu::update, old_instance);
-	}
-
 	auto const& strata_keys = game_singleton.get_definition_manager().get_pop_manager().get_stratas();
 	ModifierEffectCache const& modifier_effect_cache = game_singleton.get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
 	CountryDefines const& country_defines = game_singleton.get_definition_manager().get_define_manager().get_country_defines();
@@ -1553,7 +1549,10 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 		modifier_effect_cache,
 		country_defines
 	);
-	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
+}
+
+void MenuSingleton::update_budget_menu_cpp() const {
+	budget_menu->update_if_dirty();
 }
 
 /* Find/Search Panel */

@@ -299,7 +299,7 @@ void GUIScrollbar::emit_value_changed() {
 		return;
 	}
 	emit_signal(signal_value_changed(), value);
-	value_changed();
+	scaled_value.set(_get_scaled_value(value));
 }
 
 void GUIScrollbar::reset() {
@@ -522,12 +522,8 @@ void GUIScrollbar::set_value_as_ratio(float new_ratio) {
 	set_value(step_count * new_ratio);
 }
 
-fixed_point_t GUIScrollbar::get_value_scaled_fp() const {
-	return _get_scaled_value(value);
-}
-
 float GUIScrollbar::get_value_scaled() const {
-	return get_value_scaled_fp().to_float();
+	return _get_scaled_value(value).to_float();
 }
 
 void GUIScrollbar::set_step_count(const int32_t new_step_count) {
@@ -592,12 +588,25 @@ void GUIScrollbar::set_range_limits_fp(
 			: std::optional<fixed_point_t>{}
 	);
 }
-void GUIScrollbar::set_range_limits_and_value_from_slider_value(ReadOnlyClampedValue& slider_value) {
+void GUIScrollbar::link_to(ReadOnlyClampedValue& clamped_value) {
+	clamped_value_connection.disconnect();
 	set_range_limits_fp(
-		slider_value.get_min(),
-		slider_value.get_max()
+		clamped_value.get_min(),
+		clamped_value.get_max()
 	);
-	set_scaled_value(slider_value.get_value_untracked());
+	set_scaled_value(clamped_value.get_value(
+		[this](signal<fixed_point_t>& dependency_changed) mutable -> void {
+			clamped_value_connection = std::move(dependency_changed.connect(
+				&GUIScrollbar::set_scaled_value,
+				this
+			));
+		}
+	));
+}
+
+void GUIScrollbar::unlink() {
+	clamped_value_connection.disconnect();
+	clamped_value_connection={};
 }
 
 void GUIScrollbar::set_length_override(real_t new_length_override) {
