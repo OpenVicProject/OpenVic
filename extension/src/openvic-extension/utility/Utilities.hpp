@@ -93,6 +93,8 @@ namespace OpenVic::Utilities {
 		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
 
+	godot::Variant get_project_setting(godot::StringName const& p_path, godot::Variant const& p_default_value);
+
 #define OPTIMISED_FORMAT_CONCAT(a, b) a##b
 #define OPTIMISED_FORMAT_EXPAND(a, b) OPTIMISED_FORMAT_CONCAT(a, b)
 

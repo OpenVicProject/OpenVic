@@ -23,6 +23,7 @@
 #include "openvic-extension/classes/GUITextureRect.hpp"
 #include "openvic-extension/classes/MapMesh.hpp"
 #include "openvic-extension/classes/resources/StyleBoxWithSound.hpp"
+#include "openvic-extension/core/register_core_types.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/Checksum.hpp"
 #include "openvic-extension/singletons/CursorSingleton.hpp"
@@ -54,6 +55,8 @@ void initialize_openvic_types(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
+
+	register_core_types();
 
 	ClassDB::register_class<GitInfo>();
 	_git_info_singleton = memnew(GitInfo);
@@ -170,6 +173,8 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 
 	Engine::get_singleton()->unregister_singleton("PlayerSingleton");
 	memdelete(_player_singleton);
+
+	unregister_core_types();
 }
 
 extern "C" {
