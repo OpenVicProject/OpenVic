@@ -160,7 +160,7 @@ void ScoreOverview::on_gamestate_updated() {
 			false
 		);
 
-		const godot::String invesment_part = colonial_power_invested == 0
+		const godot::String investment_part = colonial_power_invested == 0
 			? ""
 			: "\n"+colonial_power_label.tr("COLONIAL_INVESTMENT")
 				.replace(
@@ -182,7 +182,7 @@ void ScoreOverview::on_gamestate_updated() {
 			MenuSingleton::get_tooltip_separator(),
 			available_part,
 			from_tech_part,
-			invesment_part,
+			investment_part,
 			maintenance_part
 		);
 	}
