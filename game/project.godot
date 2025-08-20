@@ -30,7 +30,6 @@ buses/default_bus_layout="res://assets/audio/default_bus_layout.tres"
 [autoload]
 
 Resolution="*res://src/Autoload/Resolution.gd"
-ArgumentParser="*res://src/Autoload/Argument/ArgumentParser.tscn"
 WindowOverride="*res://src/Autoload/WindowOverride.gd"
 GuiScale="*res://src/Autoload/GuiScale.gd"
 Events="*res://src/Autoload/Events/Events.gd"
