@@ -6,8 +6,16 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-simulation/politics/Government.hpp"
 #include <gli/convert.hpp>
 #include <gli/load_dds.hpp>
+
+#include <openvic-simulation/country/CountryInstance.hpp>
+#include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/map/Region.hpp>
+#include <openvic-simulation/map/State.hpp>
+
+#include "openvic-extension/classes/GUINode.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -251,6 +259,78 @@ Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int3
 	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);
 	ERR_FAIL_NULL_V(result, nullptr);
 	return result;
+}
+
+godot::String Utilities::get_state_name(godot::Object const& translation_object, State const& state) {
+	StateSet const& state_set = state.get_state_set();
+
+	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
+
+	String name = translation_object.tr(region_identifier);
+
+	const bool named = name != region_identifier;
+	const bool owned = state.get_owner() != nullptr;
+	const bool split = state_set.get_state_count() > 1;
+
+	if (!named) {
+		// Capital province name
+		// TODO - confirm capital is never null?
+		name = translation_object.tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
+
+		if (!owned) {
+			static const StringName region_key = "REGION_NAME";
+			static const String name_key = "$NAME$";
+
+			String region = translation_object.tr(region_key);
+
+			if (region != region_key) {
+				// CAPITAL Region
+				return region.replace(name_key, name);
+			}
+		}
+	}
+
+	if (owned && split) {
+		// COUNTRY STATE/CAPITAL
+		return get_country_adjective(translation_object, *state.get_owner()) + " " + name;
+	}
+
+	// STATE/CAPITAL
+	return name;
+}
+godot::String Utilities::get_country_name(godot::Object const& translation_object, CountryInstance const& country) {
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
+		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", government_type->get_identifier()
+		));
+
+		String government_name = translation_object.tr(government_name_key);
+
+		if (government_name != government_name_key) {
+			return government_name;
+		}
+	}
+
+	return translation_object.tr(Utilities::std_to_godot_string(country.get_identifier()));
+}
+godot::String Utilities::get_country_adjective(godot::Object const& translation_object, CountryInstance const& country) {
+	static constexpr std::string_view adjective = "_ADJ";
+
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
+		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", government_type->get_identifier(), adjective
+		));
+
+		String government_adjective = translation_object.tr(government_adjective_key);
+
+		if (government_adjective != government_adjective_key) {
+			return government_adjective;
+		}
+	}
+
+	return translation_object.tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
 namespace OpenVic::Utilities {

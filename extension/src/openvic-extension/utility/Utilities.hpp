@@ -13,6 +13,15 @@
 
 #define ERR(x) ((x) ? OK : FAILED)
 
+namespace godot {
+	struct Object;
+}
+
+namespace OpenVic {
+	struct CountryInstance;
+	struct State;
+}
+
 namespace OpenVic::Utilities {
 	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
 		return str.utf8().get_data();
@@ -92,6 +101,10 @@ namespace OpenVic::Utilities {
 		godot::Color const& colour, int32_t width, int32_t height,
 		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
+
+	godot::String get_state_name(godot::Object const& translation_object, State const& state);
+	godot::String get_country_name(godot::Object const& translation_object, CountryInstance const& country);
+	godot::String get_country_adjective(godot::Object const& translation_object, CountryInstance const& country);
 
 #define OPTIMISED_FORMAT_CONCAT(a, b) a##b
 #define OPTIMISED_FORMAT_EXPAND(a, b) OPTIMISED_FORMAT_CONCAT(a, b)

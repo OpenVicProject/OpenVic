@@ -49,80 +49,6 @@ StringName const& MenuSingleton::_signal_update_tooltip() {
 	return signal_update_tooltip;
 }
 
-String MenuSingleton::_get_state_name(State const& state) const {
-	StateSet const& state_set = state.get_state_set();
-
-	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
-
-	String name = tr(region_identifier);
-
-	const bool named = name != region_identifier;
-	const bool owned = state.get_owner() != nullptr;
-	const bool split = state_set.get_state_count() > 1;
-
-	if (!named) {
-		// Capital province name
-		// TODO - confirm capital is never null?
-		name = tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
-
-		if (!owned) {
-			static const StringName region_key = "REGION_NAME";
-			static const String name_key = "$NAME$";
-
-			String region = tr(region_key);
-
-			if (region != region_key) {
-				// CAPITAL Region
-				return region.replace(name_key, name);
-			}
-		}
-	}
-
-	if (owned && split) {
-		// COUNTRY STATE/CAPITAL
-		return _get_country_adjective(*state.get_owner()) + " " + name;
-	}
-
-	// STATE/CAPITAL
-	return name;
-}
-
-String MenuSingleton::_get_country_name(CountryInstance const& country) const {
-	GovernmentType const* government_type = country.get_government_type_untracked();
-	if (government_type != nullptr) {
-		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
-			country.get_identifier(), "_", government_type->get_identifier()
-		));
-
-		String government_name = tr(government_name_key);
-
-		if (government_name != government_name_key) {
-			return government_name;
-		}
-	}
-
-	return tr(Utilities::std_to_godot_string(country.get_identifier()));
-}
-
-String MenuSingleton::_get_country_adjective(CountryInstance const& country) const {
-	static constexpr std::string_view adjective = "_ADJ";
-
-	GovernmentType const* government_type = country.get_government_type_untracked();
-	if (government_type != nullptr) {
-		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
-			country.get_identifier(), "_", government_type->get_identifier(), adjective
-		));
-
-		String government_adjective = tr(government_adjective_key);
-
-		if (government_adjective != government_adjective_key) {
-			return government_adjective;
-		}
-	}
-
-	return tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
-}
-
 String MenuSingleton::_make_modifier_effect_value(
 	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 ) const {
@@ -369,6 +295,7 @@ void MenuSingleton::_bind_methods() {
 
 	/* TOPBAR */
 	OV_BIND_METHOD(MenuSingleton::get_topbar_info);
+	OV_BIND_METHOD(MenuSingleton::link_top_bar_to_cpp, { "godot_top_bar" });
 
 	/* TIME/SPEED CONTROL PANEL */
 	OV_BIND_METHOD(MenuSingleton::is_paused);
@@ -497,7 +424,7 @@ String MenuSingleton::get_country_name_from_identifier(String const& country_ide
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return _get_country_name(*country);
+	return Utilities::get_country_name(*this,*country);
 }
 
 String MenuSingleton::get_country_adjective_from_identifier(String const& country_identifier) const {
@@ -516,7 +443,7 @@ String MenuSingleton::get_country_adjective_from_identifier(String const& countr
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return _get_country_adjective(*country);
+	return Utilities::get_country_adjective(*this,*country);
 }
 
 /* TOOLTIP */
@@ -623,7 +550,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
-		ret[province_info_state_key] = _get_state_name(*state);
+		ret[province_info_state_key] = Utilities::get_state_name(*this,*state);
 	}
 
 	ret[province_info_slave_status_key] = province->get_slave();
@@ -660,7 +587,9 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		static const StringName controller_localisation_key = "PV_CONTROLLER";
 		static const String controller_template_string = "%s %s";
 		ret[province_info_controller_tooltip_key] = Utilities::format(
-			controller_template_string, tr(controller_localisation_key), _get_country_name(*controller)
+			controller_template_string,
+			tr(controller_localisation_key),
+			Utilities::get_country_name(*this,*controller)
 		);
 	}
 
@@ -1151,111 +1080,6 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	ret[country_status_key] = static_cast<int32_t>(country->get_country_status());
 	ret[total_rank_key] = static_cast<uint64_t>(country->get_total_rank());
 
-	static const StringName prestige_key = "prestige";
-	static const StringName prestige_rank_key = "prestige_rank";
-	static const StringName prestige_tooltip_key = "prestige_tooltip";
-
-	ret[prestige_key] = country->get_prestige_untracked().to_int32_t();
-	ret[prestige_rank_key] = static_cast<uint64_t>(country->get_prestige_rank());
-	ret[prestige_tooltip_key] = String {}; // TODO - list prestige sources (e.g. power status)
-
-	static const StringName industrial_power_key = "industrial_power";
-	static const StringName industrial_rank_key = "industrial_rank";
-	static const StringName industrial_power_tooltip_key = "industrial_power_tooltip";
-
-	ret[industrial_power_key] = country->get_industrial_power_untracked().to_int32_t();
-	ret[industrial_rank_key] = static_cast<uint64_t>(country->get_industrial_rank());
-	{
-		String industrial_power_tooltip;
-
-		// Pair: State name / Power
-		std::vector<std::pair<String, fixed_point_t>> industrial_power_states;
-		for (auto const& [state, power] : country->get_industrial_power_from_states()) {
-			industrial_power_states.emplace_back(_get_state_name(*state), power);
-		}
-		std::sort(
-			industrial_power_states.begin(), industrial_power_states.end(),
-			[](auto const& a, auto const& b) -> bool {
-				// Sort by greatest power, then by state name alphabetically
-				return a.second != b.second ? a.second > b.second : a.first < b.first;
-			}
-		);
-		for (auto const& [state_name, power] : industrial_power_states) {
-			static const String state_power_template_string =
-				"\n%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
-
-			industrial_power_tooltip += Utilities::format(
-				state_power_template_string,
-				state_name,
-				Utilities::fixed_point_to_string_dp(power, 3)
-			);
-		}
-
-		// Tuple: Country identifier / Country name / Power
-		std::vector<std::tuple<String, String, fixed_point_t>> industrial_power_from_investments;
-		for (auto const& [country, power] : country->get_industrial_power_from_investments()) {
-			industrial_power_from_investments.emplace_back(
-				Utilities::std_to_godot_string(country->get_identifier()), _get_country_name(*country), power
-			);
-		}
-		std::sort(
-			industrial_power_from_investments.begin(), industrial_power_from_investments.end(),
-			[](auto const& a, auto const& b) -> bool {
-				// Sort by greatest power, then by country name alphabetically
-				return std::get<2>(a) != std::get<2>(b) ? std::get<2>(a) > std::get<2>(b) : std::get<1>(a) < std::get<1>(b);
-			}
-		);
-		for (auto const& [country_identifier, country_name, power] : industrial_power_from_investments) {
-			static const String investment_power_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: " +
-				GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
-
-			industrial_power_tooltip += Utilities::format(
-				investment_power_template_string,
-				country_identifier,
-				country_name,
-				Utilities::fixed_point_to_string_dp(power, 3)
-			);
-		}
-
-		ret[industrial_power_tooltip_key] = std::move(industrial_power_tooltip);
-	}
-
-	static const StringName military_power_key = "military_power";
-	static const StringName military_rank_key = "military_rank";
-	static const StringName military_power_tooltip_key = "military_power_tooltip";
-
-	ret[military_power_key] = country->military_power.get_untracked().to_int32_t();
-	ret[military_rank_key] = static_cast<uint64_t>(country->get_military_rank());
-	{
-		String military_power_tooltip;
-
-		static const StringName military_power_from_land_key = "MIL_FROM_TROOPS";
-		static const StringName military_power_from_sea_key = "MIL_FROM_CAP_SHIPS";
-		static const StringName military_power_from_leaders_key = "MIL_FROM_LEADERS";
-
-		for (auto const& [source, power] : {
-			std::pair
-			{ military_power_from_land_key, country->get_military_power_from_land_untracked() },
-			{ military_power_from_sea_key, country->get_military_power_from_sea_untracked() },
-			{ military_power_from_leaders_key, country->get_military_power_from_leaders_untracked() }
-		}) {
-			if (power != 0) {
-				military_power_tooltip += "\n" + tr(source) + ": " + GUILabel::get_colour_marker() + "Y"
-					+ Utilities::fixed_point_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";
-			}
-		}
-
-		ret[military_power_tooltip_key] = std::move(military_power_tooltip);
-	}
-
-	static const StringName colonial_power_available_key = "colonial_power_available";
-	static const StringName colonial_power_max_key = "colonial_power_max";
-	static const StringName colonial_power_tooltip_key = "colonial_power_tooltip";
-	// TODO - colonial power info
-	ret[colonial_power_available_key] = 0;
-	ret[colonial_power_max_key] = 0;
-	ret[colonial_power_tooltip_key] = String {};
-
 	// Production
 
 	// Budget
@@ -1487,6 +1311,12 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 	return ret;
 }
+void MenuSingleton::link_top_bar_to_cpp(GUINode const* const godot_top_bar) {
+	ERR_FAIL_NULL(godot_top_bar);
+	top_bar = memory::make_unique<TopBar>(
+		*godot_top_bar
+	);
+}
 
 /* TIME/SPEED CONTROL PANEL */
 
@@ -1585,7 +1415,7 @@ Error MenuSingleton::generate_search_cache() {
 
 	for (StateSet const& state_set : state_sets) {
 		for (State const& state : state_set.get_states()) {
-			String display_name = _get_state_name(state);
+			String display_name = Utilities::get_state_name(*this,state);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({
@@ -1598,7 +1428,7 @@ Error MenuSingleton::generate_search_cache() {
 	for (CountryInstance const& country : countries) {
 		// TODO - replace with a proper "exists" check
 		if (country.get_capital() != nullptr) {
-			String display_name = _get_country_name(country);
+			String display_name = Utilities::get_country_name(*this,country);
 			String search_name = display_name.to_lower();
 
 			search_panel.entry_cache.push_back({
