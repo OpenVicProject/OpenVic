@@ -44,6 +44,7 @@ func _on_credits_button_pressed() -> void:
 # * UIFUN-3
 func _on_exit_button_pressed() -> void:
 	print("See you later!")
+	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 	get_tree().quit()
 
 func _on_new_game_button_visibility_changed() -> void:

@@ -56,6 +56,7 @@ func _on_main_menu_confirmed() -> void:
 # * SS-48
 # * UIFUN-70
 func _on_quit_confirmed() -> void:
+	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 	get_tree().quit()
 
 # REQUIREMENTS:

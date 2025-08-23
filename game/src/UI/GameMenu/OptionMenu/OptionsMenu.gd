@@ -39,13 +39,12 @@ func _ready() -> void:
 	back_button.text = "OPTIONS_BACK"
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
-	get_viewport().get_window().close_requested.connect(_on_window_close_requested)
 	_save_overrides.call_deferred()
 	Events.Options.save_settings.connect(func(_f : ConfigFile) -> void: self._save_overrides.call_deferred())
 
 func _notification(what : int) -> void:
 	match what:
-		NOTIFICATION_CRASH:
+		NOTIFICATION_CRASH, NOTIFICATION_WM_CLOSE_REQUEST:
 			_on_window_close_requested()
 
 func _input(event : InputEvent) -> void:
@@ -58,8 +57,7 @@ func _on_back_button_pressed() -> void:
 	back_button_pressed.emit()
 
 func _on_window_close_requested() -> void:
-	if visible:
-		Events.Options.save_settings_to_file()
+	Events.Options.save_settings_to_file()
 
 func _save_overrides() -> void:
 	var override_path : String = ProjectSettings.get_setting("application/config/project_settings_override", "")
