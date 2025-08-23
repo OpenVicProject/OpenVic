@@ -82,6 +82,7 @@ func set_resolution(resolution : Vector2i) -> void:
 	if viewport != null:
 		var window := viewport.get_window()
 		if window != null:
+			if Engine.is_embedded_in_editor(): return
 			match window.mode:
 				Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
 					window.content_scale_size = resolution
@@ -105,6 +106,7 @@ func set_window_mode(mode : Window.Mode) -> void:
 	if viewport != null:
 		var window := viewport.get_window()
 		if window != null:
+			if Engine.is_embedded_in_editor(): return
 			var current_resolution := get_current_resolution()
 			var current_monitor := window.current_screen
 			window.mode = mode
@@ -127,6 +129,7 @@ func set_monitor(index : int) -> void:
 	if viewport != null:
 		var window := viewport.get_window()
 		if window != null:
+			if Engine.is_embedded_in_editor(): return
 			window.current_screen = index
 			return
 	push_error("Trying to set monitor index before window exists!")

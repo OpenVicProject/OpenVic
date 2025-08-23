@@ -16,6 +16,7 @@ func _ready() -> void:
 	video.queue_free()
 
 func _on_SceneTree_idle() -> void:
+	if Engine.is_embedded_in_editor(): return
 	var window := get_window()
 	window.set_mode(Window.MODE_FULLSCREEN)
 	await get_tree().process_frame
