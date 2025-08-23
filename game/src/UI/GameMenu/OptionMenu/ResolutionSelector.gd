@@ -58,14 +58,8 @@ func _update_resolution_options_text() -> void:
 
 func _setup_button() -> void:
 	Resolution.resolution_added.connect(func (_value : Vector2i) -> void: _sync_resolutions())
-	if default_value.x <= 0:
-		default_value.x = ProjectSettings.get_setting("display/window/size/viewport_width")
-	if default_value.y <= 0:
-		default_value.y = ProjectSettings.get_setting("display/window/size/viewport_height")
-	if not Resolution.has_resolution(default_value):
-		Resolution.add_resolution(default_value)
-	else:
-		_sync_resolutions()
+	default_value = Resolution.default_resolution
+	_sync_resolutions()
 
 func _get_value_for_file(select_value : int):
 	if _valid_index(select_value):
@@ -76,16 +70,10 @@ func _get_value_for_file(select_value : int):
 # REQUIREMENTS:
 # * SS-25
 func _set_value_from_file(load_value : Variant) -> void:
-	var target_resolution := Resolution.error_resolution
-	match typeof(load_value):
-		TYPE_VECTOR2I: target_resolution = load_value
-		TYPE_STRING, TYPE_STRING_NAME: target_resolution = Resolution.get_resolution_value_from_string(load_value)
+	var target_resolution := Resolution.set_resolution_from(load_value)
 	if target_resolution != Resolution.error_resolution:
 		selected = _find_resolution_index_by_value(target_resolution)
 		if selected != -1: return
-		if Resolution.add_resolution(target_resolution):
-			Resolution.set_resolution(target_resolution)
-			return
 	push_error("Setting value '%s' invalid for setting [%s] %s" % [load_value, section_name, setting_name])
 	selected = default_selected
 
