@@ -52,19 +52,3 @@ func _notification(what : int) -> void:
 # * UIFUN-30
 func _on_slider_value_changed(value : float, bus_index : int) -> void:
 	AudioServer.set_bus_volume_db(bus_index, get_volume_value_as_db(value))
-
-
-func _on_options_menu_load_settings(load_file : ConfigFile) -> void:
-	for volume_slider : SettingHSlider in _slider_dictionary.values():
-		volume_slider.load_setting(load_file)
-
-# REQUIREMENTS
-# * UIFUN-23
-func _on_options_menu_save_settings(save_file : ConfigFile) -> void:
-	for volume_slider : SettingHSlider in _slider_dictionary.values():
-		volume_slider.save_setting(save_file)
-
-
-func _on_options_menu_reset_settings() -> void:
-	for volume_slider : SettingHSlider in _slider_dictionary.values():
-		volume_slider.reset_setting()
