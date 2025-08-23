@@ -156,11 +156,11 @@ func setup_title_theme() -> void:
 	var song_paths = MusicManager.get_all_song_paths()
 	var title_index = song_paths.find(SoundSingleton.title_theme)
 	if title_index != -1:
-		MusicManager.call_deferred("start_song_by_index",title_index)
+		MusicManager.start_song_by_index.call_deferred(title_index)
 	if len(MusicManager._available_songs) <= 0:
 		push_error("No song available to play")
 	else:
-		MusicManager.call_deferred("start_current_song")
+		MusicManager.start_current_song.call_deferred()
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
