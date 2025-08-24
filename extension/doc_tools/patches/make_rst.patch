@@ -1,5 +1,5 @@
 diff --git a/extension/doc_tools/make_rst.py b/extension/doc_tools/make_rst.py
-index 0b4896d..7c269f7 100644
+index c5fe5a6..2cf04aa 100644
 --- a/extension/doc_tools/make_rst.py
 +++ b/extension/doc_tools/make_rst.py
 @@ -12,7 +12,6 @@ from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
@@ -7,10 +7,10 @@ index 0b4896d..7c269f7 100644
  sys.path.insert(0, root_directory := os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../"))
  
 -import version
- from misc.utility.color import Ansi, toggle_color
+ from misc.utility.color import Ansi, force_stderr_color, force_stdout_color
  
  # $DOCS_URL/path/to/page.html(#fragment-tag)
-@@ -672,6 +671,13 @@ class ScriptLanguageParityCheck:
+@@ -673,6 +672,13 @@ class ScriptLanguageParityCheck:
          self.hit_map[class_name].append((context, error))
  
  
@@ -18,13 +18,13 @@ index 0b4896d..7c269f7 100644
 +    return "https://github.com/godotengine/godot"
 +
 +def get_engine_release() -> str:
-+    return "4.4.1-stable"
++    return "4.5-stable"
 +
 +
  # Entry point for the RST generator.
  def main() -> None:
      parser = argparse.ArgumentParser()
-@@ -719,21 +725,46 @@ def main() -> None:
+@@ -721,21 +727,46 @@ def main() -> None:
          else:
              print(f'No PO file at "{lang_file}" for language "{args.lang}".')
  
@@ -73,7 +73,7 @@ index 0b4896d..7c269f7 100644
  
          elif os.path.isdir(path):
              file_list += (os.path.join(path, f) for f in os.listdir(path) if f.endswith(".xml"))
-@@ -781,6 +812,8 @@ def main() -> None:
+@@ -783,6 +814,8 @@ def main() -> None:
      grouped_classes: Dict[str, List[str]] = {}
  
      for class_name, class_def in state.classes.items():
@@ -82,7 +82,7 @@ index 0b4896d..7c269f7 100644
          if args.filter and not pattern.search(class_def.filepath):
              continue
          state.current_class = class_name
-@@ -872,9 +905,6 @@ def translate(string: str) -> str:
+@@ -874,9 +907,6 @@ def translate(string: str) -> str:
  
  
  def get_git_branch() -> str:
@@ -92,7 +92,7 @@ index 0b4896d..7c269f7 100644
      return "master"
  
  
-@@ -901,11 +931,11 @@ def make_rst_class(class_def: ClassDef, state: State, dry_run: bool, output_dir:
+@@ -903,11 +933,11 @@ def make_rst_class(class_def: ClassDef, state: State, dry_run: bool, output_dir:
  
          git_branch = get_git_branch()
          source_xml_path = os.path.relpath(class_def.filepath, root_directory).replace("\\", "/")
@@ -107,7 +107,7 @@ index 0b4896d..7c269f7 100644
          f.write(f".. Generator: {generator_github_url}.\n")
          f.write(f".. XML source: {source_github_url}.\n\n")
  
-@@ -1729,7 +1759,7 @@ def make_rst_index(grouped_classes: Dict[str, List[str]], dry_run: bool, output_
+@@ -1733,7 +1763,7 @@ def make_rst_index(grouped_classes: Dict[str, List[str]], dry_run: bool, output_
          # Also provide links to the source files for reference.
  
          git_branch = get_git_branch()
