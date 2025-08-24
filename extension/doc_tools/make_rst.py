@@ -5,7 +5,6 @@
 import argparse
 import os
 import re
-import subprocess
 import sys
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
@@ -678,7 +677,7 @@ def get_engine_url() -> str:
     return "https://github.com/godotengine/godot"
 
 def get_engine_release() -> str:
-    return "4.3-stable"
+    return "4.4.1-stable"
 
 
 # Entry point for the RST generator.
@@ -755,6 +754,7 @@ def main() -> None:
 
     doc_cache_path = "extension/doc_tools/cache/engine"
 
+    import subprocess
     if not os.path.exists(doc_cache_path):
         os.makedirs(doc_cache_path)
         engine_url = get_engine_url()
