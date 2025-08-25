@@ -1,6 +1,7 @@
 #include "Utilities.hpp"
 
 #include <godot_cpp/classes/file_access.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/variant/string_name.hpp>
@@ -250,6 +251,16 @@ Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int3
 	ERR_FAIL_NULL_V(image, nullptr);
 	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);
 	ERR_FAIL_NULL_V(result, nullptr);
+	return result;
+}
+
+Variant Utilities::get_project_setting(godot::StringName const& p_path, godot::Variant const& p_default_value) {
+	if (!ProjectSettings::get_singleton()->has_setting(p_path)) {
+		ProjectSettings::get_singleton()->set(p_path, p_default_value);
+	}
+	Variant result = ProjectSettings::get_singleton()->get_setting_with_override(p_path);
+
+	ProjectSettings::get_singleton()->set_initial_value(p_path, p_default_value);
 	return result;
 }
 

@@ -19,8 +19,8 @@ static func is_debug_mode() -> bool:
 	return _singleton._is_debug_mode()
 
 func _set_debug_mode(value : bool) -> void:
-	ArgumentParser.set_argument(&"game-debug", value)
+	ArgumentParser.set_option_value(&"game-debug", value)
 	print("Set debug mode to: ", value)
 
 func _is_debug_mode() -> bool:
-	return ArgumentParser.get_argument(&"game-debug", false)
+	return ArgumentParser.get_option_value(&"game-debug")
