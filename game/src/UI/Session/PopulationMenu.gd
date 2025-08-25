@@ -8,6 +8,12 @@ const _scene_name : String = "country_pops"
 
 var _pop_screen_panel : Panel
 
+var _province_list_type_pool : Dictionary = {
+	MenuSingleton.LIST_ENTRY_COUNTRY: [],
+	MenuSingleton.LIST_ENTRY_STATE: [],
+	MenuSingleton.LIST_ENTRY_PROVINCE: []
+}
+
 var _province_listbox : GUIListBox
 var _province_list_scroll_index : int = 0
 var _province_list_types : Array[MenuSingleton.ProvinceListEntry]
@@ -83,38 +89,35 @@ func _ready() -> void:
 
 	_update_info()
 
-func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListEntry) -> Error:
-	while _province_list_types.size() <= index:
-		_province_list_types.push_back(MenuSingleton.LIST_ENTRY_NONE)
-		_province_list_indices.push_back(-1)
-		_province_list_panels.push_back(null)
-		_province_list_buttons.push_back(null)
-		_province_list_name_labels.push_back(null)
-		_province_list_size_labels.push_back(null)
-		_province_list_growth_icons.push_back(null)
-		_province_list_colony_buttons.push_back(null)
-		_province_list_national_focus_buttons.push_back(null)
-		_province_list_expand_buttons.push_back(null)
+func _resize_province_list(list_size : int) -> void:
+	list_size = max(list_size, 8)
+	if _province_list_types.size() <= list_size:
+		_province_list_types.resize(list_size)
+		var old_ind_size := _province_list_indices.size()
+		_province_list_indices.resize(list_size)
+		for i : int in range(old_ind_size, _province_list_indices.size()):
+			_province_list_indices[i] = -1
+		_province_list_panels.resize(list_size)
+		_province_list_buttons.resize(list_size)
+		_province_list_name_labels.resize(list_size)
+		_province_list_size_labels.resize(list_size)
+		_province_list_growth_icons.resize(list_size)
+		_province_list_colony_buttons.resize(list_size)
+		_province_list_national_focus_buttons.resize(list_size)
+		_province_list_expand_buttons.resize(list_size)
+		for k : MenuSingleton.ProvinceListEntry in _province_list_type_pool:
+			_province_list_type_pool[k].resize(list_size)
 
-	if _province_list_types[index] == type:
+func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListEntry) -> Error:
+	if _province_list_types.size() <= index:
+		_resize_province_list(_province_list_types.size() + 1)
+	elif _province_list_types[index] == type:
 		return OK
 
-	if _province_list_panels[index]:
-		_province_listbox.remove_child(_province_list_panels[index])
-		_province_list_panels[index].queue_free()
-
-	_province_list_types[index] = MenuSingleton.LIST_ENTRY_NONE
-	_province_list_indices[index] = -1
-	_province_list_panels[index] = null
-	_province_list_buttons[index] = null
-	_province_list_name_labels[index] = null
-	_province_list_size_labels[index] = null
-	_province_list_growth_icons[index] = null
-	_province_list_colony_buttons[index] = null
-	_province_list_national_focus_buttons[index] = null
-	_province_list_expand_buttons[index] = null
-
+	_province_list_types[index] = type
 	if type == MenuSingleton.LIST_ENTRY_NONE:
+		if _province_list_panels[index]:
+			_province_listbox.remove_child(_province_list_panels[index])
 		return OK
 
 	const gui_element_names : Dictionary = {
@@ -123,13 +126,16 @@ func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListE
 		MenuSingleton.LIST_ENTRY_PROVINCE: "poplistitem_province"
 	}
 
-	var entry_panel : Panel = GUINode.generate_gui_element(_scene_name, gui_element_names[type])
-
+	var entry_panel : Panel = _province_list_type_pool[type][index]
 	if not entry_panel:
-		return FAILED
+		entry_panel = GUINode.generate_gui_element(_scene_name, gui_element_names[type])
+		if not entry_panel:
+			return FAILED
 
-	_province_list_types[index] = type
+		_province_list_type_pool[type][index] = entry_panel
 
+	if _province_list_panels[index]:
+		_province_listbox.remove_child(_province_list_panels[index])
 	_province_list_panels[index] = entry_panel
 
 	_province_list_buttons[index] = GUINode.get_gui_icon_button_from_node(entry_panel.get_node(^"./poplistbutton"))
@@ -156,7 +162,8 @@ func _generate_province_list_row(index : int, type : MenuSingleton.ProvinceListE
 				func() -> void: MenuSingleton.population_menu_toggle_expanded(_province_list_indices[index])
 			)
 
-	_province_listbox.add_child(entry_panel)
+	if not entry_panel.is_inside_tree():
+		_province_listbox.add_child(entry_panel)
 	_province_listbox.move_child(entry_panel, index)
 
 	return OK
@@ -367,6 +374,10 @@ func _notification(what : int) -> void:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			MenuSingleton.population_menu_update_locale_sort_cache()
 			_update_info()
+		NOTIFICATION_PREDELETE:
+			for k : MenuSingleton.ProvinceListEntry in _province_list_type_pool:
+				for panel : Panel in _province_list_type_pool[k]:
+					if panel: panel.queue_free()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	_active = active_screen == _screen
