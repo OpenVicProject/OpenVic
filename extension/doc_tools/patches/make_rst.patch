@@ -1,13 +1,8 @@
 diff --git a/extension/doc_tools/make_rst.py b/extension/doc_tools/make_rst.py
-index efd902f..f6e7fa2 100644
+index 761a7f8..5689df4 100644
 --- a/extension/doc_tools/make_rst.py
 +++ b/extension/doc_tools/make_rst.py
-@@ -9,11 +9,11 @@ import sys
- import xml.etree.ElementTree as ET
- from collections import OrderedDict
- from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
-+import subprocess
- 
+@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
  # Import hardcoded version information from version.py
  root_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../")
  sys.path.append(root_directory)  # Include the root directory
@@ -15,7 +10,7 @@ index efd902f..f6e7fa2 100644
  
  # $DOCS_URL/path/to/page.html(#fragment-tag)
  GODOT_DOCS_PATTERN = re.compile(r"^\$DOCS_URL/(.*)\.html(#.*)?$")
-@@ -674,6 +674,13 @@ class ScriptLanguageParityCheck:
+@@ -674,6 +673,13 @@ class ScriptLanguageParityCheck:
          self.hit_map[class_name].append((context, error))
  
  
@@ -23,13 +18,13 @@ index efd902f..f6e7fa2 100644
 +    return "https://github.com/godotengine/godot"
 +
 +def get_engine_release() -> str:
-+    return "4.3-stable"
++    return "4.4.1-stable"
 +
 +
  # Entry point for the RST generator.
  def main() -> None:
      parser = argparse.ArgumentParser()
-@@ -744,21 +751,45 @@ def main() -> None:
+@@ -744,21 +750,46 @@ def main() -> None:
          else:
              print(f'No PO file at "{lang_file}" for language "{args.lang}".')
  
@@ -37,6 +32,7 @@ index efd902f..f6e7fa2 100644
 +
 +    doc_cache_path = "extension/doc_tools/cache/engine"
 +
++    import subprocess
 +    if not os.path.exists(doc_cache_path):
 +        os.makedirs(doc_cache_path)
 +        engine_url = get_engine_url()
