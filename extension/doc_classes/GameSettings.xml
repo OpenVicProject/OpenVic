@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameSettings" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_section_keys" qualifiers="const">
+			<return type="PackedStringArray" />
+			<param index="0" name="section" type="String" />
+			<description>
+				Returns an array of all defined key identifiers in the specified section. Raises an error and returns an empty array if the section does not exist.
+				See [method ConfigFile.get_section_keys].
+			</description>
+		</method>
+		<method name="get_sections" qualifiers="const">
+			<return type="PackedStringArray" />
+			<description>
+				Returns an array of all defined section identifiers.
+				See [method ConfigFile.get_sections].
+			</description>
+		</method>
+		<method name="get_value">
+			<return type="Variant" />
+			<param index="0" name="section" type="String" />
+			<param index="1" name="key" type="String" />
+			<param index="2" name="default" type="Variant" default="null" />
+			<description>
+				Returns the current value for the specified section and key. If either the section or the key do not exist, the method returns the fallback [param default]. If [param default] is not specified, is set to null when previously not set, or is not equal to the previously set value, an error is also raised. 
+				See [method ConfigFile.get_value].
+			</description>
+		</method>
+		<method name="has_section" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="section" type="String" />
+			<description>
+				Returns [code]true[/code] if the specified section exists.
+				See [method ConfigFile.has_section].
+			</description>
+		</method>
+		<method name="has_section_key" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="section" type="String" />
+			<param index="1" name="key" type="String" />
+			<description>
+				Returns [code]true[/code] if the specified section-key pair exists.
+				See [method ConfigFile.has_section_key].
+			</description>
+		</method>
+		<method name="load">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" default="&quot;&quot;" />
+			<description>
+				Loads the settings file specified by [param path] and then emitting [signal Resource.changed]. If [param path] is empty then it is set to [member Resource.resource_path]. The file's contents are parsed and loaded in the [GameSettings] object which the method was called on. Sets [member Resource.resource_path] to [param path].
+				Returns [constant OK] on success, or one of the other [enum Error] values if the operation failed.
+				See [method ConfigFile.load].
+			</description>
+		</method>
+		<method name="load_deprecated_file">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="section_keys" type="Dictionary" />
+			<description>
+				Loads the settings file specified by [param path] and then emitting [signal Resource.changed], loading only the contents found in [param section_keys] into the [GameSettings] object which the method was called on.
+				Returns [constant OK] on success, or one of the other [enum Error] values if the operation failed. Returns [constant ERR_INVALID_PARAMETER] if [param section_keys] contains invalid values.
+
+				Each key of [param section_keys] corresponds to a section name where each value corresponds to keys that can be:
+				- [code]null[/code]: Will copy the entire section.
+				- [String] or [StringName]: Will copy the specified section-key pair.
+				- [PackedStringArray] or [Array] containing [String] or [StringName] values: Will copy every contained key in the specified section.
+			</description>
+		</method>
+		<method name="load_from_file" qualifiers="static">
+			<return type="GameSettings" />
+			<param index="0" name="path" type="String" />
+			<description>
+				Loads a settings file specified by [param path] if [method ResourceLoader.has_cached] returns [code]false[/code] for [param path]. If [param path] is cached then it will load the reference to the cached [GameSettings] resource instead, this will not reload the [GameSettings] config from the file, call [method load] instead.
+				Note: This will recursively create the directories to [param path] if none exist. It will save an empty text file if the file does not exist.
+			</description>
+		</method>
+		<method name="reset_section">
+			<return type="void" />
+			<param index="0" name="section" type="String" />
+			<description>
+				Resets all the key-value pairs inside the section to their initial default value, emitting [signal Resource.changed]. Raises an error if the section does not have defaults.
+			</description>
+		</method>
+		<method name="reset_section_key">
+			<return type="void" />
+			<param index="0" name="section" type="String" />
+			<param index="1" name="key" type="String" />
+			<description>
+				Resets the specified key inside the section to their initial default value, emitting [signal Resource.changed]. Raises an error if either the section-key pair does not have a default.
+			</description>
+		</method>
+		<method name="reset_settings">
+			<return type="void" />
+			<description>
+				Resets every key to its initial default value, emitting [signal Resource.changed].
+			</description>
+		</method>
+		<method name="save">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" default="&quot;&quot;" />
+			<description>
+				Saves the contents of the [GameSettings] object to the file specified by as [param path], including its default values. If [param path] is empty then it is set to [member Resource.resource_path]. The output file uses an INI-style structure.
+				Returns [constant OK] on success, or one of the other [enum Error] values if the operation failed.
+				See [method ConfigFile.save].
+			</description>
+		</method>
+		<method name="set_value">
+			<return type="void" />
+			<param index="0" name="section" type="String" />
+			<param index="1" name="key" type="String" />
+			<param index="2" name="value" type="Variant" />
+			<description>
+				Assigns a value to the specified key of the specified section. If either the section or the key do not exist, they are created. Passing a [code]null[/code] value resets the specified key to its default without emitting [signal Resource.changed], raising an error if a default is not set.
+				See [method ConfigFile.set_value].
+			</description>
+		</method>
+	</methods>
+</class>
