@@ -60,6 +60,7 @@ func _ready() -> void:
 		var msg := "Failed to generate any valid %s %s options." % [setting_name, section_name]
 		push_error(msg)
 		OS.alert(msg, "Options Error: %s / %s" % [section_name, setting_name])
+		get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 		get_tree().quit()
 
 func load_setting(file : ConfigFile) -> void:

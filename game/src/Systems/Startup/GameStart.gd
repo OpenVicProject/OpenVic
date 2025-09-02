@@ -113,6 +113,7 @@ func _setup_compatibility_mode_paths() -> void:
 			var failure_func := func() -> void:
 				get_window().mode = Window.MODE_WINDOWED
 				OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
+				get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 				get_tree().quit()
 			vic2_dir_dialog.canceled.connect(failure_func)
 			await vic2_dir_dialog.dir_selected
