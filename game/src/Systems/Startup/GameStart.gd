@@ -47,8 +47,7 @@ func _ready() -> void:
 	}
 
 	Localisation.initialize()
-	if ArgumentParser.get_argument(&"help"):
-		ArgumentParser._print_help()
+	if ArgumentParser.get_option_value(&"help"):
 		# For some reason this doesn't get freed properly
 		# Godot will always quit before it frees the active StreamPlayback resource
 		# This hack fixes that
@@ -79,8 +78,8 @@ func _save_setting(file : ConfigFile) -> void:
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
 
-	var arg_base_path : String = ArgumentParser.get_argument(&"base-path", "")
-	var arg_search_path : String = ArgumentParser.get_argument(&"search-path", "")
+	var arg_base_path : String = ArgumentParser.get_option_value(&"base-path")
+	var arg_search_path : String = ArgumentParser.get_option_value(&"search-path")
 
 	var actual_base_path : String = ""
 
@@ -131,7 +130,7 @@ func _setup_compatibility_mode_paths() -> void:
 	_compatibility_path_list = [actual_base_path]
 
 	# Add mod paths
-	var settings_mod_names : PackedStringArray = ArgumentParser.get_argument(&"mod", "")
+	var settings_mod_names : PackedStringArray = ArgumentParser.get_option_value(&"mod")
 	for mod_name : String in settings_mod_names:
 		_compatibility_path_list.push_back(actual_base_path + "/mod/" + mod_name)
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ArgumentParser" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		OpenVic commandline argument parser.
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_help" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="is_rich" type="bool" />
+			<description>
+				Returns the game application's help string formatted for printing.
+				If [param is_rich] is [code]true[/code] then the string will include BBCode color formatting.
+				See [method ArgumentOption.get_help_string].
+			</description>
+		</method>
+		<method name="get_option_value" qualifiers="const">
+			<return type="Variant" />
+			<param index="0" name="arg_name" type="StringName" />
+			<description>
+				Returns the value set for [param arg_name] or [member ArgumentOption.default_value] if the option was not set.
+			</description>
+		</method>
+		<method name="has_option" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="arg_name" type="StringName" />
+			<param index="1" name="include_aliases" type="bool" default="false" />
+			<description>
+				Returns [code]true[/code] if [param arg_name] is a valid option.
+				If [param include_aliases] is [code]true[/code] then also checks against [member ArgumentOption.aliases].
+			</description>
+		</method>
+		<method name="is_option_set" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="arg_name" type="StringName" />
+			<param index="1" name="include_aliases" type="bool" default="false" />
+			<description>
+				Returns [code]true[/code] if [param arg_name] was set either by [method parse_arguments] or [method set_option_value].
+				Returns [code]false[/code] if [param arg_name] is not a valid option.
+				If [param include_aliases] is [code]true[/code] then also searchs against [member ArgumentOption.aliases].
+			</description>
+		</method>
+		<method name="parse_arguments">
+			<return type="int" enum="Error" />
+			<param index="0" name="args" type="PackedStringArray" />
+			<param index="1" name="error_unknown" type="bool" default="true" />
+			<description>
+				Parses the arguments for the commandline into the [ArgumentParser]. This is run before game initialization for [method OS.get_cmdline_args] and [method OS.get_cmdline_user_args].
+				Prints errors for unknown arguments when [param error_unknown] is true.
+			</description>
+		</method>
+		<method name="set_option_value">
+			<return type="void" />
+			<param index="0" name="arg_name" type="StringName" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Sets the option's argument of [param arg_name] to value of [param value].
+			</description>
+		</method>
+	</methods>
+</class>
