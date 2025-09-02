@@ -4,6 +4,8 @@ signal resolution_added(value : Vector2i)
 
 const error_resolution : Vector2i = Vector2i(-1,-1)
 
+var default_resolution : Vector2i = error_resolution
+
 @export
 var minimum_resolution : Vector2i = Vector2i(1,1)
 
@@ -31,6 +33,14 @@ func _ready() -> void:
 	assert(minimum_resolution.x > 0 and minimum_resolution.y > 0, "Minimum resolution must be positive!")
 	for resolution_value : Vector2i in _starting_resolutions:
 		add_resolution(resolution_value)
+
+	default_resolution = Vector2i(
+		ProjectSettings.get_setting("display/window/size/viewport_width"),
+		ProjectSettings.get_setting("display/window/size/viewport_height")
+	)
+	if default_resolution > minimum_resolution:
+		add_resolution(default_resolution)
+
 	assert(not _resolutions.is_empty(), "No valid starting resolutions!")
 
 	_regex = RegEx.new()
@@ -91,6 +101,19 @@ func set_resolution(resolution : Vector2i) -> void:
 					window.content_scale_size = Vector2i(0,0)
 			return
 	push_error("Trying to set resolution before window exists!")
+
+func set_resolution_from(load_value : Variant) -> Vector2i:
+	var target_resolution := Resolution.error_resolution
+	match typeof(load_value):
+		TYPE_VECTOR2I:
+			target_resolution = load_value
+			return target_resolution
+		TYPE_STRING, TYPE_STRING_NAME:
+			target_resolution = Resolution.get_resolution_value_from_string(load_value)
+			return target_resolution
+	if Resolution.add_resolution(target_resolution):
+		Resolution.set_resolution(target_resolution)
+	return target_resolution
 
 func get_current_window_mode() -> Window.Mode:
 	var viewport := get_viewport()
