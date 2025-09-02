@@ -187,8 +187,10 @@ Ref<Resource> Utilities::load_resource(String const& path, String const& type_hi
 }
 
 static Ref<Image> load_dds_image(String const& path) {
-	gli::texture2d texture { gli::load_dds(Utilities::godot_to_std_string(path)) };
-	ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, Utilities::format("Failed to load DDS file: %s", path));
+	const gli::texture dds_file = gli::load_dds(Utilities::godot_to_std_string(path));
+	ERR_FAIL_COND_V_MSG(dds_file.empty(), nullptr, Utilities::format("Failed to load DDS file: %s", path));
+	gli::texture2d texture { dds_file };
+	ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, Utilities::format("Failed to create DDS texture: %s", path));
 
 	static constexpr gli::format expected_format = gli::FORMAT_BGRA8_UNORM_PACK8;
 	const bool needs_bgr_to_rgb = texture.format() == expected_format;
