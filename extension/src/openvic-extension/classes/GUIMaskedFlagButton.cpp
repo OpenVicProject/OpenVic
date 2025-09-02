@@ -74,6 +74,9 @@ Error GUIMaskedFlagButton::set_flag_country_name(String const& flag_country_name
 
 	return gfx_masked_flag_texture->set_flag_country_name(flag_country_name);
 }
+Error GUIMaskedFlagButton::set_flag_country(CountryInstance* flag_country) const {
+	return gfx_masked_flag_texture->set_flag_country(flag_country);
+}
 
 String GUIMaskedFlagButton::get_flag_country_name() const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, {});
