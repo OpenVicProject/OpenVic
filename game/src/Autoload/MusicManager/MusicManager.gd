@@ -12,6 +12,7 @@ signal song_scrubbed(percentage : float, seconds : float)
 @export var first_song_name : String
 
 @export var _audio_stream_player : AudioStreamPlayer
+var _audio_stream_paused : bool = false
 
 var _selected_track := 0
 var _available_songs : Array[SongInfo] = []
@@ -26,8 +27,6 @@ var last_played: int = -1
 ## True if music player should be visible.
 ## Used to keep keep consistency between scene changes
 var is_music_player_visible : bool = true
-
-var _has_startup_happened : bool = false
 
 func get_all_song_names() -> PackedStringArray:
 	var songNames : PackedStringArray = []
@@ -56,10 +55,12 @@ func get_current_song_progress_percentage() -> float:
 	return 100 * (_audio_stream_player.get_playback_position() / _audio_stream_player.stream.get_length())
 
 func is_paused() -> bool:
-	return _audio_stream_player.stream_paused
+	return _audio_stream_paused
 
 func set_paused(paused : bool) -> void:
 	_audio_stream_player.stream_paused = paused
+	# stream_paused requires an active stream
+	_audio_stream_paused = paused
 	song_paused.emit(paused)
 
 func toggle_play_pause() -> void:
@@ -69,6 +70,8 @@ func start_current_song() -> void:
 	_audio_stream_player.stream = _available_songs[_selected_track].song_stream
 	_audio_stream_player.play()
 	song_started.emit(_selected_track)
+	if _audio_stream_paused:
+		set_paused(true)
 
 # REQUIREMENTS
 # * SS-70
@@ -86,10 +89,12 @@ func select_next_song() -> void:
 	_selected_track = playlist[playlist_index]
 	playlist_index += 1
 	last_played = playlist_index
+	_audio_stream_paused = false
 	start_current_song()
 
 func select_previous_song() -> void:
 	_selected_track = (len(_available_songs) - 1) if (_selected_track == 0) else (_selected_track - 1)
+	_audio_stream_paused = false
 	start_current_song()
 
 func setup_compat_song(file_name) -> void:
@@ -162,9 +167,7 @@ func _ready() -> void:
 	#GameStart so we can wait until the music is loaded
 
 func set_startup_music(play : bool) -> void:
-	if not _has_startup_happened:
-		_has_startup_happened = true
-		set_paused(not play)
+	set_paused(not play)
 
 func _on_audio_stream_player_finished() -> void:
 	song_finished.emit(_selected_track)
