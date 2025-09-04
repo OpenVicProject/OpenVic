@@ -10,17 +10,19 @@ var setting_name : String = "setting_hslider"
 @export
 var default_value : float = 0
 
-func _ready() -> void:
-	Events.Options.load_settings.connect(load_setting)
-	Events.Options.save_settings.connect(save_setting)
-	Events.Options.reset_settings.connect(reset_setting)
+var settings_path := "user://settings.cfg"
 
-func load_setting(file : ConfigFile) -> void:
-	if file == null: return
-	var load_value : Variant = file.get_value(section_name, setting_name, default_value)
+func _enter_tree() -> void:
+	var settings := GameSettings.load_from_file(settings_path)
+	settings.changed.connect(load_setting.bind(settings))
+	value_changed.connect(set_setting.bind(settings))
+
+func load_setting(menu : GameSettings) -> void:
+	var load_value : Variant = menu.get_value(section_name, setting_name, default_value)
 	match typeof(load_value):
 		TYPE_FLOAT, TYPE_INT:
-			if value == load_value: value_changed.emit(value)
+			if value == load_value:
+				value_changed.emit(value)
 			value = load_value
 			return
 		TYPE_STRING, TYPE_STRING_NAME:
@@ -33,9 +35,8 @@ func load_setting(file : ConfigFile) -> void:
 	push_error("Setting value '%s' invalid for setting [%s] \"%s\"" % [load_value, section_name, setting_name])
 	value = default_value
 
-func save_setting(file : ConfigFile) -> void:
-	if file == null: return
-	file.set_value(section_name, setting_name, value)
+func set_setting(val : float, menu : GameSettings) -> void:
+	menu.set_value(section_name, setting_name, val)
 
 func reset_setting() -> void:
 	value = default_value
