@@ -24,9 +24,9 @@ on:
       - 'README.md'
 
 env:
-  GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
-  GODOT_VERSION: 4.4.1
-  GODOT_VERSION_TYPE: stable
+  GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot-builds
+  GODOT_VERSION: 4.5
+  GODOT_VERSION_TYPE: rc1
   OPENVIC_BASE_BRANCH: master
 
 concurrency:
