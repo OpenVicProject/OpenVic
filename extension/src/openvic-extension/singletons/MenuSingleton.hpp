@@ -287,6 +287,7 @@ namespace OpenVic {
 
 		/* BUDGET MENU */
 		void link_budget_menu_to_cpp(GUINode const* const godot_budget_menu);
+		void free_cpp_budget_menu();
 
 		/* Find/Search Panel */
 		// TODO - update on country government type change and state creation/destruction

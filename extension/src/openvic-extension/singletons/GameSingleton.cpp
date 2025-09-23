@@ -154,6 +154,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG");
 
 	PlayerSingleton& player_singleton = *PlayerSingleton::get_singleton();
+	player_singleton.clear_player_country();
 	player_singleton.set_player_country(starting_country);
 	ERR_FAIL_NULL_V(player_singleton.get_player_country(), FAILED);
 

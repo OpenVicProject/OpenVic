@@ -78,6 +78,9 @@ func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_info()
+		NOTIFICATION_PREDELETE:
+			# The C++ BudgetMenu's update method, triggered by gamestate updates, could be called after destruction
+			MenuSingleton.free_cpp_budget_menu()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	_active = active_screen == SCREEN

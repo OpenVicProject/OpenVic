@@ -13,8 +13,6 @@
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
-	struct SliderValue;
-
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
 

@@ -13,6 +13,18 @@
 
 using namespace OpenVic;
 
+#define DO_FOR_ALL_COMPONENTS(F) \
+	administration_budget.F; \
+	diplomatic_budget.F; \
+	education_budget.F; \
+	military_budget.F; \
+	national_stockpile_budget.F; \
+	social_budget.F; \
+	tariff_budget.F; \
+	for (StrataTaxBudget& strata_tax_budget : tax_budgets) { \
+		strata_tax_budget.F; \
+	}
+
 BudgetMenu::BudgetMenu(
 	GUINode const& parent,
 	utility::forwardable_span<const Strata> strata_keys,
@@ -32,6 +44,8 @@ BudgetMenu::BudgetMenu(
 	tariff_budget{parent,country_defines},
 	projected_income_template{generate_projected_income_template(strata_keys.size())}
 	{
+		DO_FOR_ALL_COMPONENTS(set_range_limited(true));
+
 		tax_budgets.reserve(strata_keys.size());
 		connections.reserve(7 + strata_keys.size());
 		connections.push_back(administration_budget.balance_changed.connect(&BudgetMenu::update_projected_expenses_and_balance, this));
@@ -181,18 +195,6 @@ void BudgetMenu::update_all_projections() {
 	update_projected_expenses();
 	update_projected_income();
 }
-
-#define DO_FOR_ALL_COMPONENTS(F) \
-	administration_budget.F; \
-	diplomatic_budget.F; \
-	education_budget.F; \
-	military_budget.F; \
-	national_stockpile_budget.F; \
-	social_budget.F; \
-	tariff_budget.F; \
-	for (StrataTaxBudget& strata_tax_budget : tax_budgets) { \
-		strata_tax_budget.F; \
-	}
 
 void BudgetMenu::update() {
 	CountryInstance* const country_ptr = PlayerSingleton::get_singleton()->get_player_country();

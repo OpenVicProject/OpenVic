@@ -26,7 +26,7 @@ namespace OpenVic {
 		void update_labels(CountryInstance& country, const fixed_point_t scaled_value);
 	protected:
 		const godot::String slider_tooltip_localisation_key;
-		GUIScrollbar& slider;
+		GUIScrollbar& PROPERTY_ACCESS(slider, protected);
 		GUILabel* const budget_label;
 
 		SliderBudgetComponent(

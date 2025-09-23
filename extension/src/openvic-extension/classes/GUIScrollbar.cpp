@@ -448,16 +448,26 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 		adjust_for_min_and_step_size(gui_scrollbar->get_max_value())
 	);
 
+	// const int64_t gcd =std::gcd(gui_scrollbar->get_step_size().get_raw_value(), fixed_point_t::ONE);
+
+	// set_scale(
+	// 	gui_scrollbar->get_min_value(),
+	// 	gui_scrollbar->get_step_size().get_raw_value() / gcd,
+	// 	fixed_point_t::ONE / gcd
+	// );
+
 	set_scale(
 		gui_scrollbar->get_min_value(),
-		gui_scrollbar->get_step_size(),
-		1
+		gui_scrollbar->get_step_size().get_raw_value(),
+		fixed_point_t::ONE.get_raw_value()
 	);
-	
-	set_range_limits(
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
-	);
+
+	if (range_limited) {
+		set_range_limits(
+			adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
+			adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
+		);
+	}
 
 	if (!was_blocking_signals) {
 		set_block_signals(false);

@@ -446,6 +446,7 @@ void MenuSingleton::_bind_methods() {
 
 	/* BUDGET MENU */
 	OV_BIND_METHOD(MenuSingleton::link_budget_menu_to_cpp, { "godot_budget_menu" });
+	OV_BIND_METHOD(MenuSingleton::free_cpp_budget_menu);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1554,6 +1555,13 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 		country_defines
 	);
 	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
+}
+
+void MenuSingleton::free_cpp_budget_menu() {
+	if (budget_menu) {
+		GameSingleton::get_singleton()->gamestate_updated.disconnect(&BudgetMenu::update, budget_menu.get());
+		budget_menu.reset();
+	}
 }
 
 /* Find/Search Panel */

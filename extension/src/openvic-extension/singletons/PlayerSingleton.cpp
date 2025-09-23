@@ -20,6 +20,7 @@ StringName const& PlayerSingleton::_signal_province_selected() {
 
 void PlayerSingleton::_bind_methods() {
 	// Player country
+	OV_BIND_METHOD(PlayerSingleton::clear_player_country());
 	OV_BIND_METHOD(PlayerSingleton::set_player_country_by_province_number, { "province_number" });
 	OV_BIND_METHOD(PlayerSingleton::get_player_country_capital_position);
 
@@ -103,6 +104,10 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	Logger::info("Set player country to: ", player_country != nullptr ? player_country->get_identifier() : "<NULL>");
 
 	game_singleton._on_gamestate_updated();
+}
+
+void PlayerSingleton::clear_player_country() {
+	player_country = nullptr;
 }
 
 void PlayerSingleton::set_player_country_by_province_number(int32_t province_number) {
