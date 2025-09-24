@@ -21,9 +21,9 @@ namespace OpenVic {
 
 	struct BudgetMenu {
 	private:
-		static godot::StringName generate_projected_income_template(const size_t tax_budgets_size);
+		static godot::String generate_projected_income_template(const size_t tax_budgets_size);
 
-		const godot::StringName projected_income_template;
+		godot::String projected_income_template;
 		godot::Array projected_income_args;
 		godot::Array projected_expenses_args;
 		memory::vector<connection> connections;

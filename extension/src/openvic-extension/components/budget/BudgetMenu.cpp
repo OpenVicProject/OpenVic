@@ -86,7 +86,7 @@ void BudgetMenu::update_projected_balance() {
 }
 
 void BudgetMenu::update_projected_expenses() {
-	static const godot::StringName projected_expenses_template = "%s\n--------------\n%s\n%s\n%s\n%s\n%s\n%s%s";
+	static const godot::String projected_expenses_template = "%s\n--------------\n%s\n%s\n%s\n%s\n%s\n%s%s";
 	const fixed_point_t projected_expenses =  administration_budget.get_expenses()
 		+ diplomatic_budget.get_expenses()
 		+ education_budget.get_expenses()
@@ -227,7 +227,7 @@ void BudgetMenu::update() {
 	);
 }
 
-godot::StringName BudgetMenu::generate_projected_income_template(const size_t tax_budgets_size) {
+godot::String BudgetMenu::generate_projected_income_template(const size_t tax_budgets_size) {
 	static const std::string_view projected_income_template_start = "%s\n--------------";
 	static const std::string_view projected_income_template_dynamic_part = "\n%s";
 
@@ -242,10 +242,7 @@ godot::StringName BudgetMenu::generate_projected_income_template(const size_t ta
 		projected_income_template.append(projected_income_template_dynamic_part);
 	}
 	projected_income_template += "\n%s\n%s\n%s%s";
-	return godot::StringName(
-		projected_income_template.data(),
-		false
-	);
+	return projected_income_template.data();
 }
 
 #undef DO_FOR_ALL_COMPONENTS
