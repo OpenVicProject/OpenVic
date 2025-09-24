@@ -40,10 +40,7 @@ StrataTaxBudget::StrataTaxBudget(
 		generate_slider_tooltip_localisation_key(new_strata),
 		Utilities::format(
 			"TAX_%s_DESC",
-			(godot::String::utf8(
-				strata.get_identifier().data(),
-				strata.get_identifier().length()
-			)).to_upper()
+			Utilities::std_to_godot_string(strata.get_identifier()).to_upper()
 		)
 	);
 }
@@ -73,23 +70,11 @@ void StrataTaxBudget::on_slider_value_changed(const fixed_point_t scaled_value) 
 }
 
 godot::StringName StrataTaxBudget::generate_slider_tooltip_localisation_key(Strata const& strata) {
-	const godot::StringName prefix = "BUDGET_TAX_";
-	godot::StringName localisation_key;
-	const godot::StringName strata_identifier = (godot::StringName(
-		strata.get_identifier().data(),
-		strata.get_identifier().length()
-	)).to_upper();
-	return prefix + strata_identifier;
+	return "BUDGET_TAX_" + Utilities::std_to_godot_string(strata.get_identifier()).to_upper();
 }
 
 godot::StringName StrataTaxBudget::generate_summary_localisation_key(Strata const& strata) {
-	return Utilities::format(
-		"TAXES_%s",
-		(godot::StringName(
-			strata.get_identifier().data(),
-			strata.get_identifier().length()
-		)).to_upper()
-	);
+	return "TAXES_" + Utilities::std_to_godot_string(strata.get_identifier()).to_upper();
 }
 
 void StrataTaxBudget::update_slider_tooltip(
