@@ -446,6 +446,7 @@ void MenuSingleton::_bind_methods() {
 
 	/* BUDGET MENU */
 	OV_BIND_METHOD(MenuSingleton::link_budget_menu_to_cpp, { "godot_budget_menu" });
+	OV_BIND_METHOD(MenuSingleton::unlink_budget_menu_from_cpp);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1539,9 +1540,15 @@ String MenuSingleton::get_longform_date() const {
 void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_menu) {
 	ERR_FAIL_NULL(godot_budget_menu);
 	GameSingleton& game_singleton = *GameSingleton::get_singleton();
-	BudgetMenu* old_instance = budget_menu.get();
-	if (old_instance != nullptr) {
-		game_singleton.gamestate_updated.disconnect(&BudgetMenu::update, old_instance);
+
+	if (budget_menu) {
+		UtilityFunctions::push_error(
+			"Trying to link new C++ and GDScript BudgetMenu instances without unlinking the old instances first! "
+			"The unlinking must happen just before the GDScript BudgetMenu is freed, "
+			"otherwise the C++ BudgetMenu will continue running despite all its UI node pointers now being invalid."
+		);
+
+		unlink_budget_menu_from_cpp();
 	}
 
 	auto const& strata_keys = game_singleton.get_definition_manager().get_pop_manager().get_stratas();
@@ -1554,6 +1561,15 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 		country_defines
 	);
 	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
+}
+
+void MenuSingleton::unlink_budget_menu_from_cpp() {
+	if (budget_menu) {
+		GameSingleton::get_singleton()->gamestate_updated.disconnect(&BudgetMenu::update, budget_menu.get());
+		budget_menu.reset();
+	} else {
+		UtilityFunctions::push_warning("unlink_budget_menu_from_cpp called but no C++ BudgetMenu instance was linked!");
+	}
 }
 
 /* Find/Search Panel */

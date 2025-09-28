@@ -8,7 +8,6 @@
 namespace OpenVic {
 	struct GUILabel;
 	struct GUINode;
-	struct GUIScrollbar;
 
 	struct NationalStockpileBudget : public BudgetComponent, public BudgetExpenseComponent {
 	private:

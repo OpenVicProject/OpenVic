@@ -19,6 +19,8 @@ StringName const& PlayerSingleton::_signal_province_selected() {
 }
 
 void PlayerSingleton::_bind_methods() {
+	OV_BIND_METHOD(PlayerSingleton::reset_player_singleton);
+
 	// Player country
 	OV_BIND_METHOD(PlayerSingleton::set_player_country_by_province_number, { "province_number" });
 	OV_BIND_METHOD(PlayerSingleton::get_player_country_capital_position);
@@ -72,6 +74,14 @@ PlayerSingleton::PlayerSingleton() {
 PlayerSingleton::~PlayerSingleton() {
 	ERR_FAIL_COND(singleton != this);
 	singleton = nullptr;
+}
+
+void PlayerSingleton::reset_player_singleton() {
+	// This function is called when a game session ends, so we don't use functions like set_player_country or
+	// unset_selected_province here as they can dereference leftover pointers from the previous game session which
+	// are either already or soon to be invalid.
+	player_country = nullptr;
+	selected_province = nullptr;
 }
 
 // Player country

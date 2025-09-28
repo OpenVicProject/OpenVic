@@ -16,6 +16,12 @@ func _ready() -> void:
 	# In game, the province selector uses the normal glove cursor.
 	CursorManager.set_compat_cursor(&"normal", Input.CURSOR_IBEAM)
 
+func _notification(what : int) -> void:
+	match what:
+		NOTIFICATION_PREDELETE:
+			if GameSingleton.end_game_session() != OK:
+				push_error("Failed to end game session")
+
 func _process(_delta : float) -> void:
 	GameSingleton.update_clock()
 
