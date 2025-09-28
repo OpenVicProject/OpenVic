@@ -82,6 +82,21 @@ void PlayerSingleton::reset_player_singleton() {
 	// are either already or soon to be invalid.
 	player_country = nullptr;
 	selected_province = nullptr;
+
+	// TODO - any other cleanup needed, maybe clear any queued game actions?
+
+	// Changing player_country calls:
+	//  - game_singleton._on_gamestate_updated();
+	//     - calls _update_colour_image(); (see below in selected_province comments)
+	//     - calls emit_signal(_signal_gamestate_updated());
+	//     - calls gamestate_updated();
+
+	// Changing selected_province calls:
+	//  - GameSingleton::get_singleton()->_update_colour_image();
+	//     - updates the province_colour_texture which tells the map shader what base and stripe colours each province should have
+	//  - emit_signal(_signal_province_selected(), get_selected_province_number());
+	//     - connected to _on_province_selected in MapView.gd, which passes on the selected province index to the map shader
+	//     - connected to _on_province_selected in ProvinceOverviewPanel.gd, which updates the displayed province info
 }
 
 // Player country

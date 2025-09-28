@@ -90,7 +90,9 @@ void TariffBudget::update_slider_tooltip(
 			1
 		)
 	);
-	
+
+	// TODO - clean up overuse of StringName
+
 	slider_tooltip_args[1] = slider.tr("BUDGET_TARIFFS_MODIFIED").replace(
 		"Y"+Utilities::get_percentage_value_placeholder(),
 		//not percentage_to_string_dp as localisation text contains the %

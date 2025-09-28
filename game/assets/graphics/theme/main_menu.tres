@@ -11,44 +11,10 @@
 [sub_resource type="Resource" id="Resource_hxpog"]
 script = ExtResource("2_7bwl2")
 texture = ExtResource("3_cpatd")
-draw_center = true
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-expand_margin_left = 0.0
-expand_margin_top = 0.0
-expand_margin_right = 0.0
-expand_margin_bottom = 0.0
-axis_stretch_horizontal = 0
-axis_stretch_vertical = 0
-region_rect = Rect2(0, 0, 0, 0)
-modulate_color = Color(1, 1, 1, 1)
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
 
 [sub_resource type="Resource" id="Resource_c0k5l"]
 script = ExtResource("2_7bwl2")
 texture = ExtResource("4_sl60o")
-draw_center = true
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-expand_margin_left = 0.0
-expand_margin_top = 0.0
-expand_margin_right = 0.0
-expand_margin_bottom = 0.0
-axis_stretch_horizontal = 0
-axis_stretch_vertical = 0
-region_rect = Rect2(0, 0, 0, 0)
-modulate_color = Color(1, 1, 1, 1)
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
 
 [sub_resource type="StyleBox" id="StyleBox_odacv"]
 resource_local_to_scene = false

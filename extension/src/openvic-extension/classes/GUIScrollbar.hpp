@@ -76,6 +76,7 @@ namespace OpenVic {
 		float _value_to_ratio(int32_t val) const;
 		int32_t _fp_to_value(const fixed_point_t val) const;
 		fixed_point_t _get_scaled_value(const int32_t val) const;
+		// fixed_point_t _adjust_for_min_and_step_size(const int32_t val) const;
 
 		void _calculate_rects();
 
@@ -123,6 +124,7 @@ namespace OpenVic {
 			const int32_t new_scale_numerator,
 			const int32_t new_scale_denominator
 		);
+		// void set_range_limited(bool new_range_limited);
 		void set_range_limits(
 			const std::optional<int32_t> new_lower_range_limit,
 			const std::optional<int32_t> new_upper_range_limit
@@ -133,6 +135,7 @@ namespace OpenVic {
 		);
 		// This function can also be used for GUIScrollbars that are not range limited, in which case it will check that the
 		// ReadOnlyClampedValue's min and max match the full range of the scrollbar and emit a warning if not.
+		// TODO - change name to make clear this works for non-range limited scrollbars as well ???
 		void set_range_limits_and_value_from_slider_value(
 			ReadOnlyClampedValue& slider_value
 		);

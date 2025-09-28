@@ -112,8 +112,7 @@ bool SoundSingleton::load_title_theme() {
 		if (file_stem == title_theme_name.data()) {
 			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
 
-			String name = to_define_file_name(file, music_folder);
-			title_theme = name;
+			title_theme = file_stem;
 			ret = true;
 			break;
 		}

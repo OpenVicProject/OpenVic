@@ -45,6 +45,7 @@ void GameSingleton::_bind_methods() {
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
 	OV_BIND_METHOD(GameSingleton::start_game_session);
 	OV_BIND_METHOD(GameSingleton::end_game_session);
+	// OV_BIND_METHOD(GameSingleton::is_game_session_active);
 
 	OV_BIND_METHOD(GameSingleton::get_province_number_from_uv_coords, { "coords" });
 
@@ -178,6 +179,10 @@ Error GameSingleton::end_game_session() {
 	PlayerSingleton::get_singleton()->reset_player_singleton();
 	return ERR(game_manager.end_game_session());
 }
+
+// bool GameSingleton::is_game_session_active() const {
+// 	return game_manager.is_game_session_active();
+// }
 
 int32_t GameSingleton::get_province_number_from_uv_coords(Vector2 const& coords) const {
 	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();

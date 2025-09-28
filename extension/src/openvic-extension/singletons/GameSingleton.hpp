@@ -80,6 +80,7 @@ namespace OpenVic {
 		godot::Error setup_game(int32_t bookmark_index);
 		godot::Error start_game_session();
 		godot::Error end_game_session();
+		// bool is_game_session_active() const;
 
 		int32_t get_province_number_from_uv_coords(godot::Vector2 const& coords) const;
 
