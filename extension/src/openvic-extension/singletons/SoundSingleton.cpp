@@ -72,7 +72,7 @@ String SoundSingleton::to_define_file_name(String const& path, std::string_view 
 // Load a sound from the cache, or directly if its not in the cache
 // take in a path, extract just the file name for the cache (and defines)
 Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
-	String name = to_define_file_name(path, music_folder);
+	String name = to_define_file_name("get_song", path, music_folder);
 
 	const song_asset_map_t::const_iterator it = tracks.find(name);
 	if (it != tracks.end()) { // it->first = key, it->second = value
@@ -107,7 +107,7 @@ bool SoundSingleton::load_title_theme() {
 		// the path
 		String file = std_to_godot_string(file_name.string());
 		// file name
-		String file_stem = to_define_file_name(file, music_folder);
+		String file_stem = to_define_file_name("load_title_theme1", file, music_folder);
 
 		if (file_stem == title_theme_name.data()) {
 			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
@@ -142,7 +142,7 @@ bool SoundSingleton::load_music() {
 
 	for (std::filesystem::path const& file_name : music_files) {
 		String file = std_to_godot_string(file_name.string());
-		String name = to_define_file_name(file, music_folder);
+		String name = to_define_file_name("load_music", file, music_folder);
 		if (name == title_theme_name.data()) {
 			continue;
 		}
@@ -160,7 +160,7 @@ bool SoundSingleton::load_music() {
 
 // Load a sound into the sound cache, accessed via its file path
 Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
-	String name = to_define_file_name(path, sound_folder);
+	String name = to_define_file_name("get_sound", path, sound_folder);
 
 	const sfx_asset_map_t::const_iterator it = sfx.find(name);
 	if (it != sfx.end()) { // it->first = key, it->second = value
@@ -228,7 +228,7 @@ bool SoundSingleton::load_sounds() {
 			continue; // don't try to append a null pointer to the list
 		}
 
-		String name = to_define_file_name(std_to_godot_string(full_path.string()), sound_folder);
+		String name = to_define_file_name("load_sound", std_to_godot_string(full_path.string()), sound_folder);
 
 		StringName define_gd_name = std_to_godot_string(sound_inst.get_identifier());
 		sfx_define[define_gd_name].audioStream = get_sound(name);
