@@ -64,9 +64,9 @@ SoundSingleton::~SoundSingleton() {
 // slices a path down to after the base_folder, keeps the extension
 // this is because the defines refer to audio files using this format,
 // so we might as well use this form as the key for the "name"->audiostream map
-String SoundSingleton::to_define_file_name(String const& path, std::string_view const& base_folder) {
-	String name = path.replace("\\", "/");
-	return name.get_slice(base_folder.data(), 1); // get file name with extension
+static String to_define_file_name(String const& caller, String const& path, std::string_view const& base_folder) {
+	UtilityFunctions::print("SoundSingleton::to_define_file_name for ", caller, ": path = ", path, " + base_folder = ", base_folder.data(), " -> result = ", path.replace("\\", "/").get_slice(base_folder.data(), 1));
+	return path.replace("\\", "/").get_slice(base_folder.data(), 1); // get file name with extension
 }
 
 // Load a sound from the cache, or directly if its not in the cache

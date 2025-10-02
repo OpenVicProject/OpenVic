@@ -145,6 +145,7 @@ func add_ootb_music() -> void:
 
 func generate_playlist() -> void:
 	var song_names : PackedStringArray = MusicManager.get_all_song_paths()
+	# TODO - what if song_names is empty?
 	var possible_indices : PackedInt32Array = range(song_names.size() - 1)
 
 	var title_index : int = song_names.find(SoundSingleton.title_theme)
@@ -166,6 +167,7 @@ func generate_playlist() -> void:
 
 	# Essentially shuffle-bag randomness, picking from a list of song indices
 	for i : int in range(actual_playlist_len):
+		# TODO - what if possible_indices is empty?
 		var ind : int = randi_range(0, possible_indices.size() - 1)
 		# Add back the last song we just played as an option
 		if i == 1 and last_played != -1:
@@ -187,6 +189,10 @@ func set_startup_music(play : bool) -> void:
 	if not _audio_stream_player:
 		push_error("_audio_stream_player null")
 	if not _has_startup_happened:
+		# TODO - actually check if this is arriving at the start, rather than just being the first time it's called (would it always be called at the beginning, e.g. if no saved setting exists yet?)
+		#      - if you toggle this from the main menu should it affect the current music?
+		#        What if you're in the main menu after resigning from a game?
+		#        Is this setting about the loading screen + main menu, or just the loading screen when the program first starts?
 		_has_startup_happened = true
 		set_paused(not play)
 
