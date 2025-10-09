@@ -30,6 +30,8 @@ namespace OpenVic {
 		PlayerSingleton();
 		~PlayerSingleton();
 
+		void reset_player_singleton();
+
 		// Player country
 		[[nodiscard]] constexpr CountryInstance* get_player_country() {
 			return player_country;
