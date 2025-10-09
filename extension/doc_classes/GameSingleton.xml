@@ -8,6 +8,11 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="end_game_session">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
 		<method name="get_bookmark_info" qualifiers="const">
 			<return type="Dictionary[]" />
 			<description>
@@ -123,6 +128,21 @@
 			<return type="Texture2DArray" />
 			<description>
 				Return a [Texture2DArray] containing all terrain textures, both the solid blue generated water texture and the loaded land terrain textures.
+			</description>
+		</method>
+		<method name="is_bookmark_loaded" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_game_instance_setup" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_game_session_active" qualifiers="const">
+			<return type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="is_parchment_mapmode_allowed" qualifiers="const">
