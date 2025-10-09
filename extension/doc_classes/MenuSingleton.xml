@@ -255,6 +255,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="unlink_budget_menu_from_cpp">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 		<method name="update_search_results">
 			<return type="void" />
 			<param index="0" name="text" type="String" />
