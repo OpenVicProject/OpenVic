@@ -187,6 +187,7 @@ Error GameSingleton::start_game_session() {
 }
 
 Error GameSingleton::end_game_session() {
+	PlayerSingleton::get_singleton()->reset_player_singleton();
 	return ERR(game_manager.end_game_session());
 }
 

@@ -39,6 +39,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="reset_player_singleton">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 		<method name="set_auto_assign_leaders" qualifiers="const">
 			<return type="void" />
 			<param index="0" name="value" type="bool" />
