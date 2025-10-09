@@ -78,6 +78,11 @@ func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
 			_update_info()
+		NOTIFICATION_PREDELETE:
+			# If the C++ BudgetMenu isn't freed before the destruction of this GUINode, then its update method, triggered by
+			# gamestate updates, could be called after all the child UI nodes they refer to have been freed,
+			# meaning the C++ BudgetMenu would be dereferencing invalid pointers.
+			MenuSingleton.unlink_budget_menu_from_cpp()
 
 func _on_update_active_nation_management_screen(active_screen : NationManagement.Screen) -> void:
 	_active = active_screen == SCREEN
