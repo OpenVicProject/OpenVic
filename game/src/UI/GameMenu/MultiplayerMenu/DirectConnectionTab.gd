@@ -38,7 +38,7 @@ func initial_setup(player_name : StringName) -> void:
 func new_ip_entry() -> void:
 	var game_name : String = game_name_edit.text
 	if game_name.is_empty():
-		game_name_edit.placeholder_text
+		game_name = game_name_edit.placeholder_text
 	add_ip_entry_to_list(game_name,ip_edit.get_text())
 
 func add_ip_entry_to_list(connection_name : String, ip : String) -> void:

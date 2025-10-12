@@ -72,12 +72,13 @@ func _ready() -> void:
 
 	# TODO - generate strata pop type icons
 
+	MenuSingleton.update_budget_menu_localisation()
 	_update_info()
 
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
-			_update_info()
+			MenuSingleton.update_budget_menu_localisation()
 		NOTIFICATION_PREDELETE:
 			# If the C++ BudgetMenu isn't freed before the destruction of this GUINode, then its update method, triggered by
 			# gamestate updates, could be called after all the child UI nodes they refer to have been freed,

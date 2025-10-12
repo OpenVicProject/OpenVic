@@ -9,12 +9,13 @@
 namespace OpenVic {
 	struct CountryDefines;
 
-	struct TariffBudget:
+	struct TariffBudget :
 		public SliderBudgetComponent,
 		public BudgetIncomeComponent,
 		public BudgetExpenseComponent {
+
 	private:
-		godot::Array slider_tooltip_args;
+		godot::String tariff_efficiency_string;
 
 		fixed_point_t calculate_budget_and_update_custom(
 			CountryInstance& country,
@@ -28,11 +29,13 @@ namespace OpenVic {
 			GUINode const& parent,
 			CountryDefines const& country_defines
 		);
+
 		fixed_point_t get_expenses() const override;
 		fixed_point_t get_income() const override;
 		void update_slider_tooltip(
 			CountryInstance& country,
 			const fixed_point_t scaled_value
 		) override;
+		void update_slider_tooltip_localisation();
 	};
 }

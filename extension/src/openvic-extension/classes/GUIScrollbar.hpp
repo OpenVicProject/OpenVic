@@ -13,8 +13,6 @@
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
-	struct SliderValue;
-
 	class GUIScrollbar : public godot::Control {
 		GDCLASS(GUIScrollbar, godot::Control)
 
@@ -78,6 +76,7 @@ namespace OpenVic {
 		float _value_to_ratio(int32_t val) const;
 		int32_t _fp_to_value(const fixed_point_t val) const;
 		fixed_point_t _get_scaled_value(const int32_t val) const;
+		// fixed_point_t _adjust_for_min_and_step_size(const int32_t val) const;
 
 		void _calculate_rects();
 
@@ -105,6 +104,7 @@ namespace OpenVic {
 		godot::Error set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar);
 		godot::Error set_gui_scrollbar_name(godot::String const& gui_scene, godot::String const& gui_scrollbar_name);
 		godot::String get_gui_scrollbar_name() const;
+		std::string_view get_gui_scrollbar_name_std() const;
 
 		void set_value(int32_t new_value);
 		void set_scaled_value(fixed_point_t new_scaled_value);
@@ -124,6 +124,7 @@ namespace OpenVic {
 			const int32_t new_scale_numerator,
 			const int32_t new_scale_denominator
 		);
+		// void set_range_limited(bool new_range_limited);
 		void set_range_limits(
 			const std::optional<int32_t> new_lower_range_limit,
 			const std::optional<int32_t> new_upper_range_limit
@@ -132,11 +133,14 @@ namespace OpenVic {
 			const std::optional<fixed_point_t> new_lower_range_limit,
 			const std::optional<fixed_point_t> new_upper_range_limit
 		);
+		// This function can also be used for GUIScrollbars that are not range limited, in which case it will check that the
+		// ReadOnlyClampedValue's min and max match the full range of the scrollbar and emit a warning if not.
+		// TODO - change name to make clear this works for non-range limited scrollbars as well ???
 		void set_range_limits_and_value_from_slider_value(
 			ReadOnlyClampedValue& slider_value
 		);
 
-		/* Override the main dimension of gui_scollbar's size with the specified length. */
+		/* Override the main dimension of gui_scrollbar's size with the specified length. */
 		void set_length_override(real_t new_length_override);
 	};
 }

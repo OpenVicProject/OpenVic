@@ -118,6 +118,11 @@ fixed_point_t GUIScrollbar::_get_scaled_value(const int32_t val) const {
 	return offset + fixed_point_t::parse(val) * scale_numerator / scale_denominator;
 }
 
+// fixed_point_t GUIScrollbar::_adjust_for_min_and_step_size(const int32_t val) const {
+// 	// TODO - check if gui_scrollbar == nullptr ?
+// 	return (val - gui_scrollbar->get_min_value()) / gui_scrollbar->get_step_size();
+// }
+
 void GUIScrollbar::_calculate_rects() {
 	update_minimum_size();
 
@@ -255,7 +260,7 @@ void GUIScrollbar::_constrain_range_limits() {
 		lower_range_limit = upper_range_limit = {};
 		return;
 	}
-	
+
 	if (lower_range_limit.has_value()) {
 		lower_range_limit = std::clamp(lower_range_limit.value(), 0, step_count);
 	}
@@ -354,6 +359,67 @@ void GUIScrollbar::clear() {
 	reset();
 }
 
+// template<typename T>
+// static constexpr std::string_view get_type_name() {
+// 	if constexpr (std::is_same_v<T, int32_t>) {
+// 		return "int32_t";
+// 	} else if constexpr (std::is_same_v<T, int64_t>) {
+// 		return "int64_t";
+// 	} else if constexpr (std::is_same_v<T, fixed_point_t>) {
+// 		return "fixed_point_t";
+// 	}
+// };
+
+// using scale_arg_t = int32_t;
+
+// template<typename N, typename D>
+// struct frac_t {
+// 	const N numerator;
+// 	const D denominator;
+// 	const double numerator_d;
+// 	const double denominator_d;
+// 	const double scale_d;
+
+// 	// DENOMINATOR CANNOT BE 0
+
+// 	constexpr frac_t(N new_numerator, D new_denominator)
+// 	  : numerator { new_numerator }, denominator { new_denominator },
+// 		numerator_d { static_cast<double>(numerator) }, denominator_d { static_cast<double>(denominator) },
+// 		scale_d { numerator_d / denominator_d } {}
+// };
+
+// template<typename N, typename D>
+// static std::ostream& operator<<(std::ostream& stream, frac_t<N, D> const& frac) {
+// 	return stream << get_type_name<N>() << " " << frac.numerator << " / " << get_type_name<D>() << " " << frac.denominator
+// 		<< " (as doubles: " << frac.numerator_d << " / " << frac.denominator_d << " = " << frac.scale_d << ")";
+// }
+
+// template<typename N, typename D>
+// struct scale_data_t {
+
+// 	const frac_t<N, D> original;
+// 	const frac_t<scale_arg_t, scale_arg_t> casted_scale_arg;
+// 	const frac_t<N, D> casted_back;
+
+// 	// DENOMINATOR CANNOT BE 0
+
+// 	constexpr scale_data_t(N new_numerator, D new_denominator)
+// 	  : original { new_numerator, new_denominator },
+// 		casted_scale_arg { static_cast<scale_arg_t>(original.numerator), static_cast<scale_arg_t>(original.denominator) },
+// 		casted_back { static_cast<N>(casted_scale_arg.numerator), static_cast<D>(casted_scale_arg.denominator) } {}
+
+// 	constexpr bool is_lossy() const {
+// 		return original.numerator != casted_back.numerator || original.denominator != casted_back.denominator;
+// 	}
+// };
+
+// template<typename N, typename D>
+// static std::ostream& operator<<(std::ostream& stream, scale_data_t<N, D> const& scale_data) {
+// 	return stream << "Scale data:\n  original: " << scale_data.original << "\n  casted scale arg: "
+// 		<< scale_data.casted_scale_arg << "\n  casted back: " << scale_data.casted_back << "\n  conversion is "
+// 		<< (scale_data.is_lossy() ? "" : "not ") << "lossy";
+// }
+
 Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	if (gui_scrollbar == new_gui_scrollbar) {
 		return OK;
@@ -448,16 +514,32 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 		adjust_for_min_and_step_size(gui_scrollbar->get_max_value())
 	);
 
+	// const scale_data_t old_scale_data { gui_scrollbar->get_step_size(), 1 };
+	// const scale_data_t new_scale_data { gui_scrollbar->get_step_size().get_raw_value(), fixed_point_t::ONE };
+
+	// Logger::info(
+	// 	"\nOLD SCALE DATA:\n", old_scale_data, "\n\nNEW SCALE DATA:\n", new_scale_data,
+	// 	"\n\nOLD is ", old_scale_data.is_lossy() ? "" : "not ", "lossy, NEW is ", new_scale_data.is_lossy() ? "" : "not ", "lossy"
+	// );
+
+	// set_scale(
+	// 	gui_scrollbar->get_min_value(),
+	// 	gui_scrollbar->get_step_size(),
+	// 	1
+	// );
+
 	set_scale(
 		gui_scrollbar->get_min_value(),
-		gui_scrollbar->get_step_size(),
-		1
+		gui_scrollbar->get_step_size().get_raw_value(),
+		fixed_point_t::ONE
 	);
-	
-	set_range_limits(
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
-	);
+
+	if (range_limited) {
+		set_range_limits(
+			adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
+			adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
+		);
+	}
 
 	if (!was_blocking_signals) {
 		set_block_signals(false);
@@ -487,6 +569,10 @@ Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const
 
 String GUIScrollbar::get_gui_scrollbar_name() const {
 	return gui_scrollbar != nullptr ? Utilities::std_to_godot_string(gui_scrollbar->get_name()) : String {};
+}
+
+std::string_view GUIScrollbar::get_gui_scrollbar_name_std() const {
+	return gui_scrollbar != nullptr ? gui_scrollbar->get_name() : "<NULL>";
 }
 
 void GUIScrollbar::set_value(int32_t new_value) {
@@ -532,7 +618,9 @@ float GUIScrollbar::get_value_scaled() const {
 
 void GUIScrollbar::set_step_count(const int32_t new_step_count) {
 	if (new_step_count < 0) {
-		Logger::warning(fmt::format("Ignoring set_step_count to {} on GUIScrollbar {}", new_step_count, gui_scrollbar->get_name()));
+		Logger::warning(fmt::format(
+			"Ignoring set_step_count to {} on GUIScrollbar {}", new_step_count, get_gui_scrollbar_name_std()
+		));
 		return;
 	}
 	step_count = new_step_count;
@@ -543,17 +631,19 @@ void GUIScrollbar::set_step_count(const int32_t new_step_count) {
 		emit_value_changed();
 	}
 }
+
 void GUIScrollbar::set_scale(
 	const fixed_point_t new_offset,
 	const int32_t new_scale_numerator,
 	const int32_t new_scale_denominator
 ) {
+	// TODO - what if scale_numerator or scale_denominator is negative ?
 	if (new_scale_numerator == 0) {
-		Logger::warning(fmt::format("Ignoring set_scale with numerator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		Logger::warning(fmt::format("Ignoring set_scale with numerator 0 on GUIScrollbar {}", get_gui_scrollbar_name_std()));
 		return;
 	}
 	if (new_scale_denominator == 0) {
-		Logger::warning(fmt::format("Ignoring set_scale with denominator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		Logger::warning(fmt::format("Ignoring set_scale with denominator 0 on GUIScrollbar {}", get_gui_scrollbar_name_std()));
 		return;
 	}
 	offset = new_offset;
@@ -561,12 +651,61 @@ void GUIScrollbar::set_scale(
 	scale_denominator = new_scale_denominator;
 	emit_value_changed();
 }
+
+// void GUIScrollbar::set_range_limited(bool new_range_limited) {
+// 	// TODO - check if gui_scrollbar == nullptr ?
+// 	if (range_limited != new_range_limited) {
+// 		range_limited = new_range_limited;
+
+// 		if (range_limited) {
+// 			fixed_point_t range_limit_min = gui_scrollbar->get_range_limit_min();
+// 			if (range_limit_min < gui_scrollbar->get_min_value()) {
+// 				Logger::warning(
+// 					"GUIScrollbar ", gui_scrollbar->get_name(), " has range limit min ", range_limit_min,
+// 					" < min value ", gui_scrollbar->get_min_value(), " - correcting"
+// 				);
+// 				range_limit_min = gui_scrollbar->get_min_value();
+// 			} else {
+// 				Logger::info(
+// 					"GUIScrollbar ", gui_scrollbar->get_name(), " has range limit min ", range_limit_min,
+// 					" >= min value ", gui_scrollbar->get_min_value(), " - leaving unchanged"
+// 				);
+// 			}
+
+			
+// 			fixed_point_t range_limit_max = gui_scrollbar->get_range_limit_max();
+// 			if (range_limit_max > gui_scrollbar->get_max_value()) {
+// 				Logger::warning(
+// 					"GUIScrollbar ", gui_scrollbar->get_name(), " has range limit max ", range_limit_max,
+// 					" > max value ", gui_scrollbar->get_max_value(), " - correcting"
+// 				);
+// 				range_limit_max = gui_scrollbar->get_max_value();
+// 			} else {
+// 				Logger::info(
+// 					"GUIScrollbar ", gui_scrollbar->get_name(), " has range limit max ", range_limit_max,
+// 					" <= max value ", gui_scrollbar->get_max_value(), " - leaving unchanged"
+// 				);
+// 			}
+
+// 			set_range_limits(
+// 				_adjust_for_min_and_step_size(range_limit_min),
+// 				_adjust_for_min_and_step_size(range_limit_max)
+
+// 				// gui_scrollbar->get_min_value() / gui_scrollbar->get_step_size(),
+// 				// gui_scrollbar->get_max_value() / gui_scrollbar->get_step_size()
+// 			);
+// 		}
+// 	}
+// }
+
 void GUIScrollbar::set_range_limits(
 	const std::optional<int32_t> new_lower_range_limit,
 	const std::optional<int32_t> new_upper_range_limit
 ) {
 	if (!range_limited) {
-		Logger::warning(fmt::format("Ignoring set_range_limits of non-range-limited GUIScrollbar {}", gui_scrollbar->get_name()));
+		Logger::warning(fmt::format(
+			"Ignoring set_range_limits of non-range-limited GUIScrollbar {}", get_gui_scrollbar_name_std()
+		));
 		return;
 	}
 
@@ -579,6 +718,7 @@ void GUIScrollbar::set_range_limits(
 		emit_value_changed();
 	}
 }
+
 void GUIScrollbar::set_range_limits_fp(
 	const std::optional<fixed_point_t> new_lower_range_limit,
 	const std::optional<fixed_point_t> new_upper_range_limit
@@ -592,11 +732,26 @@ void GUIScrollbar::set_range_limits_fp(
 			: std::optional<fixed_point_t>{}
 	);
 }
+
 void GUIScrollbar::set_range_limits_and_value_from_slider_value(ReadOnlyClampedValue& slider_value) {
-	set_range_limits_fp(
-		slider_value.get_min(),
-		slider_value.get_max()
-	);
+	if (range_limited) {
+		set_range_limits_fp(
+			slider_value.get_min(),
+			slider_value.get_max()
+		);
+	} else {
+		const int32_t lower_range_limit = _fp_to_value(slider_value.get_min());
+		const int32_t upper_range_limit = _fp_to_value(slider_value.get_max());
+		if (lower_range_limit != 0 || upper_range_limit != step_count) {
+			Logger::warning(
+				"GUIScrollbar ", get_gui_scrollbar_name_std(),
+				" is not range limited but set_range_limits_and_value_from_slider_value was called with fixed point range (",
+				slider_value.get_min(), ", ", slider_value.get_max(), "), equivalent to step range (", lower_range_limit, ", ",
+				upper_range_limit, ") which does not match the full step range (0, ", step_count, ")"
+			);
+		}
+	}
+
 	set_scaled_value(slider_value.get_value_untracked());
 }
 

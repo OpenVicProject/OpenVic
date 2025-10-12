@@ -12,7 +12,7 @@ namespace OpenVic {
 		static godot::StringName generate_summary_localisation_key(Strata const& strata);
 		static godot::StringName generate_slider_tooltip_localisation_key(Strata const& strata);
 
-		Strata const& strata;
+		Strata const& PROPERTY(strata);
 		ModifierEffectCache const& modifier_effect_cache;
 
 		fixed_point_t calculate_budget_and_update_custom(

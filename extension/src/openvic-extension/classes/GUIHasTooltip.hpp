@@ -24,6 +24,7 @@
 		void set_tooltip_string(godot::String const& new_tooltip_string); \
 		void set_tooltip_substitution_dict(godot::Dictionary const& new_tooltip_substitution_dict); \
 		void clear_tooltip(); \
+		bool has_tooltip() const; \
 	private: \
 		godot::String PROPERTY(tooltip_string); \
 		godot::Dictionary PROPERTY(tooltip_substitution_dict); \
@@ -43,7 +44,7 @@
 			tooltip_string = new_tooltip_string; \
 			tooltip_substitution_dict = new_tooltip_substitution_dict; \
 			if (tooltip_active) { \
-				_set_tooltip_visibility(!tooltip_string.is_empty()); \
+				_set_tooltip_visibility(has_tooltip()); \
 			} \
 		} \
 	} \
@@ -54,7 +55,7 @@
 		if (tooltip_string != new_tooltip_string) { \
 			tooltip_string = new_tooltip_string; \
 			if (tooltip_active) { \
-				_set_tooltip_visibility(!tooltip_string.is_empty()); \
+				_set_tooltip_visibility(has_tooltip()); \
 			} \
 		} \
 	} \
@@ -65,12 +66,15 @@
 		if (tooltip_substitution_dict != new_tooltip_substitution_dict) { \
 			tooltip_substitution_dict = new_tooltip_substitution_dict; \
 			if (tooltip_active) { \
-				_set_tooltip_visibility(!tooltip_string.is_empty()); \
+				_set_tooltip_visibility(has_tooltip()); \
 			} \
 		} \
 	} \
 	void CLASS::clear_tooltip() { \
 		set_tooltip_string_and_substitution_dict({}, {}); \
+	} \
+	bool CLASS::has_tooltip() const { \
+		return !tooltip_string.is_empty(); \
 	} \
 	void CLASS::_tooltip_notification(int what) { \
 		if (what == NOTIFICATION_MOUSE_ENTER_SELF) { \
@@ -82,7 +86,7 @@
 	void CLASS::_set_tooltip_active(bool new_tooltip_active) { \
 		if (tooltip_active != new_tooltip_active) { \
 			tooltip_active = new_tooltip_active; \
-			if (!tooltip_string.is_empty()) { \
+			if (has_tooltip()) { \
 				_set_tooltip_visibility(tooltip_active); \
 			} \
 		} \

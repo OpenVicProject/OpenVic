@@ -95,7 +95,7 @@ namespace OpenVic {
 
 		void set_text(godot::String const& new_text);
 
-		void add_substitution(godot::String const& key, godot::String const& value);
+		void add_substitution(godot::StringName const& key, godot::String const& value);
 		void set_substitution_dict(godot::Dictionary const& new_substitution_dict);
 		void clear_substitutions();
 

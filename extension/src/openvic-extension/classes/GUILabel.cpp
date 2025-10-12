@@ -327,7 +327,7 @@ void GUILabel::set_text(String const& new_text) {
 	}
 }
 
-void GUILabel::add_substitution(String const& key, String const& value) {
+void GUILabel::add_substitution(StringName const& key, String const& value) {
 	Variant& existing_value = substitution_dict[key];
 	if (existing_value != value) {
 		existing_value = value;
@@ -534,7 +534,7 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 			marker_end_pos = base_text.length();
 		}
 
-		String key = base_text.substr(
+		const StringName key = base_text.substr(
 			marker_start_pos + get_substitution_marker().length(),
 			marker_end_pos - marker_start_pos - get_substitution_marker().length()
 		);

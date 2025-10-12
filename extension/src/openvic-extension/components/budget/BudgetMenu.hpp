@@ -2,6 +2,7 @@
 
 #include <godot_cpp/classes/object.hpp>
 
+#include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/Signal.hpp>
 #include <openvic-simulation/utility/ForwardableSpan.hpp>
 
@@ -23,9 +24,6 @@ namespace OpenVic {
 	private:
 		static godot::String generate_projected_income_template(const size_t tax_budgets_size);
 
-		godot::String projected_income_template;
-		godot::Array projected_income_args;
-		godot::Array projected_expenses_args;
 		memory::vector<connection> connections;
 		GUILabel& cash_stockpile_label;
 		GUILabel& gold_income_label;
@@ -39,21 +37,27 @@ namespace OpenVic {
 		NationalStockpileBudget national_stockpile_budget;
 		SocialBudget social_budget;
 		TariffBudget tariff_budget;
-		memory::vector<StrataTaxBudget> tax_budgets;
+		IndexedFlatMap<Strata, StrataTaxBudget> tax_budgets;
 
 		void update_projected_balance();
+		void update_projected_expenses_tooltip_localisation();
 		void update_projected_expenses();
 		void update_projected_expenses_and_balance();
 		void update_projected_income();
 		void update_projected_income_and_balance();
 		void update_all_projections();
+		void update_gold_income_description_localisation();
+		void update_projected_income_localisation();
+
 	public:
 		BudgetMenu(
 			GUINode const& parent,
-			utility::forwardable_span<const Strata> strata_keys,
+			decltype(tax_budgets)::keys_span_type strata_keys,
 			ModifierEffectCache const& modifier_effect_cache,
 			CountryDefines const& country_defines
 		);
+
 		void update();
+		void update_localisation();
 	};
 }

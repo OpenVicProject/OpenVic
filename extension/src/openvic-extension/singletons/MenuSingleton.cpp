@@ -447,6 +447,7 @@ void MenuSingleton::_bind_methods() {
 	/* BUDGET MENU */
 	OV_BIND_METHOD(MenuSingleton::link_budget_menu_to_cpp, { "godot_budget_menu" });
 	OV_BIND_METHOD(MenuSingleton::unlink_budget_menu_from_cpp);
+	OV_BIND_METHOD(MenuSingleton::update_budget_menu_localisation);
 
 	/* Find/Search Panel */
 	OV_BIND_METHOD(MenuSingleton::generate_search_cache);
@@ -1564,12 +1565,14 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 }
 
 void MenuSingleton::unlink_budget_menu_from_cpp() {
-	if (budget_menu) {
-		GameSingleton::get_singleton()->gamestate_updated.disconnect(&BudgetMenu::update, budget_menu.get());
-		budget_menu.reset();
-	} else {
-		UtilityFunctions::push_warning("unlink_budget_menu_from_cpp called but no C++ BudgetMenu instance was linked!");
-	}
+	ERR_FAIL_NULL_MSG(budget_menu, "unlink_budget_menu_from_cpp called but no C++ BudgetMenu instance was linked!");
+	GameSingleton::get_singleton()->gamestate_updated.disconnect(&BudgetMenu::update, budget_menu.get());
+	budget_menu.reset();
+}
+
+void MenuSingleton::update_budget_menu_localisation() {
+	ERR_FAIL_NULL_MSG(budget_menu, "update_budget_menu_localisation called but no C++ BudgetMenu instance was linked!");
+	budget_menu->update_localisation();
 }
 
 /* Find/Search Panel */

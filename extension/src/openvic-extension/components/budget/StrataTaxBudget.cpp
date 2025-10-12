@@ -18,7 +18,7 @@ StrataTaxBudget::StrataTaxBudget(
 	GUINode const& parent,
 	Strata const& new_strata,
 	ModifierEffectCache const& new_modifier_effect_cache
-): SliderBudgetComponent(
+) : SliderBudgetComponent(
 		parent,
 		generate_slider_tooltip_localisation_key(new_strata),
 		BALANCE,

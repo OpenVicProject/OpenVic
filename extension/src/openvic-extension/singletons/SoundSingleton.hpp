@@ -57,7 +57,7 @@ namespace OpenVic {
 	protected:
 		static void _bind_methods();
 
-		static godot::String to_define_file_name(godot::String const& path, std::string_view const& base_folder);
+		// static godot::String to_define_file_name(godot::String const& path, std::string_view const& base_folder);
 
 	public:
 		// gets a song from the cache ('tracks' variable), or if not, then from the files
