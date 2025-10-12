@@ -76,9 +76,16 @@ namespace OpenVic {
 
 		godot::TypedArray<godot::Dictionary> get_bookmark_info() const;
 
-		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
+		/* After initial load or resigning a previous session game setup, all mutable components of the simulation
+		   are reset and reinitialised to their initial states, then updated by the history instructions of the
+		   chosen bookmark. */
 		godot::Error setup_game(int32_t bookmark_index);
+		bool is_game_instance_setup() const;
+		bool is_bookmark_loaded() const;
+
 		godot::Error start_game_session();
+		godot::Error end_game_session();
+		bool is_game_session_active() const;
 
 		int32_t get_province_number_from_uv_coords(godot::Vector2 const& coords) const;
 
