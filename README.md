@@ -3,6 +3,11 @@
 # OpenVic
 Main Repo for the OpenVic Project
 
+### Links
+- Website: https://www.openvic.com/
+- Discord: https://discord.gg/vM4E3BFkqH
+- Youtube: [@OpenVicProject](https://www.youtube.com/@OpenVicProject)
+
 ## Quickstart Guide
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
 
