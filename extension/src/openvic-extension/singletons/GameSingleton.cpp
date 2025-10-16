@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include <godot_cpp/classes/time.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -93,7 +94,11 @@ void GameSingleton::_on_gamestate_updated() {
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton()
-	: game_manager { std::bind(&GameSingleton::_on_gamestate_updated, this) }, mapmode { &Mapmode::ERROR_MAPMODE } {
+	: game_manager {
+		std::bind(&GameSingleton::_on_gamestate_updated, this),
+		std::bind(&Time::get_ticks_usec, Time::get_singleton()),
+		std::bind(&Time::get_ticks_msec, Time::get_singleton())
+	}, mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
