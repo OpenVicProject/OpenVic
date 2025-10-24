@@ -38,6 +38,9 @@ namespace OpenVic {
 			godot::NodePath const& percent_label_path = {}
 		);
 
+		virtual bool was_budget_cut(CountryInstance const& country) const {
+			return false;
+		}
 		virtual fixed_point_t calculate_budget_and_update_custom(
 			CountryInstance& country,
 			const fixed_point_t scaled_value
