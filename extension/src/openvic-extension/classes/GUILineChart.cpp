@@ -10,7 +10,10 @@ using namespace OpenVic;
 using namespace OpenVic::Utilities::literals;
 using namespace godot;
 
+GUI_TOOLTIP_IMPLEMENTATIONS(GUILineChart)
+
 void GUILineChart::_bind_methods() {
+	GUI_TOOLTIP_BIND_METHODS(GUILineChart)
 	OV_BIND_METHOD(GUILineChart::clear);
 	OV_BIND_METHOD(GUILineChart::clear_lines);
 
@@ -25,6 +28,10 @@ void GUILineChart::_bind_methods() {
 	);
 	OV_BIND_METHOD(GUILineChart::add_coloured_line, { "line_values", "line_colour" });
 	OV_BIND_METHOD(GUILineChart::scale_coloured_lines);
+}
+
+void GUILineChart::_notification(int what) {
+	_tooltip_notification(what);
 }
 
 GUILineChart::GUILineChart() {

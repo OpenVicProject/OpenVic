@@ -7,8 +7,16 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-simulation/politics/Government.hpp"
 #include <gli/convert.hpp>
 #include <gli/load_dds.hpp>
+
+#include <openvic-simulation/country/CountryInstance.hpp>
+#include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/map/Region.hpp>
+#include <openvic-simulation/map/State.hpp>
+
+#include "openvic-extension/classes/GUINode.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -263,6 +271,169 @@ Variant Utilities::get_project_setting(godot::StringName const& p_path, godot::V
 	Variant result = ProjectSettings::get_singleton()->get_setting_with_override(p_path);
 
 	ProjectSettings::get_singleton()->set_initial_value(p_path, p_default_value);
+	return result;
+}
+
+godot::String Utilities::get_state_name(godot::Object const& translation_object, State const& state) {
+	StateSet const& state_set = state.get_state_set();
+
+	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
+
+	String name = translation_object.tr(region_identifier);
+
+	const bool named = name != region_identifier;
+	const bool owned = state.get_owner() != nullptr;
+	const bool split = state_set.get_state_count() > 1;
+
+	if (!named) {
+		// Capital province name
+		// TODO - confirm capital is never null?
+		name = translation_object.tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
+
+		if (!owned) {
+			static const StringName region_key = "REGION_NAME";
+			static const String name_key = "$NAME$";
+
+			String region = translation_object.tr(region_key);
+
+			if (region != region_key) {
+				// CAPITAL Region
+				return region.replace(name_key, name);
+			}
+		}
+	}
+
+	if (owned && split) {
+		// COUNTRY STATE/CAPITAL
+		return get_country_adjective(translation_object, *state.get_owner()) + " " + name;
+	}
+
+	// STATE/CAPITAL
+	return name;
+}
+godot::String Utilities::get_country_name(godot::Object const& translation_object, CountryInstance const& country) {
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
+		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", government_type->get_identifier()
+		));
+
+		String government_name = translation_object.tr(government_name_key);
+
+		if (government_name != government_name_key) {
+			return government_name;
+		}
+	}
+
+	return translation_object.tr(Utilities::std_to_godot_string(country.get_identifier()));
+}
+godot::String Utilities::get_country_adjective(godot::Object const& translation_object, CountryInstance const& country) {
+	static constexpr std::string_view adjective = "_ADJ";
+
+	GovernmentType const* government_type = country.get_government_type_untracked();
+	if (government_type != nullptr) {
+		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+			country.get_identifier(), "_", government_type->get_identifier(), adjective
+		));
+
+		String government_adjective = translation_object.tr(government_adjective_key);
+
+		if (government_adjective != government_adjective_key) {
+			return government_adjective;
+		}
+	}
+
+	return translation_object.tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
+}
+
+godot::String Utilities::make_modifier_effect_value(
+	godot::Object const& translation_object,
+	ModifierEffect const& format_effect,
+	fixed_point_t value,
+	bool plus_for_non_negative
+) {
+	godot::String result;
+
+	if (plus_for_non_negative && value >= 0) {
+		result = "+";
+	}
+
+	const uint8_t format = static_cast<uint8_t>(format_effect.get_format());
+
+	// Apply multiplier format part
+	{
+		uint8_t multiplier_power = (format >> ModifierEffect::FORMAT_MULTIPLIER_BIT_OFFSET) &
+			((1 << ModifierEffect::FORMAT_MULTIPLIER_BIT_COUNT) - 1);
+		while (multiplier_power-- > 0) {
+			value *= 10;
+		}
+	}
+
+	// Apply decimal places format part
+	const uint8_t decimal_places = (format >> ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_OFFSET) &
+		((1 << ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_COUNT) - 1);
+
+	result += Utilities::fixed_point_to_string_dp(value, decimal_places);
+
+	// Apply suffix format part
+	const ModifierEffect::suffix_t suffix = static_cast<ModifierEffect::suffix_t>(
+		(format >> ModifierEffect::FORMAT_SUFFIX_BIT_OFFSET) & ((1 << ModifierEffect::FORMAT_SUFFIX_BIT_COUNT) - 1)
+	);
+
+	static const String normal_suffix_text = GUILabel::get_colour_marker() + String { "!" };
+	static const String special_suffix_text = " " + normal_suffix_text;
+
+	switch (suffix) {
+		using enum ModifierEffect::suffix_t;
+
+	case PERCENT: {
+		result += "%" + normal_suffix_text;
+		break;
+	}
+
+	// DAYS AND SPEED MUST BE DEFAULT COLOUR!
+	case DAYS: {
+		static const StringName days_localisation_key = "DAYS";
+		result += special_suffix_text + translation_object.tr(days_localisation_key);
+		break;
+	}
+
+	case SPEED: {
+		static const StringName speed_localisation_key = "KPH";
+		result += special_suffix_text + translation_object.tr(speed_localisation_key);
+		break;
+	}
+
+	default: {
+		result += normal_suffix_text;
+		break;
+	}
+	}
+
+	return result;
+}
+godot::String Utilities::make_modifier_effect_value_coloured(
+	godot::Object const& translation_object,
+	ModifierEffect const& format_effect,
+	fixed_point_t value,
+	bool plus_for_non_negative
+) {
+	godot::String result = GUILabel::get_colour_marker();
+
+	const bool is_positive_green = (
+		static_cast<uint8_t>(format_effect.get_format()) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)
+	) == static_cast<uint8_t>(ModifierEffect::format_t::FORMAT_PART_POS);
+
+	if (value == 0) {
+		result += "Y";
+	} else if (is_positive_green == (value > 0)) {
+		result += "G";
+	} else {
+		result += "R";
+	}
+
+	result += make_modifier_effect_value(translation_object, format_effect, value, plus_for_non_negative);
+
 	return result;
 }
 

@@ -15,6 +15,7 @@
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
+#include "openvic-extension/components/overview/TopBar.hpp"
 
 namespace OpenVic {
 	struct CountryInstance;
@@ -121,6 +122,7 @@ namespace OpenVic {
 
 	private:
 		memory::unique_ptr<BudgetMenu> budget_menu;
+		memory::unique_ptr<TopBar> top_bar;
 		population_menu_t population_menu;
 		search_panel_t search_panel;
 
@@ -137,10 +139,6 @@ namespace OpenVic {
 		 * position (godot::Vector2). If text is empty then the tooltip will be hidden, otherwise the text will be shown at
 		 * the given position. */
 		static godot::StringName const& _signal_update_tooltip();
-
-		godot::String _get_state_name(State const& state) const;
-		godot::String _get_country_name(CountryInstance const& country) const;
-		godot::String _get_country_adjective(CountryInstance const& country) const;
 
 		godot::String _make_modifier_effect_value(
 			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
@@ -199,6 +197,8 @@ namespace OpenVic {
 
 		/* TOPBAR */
 		godot::Dictionary get_topbar_info() const;
+		void link_top_bar_to_cpp(GUINode const* const godot_top_bar);
+		void unlink_top_bar_from_cpp();
 
 		/* TIME/SPEED CONTROL PANEL */
 		bool is_paused() const;

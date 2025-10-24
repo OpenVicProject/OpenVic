@@ -4,10 +4,13 @@
 #include <godot_cpp/classes/line2d.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+#include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
 	class GUILineChart : public godot::Control {
 		GDCLASS(GUILineChart, godot::Control)
+
+		GUI_TOOLTIP_DEFINITIONS
 
 		GFX::LineChart const* gfx_line_chart = nullptr;
 
@@ -17,6 +20,8 @@ namespace OpenVic {
 
 	protected:
 		static void _bind_methods();
+
+		void _notification(int what);
 
 	public:
 		GUILineChart();

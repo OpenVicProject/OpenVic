@@ -13,6 +13,16 @@
 
 #define ERR(x) ((x) ? OK : FAILED)
 
+namespace godot {
+	struct Object;
+}
+
+namespace OpenVic {
+	struct CountryInstance;
+	struct ModifierEffect;
+	struct State;
+}
+
 namespace OpenVic::Utilities {
 	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
 		return str.utf8().get_data();
@@ -94,6 +104,23 @@ namespace OpenVic::Utilities {
 	);
 
 	godot::Variant get_project_setting(godot::StringName const& p_path, godot::Variant const& p_default_value);
+
+	godot::String get_state_name(godot::Object const& translation_object, State const& state);
+	godot::String get_country_name(godot::Object const& translation_object, CountryInstance const& country);
+	godot::String get_country_adjective(godot::Object const& translation_object, CountryInstance const& country);
+
+	godot::String make_modifier_effect_value(
+		godot::Object const& translation_object,
+		ModifierEffect const& format_effect,
+		fixed_point_t value,
+		bool plus_for_non_negative
+	);
+	godot::String make_modifier_effect_value_coloured(
+		godot::Object const& translation_object,
+		ModifierEffect const& format_effect,
+		fixed_point_t value,
+		bool plus_for_non_negative
+	);
 
 #define OPTIMISED_FORMAT_CONCAT(a, b) a##b
 #define OPTIMISED_FORMAT_EXPAND(a, b) OPTIMISED_FORMAT_CONCAT(a, b)
