@@ -8,6 +8,7 @@
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
 
@@ -59,8 +60,11 @@ void SliderBudgetComponent::full_update(CountryInstance& country) {
 void SliderBudgetComponent::update_labels(CountryInstance& country, const fixed_point_t scaled_value) {
 	const fixed_point_t budget = calculate_budget_and_update_custom(country, scaled_value);
 	if (budget_label != nullptr) {
+		const godot::String budget_text = Utilities::cash_to_string_dp_dynamic(budget);
 		budget_label->set_text(
-			Utilities::cash_to_string_dp_dynamic(budget)
+			was_budget_cut(country)
+				? Utilities::format(godot::String::utf8("§R%s§W"), budget_text)
+				: budget_text
 		);
 	};
 

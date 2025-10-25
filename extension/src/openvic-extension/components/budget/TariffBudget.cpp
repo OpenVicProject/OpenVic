@@ -54,6 +54,10 @@ fixed_point_t TariffBudget::get_income() const {
 	return std::max(fixed_point_t::_0, get_balance());
 }
 
+bool TariffBudget::was_budget_cut(CountryInstance const& country) const {
+	return country.get_was_import_subsidies_budget_cut_yesterday();
+}
+
 fixed_point_t TariffBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value

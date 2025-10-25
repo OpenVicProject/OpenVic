@@ -16,6 +16,7 @@ namespace OpenVic {
 	private:
 		godot::Array slider_tooltip_args;
 
+		bool was_budget_cut(CountryInstance const& country) const override;
 		fixed_point_t calculate_budget_and_update_custom(
 			CountryInstance& country,
 			const fixed_point_t scaled_value

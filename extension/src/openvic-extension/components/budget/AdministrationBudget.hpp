@@ -13,6 +13,8 @@ namespace OpenVic {
 		CountryDefines const& country_defines;
 		godot::Array administrative_efficiency_tooltip_args;
 		GUILabel& administrative_efficiency_label;
+
+		bool was_budget_cut(CountryInstance const& country) const override;
 		fixed_point_t calculate_budget_and_update_custom(
 			CountryInstance& country,
 			const fixed_point_t scaled_value

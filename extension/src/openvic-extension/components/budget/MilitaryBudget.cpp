@@ -5,6 +5,7 @@
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
 
@@ -27,26 +28,38 @@ MilitaryBudget::MilitaryBudget(GUINode const& parent):
 		parent, "./country_budget/mil_spend_desc",
 		"MILITARY_SPENDING","DEFENCE_DESC"
 	);
-
-	if (budget_label != nullptr) {
-		budget_label->set_tooltip_string(
-			Utilities::format(
-				"%s\n--------------\n%s",
-				budget_label->tr("DIST_DEFENCE"),
-				budget_label->tr("DEFENCE_DESC")
-			)
-		);
-	}
 }
 
 fixed_point_t MilitaryBudget::get_expenses() const {
 	return std::max(fixed_point_t::_0, -get_balance());
 }
 
+bool MilitaryBudget::was_budget_cut(CountryInstance const& country) const {
+	return country.get_was_military_budget_cut_yesterday();
+}
+
 fixed_point_t MilitaryBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
+	if (budget_label != nullptr) {
+		budget_label->set_tooltip_string(
+			Utilities::format(
+				"%s\n--------------\n%s%s",
+				budget_label->tr("DIST_DEFENCE"),
+				was_budget_cut(country)
+					? budget_label->tr("EXPENSE_NO_AFFORD").replace(
+						Utilities::get_short_value_placeholder(),
+						Utilities::float_to_string_dp_dynamic(
+							country.get_actual_military_spending().load()
+						)
+					) + "\n"
+					: "",
+				budget_label->tr("DEFENCE_DESC")
+			)
+		);
+	}
+
 	return scaled_value * country.get_projected_military_spending_unscaled_by_slider_untracked();
 }
 
