@@ -5,6 +5,7 @@
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
+#include "godot_cpp/variant/packed_string_array.hpp"
 
 namespace OpenVic {
 
@@ -66,13 +67,13 @@ namespace OpenVic {
 
 		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
-		godot::Error set_compatibility_mode_roots(
-			godot::PackedStringArray const& file_paths, godot::PackedStringArray const& replace_paths = {}
-		);
-		godot::Error load_defines_compatibility_mode();
+		godot::Error set_compatibility_mode_roots(godot::String const& path);
+		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& mods = {});
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});
 		godot::String lookup_file_path(godot::String const& path) const;
+
+		godot::TypedArray<godot::Dictionary> get_mod_info() const;
 
 		godot::TypedArray<godot::Dictionary> get_bookmark_info() const;
 
