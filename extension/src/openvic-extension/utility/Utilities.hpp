@@ -195,3 +195,13 @@ namespace OpenVic::Utilities {
 		constexpr real_t operator""_real(long double val) { return to_real_t(val); }
 	}
 }
+
+template<>
+struct fmt::formatter<godot::String> : formatter<string_view> {
+	format_context::iterator format(godot::String const& str, format_context& ctx) const;
+};
+
+template<>
+struct fmt::formatter<godot::StringName> : formatter<godot::String> {
+	format_context::iterator format(godot::StringName const& str, format_context& ctx) const;
+};

@@ -3,7 +3,9 @@
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+#include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
+#include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -12,11 +14,11 @@ namespace OpenVic {
 	template<typename MapType>
 	concept IsPieChartDistribution = (
 			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
-			utility::specialization_of<MapType, tsl::ordered_map>
+			specialization_of<MapType, tsl::ordered_map>
 			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
-			|| utility::specialization_of<MapType, IndexedFlatMap>
+			|| specialization_of<MapType, IndexedFlatMap>
 		)
-		&& HasGetIdentifierAndGetColour<std::remove_pointer_t<map_key_t<MapType>>>
+		&& has_get_identifier_and_colour<std::remove_pointer_t<map_key_t<MapType>>>
 		&& std::convertible_to<map_value_t<MapType>, float>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
@@ -62,7 +64,7 @@ namespace OpenVic {
 			using entry_t = std::pair<key_type const*, float>;
 
 			std::vector<entry_t> sorted_distribution;
-			if constexpr (utility::is_specialization_of_v<MapType, IndexedFlatMap>) {
+			if constexpr (specialization_of<MapType, IndexedFlatMap>) {
 				sorted_distribution.reserve(distribution.get_count());
 			} else {
 				sorted_distribution.reserve(distribution.size());
@@ -84,7 +86,10 @@ namespace OpenVic {
 
 					total_weight += value;
 				} else if (value < 0.0f) {
-					Logger::error("Negative distribution value ", value, " for key \"", key_ptr->get_identifier(), "\"");
+					spdlog::error_s(
+						"Negative distribution value {} for key \"{}\"",
+						value, *key_ptr
+					);
 				}
 			}
 

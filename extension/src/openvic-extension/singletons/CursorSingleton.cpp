@@ -18,6 +18,8 @@
 #include <openvic-extension/utility/ClassBindings.hpp>
 #include <openvic-extension/utility/Utilities.hpp>
 
+#include <fmt/std.h>
+
 using namespace godot;
 using namespace OpenVic;
 
@@ -162,11 +164,8 @@ Error CursorSingleton::load_cursors() {
 
 	Dataloader::path_vector_t animated_cursor_files = game_singleton->get_dataloader()
 		.lookup_files_in_dir_recursive(cursor_directory, ".ani");
-	
-	if (cursor_files.empty() && animated_cursor_files.empty()){
-		Logger::error("failed to load cursors: no files in cursors directory");
-		return FAILED;
-	}
+
+	ERR_FAIL_COND_V_MSG(cursor_files.empty() && animated_cursor_files.empty(), FAILED, "No files in cursors directory");
 
 	Error ret = OK;
 
@@ -175,7 +174,7 @@ Error CursorSingleton::load_cursors() {
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_cur(name,file)){
-			Logger::error("failed to load normal cursor at path ", file_name);
+			spdlog::error_s("Failed to load normal cursor at path {}", file_name);
 			ret = FAILED;
 		}
 	}
@@ -185,7 +184,7 @@ Error CursorSingleton::load_cursors() {
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_ani(name,file)){
-			Logger::error("failed to load animated cursor at path ", file_name);
+			spdlog::error_s("Failed to load animated cursor at path {}", file_name);
 			ret = FAILED;
 		}
 	}
@@ -225,10 +224,7 @@ static constexpr int32_t _get_row_start(int32_t x_coord, int32_t y_coord, int32_
 static constexpr int32_t _select_bits(uint8_t const* data, int32_t row_start, int32_t first_bit, int32_t bit_count) {
 	int32_t byte_index = first_bit >> 3;
 	int32_t bit_in_byte_index = first_bit & 0b111;
-	if (bit_in_byte_index + bit_count > 8) {
-		Logger::error("Attempted to select bits outside of a byte.");
-		return 0;
-	}
+	ERR_FAIL_COND_V_MSG(bit_in_byte_index + bit_count > 8, 0, "Attempted to select bits outside of a byte.");
 	int32_t byte = _reverse_bits(*(data+row_start+byte_index));
 	int32_t selected = (byte >> bit_in_byte_index) & ((1 << bit_count) - 1);
 
@@ -254,12 +250,11 @@ static void _pixel_palette_lookup(
 	
 	int32_t row_start = _get_row_start(x_dimension, coord_y, bits_per_pixel);
 	int32_t pixel_bits = _select_bits(data.ptr(), row_start + offset, coord_x*bits_per_pixel, bits_per_pixel);
-	
-	if ((pixel_bits+1)*4 > palette.size()){
-		Logger::error("attempted to select invalid colour palette entry, ", pixel_bits);
-		return;
-	}
-	
+
+	ERR_FAIL_COND_MSG(
+		(pixel_bits + 1) * 4 > palette.size(), vformat("Attempted to select invalid colour palette entry %s", pixel_bits)
+	);
+
 	//pixel bits serves as an index into the colour palette. We need to multiply the index by the number of bytes per colour (4)
 	pixel_data[(i*4) + 0] = palette[pixel_bits*4 + 0];
 	pixel_data[(i*4) + 1] = palette[pixel_bits*4 + 1];
@@ -276,11 +271,10 @@ So emit a warning when trying to load one of these
 static void _read_24bit_pixel(
 	PackedByteArray const& image_data, PackedByteArray& pixel_data,
 	int32_t i, int32_t offset, bool opaque) {
-
-	if((i+1)*3 > image_data.size()){
-		Logger::error("Pixel ", i, "tried to read from a pixel data array of max size ", pixel_data.size());
-		return;
-	}
+	ERR_FAIL_COND_MSG(
+		(i + 1) * 3 > image_data.size(),
+		vformat("Pixel %d tried to read from a pixel data array of max size %d", i, pixel_data.size())
+	);
 
 	pixel_data[(i*4) + 0] = image_data[offset + (i*3) + 2]; //r
 	pixel_data[(i*4) + 1] = image_data[offset + (i*3) + 1]; //g
@@ -291,11 +285,10 @@ static void _read_24bit_pixel(
 static void _read_32bit_pixel(
 	PackedByteArray const& image_data, PackedByteArray& pixel_data,
 	int32_t i, int32_t offset, bool opaque) {
-
-	if((i+1)*4 > image_data.size()){
-		Logger::error("Pixel ", i, "tried to read from a pixel data array of max size ", pixel_data.size());
-		return;
-	}
+	ERR_FAIL_COND_MSG(
+		(i + 1) * 4 > image_data.size(),
+		vformat("Pixel %d tried to read from a pixel data array of max size %d", i, pixel_data.size())
+	);
 
 	pixel_data[(i*4) + 0] = image_data[offset + (i*4) + 2]; //r
 	pixel_data[(i*4) + 1] = image_data[offset + (i*4) + 1]; //g
@@ -352,10 +345,13 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 			//int32_t colour_planes = image_data.decode_u16(12);
 			int32_t bits_per_pixel = image_data.decode_u16(14);
 			if (bits_per_pixel <= 8 || bits_per_pixel == 24){
-				Logger::warning("Attempting to import ", bits_per_pixel, "bit cursor, this isn't guaranteed to work");
+				spdlog::warn_s("Attempting to import {} bit cursor, this isn't guaranteed to work", bits_per_pixel);
 			}
 			else if (bits_per_pixel != 32){
-				Logger::error("Invalid or Unsupported bits per pixel while loading cursor image, bpp: ", bits_per_pixel, "loading blank image instead");
+				spdlog::error_s(
+					"Unsupported bits per pixel while loading cursor image with {} bits per pixel, loading blank image",
+					bits_per_pixel
+				);
 			}
 
 			int32_t size = image_data.decode_u32(20);
@@ -422,7 +418,7 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 		image_texture = image_texture->create_from_image(image);
 		
 		if (image_texture.is_null()){
-			Logger::error("Image Texture ",Utilities::godot_to_std_string(file->get_path())," was null!");
+			spdlog::error_s("Image Texture {} was null!", file->get_path());
 		}
 
 		pairs.hotspots.push_back(hotspot);
@@ -511,10 +507,9 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 			}
 			else {
 				if (pair.images.size() != frames_by_resolution.size()){
-					Logger::error(
-						"Malformatted .ani cursor file ",
-						Utilities::godot_to_std_string(name),
-						" had inconsistent number of images per cursor"
+					spdlog::error_s(
+						"Malformatted .ani cursor file {} had inconsistent number of images per cursor",
+						name
 					);
 				}
 				for(int32_t i=0; i<pair.images.size(); i++){

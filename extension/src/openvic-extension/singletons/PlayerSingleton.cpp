@@ -7,6 +7,7 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-simulation/utility/FormatValidate.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -110,7 +111,7 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 		);
 	}
 
-	Logger::info("Set player country to: ", player_country != nullptr ? player_country->get_identifier() : "<NULL>");
+	SPDLOG_INFO("Set player country to: {}", ovfmt::validate(player_country));
 
 	game_singleton._on_gamestate_updated();
 }
@@ -160,9 +161,9 @@ void PlayerSingleton::set_selected_province_by_number(int32_t province_number) {
 		set_selected_province(map_instance.get_province_instance_from_number(province_number));
 
 		if (selected_province == nullptr) {
-			Logger::error(
-				"Trying to set selected province to an invalid number ", province_number, " (max number is ",
-				map_instance.get_province_instance_by_definition().get_count(), ")"
+			spdlog::error_s(
+				"Trying to set selected province to an invalid number {} (max number is {})",
+				map_instance.get_province_instance_by_definition().get_count(), province_number
 			);
 		}
 	}

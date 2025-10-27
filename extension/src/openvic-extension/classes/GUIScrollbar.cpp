@@ -532,7 +532,7 @@ float GUIScrollbar::get_value_scaled() const {
 
 void GUIScrollbar::set_step_count(const int32_t new_step_count) {
 	if (new_step_count < 0) {
-		Logger::warning(fmt::format("Ignoring set_step_count to {} on GUIScrollbar {}", new_step_count, gui_scrollbar->get_name()));
+		spdlog::warn_s("Ignoring set_step_count to {} on GUIScrollbar {}", new_step_count, *gui_scrollbar);
 		return;
 	}
 	step_count = new_step_count;
@@ -549,11 +549,11 @@ void GUIScrollbar::set_scale(
 	const int32_t new_scale_denominator
 ) {
 	if (new_scale_numerator == 0) {
-		Logger::warning(fmt::format("Ignoring set_scale with numerator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		spdlog::warn_s("Ignoring set_scale with numerator 0 on GUIScrollbar {}", *gui_scrollbar);
 		return;
 	}
 	if (new_scale_denominator == 0) {
-		Logger::warning(fmt::format("Ignoring set_scale with denominator 0 on GUIScrollbar {}", gui_scrollbar->get_name()));
+		spdlog::warn_s("Ignoring set_scale with denominator 0 on GUIScrollbar {}", *gui_scrollbar);
 		return;
 	}
 	offset = new_offset;
@@ -566,7 +566,7 @@ void GUIScrollbar::set_range_limits(
 	const std::optional<int32_t> new_upper_range_limit
 ) {
 	if (!range_limited) {
-		Logger::warning(fmt::format("Ignoring set_range_limits of non-range-limited GUIScrollbar {}", gui_scrollbar->get_name()));
+		spdlog::warn_s("Ignoring set_range_limits of non-range-limited GUIScrollbar {}", *gui_scrollbar);
 		return;
 	}
 

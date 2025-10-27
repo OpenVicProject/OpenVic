@@ -443,3 +443,14 @@ namespace OpenVic::Utilities {
 	thread_local memory::vector<godot::Array> _formatting_array_pool_3;
 	thread_local memory::vector<godot::Array> _formatting_array_pool_4;
 }
+
+fmt::format_context::iterator fmt::formatter<String>::format(String const& str, format_context& ctx) const {
+	CharString cs = str.utf8();
+	string_view view { cs.get_data(), static_cast<size_t>(cs.length()) };
+
+	return fmt::formatter<string_view>::format(view, ctx);
+}
+
+fmt::format_context::iterator fmt::formatter<StringName>::format(StringName const& str, format_context& ctx) const {
+	return fmt::formatter<String>::format(static_cast<String>(str), ctx);
+}
