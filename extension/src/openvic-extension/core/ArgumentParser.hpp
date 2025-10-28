@@ -12,9 +12,7 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
-#undef HASH_MURMUR3_SEED
-
-#include <openvic-simulation/utility/Utility.hpp>
+#include <openvic-simulation/utility/Typedefs.hpp>
 
 namespace OpenVic {
 	class ArgumentOption : public godot::RefCounted {

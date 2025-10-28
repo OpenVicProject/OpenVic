@@ -576,7 +576,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<String> localised_items;
 	std::vector<size_t> sorted_items;
 
-	const auto generate_sort_cache_indexed = [this, &localised_items, &sorted_items]<HasGetIdentifier T>(
+	const auto generate_sort_cache_indexed = [this, &localised_items, &sorted_items]<has_get_identifier T>(
 		IndexedFlatMap<T, size_t>& cache, std::span<const T> items
 	) {
 		localised_items.resize(items.size());
@@ -603,7 +603,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 		}
 		cache = std::move(sorted_cache);
 	};
-	const auto generate_sort_cache_ordered = [this, &localised_items, &sorted_items]<HasGetIdentifier T>(
+	const auto generate_sort_cache_ordered = [this, &localised_items, &sorted_items]<has_get_identifier T>(
 		ordered_map<T const*, size_t>& cache, std::span<const T> items
 	) {
 		localised_items.resize(items.size());
@@ -680,7 +680,7 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 	using key_type = std::remove_pointer_t<map_key_t<MapType>>;
 
 	ordered_map<key_type const*, String> tooltips;
-	if constexpr (utility::is_specialization_of_v<MapType, IndexedFlatMap>) {
+	if constexpr (specialization_of<MapType, IndexedFlatMap>) {
 		tooltips.reserve(distribution.get_count());
 	} else {
 		tooltips.reserve(distribution.size());
@@ -955,7 +955,7 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
 	const auto make_pie_chart_tooltip = [this](
-		HasGetIdentifierAndGetColour auto const* key, String const& identifier, float weight, float total_weight
+		has_get_identifier_and_colour auto const* key, String const& identifier, float weight, float total_weight
 	) -> String {
 		static const String format_key =
 			GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";

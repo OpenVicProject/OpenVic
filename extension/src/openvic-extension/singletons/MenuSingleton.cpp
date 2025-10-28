@@ -7,6 +7,7 @@
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/PopSprite.hpp>
@@ -568,9 +569,9 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			State const* state = province->get_state();
 
 			if (unlikely(state == nullptr)) {
-				Logger::error(
-					"Province \"", province->get_identifier(), "\" has no state, preventing calculation of state-wide "
-					"population proportion of RGO owner pop type \"", owner_pop_type.get_identifier(), "\""
+				spdlog::error_s(
+					"Province \"{}\" has no state, preventing calculation of state-wide population proportion of RGO owner pop type \"{}\"",
+					*province, owner_pop_type
 				);
 			} else {
 				fixed_point_t effect_value = owner_job->get_effect_multiplier() * state->get_population_by_type(owner_pop_type);
@@ -896,7 +897,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	ret[province_info_total_population_key] = province->get_total_population();
 
 	const auto make_pie_chart_tooltip = [this](
-		HasGetIdentifierAndGetColour auto const* key, String const& identifier, float weight, float total_weight
+		has_get_identifier_and_colour auto const* key, String const& identifier, float weight, float total_weight
 	) -> String {
 		static const String format_key = "%d%% %s";
 		return Utilities::format(

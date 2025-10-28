@@ -39,7 +39,7 @@
 #include <godot_cpp/variant/vector4.hpp>
 #include <godot_cpp/variant/vector4i.hpp>
 
-#include <openvic-simulation/utility/Utility.hpp>
+#include <openvic-simulation/utility/Typedefs.hpp>
 
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -501,7 +501,7 @@ Variant ArgumentParser::_parse_value( //
 				)
 			);
 
-		default: utility::unreachable();
+		default: unreachable();
 		}
 		return UtilityFunctions::str_to_var(vformat("%s(%s)", String(",").join(array)));
 	}

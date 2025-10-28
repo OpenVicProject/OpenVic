@@ -16,6 +16,9 @@
 #include "openvic-extension/utility/ClassBindings.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/callback_sink.h>
+
 using namespace godot;
 using namespace OpenVic;
 
@@ -109,15 +112,35 @@ GameSingleton::~GameSingleton() {
 }
 
 void GameSingleton::setup_logger() {
-	Logger::set_info_func([](memory::string&& str) {
-		UtilityFunctions::print(Utilities::std_to_godot_string(str));
+	spdlog::sink_ptr godot_sink = std::make_shared<spdlog::sinks::callback_sink_st>([](spdlog::details::log_msg const& msg) {
+		std::string_view payload { msg.payload.begin(), msg.payload.end() };
+
+		switch (msg.level) {
+			using namespace spdlog::level;
+		case info:	   UtilityFunctions::print_rich("[[color=green]info[/color]] ", Utilities::std_to_godot_string(payload)); break;
+		case warn:
+			godot::_err_print_error(
+				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), false, true
+			);
+			break;
+		case err:
+			godot::_err_print_error(
+				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), false, false
+			);
+			break;
+		case critical:
+			godot::_err_print_error(
+				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), true, true
+			);
+			break;
+		case trace:
+		case debug: UtilityFunctions::print_verbose(Utilities::std_to_godot_string(payload));
+		default:	break;
+		}
 	});
-	Logger::set_warning_func([](memory::string&& str) {
-		UtilityFunctions::push_warning(Utilities::std_to_godot_string(str));
-	});
-	Logger::set_error_func([](memory::string&& str) {
-		UtilityFunctions::push_error(Utilities::std_to_godot_string(str));
-	});
+
+	spdlog::default_logger_raw()->sinks().pop_back();
+	spdlog::default_logger_raw()->sinks().push_back(std::move(godot_sink));
 }
 
 TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
@@ -171,7 +194,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	for (Technology const& technology :
 		 get_definition_manager().get_research_manager().get_technology_manager().get_technologies()) {
 		if (starting_country->can_research_tech(technology, instance_manager->get_today())) {
-			starting_country->start_research(technology, *instance_manager);
+			starting_country->start_research(technology, instance_manager->get_today());
 			break;
 		}
 	}
