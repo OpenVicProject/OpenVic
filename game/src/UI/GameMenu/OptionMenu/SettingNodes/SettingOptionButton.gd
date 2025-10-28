@@ -18,6 +18,8 @@ var default_selected : int = -1:
 			return
 		default_selected = v % item_count
 
+var settings_path := "user://settings.cfg"
+
 func _valid_index(index : int) -> bool:
 	return 0 <= index and index < item_count
 
@@ -50,10 +52,12 @@ func _set_value_from_file(load_value : Variant) -> void:
 func _setup_button() -> void:
 	pass
 
+func _enter_tree() -> void:
+	var settings := GameSettings.load_from_file(settings_path)
+	settings.changed.connect(load_setting.bind(settings))
+	item_selected.connect(set_setting.bind(settings))
+
 func _ready() -> void:
-	Events.Options.load_settings.connect(load_setting)
-	Events.Options.save_settings.connect(save_setting)
-	Events.Options.reset_settings.connect(reset_setting)
 	item_selected.connect(func(index : int) -> void: option_selected.emit(index, true))
 	_setup_button()
 	if not _valid_index(default_selected) or selected == -1:
@@ -63,14 +67,12 @@ func _ready() -> void:
 		get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 		get_tree().quit()
 
-func load_setting(file : ConfigFile) -> void:
-	if file == null: return
-	_set_value_from_file(file.get_value(section_name, setting_name, _get_value_for_file(default_selected)))
-	option_selected.emit(selected, false)
+func set_setting(index : int, menu : GameSettings) -> void:
+	menu.set_value(section_name, setting_name, _get_value_for_file(index))
 
-func save_setting(file : ConfigFile) -> void:
-	if file == null: return
-	file.set_value(section_name, setting_name, _get_value_for_file(selected))
+func load_setting(menu : GameSettings) -> void:
+	_set_value_from_file(menu.get_value(section_name, setting_name, _get_value_for_file(default_selected)))
+	option_selected.emit(selected, false)
 
 func reset_setting(no_emit : bool = false) -> void:
 	selected = default_selected

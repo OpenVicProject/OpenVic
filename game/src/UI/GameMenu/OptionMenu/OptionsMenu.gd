@@ -7,6 +7,9 @@ signal back_button_pressed
 
 @export var _tab_container : TabContainer
 
+@onready
+var _settings := GameSettings.load_from_file("user://settings.cfg")
+
 func _ready() -> void:
 	_tab_container.set_tab_title(0, "OPTIONS_GENERAL")
 	_tab_container.set_tab_title(1, "OPTIONS_VIDEO")
@@ -29,7 +32,7 @@ func _ready() -> void:
 	# * UIFUN-14
 	var reset_button := Button.new()
 	reset_button.text = "OPTIONS_RESET"
-	reset_button.pressed.connect(Events.Options.try_reset_settings)
+	reset_button.pressed.connect(_settings.reset_settings)
 	button_list.add_child(reset_button)
 
 	# REQUIREMENTS
@@ -40,7 +43,8 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
 	_save_overrides.call_deferred()
-	Events.Options.save_settings.connect(func(_f : ConfigFile) -> void: self._save_overrides.call_deferred())
+
+	_settings.changed.emit()
 
 func _notification(what : int) -> void:
 	match what:
@@ -53,23 +57,27 @@ func _input(event : InputEvent) -> void:
 			_on_back_button_pressed()
 
 func _on_back_button_pressed() -> void:
-	Events.Options.save_settings_to_file()
 	back_button_pressed.emit()
+	_settings.save()
+	_save_overrides()
 
 func _on_window_close_requested() -> void:
-	Events.Options.save_settings_to_file()
+	_settings.save()
+	_save_overrides()
 
 func _save_overrides() -> void:
-	var override_path : String = ProjectSettings.get_setting("application/config/project_settings_override", "")
+	var override_path : String = ProjectSettings.get_setting_with_override("application/config/project_settings_override")
 	if override_path.is_empty():
-		override_path = ProjectSettings.get_setting(Events.Options.settings_file_path_setting, Events.Options.settings_file_path_default)
-	var file := ConfigFile.new()
+		return
+	var override_settings := GameSettings.load_from_file(override_path)
+	override_settings.set_block_signals(true)
 	if FileAccess.file_exists(override_path):
-		if file.load(override_path) != OK:
+		if override_settings.load(override_path) != OK:
 			push_error("Failed to load overrides from %s" % override_path)
-	file.set_value("display", "window/size/mode", Resolution.get_current_window_mode())
+	override_settings.set_value("display", "window/size/mode", Resolution.get_current_window_mode())
 	var resolution : Vector2i = Resolution.get_current_resolution()
-	file.set_value("display", "window/size/viewport_width", resolution.x)
-	file.set_value("display", "window/size/viewport_height", resolution.y)
-	if file.save(override_path) != OK:
+	override_settings.set_value("display", "window/size/viewport_width", resolution.x)
+	override_settings.set_value("display", "window/size/viewport_height", resolution.y)
+	if override_settings.save(override_path) != OK:
 		push_error("Failed to save overrides to %s" % override_path)
+	override_settings.set_block_signals(false)

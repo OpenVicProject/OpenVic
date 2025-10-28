@@ -3,7 +3,14 @@ extends OptionButton
 const section_name : String = "localisation"
 const setting_name : String = "locale"
 
+var settings_path := "user://settings.cfg"
+
 var _default_locale_index : int
+
+func _enter_tree() -> void:
+	var settings := GameSettings.load_from_file(settings_path)
+	settings.changed.connect(load_setting.bind(settings))
+	item_selected.connect(set_setting.bind(settings))
 
 func _ready() -> void:
 	var locales_country_rename : Dictionary = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
@@ -30,9 +37,6 @@ func _ready() -> void:
 		if locale == default_locale:
 			_default_locale_index = item_count - 1
 
-	Events.Options.load_settings.connect(load_setting)
-	Events.Options.save_settings.connect(save_setting)
-
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_TRANSLATION_CHANGED:
@@ -41,9 +45,8 @@ func _notification(what : int) -> void:
 func _valid_index(index : int) -> bool:
 	return 0 <= index and index < item_count
 
-func load_setting(file : ConfigFile) -> void:
-	if file == null: return
-	var load_value : Variant = file.get_value(section_name, setting_name, Localisation.get_default_locale())
+func load_setting(menu : GameSettings) -> void:
+	var load_value : Variant = menu.get_value(section_name, setting_name, Localisation.get_default_locale())
 	match typeof(load_value):
 		TYPE_STRING, TYPE_STRING_NAME:
 			if _select_locale_by_string(load_value as String):
@@ -62,9 +65,8 @@ func _select_locale_by_string(locale : String) -> bool:
 
 # REQUIREMENTS:
 # * UIFUN-74
-func save_setting(file : ConfigFile) -> void:
-	if file == null: return
-	file.set_value(section_name, setting_name, get_item_metadata(selected))
+func set_setting(index : int, menu : GameSettings) -> void:
+	menu.set_value(section_name, setting_name, get_item_metadata(index))
 
 func reset_setting() -> void:
 	_select_locale_by_string(TranslationServer.get_locale())
@@ -75,7 +77,6 @@ func reset_setting() -> void:
 func _on_item_selected(index : int) -> void:
 	if _valid_index(index):
 		TranslationServer.set_locale(get_item_metadata(index))
-		Events.Options.save_settings_to_file.call_deferred()
 	else:
 		push_error("Invalid LocaleButton index: %d" % index)
 		reset_setting()
