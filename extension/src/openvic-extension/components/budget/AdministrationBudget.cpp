@@ -38,16 +38,6 @@ AdministrationBudget::AdministrationBudget(
 		"ADMINISTRATION","ADM_DESC"
 	);
 
-	if (budget_label != nullptr) {
-		budget_label->set_tooltip_string(
-			Utilities::format(
-				"%s\n--------------\n%s",
-				budget_label->tr("DIST_ADMINISTRATION"),
-				budget_label->tr("ADM_DESC")
-			)
-		);
-	}
-
 	administrative_efficiency_tooltip_args.resize(7);
 	administrative_efficiency_tooltip_args[1] = administrative_efficiency_label.tr("BUDGET_ADMIN_EFFICIENCY_DESC2");
 	administrative_efficiency_tooltip_args[4] = administrative_efficiency_label.tr("ADM_EXPLAIN_DESC");
@@ -55,6 +45,10 @@ AdministrationBudget::AdministrationBudget(
 
 fixed_point_t AdministrationBudget::get_expenses() const {
 	return std::max(fixed_point_t::_0, -get_balance());
+}
+
+bool AdministrationBudget::was_budget_cut(CountryInstance const& country) const {
+	return country.get_was_administration_budget_cut_yesterday();
 }
 
 fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
@@ -145,6 +139,24 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 	administrative_efficiency_label.set_tooltip_string(
 		administrative_efficiency_template % administrative_efficiency_tooltip_args
 	);
+
+	if (budget_label != nullptr) {
+		budget_label->set_tooltip_string(
+			Utilities::format(
+				"%s\n--------------\n%s%s",
+				budget_label->tr("DIST_ADMINISTRATION"),
+				was_budget_cut(country)
+					? budget_label->tr("EXPENSE_NO_AFFORD").replace(
+						Utilities::get_short_value_placeholder(),
+						Utilities::float_to_string_dp_dynamic(
+							country.get_actual_administration_spending().load()
+						)
+					) + "\n"
+					: "",
+				budget_label->tr("ADM_DESC")
+			)
+		);
+	}
 
 	return scaled_value * country.get_projected_administration_spending_unscaled_by_slider_untracked();
 }
