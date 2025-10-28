@@ -84,7 +84,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 	if (scaled_value == 0) {
 		administrative_efficiency_tooltip_args[2] = "";
 	} else {
-		static const godot::String admin_crime_template = godot::String::utf8("\n%s §Y%s%%§W %s");
+		static const godot::String admin_crime_template = godot::String::utf8("\n%s §Y%s%%§! %s");
 		const fixed_point_t admin_spending_crime_effect = country_defines.get_admin_spending_crimefight_percent();
 		administrative_efficiency_tooltip_args[2] = Utilities::format(
 			admin_crime_template,
@@ -126,7 +126,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 			continue;
 		}
 		
-		static const godot::String reform_template = godot::String::utf8("\n%s: %s §Y+%s%%§W");
+		static const godot::String reform_template = godot::String::utf8("\n%s: %s §Y+%s%%§!");
 
 		const fixed_point_t extra_administrator_percentage = administrative_multiplier * country_defines.get_bureaucracy_percentage_increment();
 		reforms_part += Utilities::format(

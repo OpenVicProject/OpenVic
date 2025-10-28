@@ -53,7 +53,7 @@ void BudgetOverview::update() {
 
 	funds_label.set_text(
 		Utilities::format(
-			godot::String::utf8("§Y%s§W (§%s%s§W)"),
+			godot::String::utf8("§Y%s§! (§%s%s§!)"),
 			Utilities::cash_to_string_dp_dynamic(cash),
 			Utilities::get_colour_and_sign(last_balance),
 			Utilities::cash_to_string_dp_dynamic(last_balance)
@@ -62,12 +62,12 @@ void BudgetOverview::update() {
 	funds_label.set_tooltip_string(
 		funds_label.tr("TOPBAR_FUNDS")
 			.replace("$YESTERDAY$", Utilities::format(
-					godot::String::utf8("§%s%s§W"),
+					godot::String::utf8("§%s%s§!"),
 					Utilities::get_colour_and_sign(last_balance),
 					Utilities::cash_to_string_dp_dynamic(last_balance)
 				))
 			.replace("$CASH$", Utilities::format(
-					godot::String::utf8("§Y%s§W"),
+					godot::String::utf8("§Y%s§!"),
 					Utilities::cash_to_string_dp_dynamic(cash)
 				))
 	);
@@ -75,12 +75,12 @@ void BudgetOverview::update() {
 		history_chart.tr("TOPBAR_HISTORICAL_INCOME")
 			.replace("$DAYS$", godot::String::num_int64(balance_history.size()))
 			.replace("$MAX$", Utilities::format(
-				godot::String::utf8("§%s%s§W"),
+				godot::String::utf8("§%s%s§!"),
 				Utilities::get_colour_and_sign(maximum_balance),
 				Utilities::cash_to_string_dp_dynamic(maximum_balance)
 			))
 			.replace("$MIN$", Utilities::format(
-				godot::String::utf8("§%s%s§W"),
+				godot::String::utf8("§%s%s§!"),
 				Utilities::get_colour_and_sign(minimum_balance),
 				Utilities::cash_to_string_dp_dynamic(minimum_balance)
 			))

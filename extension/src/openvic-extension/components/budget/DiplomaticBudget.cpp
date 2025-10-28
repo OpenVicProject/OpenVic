@@ -51,7 +51,7 @@ void DiplomaticBudget::full_update(CountryInstance& country) {
 
 	balance_label.set_text(
 		Utilities::format(
-			godot::String::utf8("§%s%s§W"),
+			godot::String::utf8("§%s%s§!"),
 			Utilities::get_colour_and_sign(diplomatic_balance),
 			Utilities::format_with_currency(
 				Utilities::float_to_string_dp(diplomatic_balance, decimal_places)
