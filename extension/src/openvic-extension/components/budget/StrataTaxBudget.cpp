@@ -115,7 +115,7 @@ void StrataTaxBudget::update_slider_tooltip(
 	);
 
 	const godot::String tooltip = Utilities::format(
-		godot::String::utf8("%s: §Y%s§W\n%s\n%s\n%s"),
+		godot::String::utf8("%s: §Y%s§!\n%s\n%s\n%s"),
 		localised_strata_tax,
 		Utilities::percentage_to_string_dp(scaled_value, 1),
 		tax_efficiency_text,
