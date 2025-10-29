@@ -29,7 +29,7 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector2i.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 

@@ -2,7 +2,7 @@
 
 #include <numbers>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 
 using namespace godot;

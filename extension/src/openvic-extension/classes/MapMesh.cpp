@@ -2,7 +2,7 @@
 
 #include <godot_cpp/templates/vector.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 
 using namespace godot;
 using namespace OpenVic;

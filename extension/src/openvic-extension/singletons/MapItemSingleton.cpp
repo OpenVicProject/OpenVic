@@ -8,7 +8,7 @@
 #include "godot_cpp/variant/typed_array.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/country/CountryDefinition.hpp"
 #include "openvic-simulation/country/CountryInstance.hpp"

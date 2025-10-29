@@ -10,7 +10,7 @@
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/types/TextFormat.hpp"
 

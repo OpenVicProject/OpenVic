@@ -41,7 +41,7 @@
 
 #include <openvic-simulation/utility/Typedefs.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 #include "gen/commit_info.gen.hpp"

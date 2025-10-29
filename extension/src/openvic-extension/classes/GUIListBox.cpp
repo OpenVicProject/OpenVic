@@ -3,7 +3,7 @@
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 

@@ -6,7 +6,7 @@
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-simulation/utility/FormatValidate.hpp"
 
 using namespace OpenVic;

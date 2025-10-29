@@ -4,7 +4,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
