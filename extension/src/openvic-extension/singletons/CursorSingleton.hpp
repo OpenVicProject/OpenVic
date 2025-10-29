@@ -25,7 +25,7 @@ namespace OpenVic {
 
 	public:
 		//An intermediate data type to help with loading cursors.
-		//The size of images/hotspots arrays corresponds to resolutionsPerCursor.
+		//The size of images/hotspots arrays corresponds to resolutions_per_cursor.
 		struct image_hotspot_pair_asset_t {
 			std::vector<godot::Vector2i> hotspots;
 			std::vector<godot::Ref<godot::ImageTexture>> images;
