@@ -3,7 +3,7 @@
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 
 #include "openvic-extension/singletons/MenuSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 
 using namespace godot;
 using namespace OpenVic;

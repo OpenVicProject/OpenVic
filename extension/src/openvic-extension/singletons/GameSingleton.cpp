@@ -13,7 +13,7 @@
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 #include <spdlog/spdlog.h>

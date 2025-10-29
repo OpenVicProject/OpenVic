@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/gradient.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 

@@ -4,7 +4,7 @@
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 #include "gen/commit_info.gen.hpp"

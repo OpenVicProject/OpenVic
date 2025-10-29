@@ -16,7 +16,7 @@
 
 #include "openvic-simulation/utility/StringUtils.hpp"
 #include <openvic-extension/singletons/GameSingleton.hpp>
-#include <openvic-extension/utility/ClassBindings.hpp>
+#include "openvic-extension/core/Bind.hpp"
 #include <openvic-extension/utility/Utilities.hpp>
 
 using OpenVic::Utilities::godot_to_std_string;

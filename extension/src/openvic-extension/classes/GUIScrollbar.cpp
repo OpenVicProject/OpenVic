@@ -11,7 +11,7 @@
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 

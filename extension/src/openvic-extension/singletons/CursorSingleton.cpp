@@ -15,7 +15,7 @@
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
-#include <openvic-extension/utility/ClassBindings.hpp>
+#include "openvic-extension/core/Bind.hpp"
 #include <openvic-extension/utility/Utilities.hpp>
 
 #include <fmt/std.h>

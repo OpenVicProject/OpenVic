@@ -3,7 +3,7 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 
 using namespace OpenVic;
 using namespace godot;

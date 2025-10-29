@@ -17,7 +17,7 @@
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;

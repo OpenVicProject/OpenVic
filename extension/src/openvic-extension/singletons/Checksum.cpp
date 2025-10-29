@@ -3,7 +3,7 @@
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/string.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 
 using namespace OpenVic;
 using namespace godot;
