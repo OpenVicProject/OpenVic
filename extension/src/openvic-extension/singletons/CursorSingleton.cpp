@@ -471,7 +471,7 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 		else if (id == "anih"){
 			//hack for some files, there's likely a better way
 			if (size == 36){ 
-				int32_t headerSize = file->get_32();
+				file->get_32(); // header_size
 			}
 			num_frames = file->get_32();
 			num_steps = file->get_32();

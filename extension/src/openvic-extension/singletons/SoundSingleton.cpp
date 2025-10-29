@@ -185,7 +185,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
 		it == sfx_define.end(), nullptr, Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
 	);
 
-	return it.value().audioStream;
+	return it.value().audio_stream;
 }
 
 // get the base volume of a sound from its define name
@@ -232,7 +232,7 @@ bool SoundSingleton::load_sounds() {
 		String name = to_define_file_name(std_to_godot_string(full_path.string()), sound_folder);
 
 		StringName define_gd_name = std_to_godot_string(sound_inst.get_identifier());
-		sfx_define[define_gd_name].audioStream = get_sound(name);
+		sfx_define[define_gd_name].audio_stream = get_sound(name);
 		sfx_define[define_gd_name].volume = sound_inst.get_volume();
 
 		sound_list.append(define_gd_name);

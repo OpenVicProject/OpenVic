@@ -59,14 +59,14 @@ void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, Typed
 	static const StringName name_key = "name";
 	static const StringName texture_key = "texture";
 	static const StringName scale_key = "scale";
-	static const StringName noOfFrames_key = "noFrames";
+	static const StringName no_of_frames_key = "noFrames";
 
 	Dictionary dict;
 
 	dict[name_key] = Utilities::std_to_godot_string(billboard.get_name());
 	dict[texture_key] = Utilities::std_to_godot_string(billboard.get_texture_file());
 	dict[scale_key] = billboard.get_scale().to_float();
-	dict[noOfFrames_key] = billboard.get_no_of_frames();
+	dict[no_of_frames_key] = billboard.get_no_of_frames();
 
 	billboard_dict_array.push_back(dict);
 }
