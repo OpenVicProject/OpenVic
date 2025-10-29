@@ -732,6 +732,7 @@ def main() -> None:
     doc_cache_path = "extension/doc_tools/cache/engine"
 
     import subprocess
+    engine_url = ""
     if not os.path.exists(doc_cache_path):
         os.makedirs(doc_cache_path)
         engine_url = get_engine_url()
@@ -739,8 +740,11 @@ def main() -> None:
         subprocess.call(f"git remote add origin {engine_url}", cwd=doc_cache_path, shell=True)
 
     engine_release = get_engine_release()
-    if subprocess.call(f"git pull --depth=1 origin {engine_release}", cwd=doc_cache_path, shell=True) != 0:
-        print_error(f'Git pull for "{engine_url}" v{engine_release} failed. Type references will fail.', State())
+    if subprocess.call(f"git fetch --depth=1 origin tag {engine_release} --no-tags", cwd=doc_cache_path, shell=True) != 0:
+        print_error(f'Git fetch for "{engine_url}" v{engine_release} failed. Type references will fail.', State())
+
+    if subprocess.call(f"git reset --hard {engine_release}", cwd=doc_cache_path, shell=True) != 0:
+        print_error(f'Git reset for "{engine_url}" v{engine_release} failed. Type references will fail.', State())
 
     engine_doc_paths = [
         os.path.join(doc_cache_path, "doc/classes"),

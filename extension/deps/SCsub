@@ -2,6 +2,7 @@
 
 Import("env")
 
+
 def build_openvic_simulation(env):
     ovsim_env = SConscript("openvic-simulation/SConstruct")
     env.AppendUnique(CPPDEFINES=ovsim_env["CPPDEFINES"])
@@ -10,11 +11,13 @@ def build_openvic_simulation(env):
     env.Append(CPPPATH=ovsim_env.openvic_simulation["INCPATH"])
     env.openvic_simulation = ovsim_env.openvic_simulation
 
+
 def build_gli(env):
     gli_includes = ["gli", "gli/external"]
     env.gli_loader = {}
     env.gli_loader["INCPATH"] = [env.Dir(p) for p in gli_includes]
     env.Append(CPPPATH=env.gli_loader["INCPATH"])
+
 
 build_openvic_simulation(env)
 build_gli(env)
