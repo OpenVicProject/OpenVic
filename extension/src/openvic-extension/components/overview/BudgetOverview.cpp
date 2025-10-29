@@ -13,7 +13,11 @@ using namespace OpenVic;
 BudgetOverview::BudgetOverview(GUINode const& parent):
 funds_label{*parent.get_gui_label_from_nodepath("./topbar/budget_funds")},
 history_chart{*parent.get_gui_line_chart_from_nodepath("./topbar/budget_linechart")}
-{}
+{
+	godot::Control* node = parent.get_node<godot::Control>("./topbar/topbarbutton_budget");
+	funds_label.reparent(node);
+	history_chart.reparent(node);
+}
 
 void BudgetOverview::update() {
 	GameSingleton& game_singleton = *GameSingleton::get_singleton();
