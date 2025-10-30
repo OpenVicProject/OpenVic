@@ -43,8 +43,8 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 			Dictionary good_dict;
 
 			good_dict[good_index_key] = static_cast<int32_t>(good_definition->get_index());
-			good_dict[current_price_key] = good_instance.get_price().to_float();
-			good_dict[price_change_key] = good_instance.get_price_change_yesterday().to_float();
+			good_dict[current_price_key] = static_cast<real_t>(good_instance.get_price());
+			good_dict[price_change_key] = static_cast<real_t>(good_instance.get_price_change_yesterday());
 
 			{
 				static const StringName in_demand_localisation_key = "TRADE_IN_DEMAND";
@@ -135,8 +135,8 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	Dictionary ret;
 
 	ret[trade_detail_good_name_key] = Utilities::std_to_godot_string(good_instance->get_identifier());
-	ret[trade_detail_good_price_key] = good_instance->get_price().to_float();
-	ret[trade_detail_good_base_price_key] = good_instance->get_good_definition().get_base_price().to_float();
+	ret[trade_detail_good_price_key] = static_cast<real_t>(good_instance->get_price());
+	ret[trade_detail_good_base_price_key] = static_cast<real_t>(good_instance->get_good_definition().get_base_price());
 	{
 		ValueHistory<fixed_point_t> const& good_price_history = good_instance->get_price_history();
 
@@ -144,7 +144,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 
 		if (price_history.resize(good_price_history.size()) == OK) {
 			for (size_t idx = 0; idx < good_price_history.size(); ++idx) {
-				price_history[idx] = good_price_history[idx].to_float();
+				price_history[idx] = static_cast<real_t>(good_price_history[idx]);
 			}
 
 			ret[trade_detail_price_history_key] = std::move(price_history);
@@ -167,18 +167,18 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	if (stockpile_cutoff_slider != nullptr) {
 		const int32_t index = calculate_slider_value_from_trade_menu_stockpile_cutoff(
 			good_data.stockpile_cutoff,
-			stockpile_cutoff_slider->get_max_value_scaled()
+			stockpile_cutoff_slider->get_max_value_scaled().truncate<int32_t>()
 		);
 		stockpile_cutoff_slider->set_scaled_value(index);
 	}
-	ret[trade_detail_slider_amount_key] = good_data.stockpile_cutoff.to_float();
-	ret[trade_detail_government_needs_key] = good_data.government_needs.to_float();
-	ret[trade_detail_army_needs_key] = good_data.army_needs.to_float();
-	ret[trade_detail_navy_needs_key] = good_data.navy_needs.to_float();
-	ret[trade_detail_overseas_needs_key] = good_data.overseas_maintenance.to_float();
-	ret[trade_detail_factory_needs_key] = good_data.factory_demand.to_float();
-	ret[trade_detail_pop_needs_key] = good_data.pop_demand.to_float();
-	ret[trade_detail_available_key] = good_data.available_amount.to_float();
+	ret[trade_detail_slider_amount_key] = static_cast<real_t>(good_data.stockpile_cutoff);
+	ret[trade_detail_government_needs_key] = static_cast<real_t>(good_data.government_needs);
+	ret[trade_detail_army_needs_key] = static_cast<real_t>(good_data.army_needs);
+	ret[trade_detail_navy_needs_key] = static_cast<real_t>(good_data.navy_needs);
+	ret[trade_detail_overseas_needs_key] = static_cast<real_t>(good_data.overseas_maintenance);
+	ret[trade_detail_factory_needs_key] = static_cast<real_t>(good_data.factory_demand);
+	ret[trade_detail_pop_needs_key] = static_cast<real_t>(good_data.pop_demand);
+	ret[trade_detail_available_key] = static_cast<real_t>(good_data.available_amount);
 
 	return ret;
 }
@@ -275,33 +275,33 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 		if (good_data.government_needs != fixed_point_t::_0) {
 			government_needs.push_back({
 				good_index,
-				good_data.government_needs.to_float()
+				static_cast<real_t>(good_data.government_needs)
 			});
 		}
 
 		if (good_data.factory_demand != fixed_point_t::_0) {
 			factory_needs.push_back({
 				good_index,
-				good_data.factory_demand.to_float()
+				static_cast<real_t>(good_data.factory_demand)
 			});
 		}
 
 		if (good_data.pop_demand != fixed_point_t::_0) {
 			pop_needs.push_back({
-				good_index, good_data.pop_demand.to_float()
+				good_index, static_cast<real_t>(good_data.pop_demand)
 			});
 		}
 
 		market_activity.push_back({
 			good_index,
-			good_data.exported_amount.abs().to_float(),
-			(good_data.exported_amount * good.get_price()).to_float()
+			static_cast<real_t>(good_data.exported_amount.abs()),
+			static_cast<real_t>(good_data.exported_amount * good.get_price())
 		});
 
 		stockpile.push_back({
 			good_index,
-			good_data.stockpile_amount.to_float(),
-			good_data.stockpile_change_yesterday.to_float()
+			static_cast<real_t>(good_data.stockpile_amount),
+			static_cast<real_t>(good_data.stockpile_change_yesterday)
 		});
 
 		// TODO - replace with actual common market data
@@ -327,5 +327,5 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
 	ERR_FAIL_NULL_V(slider, 0.0f);
 
-	return calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp());
+	return static_cast<float>(calculate_trade_menu_stockpile_cutoff_amount_fp(slider->get_value_scaled_fp()));
 }

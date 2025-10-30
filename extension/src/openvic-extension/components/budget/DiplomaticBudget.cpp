@@ -33,7 +33,7 @@ fixed_point_t DiplomaticBudget::get_expenses() const {
 	value > 0 \
 		? balance_label.tr(localisation_key).replace( \
 			Utilities::get_short_value_placeholder(), \
-			godot::String::num_int64(value.to_int32_t_rounded()) \
+			godot::String::num_int64(value.round<int32_t>()) \
 		) \
 		: ""
 
@@ -54,7 +54,7 @@ void DiplomaticBudget::full_update(CountryInstance& country) {
 			godot::String::utf8("§%s%s§!"),
 			Utilities::get_colour_and_sign(diplomatic_balance),
 			Utilities::format_with_currency(
-				Utilities::float_to_string_dp(diplomatic_balance, decimal_places)
+				Utilities::float_to_string_dp(static_cast<float>(diplomatic_balance), decimal_places)
 			)
 		)
 	);
@@ -79,7 +79,7 @@ godot::String DiplomaticBudget::generate_income_summary_text(godot::Object const
 			income_summary_localisation_key
 		).replace(
 			Utilities::get_short_value_placeholder(),
-			Utilities::float_to_string_dp(reparations_income, income_summary_decimal_places)
+			Utilities::float_to_string_dp(static_cast<float>(reparations_income), income_summary_decimal_places)
 		)
 		: "";
 }
@@ -91,7 +91,7 @@ godot::String DiplomaticBudget::generate_expenses_summary_text(godot::Object con
 			expenses_summary_localisation_key
 		).replace(
 			Utilities::get_short_value_placeholder(),
-			Utilities::float_to_string_dp(reparations_expenses, expenses_summary_decimal_places)
+			Utilities::float_to_string_dp(static_cast<float>(reparations_expenses), expenses_summary_decimal_places)
 		)
 		: "";
 }
@@ -101,7 +101,7 @@ godot::String DiplomaticBudget::generate_balance_summary_income_text(godot::Obje
 		income_summary_localisation_key
 	).replace(
 		Utilities::get_short_value_placeholder(),
-		"+" + Utilities::float_to_string_dp(war_subsidies_income, income_summary_decimal_places)
+		"+" + Utilities::float_to_string_dp(static_cast<float>(war_subsidies_income), income_summary_decimal_places)
 	);
 }
 
@@ -110,6 +110,6 @@ godot::String DiplomaticBudget::generate_balance_summary_expenses_text(godot::Ob
 		expenses_summary_localisation_key
 	).replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(war_subsidies_expenses, expenses_summary_decimal_places)
+		Utilities::float_to_string_dp(static_cast<float>(war_subsidies_expenses), expenses_summary_decimal_places)
 	);
 }

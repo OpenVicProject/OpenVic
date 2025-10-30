@@ -281,7 +281,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 				ret = false;
 			}
 
-			const float scale = icon.get_scale();
+			const float scale = static_cast<float>(icon.get_scale());
 			gui_icon->set_scale({ scale, scale });
 
 			args.result = gui_icon;
@@ -352,7 +352,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		}
 
 		if (args.result != nullptr) {
-			const real_t rotation = icon.get_rotation();
+			const real_t rotation = static_cast<real_t>(icon.get_rotation());
 			if (rotation != 0.0_real) {
 				args.result->set_position(
 					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 {
@@ -456,7 +456,7 @@ static bool generate_button(generate_gui_args_t&& args) {
 			callable_mp_static(+gui_pressed)
 				.bind(
 					gui_button, Utilities::std_to_godot_string(clicksound->get_file().string()),
-					clicksound->get_volume().to_float()
+					static_cast<real_t>(clicksound->get_volume())
 				)
 		);
 	}

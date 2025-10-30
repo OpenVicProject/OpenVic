@@ -19,7 +19,7 @@ namespace OpenVic {
 			|| specialization_of<MapType, IndexedFlatMap>
 		)
 		&& has_get_identifier_and_colour<std::remove_pointer_t<map_key_t<MapType>>>
-		&& std::convertible_to<map_value_t<MapType>, float>;
+		&& requires { static_cast<float>(std::declval<map_value_t<MapType>>()); };
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)

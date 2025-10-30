@@ -50,7 +50,7 @@ void BudgetOverview::update() {
 		line_values.resize(balance_history.capacity());
 		size_t index = line_values.size();
 		for (auto it = balance_history.rbegin(); it != balance_history.rend(); ++it) {
-			line_values[--index] = *it;
+			line_values[--index] = static_cast<real_t>(*it);
 		}
 		history_chart.set_gradient_line(line_values);
 	}

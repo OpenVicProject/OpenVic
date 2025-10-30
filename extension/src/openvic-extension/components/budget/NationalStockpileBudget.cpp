@@ -97,7 +97,7 @@ void NationalStockpileBudget::update_labels(CountryInstance& country) {
 				godot::String::utf8("\n %s: §R%s§! (%s)"),
 				todays_actual_stockpile_spending_label.tr(Utilities::std_to_godot_string(good_instance.get_identifier())),
 				Utilities::cash_to_string_dp_dynamic(-good_data.money_traded_yesterday),
-				Utilities::float_to_string_dp_dynamic(good_data.quantity_traded_yesterday)
+				Utilities::float_to_string_dp_dynamic(static_cast<float>(good_data.quantity_traded_yesterday))
 			);
 		}
 	}

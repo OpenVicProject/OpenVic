@@ -88,7 +88,7 @@ void SliderBudgetComponent::update_slider_tooltip(
 ) {
 	godot::String tooltip;
 	const godot::String percentage_text = Utilities::float_to_string_dp(
-		(100 * scaled_value).to_float(),
+		static_cast<float>(100 * scaled_value),
 		1
 	);
 	const godot::String localised = slider.tr(slider_tooltip_localisation_key);

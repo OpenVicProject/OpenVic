@@ -803,23 +803,23 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		if (pop->get_location() != nullptr) {
 			pop_dict[pop_location_key] = Utilities::std_to_godot_string(pop->get_location()->get_identifier());
 		}
-		pop_dict[pop_militancy_key] = pop->get_militancy().to_float();
-		pop_dict[pop_consciousness_key] = pop->get_consciousness().to_float();
+		pop_dict[pop_militancy_key] = static_cast<real_t>(pop->get_militancy());
+		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop->get_consciousness());
 		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_supporter_equivalents_by_ideology());
 		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(
 			pop->get_supporter_equivalents_by_issue(), get_issue_identifier_suffix()
 		);
-		pop_dict[pop_unemployment_key] = pop->get_unemployment_fraction().to_float();
-		pop_dict[pop_cash_key] = pop->get_cash().get_copy_of_value().to_float();
-		pop_dict[pop_daily_money_key] = pop->get_income().to_float();
-		pop_dict[pop_life_needs_key] = pop->get_life_needs_fulfilled().to_float();
-		pop_dict[pop_everyday_needs_key] = pop->get_everyday_needs_fulfilled().to_float();
-		pop_dict[pop_luxury_needs_key] = pop->get_luxury_needs_fulfilled().to_float();
+		pop_dict[pop_unemployment_key] = static_cast<real_t>(pop->get_unemployment_fraction());
+		pop_dict[pop_cash_key] = static_cast<real_t>(pop->get_cash().get_copy_of_value());
+		pop_dict[pop_daily_money_key] = static_cast<real_t>(pop->get_income());
+		pop_dict[pop_life_needs_key] = static_cast<real_t>(pop->get_life_needs_fulfilled());
+		pop_dict[pop_everyday_needs_key] = static_cast<real_t>(pop->get_everyday_needs_fulfilled());
+		pop_dict[pop_luxury_needs_key] = static_cast<real_t>(pop->get_luxury_needs_fulfilled());
 		if (pop->get_rebel_type() != nullptr) {
 			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->get_icon();
 		}
 		pop_dict[pop_size_change_key] = pop->get_total_change();
-		pop_dict[pop_literacy_key] = pop->get_literacy().to_float();
+		pop_dict[pop_literacy_key] = static_cast<real_t>(pop->get_literacy());
 
 		array[idx] = std::move(pop_dict);
 	}

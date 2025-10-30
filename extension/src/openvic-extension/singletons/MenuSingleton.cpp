@@ -434,7 +434,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[building_info_start_date_key] = Utilities::date_to_string(building.get_start_date());
 			building_dict[building_info_end_date_key] = Utilities::date_to_string(building.get_end_date());
-			building_dict[building_info_expansion_progress_key] = building.get_expansion_progress().to_float();
+			building_dict[building_info_expansion_progress_key] = static_cast<real_t>(building.get_expansion_progress());
 
 			buildings_array[idx] = std::move(building_dict);
 		}
@@ -540,15 +540,15 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good.get_index());
 
-		ret[province_info_rgo_output_quantity_yesterday_key] = rgo.get_output_quantity_yesterday().to_float();
-		ret[province_info_rgo_revenue_yesterday_key] = rgo.get_revenue_yesterday().to_float();
+		ret[province_info_rgo_output_quantity_yesterday_key] = static_cast<real_t>(rgo.get_output_quantity_yesterday());
+		ret[province_info_rgo_revenue_yesterday_key] = static_cast<real_t>(rgo.get_revenue_yesterday());
 		ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
 		const pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
 		if (max_employee_count == 0) {
 			ret[province_info_rgo_employment_percentage_key] = 100.0f;
 		} else {
 			ret[province_info_rgo_employment_percentage_key] =
-				(rgo.get_total_employees_count_cache() * fixed_point_t::_100 / max_employee_count).to_float();
+				static_cast<real_t>(rgo.get_total_employees_count_cache() * fixed_point_t::_100 / max_employee_count);
 		}
 
 		ModifierEffectCache const& modifier_effect_cache =
@@ -1049,12 +1049,12 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			).replace(
 				date_replace_key, Utilities::date_to_formatted_string(country->get_expected_research_completion_date_untracked(), false)
 			) + "\n" + tr(research_invested_localisation_key).replace(
-				invested_replace_key, String::num_uint64(country->get_invested_research_points_untracked().to_int64_t())
-			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost_untracked().to_int64_t()));
+				invested_replace_key, String::num_uint64(country->get_invested_research_points_untracked().truncate<int64_t>())
+			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost_untracked().truncate<int64_t>()));
 
 			ret[research_key] = std::move(current_tech_localised);
 
-			ret[research_progress_key] = country->research_progress.get_untracked().to_float();
+			ret[research_progress_key] = static_cast<real_t>(country->research_progress.get_untracked());
 		} else if (country->is_civilised()) {
 			static const StringName civilised_no_research_localisation_key = "TB_TECH_NO_CURRENT";
 			static const StringName civilised_no_research_tooltip_localisation_key = "TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP";
@@ -1071,11 +1071,11 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			ret[research_tooltip_key] = tr(uncivilised_no_research_tooltip_localisation_key);
 		}
 
-		ret[literacy_key] = country->get_average_literacy().to_float();
+		ret[literacy_key] = static_cast<real_t>(country->get_average_literacy());
 		// TODO - set monthly literacy change (test for precision issues)
 		ret[literacy_change_key] = 0.0f;
 
-		ret[research_points_key] = country->get_daily_research_points_untracked().to_float();
+		ret[research_points_key] = static_cast<real_t>(country->get_daily_research_points_untracked());
 
 		String research_points_tooltip;
 
@@ -1180,7 +1180,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName leadership_key = "leadership";
 		static const StringName leadership_tooltip_key = "leadership_tooltip";
 
-		ret[leadership_key] = country->get_leadership_point_stockpile().to_int64_t();
+		ret[leadership_key] = country->get_leadership_point_stockpile().truncate<int64_t>();
 
 		String leadership_tooltip;
 

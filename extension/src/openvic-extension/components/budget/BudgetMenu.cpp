@@ -105,7 +105,7 @@ void BudgetMenu::update_projected_expenses() {
 
 	projected_expenses_args[0] = projected_expenses_label.tr("BUDGET_TOTAL_EXPENSE").replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(projected_expenses, 3)
+		Utilities::float_to_string_dp(static_cast<float>(projected_expenses), 3)
 	);
 	projected_expenses_args[1] = education_budget.generate_expenses_summary_text(projected_expenses_label);
 	projected_expenses_args[2] = administration_budget.generate_expenses_summary_text(projected_expenses_label);
@@ -113,7 +113,7 @@ void BudgetMenu::update_projected_expenses() {
 	projected_expenses_args[4] = military_budget.generate_expenses_summary_text(projected_expenses_label);
 	projected_expenses_args[5] = projected_expenses_label.tr("BUDGET_INTEREST").replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(interest_expenses, 1)
+		Utilities::float_to_string_dp(static_cast<float>(interest_expenses), 1)
 	);
 	projected_expenses_args[6] = national_stockpile_budget.generate_expenses_summary_text(projected_expenses_label);
 	projected_expenses_args[7] = diplomatic_budget.generate_expenses_summary_text(projected_expenses_label);
@@ -145,21 +145,21 @@ void BudgetMenu::update_projected_income() {
 	projected_income_excluding_tariffs += stockpile_income;
 	projected_income_args[i++] = projected_income_label.tr("BUDGET_EXPORTS").replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(stockpile_income, 1)
+		Utilities::float_to_string_dp(static_cast<float>(stockpile_income), 1)
 	);
 
 	const fixed_point_t gold_income = country.get_gold_income_untracked();
 	projected_income_excluding_tariffs += gold_income;
 	projected_income_args[i++] = projected_income_label.tr("BUDGET_GOLD").replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(gold_income, 1)
+		Utilities::float_to_string_dp(static_cast<float>(gold_income), 1)
 	);
 	projected_income_args[i++] = diplomatic_budget.generate_income_summary_text(projected_income_label);
 
 	const fixed_point_t projected_income = projected_income_excluding_tariffs + tariff_budget.get_income();
 	projected_income_args[0] = projected_income_label.tr("BUDGET_TOTAL_INCOME").replace(
 		Utilities::get_short_value_placeholder(),
-		Utilities::float_to_string_dp(projected_income, 3)
+		Utilities::float_to_string_dp(static_cast<float>(projected_income), 3)
 	);
 	projected_income_label.set_text(
 		Utilities::cash_to_string_dp_dynamic(projected_income_excluding_tariffs)
@@ -212,7 +212,7 @@ void BudgetMenu::update() {
 	const fixed_point_t gold_income = country.get_gold_income_untracked();
 	gold_income_label.set_text(
 		Utilities::format_with_currency(
-			Utilities::float_to_string_dp(gold_income, 1)
+			Utilities::float_to_string_dp(static_cast<float>(gold_income), 1)
 		)
 	);
 	gold_income_label.set_tooltip_string(
@@ -222,7 +222,7 @@ void BudgetMenu::update() {
 	const fixed_point_t cash_stockpile = country.get_cash_stockpile();
 	cash_stockpile_label.set_text(
 		Utilities::format_with_currency(
-			Utilities::float_to_string_suffixed(cash_stockpile)
+			Utilities::float_to_string_suffixed(static_cast<float>(cash_stockpile))
 		)
 	);
 }

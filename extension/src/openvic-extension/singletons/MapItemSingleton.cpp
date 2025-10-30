@@ -65,7 +65,7 @@ void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, Typed
 
 	dict[name_key] = Utilities::std_to_godot_string(billboard.get_name());
 	dict[texture_key] = Utilities::std_to_godot_string(billboard.get_texture_file());
-	dict[scale_key] = billboard.get_scale().to_float();
+	dict[scale_key] = static_cast<real_t>(billboard.get_scale());
 	dict[no_of_frames_key] = billboard.get_no_of_frames();
 
 	billboard_dict_array.push_back(dict);
@@ -101,10 +101,10 @@ void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, Ty
 
 	dict[name_key] = Utilities::std_to_godot_string(projection.get_name());
 	dict[texture_key] = Utilities::std_to_godot_string(projection.get_texture_file());
-	dict[size_key] = projection.get_size().to_float();
-	dict[spin_key] = projection.get_spin().to_float();
-	dict[expanding_key] = projection.get_expanding().to_float();
-	dict[duration_key] = projection.get_duration().to_float();
+	dict[size_key] = static_cast<real_t>(projection.get_size());
+	dict[spin_key] = static_cast<real_t>(projection.get_spin());
+	dict[expanding_key] = static_cast<real_t>(projection.get_expanding());
+	dict[duration_key] = static_cast<real_t>(projection.get_duration());
 	dict[additative_key] = projection.get_additative();
 
 	projection_dict_array.push_back(dict);

@@ -108,7 +108,7 @@ Dictionary ModelSingleton::get_animation_dict(GFX::Actor::Animation const& anima
 	Dictionary dict;
 
 	dict[file_key] = Utilities::std_to_godot_string(animation.get_file());
-	dict[time_key] = animation.get_scroll_time().to_float();
+	dict[time_key] = static_cast<real_t>(animation.get_scroll_time());
 
 	animation_cache.emplace(&animation, dict);
 
@@ -131,7 +131,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 	Dictionary dict;
 
 	dict[file_key] = Utilities::std_to_godot_string(actor.get_model_file());
-	dict[scale_key] = actor.get_scale().to_float();
+	dict[scale_key] = static_cast<real_t>(actor.get_scale());
 
 	const auto set_animation = [this, &dict](StringName const& key, std::optional<GFX::Actor::Animation> const& animation) {
 		if (animation.has_value()) {
@@ -429,7 +429,7 @@ bool ModelSingleton::add_building_dict(
 	}
 
 	fvec2_t const* position_ptr = province_definition.get_building_position(&building.get_building_type());
-	const float rotation = province_definition.get_building_rotation(&building.get_building_type());
+	const float rotation = static_cast<float>(province_definition.get_building_rotation(&building.get_building_type()));
 
 	const memory::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
 

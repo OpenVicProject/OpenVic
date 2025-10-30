@@ -378,12 +378,12 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 		province_dict[identifier_key] = Utilities::std_to_godot_string(province.get_identifier());
 		province_dict[position_key] = normalise_map_position(province.get_text_position());
 
-		const float rotation = province.get_text_rotation().to_float();
+		const float rotation = static_cast<float>(province.get_text_rotation());
 		if (rotation != 0.0f) {
 			province_dict[rotation_key] = rotation;
 		}
 
-		const float scale = province.get_text_scale().to_float();
+		const float scale = static_cast<float>(province.get_text_scale());
 		if (scale != 1.0f) {
 			province_dict[scale_key] = scale;
 		}
@@ -629,7 +629,7 @@ Error GameSingleton::_load_flag_sheet() {
 	ERR_FAIL_COND_V(flag_images.size() != flag_sheet_count, FAILED);
 
 	/* Calculate the width that will make the sheet as close to a square as possible (taking flag dimensions into account.) */
-	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil();
+	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil<int32_t>();
 
 	/* Calculated corresponding height (rounded up). */
 	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1) / flag_sheet_dims.x;
