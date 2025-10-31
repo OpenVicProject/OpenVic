@@ -75,7 +75,7 @@ namespace OpenVic::Utilities {
 	}
 
 	_FORCE_INLINE_ godot::Vector2 to_godot_fvec2(fvec2_t const& vec) {
-		return { vec.x, vec.y };
+		return { static_cast<real_t>(vec.x), static_cast<real_t>(vec.y) };
 	}
 
 	_FORCE_INLINE_ ivec2_t from_godot_ivec2(godot::Vector2i const& vec) {

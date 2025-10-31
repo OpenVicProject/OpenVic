@@ -23,7 +23,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 	const float child_width = _get_child(0)->get_size().x;
 
 	const float max_spacing = box_width / (child_count + 1);
-	const float default_spacing = child_width + gui_overlapping_elements_box->get_spacing().to_float();
+	const float default_spacing = child_width + static_cast<float>(gui_overlapping_elements_box->get_spacing());
 
 	const float spacing = std::min(max_spacing, default_spacing);
 

@@ -144,7 +144,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 			_make_modifier_effect_value_coloured(organisation_effect, modifier_value.get_effect(organisation_effect), true)
 		);
 
-		leader_dict[military_info_leader_prestige_key] = prestige.to_float();
+		leader_dict[military_info_leader_prestige_key] = static_cast<real_t>(prestige);
 		leader_dict[military_info_leader_prestige_tooltip_key] = std::move(prestige_tooltip);
 	}
 
@@ -204,7 +204,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 static inline int32_t _scale_land_unit_strength(fixed_point_t strength) {
 	static constexpr int32_t LAND_UNIT_STRENGTH_FACTOR = 1000;
 
-	return (strength * LAND_UNIT_STRENGTH_FACTOR).to_int32_t();
+	return (strength * LAND_UNIT_STRENGTH_FACTOR).truncate<int32_t>();
 }
 
 template<unit_branch_t Branch>
@@ -245,8 +245,8 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 	}
 	unit_group_dict[military_info_unit_group_unit_count_key] = static_cast<uint64_t>(unit_group.get_unit_count());
 
-	unit_group_dict[military_info_unit_group_organisation_key] = unit_group.get_organisation_proportion().to_float();
-	unit_group_dict[military_info_unit_group_strength_key] = unit_group.get_strength_proportion().to_float();
+	unit_group_dict[military_info_unit_group_organisation_key] = static_cast<real_t>(unit_group.get_organisation_proportion());
+	unit_group_dict[military_info_unit_group_strength_key] = static_cast<real_t>(unit_group.get_strength_proportion());
 
 	if (unit_group.is_moving()) {
 		static const StringName moving_localisation_key = "MILITARY_MOVING_TOOLTIP";
@@ -323,7 +323,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 
 	Dictionary in_progress_unit_dict;
 
-	in_progress_unit_dict[military_info_unit_progress_key] = progress.to_float();
+	in_progress_unit_dict[military_info_unit_progress_key] = static_cast<real_t>(progress);
 	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->get_icon();
 	in_progress_unit_dict[military_info_unit_name_key] = Utilities::std_to_godot_string(unit_type->get_identifier());
 	if (location != nullptr) {
@@ -419,14 +419,14 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	static const StringName base_value_percent_localisation_key = "MILITARY_BASEVALUE_PERCENT";
 	const String base_value_percent_tooltip = tr(base_value_percent_localisation_key);
 
-	ret[military_info_supply_consumption_key] = country->get_supply_consumption().to_float();
+	ret[military_info_supply_consumption_key] = static_cast<real_t>(country->get_supply_consumption());
 	ret[military_info_supply_consumption_tooltip_key] = base_value_percent_tooltip +
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_supply_consumption());
 
 	static const StringName from_tech_localisation_key = "FROM_TECHNOLOGY";
 	const String from_technology_tooltip = "\n" + tr(from_tech_localisation_key) + ": ";
 
-	ret[military_info_organisation_regain_key] = country->get_organisation_regain().to_float();
+	ret[military_info_organisation_regain_key] = static_cast<real_t>(country->get_organisation_regain());
 	{
 		String organisation_regain_tooltip = base_value_percent_tooltip;
 		const fixed_point_t morale = country->get_modifier_effect_value(*modifier_effect_cache.get_morale_global());
@@ -441,16 +441,16 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		ret[military_info_organisation_regain_tooltip_key] = std::move(organisation_regain_tooltip);
 	}
 
-	ret[military_info_land_organisation_key] = country->get_land_organisation().to_float();
+	ret[military_info_land_organisation_key] = static_cast<real_t>(country->get_land_organisation());
 	ret[military_info_land_organisation_tooltip_key] = base_value_percent_tooltip +
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_land_organisation());
 
-	ret[military_info_naval_organisation_key] = country->get_naval_organisation().to_float();
+	ret[military_info_naval_organisation_key] = static_cast<real_t>(country->get_naval_organisation());
 	ret[military_info_naval_organisation_tooltip_key] = base_value_percent_tooltip +
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_naval_organisation());
 
-	ret[military_info_land_unit_start_experience_key] = country->get_land_unit_start_experience().to_float();
-	ret[military_info_naval_unit_start_experience_key] = country->get_naval_unit_start_experience().to_float();
+	ret[military_info_land_unit_start_experience_key] = static_cast<real_t>(country->get_land_unit_start_experience());
+	ret[military_info_naval_unit_start_experience_key] = static_cast<real_t>(country->get_naval_unit_start_experience());
 	{
 		static const StringName base_value_localisation_key = "MILITARY_BASEVALUE";
 		String unit_start_experience_tooltip = tr(base_value_localisation_key);
@@ -476,7 +476,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		ret[military_info_unit_start_experience_tooltip_key] = std::move(unit_start_experience_tooltip);
 	}
 
-	ret[military_info_recruit_time_key] = country->get_recruit_time().to_float();
+	ret[military_info_recruit_time_key] = static_cast<real_t>(country->get_recruit_time());
 	ret[military_info_recruit_time_tooltip_key] = base_value_percent_tooltip + _make_modifier_effect_contributions_tooltip(
 		*country, *modifier_effect_cache.get_unit_recruitment_time()
 	);
@@ -494,13 +494,13 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		);
 		if (combat_width != fixed_point_t::_0) {
 			combat_width_tooltip += from_technology_tooltip + GUILabel::get_colour_marker() + "G" +
-				String::num_int64(combat_width.to_int64_t());
+				String::num_int64(combat_width.truncate<int64_t>());
 		}
 		ret[military_info_combat_width_tooltip_key] = std::move(combat_width_tooltip);
 	}
 
 	ret[military_info_dig_in_cap_key] = country->get_dig_in_cap();
-	ret[military_info_military_tactics_key] = country->get_military_tactics().to_float();
+	ret[military_info_military_tactics_key] = static_cast<real_t>(country->get_military_tactics());
 
 	// Mobilisation
 	static const StringName military_info_is_mobilised_key = "is_mobilised";
@@ -513,7 +513,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 
 	ret[military_info_is_mobilised_key] = country->is_mobilised();
 	// TODO - get mobilisation progress from SIM
-	// ret[military_info_mobilisation_progress_key] = country->get_mobilisation_progress().to_float();
+	// ret[military_info_mobilisation_progress_key] = static_cast<real_t>(country->get_mobilisation_progress());
 	ret[military_info_mobilisation_size_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
 
 	{
@@ -554,7 +554,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		ret[military_info_mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
 	}
 
-	ret[military_info_mobilisation_economy_impact_key] = country->get_mobilisation_economy_impact().to_float();
+	ret[military_info_mobilisation_economy_impact_key] = static_cast<real_t>(country->get_mobilisation_economy_impact());
 
 	{
 		String mobilisation_economy_impact_tooltip = _make_modifier_effect_contributions_tooltip(
@@ -603,7 +603,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		ret[military_info_create_leader_count_key] = static_cast<uint64_t>(country->get_create_leader_count());
 	} else {
 		ret[military_info_create_leader_cost_key] =
-			definition_manager.get_define_manager().get_military_defines().get_leader_recruit_cost().to_float();
+			static_cast<real_t>(definition_manager.get_define_manager().get_military_defines().get_leader_recruit_cost());
 	}
 	ret[military_info_auto_create_leaders_key] = country->get_auto_create_leaders();
 	ret[military_info_auto_assign_leaders_key] = country->get_auto_assign_leaders();

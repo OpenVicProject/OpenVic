@@ -259,7 +259,7 @@ namespace OpenVic {
 				copy_plus_one /= 2;
 				times_halved++;
 			}
-			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS; //truncated
+			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS.truncate<int32_t>();
 			while (
 				calculate_trade_menu_stockpile_cutoff_amount_fp(
 					slider_value

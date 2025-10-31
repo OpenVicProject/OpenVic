@@ -132,14 +132,14 @@ String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
 String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_places) {
 	// We could use fixed point's own to_string method, but that allocates an intermediate string so better to go via float
 	// return Utilities::std_to_godot_string(val.to_string(decimal_places));
-	return Utilities::float_to_string_dp(val.to_float(), decimal_places);
+	return Utilities::float_to_string_dp(static_cast<float>(val), decimal_places);
 }
 
 String Utilities::percentage_to_string_dp(fixed_point_t val, int32_t decimal_places) {
 	return Utilities::format(
 		"%s%%",
 		Utilities::float_to_string_dp(
-			(100 * val).to_float(),
+			static_cast<float>(100 * val),
 			decimal_places
 		)
 	);
@@ -153,7 +153,7 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 String Utilities::cash_to_string_dp_dynamic(fixed_point_t val) {
 	return format_with_currency(
 		Utilities::float_to_string_dp_dynamic(
-			val.to_float()
+			static_cast<float>(val)
 		)
 	);
 }

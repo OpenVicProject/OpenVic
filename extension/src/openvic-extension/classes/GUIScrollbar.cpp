@@ -111,7 +111,7 @@ float GUIScrollbar::_value_to_ratio(int32_t val) const {
 }
 
 int32_t GUIScrollbar::_fp_to_value(const fixed_point_t val) const {
-	return ((val - offset) * scale_denominator / scale_numerator).to_int32_t_rounded();
+	return ((val - offset) * scale_denominator / scale_numerator).round<int32_t>();
 }
 
 fixed_point_t GUIScrollbar::_get_scaled_value(const int32_t val) const {
@@ -433,8 +433,8 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	_calculate_rects();
 
 	auto adjust_for_min_and_step_size = [
-		min_value = gui_scrollbar->get_min_value(),
-		step_size = gui_scrollbar->get_step_size()
+		min_value = gui_scrollbar->get_min_value().truncate<int32_t>(),
+		step_size = gui_scrollbar->get_step_size().truncate<int32_t>()
 	](const int32_t val)->int32_t {
 		return (val - min_value) / step_size;
 	};
@@ -445,18 +445,18 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	}
 
 	set_step_count(
-		adjust_for_min_and_step_size(gui_scrollbar->get_max_value())
+		adjust_for_min_and_step_size(gui_scrollbar->get_max_value().truncate<int32_t>())
 	);
 
 	set_scale(
 		gui_scrollbar->get_min_value(),
-		gui_scrollbar->get_step_size(),
+		gui_scrollbar->get_step_size().truncate<int32_t>(),
 		1
 	);
 	
 	set_range_limits(
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min()),
-		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max())
+		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_min().truncate<int32_t>()),
+		adjust_for_min_and_step_size(gui_scrollbar->get_range_limit_max().truncate<int32_t>())
 	);
 
 	if (!was_blocking_signals) {
@@ -464,7 +464,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	}
 
 	set_value(
-		adjust_for_min_and_step_size(gui_scrollbar->get_start_value())
+		adjust_for_min_and_step_size(gui_scrollbar->get_start_value().truncate<int32_t>())
 	);
 
 	return ERR(ret);
@@ -527,7 +527,7 @@ fixed_point_t GUIScrollbar::get_value_scaled_fp() const {
 }
 
 float GUIScrollbar::get_value_scaled() const {
-	return get_value_scaled_fp().to_float();
+	return static_cast<float>(get_value_scaled_fp());
 }
 
 void GUIScrollbar::set_step_count(const int32_t new_step_count) {
@@ -586,10 +586,10 @@ void GUIScrollbar::set_range_limits_fp(
 	set_range_limits(
 		new_lower_range_limit.has_value()
 			? _fp_to_value(new_lower_range_limit.value())
-			: std::optional<fixed_point_t>{},
+			: std::optional<int32_t>{},
 		new_upper_range_limit.has_value()
 			? _fp_to_value(new_upper_range_limit.value())
-			: std::optional<fixed_point_t>{}
+			: std::optional<int32_t>{}
 	);
 }
 void GUIScrollbar::set_range_limits_and_value_from_slider_value(ReadOnlyClampedValue& slider_value) {

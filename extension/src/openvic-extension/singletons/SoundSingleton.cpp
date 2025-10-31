@@ -191,7 +191,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
 // get the base volume of a sound from its define name
 float SoundSingleton::get_sound_base_volume(String const& path) {
 	if (sfx_define[path].volume.has_value()) {
-		return sfx_define[path].volume.value().to_float();
+		return static_cast<float>(sfx_define[path].volume.value());
 	}
 	return 1.0;
 }

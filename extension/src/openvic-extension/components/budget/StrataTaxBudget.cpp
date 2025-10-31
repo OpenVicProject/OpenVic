@@ -93,7 +93,7 @@ void StrataTaxBudget::update_slider_tooltip(
 	const fixed_point_t tax_efficiency = country.get_tax_efficiency_untracked();
 	const godot::String tax_efficiency_text = slider.tr(tax_efficiency_localisation_key).replace(
 		Utilities::get_long_value_placeholder(),
-		Utilities::float_to_string_dp(100 * tax_efficiency, 2)
+		Utilities::float_to_string_dp(100 * static_cast<float>(tax_efficiency), 2)
 	);
 
 	const fixed_point_t tax_efficiency_from_tech = country.get_modifier_effect_value(*modifier_effect_cache.get_tax_eff());
@@ -102,7 +102,7 @@ void StrataTaxBudget::update_slider_tooltip(
 		Utilities::format(
 			"%s%%",
 			Utilities::float_to_string_dp(
-				tax_efficiency_from_tech.to_float(), //tax_efficiency_from_tech is already * 100
+				static_cast<float>(tax_efficiency_from_tech), //tax_efficiency_from_tech is already * 100
 				2
 			)
 		)
@@ -111,7 +111,7 @@ void StrataTaxBudget::update_slider_tooltip(
 	const fixed_point_t effective_tax_rate = tax_efficiency * scaled_value;
 	const godot::String effective_tax_rate_text = slider.tr(effective_tax_rate_localisation_key).replace(
 		Utilities::get_long_value_placeholder(),
-		Utilities::float_to_string_dp(100 * effective_tax_rate, 2)
+		Utilities::float_to_string_dp(100 * static_cast<float>(effective_tax_rate), 2)
 	);
 
 	const godot::String tooltip = Utilities::format(

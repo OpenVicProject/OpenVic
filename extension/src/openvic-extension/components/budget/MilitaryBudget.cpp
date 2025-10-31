@@ -51,7 +51,7 @@ fixed_point_t MilitaryBudget::calculate_budget_and_update_custom(
 					? budget_label->tr("EXPENSE_NO_AFFORD").replace(
 						Utilities::get_short_value_placeholder(),
 						Utilities::float_to_string_dp_dynamic(
-							country.get_actual_military_spending().load()
+							static_cast<float>(country.get_actual_military_spending().load())
 						)
 					) + "\n"
 					: "",

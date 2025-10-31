@@ -13,7 +13,7 @@ BudgetExpenseComponent::BudgetExpenseComponent(
 godot::String BudgetExpenseComponent::generate_expenses_summary_text(
 	godot::Object const& translation_object
 ) const {
-	const fixed_point_t expenses = get_expenses();
+	const float expenses = static_cast<float>(get_expenses());
 	return translation_object.tr(expenses_summary_localisation_key).replace(
 		Utilities::get_short_value_placeholder(),
 		expenses_summary_decimal_places < 0
@@ -24,7 +24,7 @@ godot::String BudgetExpenseComponent::generate_expenses_summary_text(
 
 godot::String BudgetExpenseComponent::generate_balance_expenses_summary_text(godot::Object const& translation_object) const {
 	static const godot::StringName red_minus = "R-";
-	const fixed_point_t expenses = get_expenses(); //TODO use yesterdays value
+	const float expenses = static_cast<float>(get_expenses());//TODO use yesterdays value
 	return translation_object.tr(expenses_summary_localisation_key).replace(
 		"Y$VAL$",
 		red_minus + Utilities::float_to_string_dp(expenses, expenses_summary_decimal_places)
