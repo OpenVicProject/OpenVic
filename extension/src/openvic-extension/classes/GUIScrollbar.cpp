@@ -1,5 +1,6 @@
 #include "GUIScrollbar.hpp"
 
+#include <cassert>
 #include <cstdint>
 
 #include <godot_cpp/classes/global_constants.hpp>
@@ -433,10 +434,13 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	_calculate_rects();
 
 	auto adjust_for_min_and_step_size = [
-		min_value = gui_scrollbar->get_min_value().truncate<int32_t>(),
-		step_size = gui_scrollbar->get_step_size().truncate<int32_t>()
+		min_value = gui_scrollbar->get_min_value(),
+		step_size = gui_scrollbar->get_step_size()
 	](const int32_t val)->int32_t {
-		return (val - min_value) / step_size;
+		assert(step_size != 0);
+		return (
+			(val - min_value) / step_size
+		).truncate<int32_t>();
 	};
 
 	const bool was_blocking_signals = is_blocking_signals();
