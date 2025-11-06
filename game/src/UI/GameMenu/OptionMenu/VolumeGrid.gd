@@ -16,7 +16,7 @@ func get_volume_value_as_db(value : float) -> float:
 
 func add_volume_row(bus_name : String, bus_index : int) -> HSlider:
 	var volume_label := Label.new()
-	if bus_name == "Master":
+	if bus_name == &"Master":
 		volume_label.text = "MASTER_BUS"
 	else:
 		volume_label.text = bus_name

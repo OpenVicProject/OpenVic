@@ -10,6 +10,7 @@
 #include "godot_cpp/variant/typed_array.hpp"
 #include "godot_cpp/variant/vector2.hpp"
 #include "openvic-extension/core/Convert.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -39,7 +40,7 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_number,{"province_number"});
 	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_number,{"province_number"});
 	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_number, {"position"});
-	
+
 }
 
 MapItemSingleton* MapItemSingleton::get_singleton() {
@@ -58,18 +59,12 @@ MapItemSingleton::~MapItemSingleton() {
 
 // repackage the billboard object into a godot dictionary for the Billboard manager to work with
 void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, TypedArray<Dictionary>& billboard_dict_array) const {
-
-	static const StringName name_key = "name";
-	static const StringName texture_key = "texture";
-	static const StringName scale_key = "scale";
-	static const StringName no_of_frames_key = "noFrames";
-
 	Dictionary dict;
 
-	dict[name_key] = convert_to<String>(billboard.get_name());
-	dict[texture_key] = convert_to<String>(billboard.get_texture_file());
-	dict[scale_key] = static_cast<real_t>(billboard.get_scale());
-	dict[no_of_frames_key] = billboard.get_no_of_frames();
+	dict[OV_SNAME(name)] = convert_to<String>(billboard.get_name());
+	dict[OV_SNAME(texture)] = convert_to<String>(billboard.get_texture_file());
+	dict[OV_SNAME(scale)] = static_cast<real_t>(billboard.get_scale());
+	dict[OV_INAME("noFrames")] = billboard.get_no_of_frames();
 
 	billboard_dict_array.push_back(dict);
 }
@@ -92,23 +87,15 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 }
 
 void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array) const {
-	static const StringName name_key = "name";
-	static const StringName texture_key = "texture";
-	static const StringName size_key = "size";
-	static const StringName spin_key = "spin";
-	static const StringName expanding_key = "expanding";
-	static const StringName duration_key = "duration";
-	static const StringName additative_key = "additative";
-
 	Dictionary dict;
 
-	dict[name_key] = convert_to<String>(projection.get_name());
-	dict[texture_key] = convert_to<String>(projection.get_texture_file());
-	dict[size_key] = static_cast<real_t>(projection.get_size());
-	dict[spin_key] = static_cast<real_t>(projection.get_spin());
-	dict[expanding_key] = static_cast<real_t>(projection.get_expanding());
-	dict[duration_key] = static_cast<real_t>(projection.get_duration());
-	dict[additative_key] = projection.get_additative();
+	dict[OV_SNAME(name)] = convert_to<String>(projection.get_name());
+	dict[OV_SNAME(texture)] = convert_to<String>(projection.get_texture_file());
+	dict[OV_SNAME(size)] = static_cast<real_t>(projection.get_size());
+	dict[OV_INAME("spin")] = static_cast<real_t>(projection.get_spin());
+	dict[OV_INAME("expanding")] = static_cast<real_t>(projection.get_expanding());
+	dict[OV_INAME("duration")] = static_cast<real_t>(projection.get_duration());
+	dict[OV_INAME("additative")] = projection.get_additative();
 
 	projection_dict_array.push_back(dict);
 }
@@ -272,7 +259,7 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 }
 
 
-Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_number) const { 
+Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
@@ -282,13 +269,13 @@ Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_
 	return game_singleton->normalise_map_position(province->get_unit_position());
 }
 
-Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_number) const { 
+Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
 		.get_province_definition_from_number(province_number);
 	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number));
-	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, number: %d", province_number) ); 
+	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, number: %d", province_number) );
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	fvec2_t const* port_position = province->get_building_position(port_building_type);
@@ -310,7 +297,7 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number));
 
 	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
-	
+
 	if(province->has_port()){
 		Vector2 port_position = game_singleton->normalise_map_position(*province->get_building_position(port_building_type));
 		if(click_position.distance_to(port_position) <= port_radius){
@@ -321,7 +308,7 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 		// search the adjacent provinces for ones with ports
 		for(ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
 			ProvinceDefinition const* adjacent_province = adjacency.get_to();
-			if(!adjacent_province->has_port()) { 
+			if(!adjacent_province->has_port()) {
 				continue; // skip provinces without ports (ie. other water provinces)
 			}
 			Vector2 port_position = game_singleton->normalise_map_position(*adjacent_province->get_building_position(port_building_type));

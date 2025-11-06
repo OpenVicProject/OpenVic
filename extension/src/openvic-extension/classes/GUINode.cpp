@@ -30,6 +30,7 @@
 #include <godot_cpp/variant/vector2i.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -160,21 +161,20 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 		ERR_FAIL_NULL_V_MSG(texture, nullptr, Utilities::format("Failed to get Texture2D from TextureRect %s", node->get_name()));
 		return texture;
 	} else if (GUIButton const* button = Object::cast_to<GUIButton>(node); button != nullptr) {
-		static const StringName theme_name_normal = "normal";
-		const Ref<StyleBox> stylebox = button->get_theme_stylebox(theme_name_normal);
+		const Ref<StyleBox> stylebox = button->get_theme_stylebox(OV_SNAME(normal));
 		ERR_FAIL_NULL_V_MSG(
-			stylebox, nullptr, Utilities::format("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
+			stylebox, nullptr, Utilities::format("Failed to get StyleBox %s from GUIButton %s", OV_SNAME(normal), node->get_name())
 		);
 		const Ref<StyleBoxTexture> stylebox_texture = stylebox;
 		ERR_FAIL_NULL_V_MSG(
 			stylebox_texture, nullptr, Utilities::format(
-				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
+				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", OV_SNAME(normal), node->get_name()
 			)
 		);
 		const Ref<Texture2D> result = stylebox_texture->get_texture();
 		ERR_FAIL_NULL_V_MSG(
 			result, nullptr,
-			Utilities::format("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name())
+			Utilities::format("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", OV_SNAME(normal), node->get_name())
 		);
 		return result;
 	}
