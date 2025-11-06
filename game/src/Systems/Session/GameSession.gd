@@ -5,7 +5,6 @@ extends Node
 @export var _game_session_menu : Control
 
 func _ready() -> void:
-	Events.Options.load_settings_from_file()
 	if GameSingleton.start_game_session() != OK:
 		push_error("Failed to setup game")
 

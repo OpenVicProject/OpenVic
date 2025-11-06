@@ -165,6 +165,18 @@ func _ready() -> void:
 	add_ootb_music()
 	#don't start the current song for compat mode, do that from
 	#GameStart so we can wait until the music is loaded
+	var settings := GameSettings.load_from_file("user://settings.cfg")
+	if not settings.has_section("audio"): return
+	set_paused(not settings.get_value("audio", "startup_music", true))
+	for key : String in settings.get_section_keys("audio"):
+		if not key.ends_with("_BUS"): continue
+		var bus_name := key
+		if key == "MASTER_BUS": bus_name = "Master"
+		var bus_index := AudioServer.get_bus_index(bus_name)
+		if bus_index == -1:
+			push_error("Could not find bus '%s'.", bus_name)
+			continue
+		AudioServer.set_bus_volume_db(bus_index, linear_to_db(settings.get_value("audio", key, 100.0) / 100))
 
 func set_startup_music(play : bool) -> void:
 	set_paused(not play)

@@ -14,6 +14,7 @@ const GameMenuScene := preload("res://src/UI/GameMenu/GameMenu/GameMenu.tscn")
 
 var _settings_base_path : String = ""
 var _compatibility_path_list : PackedStringArray = []
+var _vic2_settings : GameSettings
 
 func _enter_tree() -> void:
 	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
@@ -55,25 +56,13 @@ func _ready() -> void:
 		get_tree().quit()
 		return
 
-	# Hack to ensure Sound Options load
-	var sound_tab := SoundTabScene.instantiate()
-	sound_tab.visible = false
-	add_child(sound_tab)
-	Events.Options.load_settings.connect(_load_setting)
-	Events.Options.save_settings.connect(_save_setting)
-	Events.Options.load_settings_from_file()
-	sound_tab.queue_free()
+	_vic2_settings = GameSettings.load_from_file("user://vic2.cfg")
+	_vic2_settings.changed.connect(_vic2_settings.save)
+	_vic2_settings.load_deprecated_file("user://settings.cfg", { "general": "base_defines_path" })
+	_settings_base_path = _vic2_settings.get_value(section_name, setting_name, "")
 
 	await _setup_compatibility_mode_paths()
 	await loading_screen.start_loading_screen(_initialize_game)
-
-func _load_setting(file : ConfigFile) -> void:
-	if file == null: return
-	_settings_base_path = file.get_value(section_name, setting_name, "")
-
-func _save_setting(file : ConfigFile) -> void:
-	if file == null: return
-	file.set_value(section_name, setting_name, _settings_base_path)
 
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
@@ -123,9 +112,8 @@ func _setup_compatibility_mode_paths() -> void:
 				return
 
 	if not _settings_base_path:
-		_settings_base_path = actual_base_path
-		# Save the path found in the search
-		Events.Options.save_settings_to_file()
+		_vic2_settings.set_value(section_name, setting_name, actual_base_path)
+		_vic2_settings.emit_changed()
 
 	_compatibility_path_list = [actual_base_path]
 
