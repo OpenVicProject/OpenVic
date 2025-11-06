@@ -89,6 +89,15 @@
 				Returns the localization key [String] of the mapmode with the specified [param index].
 			</description>
 		</method>
+		<method name="get_mod_info" qualifiers="const">
+			<return type="Dictionary[]" />
+			<description>
+				Returns an [Array] of [Dictionary] containing information about available mods, with each [Dictionary] containing values for the following [StringName] keys:
+				- [code]"identifier"[/code] - The mod's [String] name
+				- [code]"dependencies"[/code] - A [PackedStringArray] of dependency mod names
+				- [code]"is_loaded"[/code] - Is [code]true[/code] if the mod is a currently loaded mod, else [code]false[/code]
+			</description>
+		</method>
 		<method name="get_province_colour_texture" qualifiers="const">
 			<return type="ImageTexture" />
 			<description>
@@ -153,8 +162,10 @@
 		</method>
 		<method name="load_defines_compatibility_mode">
 			<return type="int" enum="Error" />
+			<param index="0" name="mods" type="PackedStringArray" default="PackedStringArray()" />
 			<description>
-				Load compatibility mode text defines, localization string and map and flag images. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
+				Load compatibility mode text defines, localization string and map and flag images, loading data from [param mods] if not empty. Returns [code]FAILED[/code] if there are any problems when loading all this data, otherwise returns [code]OK[/code].
+				See [method get_mod_info] for a valid list of values.
 			</description>
 		</method>
 		<method name="lookup_file_path" qualifiers="const">
@@ -173,10 +184,9 @@
 		</method>
 		<method name="set_compatibility_mode_roots">
 			<return type="int" enum="Error" />
-			<param index="0" name="file_paths" type="PackedStringArray" />
-			<param index="1" name="replace_paths" type="PackedStringArray" default="PackedStringArray()" />
+			<param index="0" name="path" type="String" />
 			<description>
-				Set the dataloading roots to those provided in [param file_paths], ignoring the filepaths in [param replace_paths] in favor of mods, which should contain full filepaths to the base game's installation and to any mods that are to be loaded on top of it. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
+				Set the dataloading roots to those provided in [param path] which should contain full filepaths to the base game's installation and where the search for mods will begin from. Returns [code]FAILED[/code] if there are any problems when setting the dataloading roots, otherwise returns [code]OK[/code].
 			</description>
 		</method>
 		<method name="set_mapmode">

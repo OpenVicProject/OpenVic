@@ -4,8 +4,10 @@
 
 #include <godot_cpp/classes/time.hpp>
 #include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/dataloader/ModManager.hpp>
 #include <openvic-simulation/utility/Containers.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
@@ -15,6 +17,8 @@
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+
+#include <range/v3/algorithm/contains.hpp>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/callback_sink.h>
@@ -39,11 +43,13 @@ StringName const& GameSingleton::_signal_mapmode_changed() {
 void GameSingleton::_bind_methods() {
 	OV_BIND_SMETHOD(setup_logger);
 
-	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode);
-	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "file_paths", "replace_paths" }, DEFVAL(PackedStringArray{}));
+	OV_BIND_METHOD(GameSingleton::load_defines_compatibility_mode, { "mods" }, DEFVAL(PackedStringArray()));
+	OV_BIND_METHOD(GameSingleton::set_compatibility_mode_roots, { "path" });
 
 	OV_BIND_SMETHOD(search_for_game_path, { "hint_path" }, DEFVAL(String {}));
 	OV_BIND_METHOD(GameSingleton::lookup_file_path, { "path" });
+
+	OV_BIND_METHOD(GameSingleton::get_mod_info);
 
 	OV_BIND_METHOD(GameSingleton::get_bookmark_info);
 	OV_BIND_METHOD(GameSingleton::setup_game, { "bookmark_index" });
@@ -141,6 +147,37 @@ void GameSingleton::setup_logger() {
 
 	spdlog::default_logger_raw()->sinks().pop_back();
 	spdlog::default_logger_raw()->sinks().push_back(std::move(godot_sink));
+}
+
+TypedArray<Dictionary> GameSingleton::get_mod_info() const {
+	static const StringName identifier_key = "identifier";
+	static const StringName dependencies_key = "dependencies";
+	static const StringName is_loaded_key = "is_loaded";
+
+	TypedArray<Dictionary> results;
+
+	ModManager const& mod_manager = game_manager.get_mod_manager();
+	memory::vector<Mod const*> const& loaded_mods = mod_manager.get_loaded_mods();
+
+	for (Mod const& mod : mod_manager.get_mods()) {
+		Dictionary mod_info_dictionary;
+
+		mod_info_dictionary[identifier_key] = Utilities::std_to_godot_string(mod.get_identifier());
+
+		mod_info_dictionary[dependencies_key] = [&]() -> PackedStringArray {
+			PackedStringArray result;
+			for (std::string_view dep_id : mod.get_dependencies()) {
+				result.push_back(Utilities::std_to_godot_string(dep_id));
+			}
+			return result;
+		}();
+
+		mod_info_dictionary[is_loaded_key] = ranges::contains(loaded_mods, &mod);
+
+		results.push_back(std::move(mod_info_dictionary));
+	}
+
+	return results;
 }
 
 TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
@@ -662,29 +699,25 @@ Error GameSingleton::_load_flag_sheet() {
 	return ret;
 }
 
-Error GameSingleton::set_compatibility_mode_roots(
-	PackedStringArray const& file_paths, godot::PackedStringArray const& replace_paths
-) {
-	Dataloader::path_vector_t roots;
-	roots.reserve(file_paths.size());
-	for (String const& path : file_paths) {
-		roots.emplace_back(Utilities::godot_to_std_string(path));
-	}
-
-	// TODO @BrickPI https://github.com/OpenVicProject/OpenVic/pull/512
-	// Dataloader::path_vector_t replace;
-	// replace.reserve(replace_paths.size());
-	// for (String const& path : replace_paths) {
-	// 	replace.emplace_back(Utilities::godot_to_std_string(path));
-	// }
-
+Error GameSingleton::set_compatibility_mode_roots(String const& path) {
+	Dataloader::path_vector_t roots { Utilities::godot_to_std_string(path) };
 	ERR_FAIL_COND_V_MSG(!game_manager.set_base_path(roots), FAILED, "Failed to set dataloader roots!");
 	return OK;
 }
 
-Error GameSingleton::load_defines_compatibility_mode() {
+Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& mods) {
 	Error err = OK;
 	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
+
+	ERR_FAIL_COND_V_MSG(!game_manager.load_mod_descriptors(), FAILED, "Failed to load mod descriptors!");
+
+	memory::vector<memory::string> std_mods;
+	std_mods.reserve(mods.size());
+	for (String const& mod : mods) {
+		std_mods.emplace_back(Utilities::godot_to_std_string(mod));
+	}
+
+	ERR_FAIL_COND_V_MSG(!game_manager.load_mods(std_mods), FAILED, "Loading mods failed.");
 
 	if (!game_manager.load_definitions(add_message)) {
 		UtilityFunctions::push_error("Failed to load defines!");

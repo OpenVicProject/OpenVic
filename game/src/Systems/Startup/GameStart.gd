@@ -13,7 +13,7 @@ const GameMenuScene := preload("res://src/UI/GameMenu/GameMenu/GameMenu.tscn")
 @export var setting_name : String = "base_defines_path"
 
 var _settings_base_path : String = ""
-var _compatibility_path_list : PackedStringArray = []
+var _mod_list : PackedStringArray = []
 var _vic2_settings : GameSettings
 
 func _enter_tree() -> void:
@@ -115,21 +115,22 @@ func _setup_compatibility_mode_paths() -> void:
 		_vic2_settings.set_value(section_name, setting_name, actual_base_path)
 		_vic2_settings.emit_changed()
 
-	_compatibility_path_list = [actual_base_path]
-
 	# Add mod paths
-	var settings_mod_names : PackedStringArray = ArgumentParser.get_option_value(&"mod")
-	for mod_name : String in settings_mod_names:
-		_compatibility_path_list.push_back(actual_base_path + "/mod/" + mod_name)
+	var mod_status_file := ConfigFile.new()
+	mod_status_file.load("user://mods.cfg")
+	_mod_list = mod_status_file.get_value("mods", "load_list", [])
+	for mod in ArgumentParser.get_option_value(&"mod"):
+		if mod not in _mod_list and mod != "":
+			_mod_list.push_back(mod)
 
 func _load_compatibility_mode() -> void:
-	if GameSingleton.set_compatibility_mode_roots(_compatibility_path_list) != OK:
+	if GameSingleton.set_compatibility_mode_roots(_settings_base_path) != OK:
 		push_error("Errors setting game roots!")
 	
 	CursorManager.initial_cursor_setup()
 	setup_title_theme()
 
-	if GameSingleton.load_defines_compatibility_mode() != OK:
+	if GameSingleton.load_defines_compatibility_mode(_mod_list) != OK:
 		push_error("Errors loading game defines!")
 
 	SoundSingleton.load_sounds()
