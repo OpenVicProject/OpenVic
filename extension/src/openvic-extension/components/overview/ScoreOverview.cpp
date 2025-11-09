@@ -11,6 +11,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -287,9 +288,9 @@ void ScoreOverview::on_industrial_score_changed(const fixed_point_t new_industri
 godot::String ScoreOverview::generate_military_tooltip(CountryInstance& country) {
 	godot::String military_power_tooltip;
 
-	static const godot::StringName military_power_from_land_key = "MIL_FROM_TROOPS";
-	static const godot::StringName military_power_from_sea_key = "MIL_FROM_CAP_SHIPS";
-	static const godot::StringName military_power_from_leaders_key = "MIL_FROM_LEADERS";
+	const godot::StringName military_power_from_land_key = OV_INAME("MIL_FROM_TROOPS");
+	const godot::StringName military_power_from_sea_key = OV_INAME("MIL_FROM_CAP_SHIPS");
+	const godot::StringName military_power_from_leaders_key = OV_INAME("MIL_FROM_LEADERS");
 
 	for (auto const& [source, power] : {
 		std::pair

@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/types/TextFormat.hpp"
@@ -121,13 +122,9 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 				)
 			);
 
-			static const StringName set_z_index_func_name = "set_z_index";
-			static const StringName mouse_entered_signal_name = "mouse_entered";
-			static const StringName mouse_exited_signal_name = "mouse_exited";
-
 			/* Move the child element in front of its neighbours when moused-over. */
-			child->connect(mouse_entered_signal_name, Callable { child, set_z_index_func_name }.bind(1), CONNECT_PERSIST);
-			child->connect(mouse_exited_signal_name, Callable { child, set_z_index_func_name }.bind(0), CONNECT_PERSIST);
+			child->connect(OV_SNAME(mouse_entered), Callable { child, OV_SNAME(set_z_index) }.bind(1), CONNECT_PERSIST);
+			child->connect(OV_SNAME(mouse_exited), Callable { child, OV_SNAME(set_z_index) }.bind(0), CONNECT_PERSIST);
 
 			add_child(child);
 			child_count++;

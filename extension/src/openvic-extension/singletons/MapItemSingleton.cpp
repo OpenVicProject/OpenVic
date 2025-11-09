@@ -7,6 +7,7 @@
 #include "godot_cpp/variant/packed_vector2_array.hpp"
 #include "godot_cpp/variant/typed_array.hpp"
 #include "godot_cpp/variant/vector2.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -55,18 +56,12 @@ MapItemSingleton::~MapItemSingleton() {
 
 // repackage the billboard object into a godot dictionary for the Billboard manager to work with
 void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, TypedArray<Dictionary>& billboard_dict_array) const {
-
-	static const StringName name_key = "name";
-	static const StringName texture_key = "texture";
-	static const StringName scale_key = "scale";
-	static const StringName no_of_frames_key = "noFrames";
-
 	Dictionary dict;
 
-	dict[name_key] = Utilities::std_to_godot_string(billboard.get_name());
-	dict[texture_key] = Utilities::std_to_godot_string(billboard.get_texture_file());
-	dict[scale_key] = static_cast<real_t>(billboard.get_scale());
-	dict[no_of_frames_key] = billboard.get_no_of_frames();
+	dict[OV_SNAME(name)] = Utilities::std_to_godot_string(billboard.get_name());
+	dict[OV_SNAME(texture)] = Utilities::std_to_godot_string(billboard.get_texture_file());
+	dict[OV_SNAME(scale)] = static_cast<real_t>(billboard.get_scale());
+	dict[OV_INAME("noFrames")] = billboard.get_no_of_frames();
 
 	billboard_dict_array.push_back(dict);
 }
@@ -89,23 +84,15 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 }
 
 void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array) const {
-	static const StringName name_key = "name";
-	static const StringName texture_key = "texture";
-	static const StringName size_key = "size";
-	static const StringName spin_key = "spin";
-	static const StringName expanding_key = "expanding";
-	static const StringName duration_key = "duration";
-	static const StringName additative_key = "additative";
-
 	Dictionary dict;
 
-	dict[name_key] = Utilities::std_to_godot_string(projection.get_name());
-	dict[texture_key] = Utilities::std_to_godot_string(projection.get_texture_file());
-	dict[size_key] = static_cast<real_t>(projection.get_size());
-	dict[spin_key] = static_cast<real_t>(projection.get_spin());
-	dict[expanding_key] = static_cast<real_t>(projection.get_expanding());
-	dict[duration_key] = static_cast<real_t>(projection.get_duration());
-	dict[additative_key] = projection.get_additative();
+	dict[OV_SNAME(name)] = Utilities::std_to_godot_string(projection.get_name());
+	dict[OV_SNAME(texture)] = Utilities::std_to_godot_string(projection.get_texture_file());
+	dict[OV_SNAME(size)] = static_cast<real_t>(projection.get_size());
+	dict[OV_INAME("spin")] = static_cast<real_t>(projection.get_spin());
+	dict[OV_INAME("expanding")] = static_cast<real_t>(projection.get_expanding());
+	dict[OV_INAME("duration")] = static_cast<real_t>(projection.get_duration());
+	dict[OV_INAME("additative")] = projection.get_additative();
 
 	projection_dict_array.push_back(dict);
 }

@@ -3,7 +3,10 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/utility/Typedefs.hpp>
+
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -135,22 +138,17 @@ Error GFXButtonStateTexture::generate_state_image(
 }
 
 StringName const& GFXButtonStateTexture::button_state_to_name(ButtonState button_state) {
-	static const StringName name_hover = "hover";
-	static const StringName name_pressed = "pressed";
-	static const StringName name_disabled = "disabled";
-	static const StringName name_selected = "selected";
-	static const StringName name_error = "INVALID BUTTON STATE";
 	switch (button_state) {
 		case HOVER:
-			return name_hover;
+			return OV_SNAME(hover);
 		case PRESSED:
-			return name_pressed;
+			return OV_SNAME(pressed);
 		case DISABLED:
-			return name_disabled;
+			return OV_SNAME(disabled);
 		case SELECTED:
-			return name_selected;
+			return OV_SNAME(selected);
 		default:
-			return name_error;
+			unreachable();
 	}
 }
 

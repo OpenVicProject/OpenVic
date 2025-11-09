@@ -11,6 +11,7 @@
 #include <openvic-simulation/utility/Containers.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
@@ -29,15 +30,11 @@ using namespace OpenVic;
 /* Maximum width or height a GPU texture can have. */
 static constexpr int32_t GPU_DIM_LIMIT = 0x3FFF;
 
-/* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use these wrapper functions to delay their initialisation. */
 StringName const& GameSingleton::_signal_gamestate_updated() {
-	static const StringName signal_gamestate_updated = "gamestate_updated";
-	return signal_gamestate_updated;
+	return OV_SNAME(gamestate_updated);
 }
 StringName const& GameSingleton::_signal_mapmode_changed() {
-	static const StringName signal_mapmode_changed = "mapmode_changed";
-	return signal_mapmode_changed;
+	return OV_SNAME(mapmode_changed);
 }
 
 void GameSingleton::_bind_methods() {
@@ -150,10 +147,6 @@ void GameSingleton::setup_logger() {
 }
 
 TypedArray<Dictionary> GameSingleton::get_mod_info() const {
-	static const StringName identifier_key = "identifier";
-	static const StringName dependencies_key = "dependencies";
-	static const StringName is_loaded_key = "is_loaded";
-
 	TypedArray<Dictionary> results;
 
 	ModManager const& mod_manager = game_manager.get_mod_manager();
@@ -162,9 +155,9 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 	for (Mod const& mod : mod_manager.get_mods()) {
 		Dictionary mod_info_dictionary;
 
-		mod_info_dictionary[identifier_key] = Utilities::std_to_godot_string(mod.get_identifier());
+		mod_info_dictionary[OV_SNAME(identifier)] = Utilities::std_to_godot_string(mod.get_identifier());
 
-		mod_info_dictionary[dependencies_key] = [&]() -> PackedStringArray {
+		mod_info_dictionary[OV_INAME("dependencies")] = [&]() -> PackedStringArray {
 			PackedStringArray result;
 			for (std::string_view dep_id : mod.get_dependencies()) {
 				result.push_back(Utilities::std_to_godot_string(dep_id));
@@ -172,7 +165,7 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 			return result;
 		}();
 
-		mod_info_dictionary[is_loaded_key] = ranges::contains(loaded_mods, &mod);
+		mod_info_dictionary[OV_INAME("is_loaded")] = ranges::contains(loaded_mods, &mod);
 
 		results.push_back(std::move(mod_info_dictionary));
 	}
@@ -181,9 +174,6 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 }
 
 TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
-	static const StringName bookmark_info_name_key = "bookmark_name";
-	static const StringName bookmark_info_date_key = "bookmark_date";
-
 	TypedArray<Dictionary> results;
 
 	BookmarkManager const& bookmark_manager =
@@ -192,8 +182,8 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 	for (Bookmark const& bookmark : bookmark_manager.get_bookmarks()) {
 		Dictionary bookmark_info;
 
-		bookmark_info[bookmark_info_name_key] = Utilities::std_to_godot_string(bookmark.get_name());
-		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.get_date(), false);
+		bookmark_info[OV_INAME("bookmark_name")] = Utilities::std_to_godot_string(bookmark.get_name());
+		bookmark_info[OV_INAME("bookmark_date")] = Utilities::date_to_formatted_string(bookmark.get_date(), false);
 
 		results.push_back(std::move(bookmark_info));
 	}
@@ -397,11 +387,6 @@ Error GameSingleton::_update_colour_image() {
 }
 
 TypedArray<Dictionary> GameSingleton::get_province_names() const {
-	static const StringName identifier_key = "identifier";
-	static const StringName position_key = "position";
-	static const StringName rotation_key = "rotation";
-	static const StringName scale_key = "scale";
-
 	MapDefinition const& map_definition = get_definition_manager().get_map_definition();
 
 	TypedArray<Dictionary> ret;
@@ -412,17 +397,17 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 
 		Dictionary province_dict;
 
-		province_dict[identifier_key] = Utilities::std_to_godot_string(province.get_identifier());
-		province_dict[position_key] = normalise_map_position(province.get_text_position());
+		province_dict[OV_SNAME(identifier)] = Utilities::std_to_godot_string(province.get_identifier());
+		province_dict[OV_SNAME(position)] = normalise_map_position(province.get_text_position());
 
 		const float rotation = static_cast<float>(province.get_text_rotation());
 		if (rotation != 0.0f) {
-			province_dict[rotation_key] = rotation;
+			province_dict[OV_SNAME(rotation)] = rotation;
 		}
 
 		const float scale = static_cast<float>(province.get_text_scale());
 		if (scale != 1.0f) {
-			province_dict[scale_key] = scale;
+			province_dict[OV_SNAME(scale)] = scale;
 		}
 
 		ret[index] = std::move(province_dict);
@@ -538,7 +523,7 @@ Error GameSingleton::_load_map_images() {
 Error GameSingleton::_load_terrain_variants() {
 	ERR_FAIL_COND_V_MSG(terrain_texture.is_valid(), FAILED, "Terrain variants have already been loaded!");
 
-	static const StringName terrain_texturesheet_path = "map/terrain/texturesheet.tga";
+	const StringName terrain_texturesheet_path = OV_INAME("map/terrain/texturesheet.tga");
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);

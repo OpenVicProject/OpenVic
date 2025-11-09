@@ -36,10 +36,10 @@ namespace OpenVic::Utilities {
 		return file->get_buffer(size).get_string_from_ascii();
 	}
 
-	godot::StringName const& get_short_value_placeholder();
-	godot::StringName const& get_long_value_placeholder();
-	godot::StringName const& get_percentage_value_placeholder();
-	godot::StringName const& get_colour_and_sign(const fixed_point_t value);
+	godot::String get_short_value_placeholder();
+	godot::String get_long_value_placeholder();
+	godot::String get_percentage_value_placeholder();
+	godot::String get_colour_and_sign(const fixed_point_t value);
 
 	godot::String int_to_string_suffixed(int64_t val);
 

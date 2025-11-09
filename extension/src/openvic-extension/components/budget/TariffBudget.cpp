@@ -79,13 +79,9 @@ void TariffBudget::update_slider_tooltip(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	static const godot::StringName tooltip_template = "%s\n%s\n--------------\n%s\n%s";
-	static const godot::StringName green = "G";
-	static const godot::StringName red = "R";
+	static const godot::String tooltip_template = "%s\n%s\n--------------\n%s\n%s";
 	//Yes Victoria 2 overrides the colour specified in localisation...
-	godot::StringName const& prefix = scaled_value < 0
-		? red
-		: green;
+	godot::String prefix = scaled_value < 0 ? "R" : "G";
 
 	slider_tooltip_args[0] = slider.tr(slider_tooltip_localisation_key).replace(
 		"Y"+Utilities::get_short_value_placeholder(),

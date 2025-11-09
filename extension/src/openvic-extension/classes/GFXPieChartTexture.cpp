@@ -3,6 +3,7 @@
 #include <numbers>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 
 using namespace godot;
@@ -10,20 +11,16 @@ using namespace OpenVic;
 using namespace OpenVic::Utilities::literals;
 
 StringName const& GFXPieChartTexture::_slice_identifier_key() {
-	static const StringName slice_identifier_key = "identifier";
-	return slice_identifier_key;
+	return OV_SNAME(identifier);
 }
 StringName const& GFXPieChartTexture::_slice_tooltip_key() {
-	static const StringName slice_tooltip_key = "tooltip";
-	return slice_tooltip_key;
+	return OV_SNAME(tooltip);
 }
 StringName const& GFXPieChartTexture::_slice_colour_key() {
-	static const StringName slice_colour_key = "colour";
-	return slice_colour_key;
+	return OV_SNAME(colour);
 }
 StringName const& GFXPieChartTexture::_slice_weight_key() {
-	static const StringName slice_weight_key = "weight";
-	return slice_weight_key;
+	return OV_SNAME(weight);
 }
 
 GFXPieChartTexture::slice_t const* GFXPieChartTexture::get_slice(Vector2 const& position) const {

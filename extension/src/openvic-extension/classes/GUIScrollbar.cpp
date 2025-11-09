@@ -13,6 +13,7 @@
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -22,8 +23,7 @@ using namespace godot;
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
  * so we must use wrapper functions to delay their initialisation. */
 StringName const& GUIScrollbar::signal_value_changed() {
-	static const StringName signal_value_changed = "value_changed";
-	return signal_value_changed;
+	return OV_SNAME(value_changed);
 }
 
 GUI_TOOLTIP_IMPLEMENTATIONS(GUIScrollbar)

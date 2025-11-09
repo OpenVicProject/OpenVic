@@ -42,6 +42,7 @@
 #include <openvic-simulation/utility/Typedefs.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 #include "gen/commit_info.gen.hpp"
@@ -250,8 +251,7 @@ ArgumentParser::ArgumentParser() {
 	parse_arguments(OS::get_singleton()->get_cmdline_args(), false);
 	parse_arguments(OS::get_singleton()->get_cmdline_user_args());
 
-	static const StringName ARGS_PATH = "openvic/data/arguments";
-	Dictionary arguments = Utilities::get_project_setting(ARGS_PATH, Dictionary());
+	Dictionary arguments = Utilities::get_project_setting(OV_INAME("openvic/data/arguments"), Dictionary());
 	if (!arguments.is_empty()) {
 		Array keys = arguments.keys();
 		for (size_t i = 0; i < arguments.size(); i++) {
@@ -333,8 +333,8 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 		return _rich_help_string;
 	}
 
-	static const StringName APP_NAME_PATH = "application/config/name";
-	static const StringName APP_DESCRIPTION_PATH = "application/config/description";
+	const StringName APP_NAME_PATH = OV_INAME("application/config/name");
+	const StringName APP_DESCRIPTION_PATH = OV_INAME("application/config/description");
 
 	PackedStringArray option_help;
 	option_help.resize(options.size());

@@ -2,6 +2,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
@@ -37,7 +38,7 @@ AssetManager::~AssetManager() {
 	_singleton = nullptr;
 }
 
-Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
+Ref<Image> AssetManager::_load_image(String const& path, bool flip_y) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
@@ -122,9 +123,7 @@ Ref<StyleBoxTexture> AssetManager::make_stylebox_texture(Ref<Texture2D> const& t
 
 	stylebox->set_texture(texture);
 
-	static const StringName changed_signal = "changed";
-	static const StringName emit_changed_func = "emit_changed";
-	texture->connect(changed_signal, Callable { *stylebox, emit_changed_func }, Object::CONNECT_PERSIST);
+	texture->connect(OV_SNAME(changed), Callable { *stylebox, OV_SNAME(emit_changed) }, Object::CONNECT_PERSIST);
 
 	if (border != Vector2 {}) {
 		stylebox->set_texture_margin(SIDE_LEFT, border.x);

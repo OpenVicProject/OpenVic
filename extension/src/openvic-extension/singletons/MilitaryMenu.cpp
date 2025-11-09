@@ -6,6 +6,7 @@
 #include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
@@ -38,10 +39,8 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 	}
 
 	static const StringName military_info_leader_id_key = "leader_id";
-	static const StringName military_info_leader_branch_key = "leader_branch";
 	static const StringName military_info_leader_name_key = "leader_name";
 	static const StringName military_info_leader_picture_key = "leader_picture";
-	static const StringName military_info_leader_prestige_key = "leader_prestige";
 	static const StringName military_info_leader_prestige_tooltip_key = "leader_prestige_tooltip";
 	static const StringName military_info_leader_background_key = "leader_background";
 	static const StringName military_info_leader_personality_key = "leader_personality";
@@ -60,13 +59,13 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 	{
 		// Generic data
 		leader_dict[military_info_leader_id_key] = leader.get_unique_id();
-		leader_dict[military_info_leader_branch_key] = static_cast<int32_t>(leader.get_branch());
+		leader_dict[OV_INAME("leader_branch")] = static_cast<int32_t>(leader.get_branch());
 
 		leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
 
 		UnitInstanceGroup const* group = leader.get_unit_instance_group();
 		if (group != nullptr) {
-			leader_dict[military_info_leader_assignment_key] = Utilities::std_to_godot_string(group->get_name());
+			leader_dict[OV_INAME("leader_assignment")] = Utilities::std_to_godot_string(group->get_name());
 
 			ProvinceInstance const* location = group->get_position();
 			if (location != nullptr) {
@@ -144,7 +143,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 			_make_modifier_effect_value_coloured(organisation_effect, modifier_value.get_effect(organisation_effect), true)
 		);
 
-		leader_dict[military_info_leader_prestige_key] = static_cast<real_t>(prestige);
+		leader_dict[OV_INAME("leader_prestige")] = static_cast<real_t>(prestige);
 		leader_dict[military_info_leader_prestige_tooltip_key] = std::move(prestige_tooltip);
 	}
 
@@ -213,13 +212,10 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 	static const StringName military_info_unit_group_leader_tooltip_key = "unit_group_leader_tooltip";
 	static const StringName military_info_unit_group_name_key           = "unit_group_name";
 	static const StringName military_info_unit_group_location_key       = "unit_group_location";
-	static const StringName military_info_unit_group_unit_count_key     = "unit_group_unit_count";
 	static const StringName military_info_unit_group_men_count_key      = "unit_group_men_count"; // armies only
 	static const StringName military_info_unit_group_max_men_count_key  = "unit_group_max_men_count"; // armies only
 	static const StringName military_info_unit_group_organisation_key   = "unit_group_organisation";
-	static const StringName military_info_unit_group_strength_key       = "unit_group_strength";
 	static const StringName military_info_unit_group_moving_tooltip_key = "unit_group_moving_tooltip";
-	static const StringName military_info_unit_group_dig_in_tooltip_key  = "unit_group_dig_in_tooltip"; // armies only
 	static const StringName military_info_unit_group_combat_key         = "unit_group_combat";
 
 	using enum unit_branch_t;
@@ -243,10 +239,10 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 		unit_group_dict[military_info_unit_group_location_key] =
 			Utilities::std_to_godot_string(unit_group.get_position()->get_identifier());
 	}
-	unit_group_dict[military_info_unit_group_unit_count_key] = static_cast<uint64_t>(unit_group.get_unit_count());
+	unit_group_dict[OV_INAME("unit_group_unit_count")] = static_cast<uint64_t>(unit_group.get_unit_count());
 
 	unit_group_dict[military_info_unit_group_organisation_key] = static_cast<real_t>(unit_group.get_organisation_proportion());
-	unit_group_dict[military_info_unit_group_strength_key] = static_cast<real_t>(unit_group.get_strength_proportion());
+	unit_group_dict[OV_INAME("unit_group_strength")] = static_cast<real_t>(unit_group.get_strength_proportion());
 
 	if (unit_group.is_moving()) {
 		static const StringName moving_localisation_key = "MILITARY_MOVING_TOOLTIP";
@@ -271,10 +267,9 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 		const ArmyInstance::dig_in_level_t dig_in_level = unit_group.get_dig_in_level();
 
 		if (dig_in_level > 0) {
-			static const StringName dig_in_localisation_key = "MILITARY_DIGIN_TOOLTIP";
 			static const String moving_days_replace_key = "$DAYS$";
 
-			unit_group_dict[military_info_unit_group_dig_in_tooltip_key] = tr(dig_in_localisation_key).replace(
+			unit_group_dict[OV_INAME("unit_group_dig_in_tooltip")] = tr(OV_INAME("MILITARY_DIGIN_TOOLTIP")).replace(
 				moving_days_replace_key, String::num_uint64(dig_in_level)
 			);
 		}
@@ -291,10 +286,8 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	static const StringName military_info_unit_progress_key = "unit_progress";
 	static const StringName military_info_unit_icon_key = "unit_icon";
-	static const StringName military_info_unit_name_key = "unit_name";
 	static const StringName military_info_unit_location_key = "unit_location";
 	static const StringName military_info_unit_eta_key = "unit_eta";
-	static const StringName military_info_unit_tooltip_key = "unit_tooltip";
 
 	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 	GoodDefinitionManager const& good_definition_manager =
@@ -325,7 +318,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 
 	in_progress_unit_dict[military_info_unit_progress_key] = static_cast<real_t>(progress);
 	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->get_icon();
-	in_progress_unit_dict[military_info_unit_name_key] = Utilities::std_to_godot_string(unit_type->get_identifier());
+	in_progress_unit_dict[OV_INAME("unit_name")] = Utilities::std_to_godot_string(unit_type->get_identifier());
 	if (location != nullptr) {
 		in_progress_unit_dict[military_info_unit_location_key] = Utilities::std_to_godot_string(location->get_identifier());
 	}
@@ -343,7 +336,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 
 	if (!tooltip.is_empty()) {
 		static const StringName gathering_goods_localisation_key = "GOODS_PROJECT_LACK_GOODS";
-		in_progress_unit_dict[military_info_unit_tooltip_key] = tr(gathering_goods_localisation_key) + tooltip;
+		in_progress_unit_dict[OV_INAME("unit_tooltip")] = tr(gathering_goods_localisation_key) + tooltip;
 	}
 
 	return in_progress_unit_dict;
@@ -374,7 +367,6 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	static const StringName military_info_supply_consumption_tooltip_key = "supply_consumption_tooltip";
 	static const StringName military_info_organisation_regain_key = "organisation_regain";
 	static const StringName military_info_organisation_regain_tooltip_key = "organisation_regain_tooltip";
-	static const StringName military_info_land_organisation_key = "land_organisation";
 	static const StringName military_info_land_organisation_tooltip_key = "land_organisation_tooltip";
 	static const StringName military_info_naval_organisation_key = "naval_organisation";
 	static const StringName military_info_naval_organisation_tooltip_key = "naval_organisation_tooltip";
@@ -441,7 +433,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		ret[military_info_organisation_regain_tooltip_key] = std::move(organisation_regain_tooltip);
 	}
 
-	ret[military_info_land_organisation_key] = static_cast<real_t>(country->get_land_organisation());
+	ret[OV_INAME("land_organisation")] = static_cast<real_t>(country->get_land_organisation());
 	ret[military_info_land_organisation_tooltip_key] = base_value_percent_tooltip +
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_land_organisation());
 
@@ -503,18 +495,10 @@ Dictionary MenuSingleton::get_military_menu_info() {
 	ret[military_info_military_tactics_key] = static_cast<real_t>(country->get_military_tactics());
 
 	// Mobilisation
-	static const StringName military_info_is_mobilised_key = "is_mobilised";
-	static const StringName military_info_mobilisation_progress_key = "mobilisation_progress";
-	static const StringName military_info_mobilisation_size_key = "mobilisation_size";
-	static const StringName military_info_mobilisation_size_tooltip_key = "mobilisation_size_tooltip";
-	static const StringName military_info_mobilisation_impact_tooltip_key = "mobilisation_impact_tooltip";
-	static const StringName military_info_mobilisation_economy_impact_key = "mobilisation_economy_impact";
-	static const StringName military_info_mobilisation_economy_impact_tooltip_key = "mobilisation_economy_impact_tooltip";
-
-	ret[military_info_is_mobilised_key] = country->is_mobilised();
+	ret[OV_SNAME(is_mobilised)] = country->is_mobilised();
 	// TODO - get mobilisation progress from SIM
-	// ret[military_info_mobilisation_progress_key] = static_cast<real_t>(country->get_mobilisation_progress());
-	ret[military_info_mobilisation_size_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
+	// ret[OV_INAME("mobilisation_progress")] = static_cast<real_t>(country->get_mobilisation_progress());
+	ret[OV_INAME("mobilisation_size")] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
 
 	{
 		static const StringName mobilisation_size_tooltip_localisation_key = "MOB_SIZE_IRO";
@@ -547,14 +531,14 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			*country, *modifier_effect_cache.get_mobilisation_size_country()
 		);
 
-		ret[military_info_mobilisation_size_tooltip_key] = std::move(military_info_mobilisation_size_tooltip);
+		ret[OV_INAME("mobilisation_size_tooltip")] = std::move(military_info_mobilisation_size_tooltip);
 	}
 
 	if (!country->is_mobilised()) {
-		ret[military_info_mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
+		ret[OV_SNAME(mobilisation_impact_tooltip)] = _make_mobilisation_impact_tooltip();
 	}
 
-	ret[military_info_mobilisation_economy_impact_key] = static_cast<real_t>(country->get_mobilisation_economy_impact());
+	ret[OV_INAME("mobilisation_economy_impact")] = static_cast<real_t>(country->get_mobilisation_economy_impact());
 
 	{
 		String mobilisation_economy_impact_tooltip = _make_modifier_effect_contributions_tooltip(
@@ -584,7 +568,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			mobilisation_economy_impact_tooltip = mobilisation_economy_impact_tooltip.substr(1);
 		}
 
-		ret[military_info_mobilisation_economy_impact_tooltip_key] = mobilisation_economy_impact_tooltip;
+		ret[OV_INAME("mobilisation_economy_impact_tooltip")] = mobilisation_economy_impact_tooltip;
 	}
 
 	// Leaders

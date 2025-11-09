@@ -14,6 +14,7 @@
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -81,15 +82,6 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 	);
 	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for population menu province list rows: %d", count));
 
-	static const StringName type_key = "type";
-	static const StringName index_key = "index";
-	static const StringName name_key = "name";
-	static const StringName size_key = "size";
-	static const StringName change_key = "change";
-	static const StringName selected_key = "selected";
-	/* State-only keys */
-	static const StringName expanded_key = "expanded";
-	static const StringName colonial_status_key = "colony";
 	// TODO - national focus
 
 	struct entry_visitor_t {
@@ -113,12 +105,12 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (start_counter-- <= 0) {
 				Dictionary country_dict;
 
-				country_dict[type_key] = LIST_ENTRY_COUNTRY;
-				country_dict[index_key] = index;
-				country_dict[name_key] = Utilities::get_country_name(menu_singleton, country_entry.country);
-				country_dict[size_key] = country_entry.country.get_total_population();
-				country_dict[change_key] = 0;
-				country_dict[selected_key] = country_entry.selected;
+				country_dict[OV_SNAME(type)] = LIST_ENTRY_COUNTRY;
+				country_dict[OV_SNAME(index)] = index;
+				country_dict[OV_SNAME(name)] = Utilities::get_country_name(menu_singleton, country_entry.country);
+				country_dict[OV_SNAME(size)] = country_entry.country.get_total_population();
+				country_dict[OV_SNAME(change)] = 0;
+				country_dict[OV_SNAME(selected)] = country_entry.selected;
 
 				array.push_back(country_dict);
 
@@ -134,14 +126,14 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (start_counter-- <= 0) {
 				Dictionary state_dict;
 
-				state_dict[type_key] = LIST_ENTRY_STATE;
-				state_dict[index_key] = index;
-				state_dict[name_key] = Utilities::get_state_name(menu_singleton, state_entry.state);
-				state_dict[size_key] = state_entry.state.get_total_population();
-				state_dict[change_key] = 0;
-				state_dict[selected_key] = state_entry.selected;
-				state_dict[expanded_key] = state_entry.expanded;
-				state_dict[colonial_status_key] = false;
+				state_dict[OV_SNAME(type)] = LIST_ENTRY_STATE;
+				state_dict[OV_SNAME(index)] = index;
+				state_dict[OV_SNAME(name)] = Utilities::get_state_name(menu_singleton, state_entry.state);
+				state_dict[OV_SNAME(size)] = state_entry.state.get_total_population();
+				state_dict[OV_SNAME(change)] = 0;
+				state_dict[OV_SNAME(selected)] = state_entry.selected;
+				state_dict[OV_INAME("expanded")] = state_entry.expanded;
+				state_dict[OV_INAME("colony")] = false;
 
 				array.push_back(state_dict);
 
@@ -155,12 +147,12 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 			if (is_expanded && start_counter-- <= 0) {
 				Dictionary province_dict;
 
-				province_dict[type_key] = LIST_ENTRY_PROVINCE;
-				province_dict[index_key] = index;
-				province_dict[name_key] = Utilities::std_to_godot_string(province_entry.province.get_identifier());
-				province_dict[size_key] = province_entry.province.get_total_population();
-				province_dict[change_key] = 0;
-				province_dict[selected_key] = province_entry.selected;
+				province_dict[OV_SNAME(type)] = LIST_ENTRY_PROVINCE;
+				province_dict[OV_SNAME(index)] = index;
+				province_dict[OV_SNAME(name)] = Utilities::std_to_godot_string(province_entry.province.get_identifier());
+				province_dict[OV_SNAME(size)] = province_entry.province.get_total_population();
+				province_dict[OV_SNAME(change)] = 0;
+				province_dict[OV_SNAME(selected)] = province_entry.selected;
 
 				array.push_back(province_dict);
 
@@ -738,55 +730,33 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		count = population_menu.filtered_pops.size() - start;
 	}
 
-	static const StringName pop_size_key = "size";
-
-	static const StringName pop_type_icon_key = "pop_type_icon";
 	// TODO - pop type name
 	// TODO - promotions (target pop type and count)
 	// TODO - demotions (target pop type and count)
 	// TODO - good being produced (artisans, farmers, labourers, slaves)
 	// TODO - military unit and army (soldiers)
 
-	static const StringName pop_culture_key = "culture";
 	// TODO - cultural assimilation (primary/accepted, or number, target culture, and conditional weights breakdown)
 
-	static const StringName pop_religion_icon_key = "religion_icon";
 	// TODO - religion name
 	// TODO - religious conversion (accepted, or number, target religion, and conditional weights breakdown)
 
-	static const StringName pop_location_key = "location";
 	// TODO - internal, external and colonial migration
 
-	static const StringName pop_militancy_key = "militancy";
 	// TODO - monthly militancy change and modifier breakdown
 
-	static const StringName pop_consciousness_key = "consciousness";
 	// TODO - monthly consciousness change and modifier breakdown
 
-	static const StringName pop_ideology_key = "ideology";
-
-	static const StringName pop_issues_key = "issues";
-
-	static const StringName pop_unemployment_key = "unemployment";
-
-	static const StringName pop_cash_key = "cash";
-	static const StringName pop_daily_money_key = "daily_money";
 	// TODO - daily income, needs, salary and savings
 
-	static const StringName pop_life_needs_key = "life_needs";
-	static const StringName pop_everyday_needs_key = "everyday_needs";
-	static const StringName pop_luxury_needs_key = "luxury_needs";
 	// TODO - goods not available on market or goods not affordale + price (for all 3 needs types)
 
-	static const StringName pop_rebel_icon_key = "rebel_icon";
 	// TODO - rebel faction name/description
 	// TODO - icons for social/political reform movements
 	// TODO - flags for country-related rebels
 
-	static const StringName pop_size_change_key = "size_change";
 	// TODO - size change breakdown
 
-	static const StringName pop_literacy_key = "literacy";
 	// TODO - monthly change
 
 	TypedArray<Dictionary> array;
@@ -796,30 +766,30 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		Pop const* pop = population_menu.filtered_pops[start + idx];
 		Dictionary pop_dict;
 
-		pop_dict[pop_size_key] = pop->get_size();
-		pop_dict[pop_type_icon_key] = pop->get_type()->get_sprite();
-		pop_dict[pop_culture_key] = Utilities::std_to_godot_string(pop->get_culture().get_identifier());
-		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
+		pop_dict[OV_SNAME(size)] = pop->get_size();
+		pop_dict[OV_INAME("pop_type_icon")] = pop->get_type()->get_sprite();
+		pop_dict[OV_SNAME(culture)] = Utilities::std_to_godot_string(pop->get_culture().get_identifier());
+		pop_dict[OV_INAME("religion_icon")] = pop->get_religion().get_icon();
 		if (pop->get_location() != nullptr) {
-			pop_dict[pop_location_key] = Utilities::std_to_godot_string(pop->get_location()->get_identifier());
+			pop_dict[OV_INAME("location")] = Utilities::std_to_godot_string(pop->get_location()->get_identifier());
 		}
-		pop_dict[pop_militancy_key] = static_cast<real_t>(pop->get_militancy());
-		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop->get_consciousness());
-		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_supporter_equivalents_by_ideology());
-		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(
+		pop_dict[OV_INAME("militancy")] = static_cast<real_t>(pop->get_militancy());
+		pop_dict[OV_INAME("consciousness")] = static_cast<real_t>(pop->get_consciousness());
+		pop_dict[OV_INAME("ideology")] = generate_population_menu_pop_row_pie_chart_data(pop->get_supporter_equivalents_by_ideology());
+		pop_dict[OV_SNAME(issues)] = generate_population_menu_pop_row_pie_chart_data(
 			pop->get_supporter_equivalents_by_issue(), get_issue_identifier_suffix()
 		);
-		pop_dict[pop_unemployment_key] = static_cast<real_t>(pop->get_unemployment_fraction());
-		pop_dict[pop_cash_key] = static_cast<real_t>(pop->get_cash().get_copy_of_value());
-		pop_dict[pop_daily_money_key] = static_cast<real_t>(pop->get_income());
-		pop_dict[pop_life_needs_key] = static_cast<real_t>(pop->get_life_needs_fulfilled());
-		pop_dict[pop_everyday_needs_key] = static_cast<real_t>(pop->get_everyday_needs_fulfilled());
-		pop_dict[pop_luxury_needs_key] = static_cast<real_t>(pop->get_luxury_needs_fulfilled());
+		pop_dict[OV_INAME("unemployment")] = static_cast<real_t>(pop->get_unemployment_fraction());
+		pop_dict[OV_INAME("cash")] = static_cast<real_t>(pop->get_cash().get_copy_of_value());
+		pop_dict[OV_INAME("daily_money")] = static_cast<real_t>(pop->get_income());
+		pop_dict[OV_INAME("life_needs")] = static_cast<real_t>(pop->get_life_needs_fulfilled());
+		pop_dict[OV_INAME("everyday_needs")] = static_cast<real_t>(pop->get_everyday_needs_fulfilled());
+		pop_dict[OV_INAME("luxury_needs")] = static_cast<real_t>(pop->get_luxury_needs_fulfilled());
 		if (pop->get_rebel_type() != nullptr) {
-			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->get_icon();
+			pop_dict[OV_INAME("rebel_icon")] = pop->get_rebel_type()->get_icon();
 		}
-		pop_dict[pop_size_change_key] = pop->get_total_change();
-		pop_dict[pop_literacy_key] = static_cast<real_t>(pop->get_literacy());
+		pop_dict[OV_INAME("size_change")] = pop->get_total_change();
+		pop_dict[OV_SNAME(literacy)] = static_cast<real_t>(pop->get_literacy());
 
 		array[idx] = std::move(pop_dict);
 	}
@@ -861,7 +831,6 @@ PackedInt32Array MenuSingleton::get_population_menu_pop_filter_setup_info() {
 
 TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() const {
 	static const StringName pop_filter_count_key = "count";
-	static const StringName pop_filter_change_key = "change";
 	static const StringName pop_filter_selected_key = "selected";
 
 	TypedArray<Dictionary> array;
@@ -873,7 +842,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 		Dictionary filter_dict;
 
 		filter_dict[pop_filter_count_key] = filter.count;
-		filter_dict[pop_filter_change_key] = filter.promotion_demotion_change;
+		filter_dict[OV_SNAME(change)] = filter.promotion_demotion_change;
 		filter_dict[pop_filter_selected_key] = filter.selected;
 
 		array[idx] = std::move(filter_dict);

@@ -40,6 +40,7 @@
 #include "openvic-extension/classes/GUIPieChart.hpp"
 #include "openvic-extension/classes/GUIProgressBar.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/SoundSingleton.hpp"
@@ -431,7 +432,6 @@ static bool generate_button(generate_gui_args_t&& args) {
 	gui_button->set_shortcut_in_tooltip(false);
 
 	if (clicksound && !clicksound->get_file().empty()) {
-		static const StringName sfx_bus = "SFX_BUS";
 		static auto gui_pressed = [](GUIButton* button, String const& file, float volume) {
 			static auto on_audio_finished = [](AudioStreamPlayer* stream) {
 				stream->queue_free();
@@ -441,8 +441,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 			if (audio_stream.is_valid()) {
 				AudioStreamPlayer* asp = memnew(AudioStreamPlayer);
 				asp->connect("finished", callable_mp_static(+on_audio_finished).bind(asp));
-				if (AudioServer::get_singleton()->get_bus_index(sfx_bus) != -1) {
-					asp->set_bus(sfx_bus);
+				if (AudioServer::get_singleton()->get_bus_index(OV_SNAME(SFX_BUS)) != -1) {
+					asp->set_bus(OV_SNAME(SFX_BUS));
 				}
 				asp->set_stream(audio_stream);
 				asp->set_volume_db(volume);
@@ -604,23 +604,20 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 	godot_line_edit->set_position(godot_line_edit->get_position() + border_size + default_position_padding);
 	godot_line_edit->set_custom_minimum_size(max_size - border_size - default_size_padding);
 
-	static const StringName caret_color_theme = "caret_color";
 	static const Color caret_colour { 1.0_real, 0.0_real, 0.0_real };
-	godot_line_edit->add_theme_color_override(caret_color_theme, caret_colour);
+	godot_line_edit->add_theme_color_override(OV_SNAME(caret_color), caret_colour);
 
 	if (text_edit_box.get_font() != nullptr) {
 		const StringName font_file = Utilities::std_to_godot_string(text_edit_box.get_font()->get_fontname());
 		const Ref<Font> font = args.asset_manager.get_font(font_file);
 		if (font.is_valid()) {
-			static const StringName font_theme = "font";
-			godot_line_edit->add_theme_font_override(font_theme, font);
+			godot_line_edit->add_theme_font_override(OV_SNAME(font), font);
 		} else {
 			UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUI text edit box", text_edit_box_name);
 			ret = false;
 		}
 		const Color colour = Utilities::to_godot_color(text_edit_box.get_font()->get_colour());
-		static const StringName font_color_theme = "font_color";
-		godot_line_edit->add_theme_color_override(font_color_theme, colour);
+		godot_line_edit->add_theme_color_override(OV_SNAME(font_color), colour);
 	}
 
 	const StringName texture_file = Utilities::std_to_godot_string(text_edit_box.get_texture_file());
@@ -630,8 +627,7 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 		if (texture.is_valid()) {
 			Ref<StyleBoxTexture> stylebox = AssetManager::make_stylebox_texture(texture, border_size);
 			if (stylebox.is_valid()) {
-				static const StringName normal_theme = "normal";
-				godot_line_edit->add_theme_stylebox_override(normal_theme, stylebox);
+				godot_line_edit->add_theme_stylebox_override(OV_SNAME(normal), stylebox);
 			} else {
 				UtilityFunctions::push_error("Failed to make StyleBoxTexture for GUI button ", text_edit_box_name);
 				ret = false;
@@ -647,8 +643,7 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 	Ref<StyleBoxEmpty> stylebox_empty;
 	stylebox_empty.instantiate();
 	if (stylebox_empty.is_valid()) {
-		static const StringName focus_theme = "focus";
-		godot_line_edit->add_theme_stylebox_override(focus_theme, stylebox_empty);
+		godot_line_edit->add_theme_stylebox_override(OV_SNAME(focus), stylebox_empty);
 	} else {
 		UtilityFunctions::push_error("Failed to create empty style box for focus of GUI text edit box ", text_edit_box_name);
 		ret = false;
@@ -700,8 +695,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 	Ref<StyleBoxEmpty> stylebox_empty;
 	stylebox_empty.instantiate();
 	if (stylebox_empty.is_valid()) {
-		static const StringName panel_theme = "panel";
-		godot_panel->add_theme_stylebox_override(panel_theme, stylebox_empty);
+		godot_panel->add_theme_stylebox_override(OV_SNAME(panel), stylebox_empty);
 	} else {
 		UtilityFunctions::push_error("Failed to create empty style box for background of GUI window ", window_name);
 		ret = false;

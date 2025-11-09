@@ -55,7 +55,7 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 	CountryInstance& country,
 	const fixed_point_t scaled_value
 ) {
-	static const godot::StringName administrative_efficiency_template = "%s\n%s%s\n--------------\n%s%s%s%s";
+	static const godot::String administrative_efficiency_template = "%s\n%s%s\n--------------\n%s%s%s%s";
 
 	const fixed_point_t administrative_efficiency_from_administrators = country.get_administrative_efficiency_from_administrators_untracked();
 	administrative_efficiency_label.set_text(

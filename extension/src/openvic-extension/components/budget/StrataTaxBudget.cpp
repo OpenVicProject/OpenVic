@@ -9,6 +9,7 @@
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -37,7 +38,7 @@ StrataTaxBudget::StrataTaxBudget(
 	GUILabel::set_text_and_tooltip(
 		parent,
 		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.get_index())),
-		generate_slider_tooltip_localisation_key(new_strata),
+		slider_tooltip_localisation_key,
 		Utilities::format(
 			"TAX_%s_DESC",
 			Utilities::std_to_godot_string(strata.get_identifier()).to_upper()
@@ -82,22 +83,19 @@ void StrataTaxBudget::update_slider_tooltip(
 	const fixed_point_t scaled_value
 ) {
 	//these use $VALUE$%
-	static const godot::StringName tax_efficiency_localisation_key = "BUDGET_TAX_EFFICIENCY";
-	static const godot::StringName effective_tax_rate_localisation_key = "BUDGET_TAX_EFFECT";
 
 	//this uses $VALUE$ only
-	static const godot::StringName tax_efficiency_from_tech_localisation_key = "BUDGET_TECH_TAX";
 
 	const godot::String localised_strata_tax = slider.tr(slider_tooltip_localisation_key);
 
 	const fixed_point_t tax_efficiency = country.get_tax_efficiency_untracked();
-	const godot::String tax_efficiency_text = slider.tr(tax_efficiency_localisation_key).replace(
+	const godot::String tax_efficiency_text = slider.tr(OV_INAME("BUDGET_TAX_EFFICIENCY")).replace(
 		Utilities::get_long_value_placeholder(),
 		Utilities::float_to_string_dp(100 * static_cast<float>(tax_efficiency), 2)
 	);
 
 	const fixed_point_t tax_efficiency_from_tech = country.get_modifier_effect_value(*modifier_effect_cache.get_tax_eff());
-	const godot::String tax_efficiency_from_tech_text = slider.tr(tax_efficiency_from_tech_localisation_key).replace(
+	const godot::String tax_efficiency_from_tech_text = slider.tr(OV_INAME("BUDGET_TECH_TAX")).replace(
 		Utilities::get_short_value_placeholder(),
 		Utilities::format(
 			"%s%%",
@@ -109,7 +107,7 @@ void StrataTaxBudget::update_slider_tooltip(
 	);
 
 	const fixed_point_t effective_tax_rate = tax_efficiency * scaled_value;
-	const godot::String effective_tax_rate_text = slider.tr(effective_tax_rate_localisation_key).replace(
+	const godot::String effective_tax_rate_text = slider.tr(OV_INAME("BUDGET_TAX_EFFECT")).replace(
 		Utilities::get_long_value_placeholder(),
 		Utilities::float_to_string_dp(100 * static_cast<float>(effective_tax_rate), 2)
 	);

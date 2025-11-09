@@ -37,7 +37,7 @@ namespace OpenVic {
 		image_asset_map_t image_assets;
 		font_map_t fonts;
 
-		static godot::Ref<godot::Image> _load_image(godot::StringName const& path, bool flip_y);
+		static godot::Ref<godot::Image> _load_image(godot::String const& path, bool flip_y);
 
 	protected:
 		static void _bind_methods();

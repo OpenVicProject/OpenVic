@@ -4,6 +4,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -11,11 +12,8 @@ using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
-/* StringNames cannot be constructed until Godot has called StringName::setup(),
- * so we must use wrapper functions to delay their initialisation. */
 StringName const& GUIListBox::_signal_scroll_index_changed() {
-	static const StringName signal_scroll_index_changed = "scroll_index_changed";
-	return signal_scroll_index_changed;
+	return OV_SNAME(scroll_index_changed);
 }
 
 Error GUIListBox::_calculate_max_scroll_index(bool signal) {
@@ -285,10 +283,8 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 				scrollbar->set_position(position);
 				scrollbar->set_length_override(size.height);
 
-				static const StringName set_scroll_index_func_name = "set_scroll_index";
-
 				scrollbar->connect(
-					GUIScrollbar::signal_value_changed(), Callable { this, set_scroll_index_func_name }, CONNECT_PERSIST
+					GUIScrollbar::signal_value_changed(), Callable { this, OV_SNAME(set_scroll_index) }, CONNECT_PERSIST
 				);
 			} else {
 				UtilityFunctions::push_error(

@@ -11,6 +11,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -40,7 +41,7 @@ void StyleBoxWithSound::_bind_methods() {
 }
 
 StyleBoxWithSound::StyleBoxWithSound() {
-	audio_bus = "Master";
+	audio_bus = OV_SNAME(Master);
 }
 
 Ref<StyleBox> StyleBoxWithSound::get_style_box() const {

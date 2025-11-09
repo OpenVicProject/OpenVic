@@ -4,6 +4,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -117,7 +118,6 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	static const StringName trade_detail_slider_amount_key = "trade_detail_slider_amount"; // exponential good amount
 	static const StringName trade_detail_government_needs_key = "trade_detail_government_needs";
 	static const StringName trade_detail_army_needs_key = "trade_detail_army_needs";
-	static const StringName trade_detail_navy_needs_key = "trade_detail_navy_needs";
 	static const StringName trade_detail_overseas_needs_key = "trade_detail_overseas_needs";
 	static const StringName trade_detail_factory_needs_key = "trade_detail_factory_needs";
 	static const StringName trade_detail_pop_needs_key = "trade_detail_pop_needs";
@@ -174,7 +174,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	ret[trade_detail_slider_amount_key] = static_cast<real_t>(good_data.stockpile_cutoff);
 	ret[trade_detail_government_needs_key] = static_cast<real_t>(good_data.government_needs);
 	ret[trade_detail_army_needs_key] = static_cast<real_t>(good_data.army_needs);
-	ret[trade_detail_navy_needs_key] = static_cast<real_t>(good_data.navy_needs);
+	ret[OV_INAME("trade_detail_navy_needs")] = static_cast<real_t>(good_data.navy_needs);
 	ret[trade_detail_overseas_needs_key] = static_cast<real_t>(good_data.overseas_maintenance);
 	ret[trade_detail_factory_needs_key] = static_cast<real_t>(good_data.factory_demand);
 	ret[trade_detail_pop_needs_key] = static_cast<real_t>(good_data.pop_demand);

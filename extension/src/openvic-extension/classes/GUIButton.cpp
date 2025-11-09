@@ -1,9 +1,8 @@
 #include "GUIButton.hpp"
 
-#include <array>
-
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -33,9 +32,7 @@ Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTex
 		Ref<StyleBoxTexture> stylebox = AssetManager::make_stylebox_texture(texture);
 
 		if (stylebox.is_valid()) {
-			static const StringName normal_theme = "normal";
-
-			add_theme_stylebox_override(normal_theme, stylebox);
+			add_theme_stylebox_override(OV_SNAME(normal), stylebox);
 		} else {
 			UtilityFunctions::push_error("Failed to make StyleBoxTexture for GUIButton ", get_name());
 
@@ -86,22 +83,24 @@ Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 	const Ref<Font> font = asset_manager->get_font(font_file);
 
 	if (font.is_valid()) {
-		static const StringName font_theme = "font";
-
-		add_theme_font_override(font_theme, font);
+		add_theme_font_override(OV_SNAME(font), font);
 	} else {
 		UtilityFunctions::push_error("Failed to load font \"", font_file, "\" for GUIButton ", get_name());
 
 		err = FAILED;
 	}
 
-	static const std::array<StringName, 5> button_font_themes {
-		"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
-	};
-
 	const Color colour = Utilities::to_godot_color(gfx_font->get_colour());
 
-	for (StringName const& theme_name : button_font_themes) {
+	for (StringName const& theme_name :
+		 {
+			 OV_SNAME(font_color), //
+			 OV_SNAME(font_hover_color), //
+			 OV_SNAME(font_hover_pressed_color), //
+			 OV_SNAME(font_pressed_color), //
+			 OV_SNAME(font_disabled_color) //
+		 } //
+	) {
 		add_theme_color_override(theme_name, colour);
 	}
 
