@@ -2,6 +2,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
@@ -41,8 +42,8 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
-	const String lookedup_path = Utilities::std_to_godot_string(
-		game_singleton->get_dataloader().lookup_image_file(Utilities::godot_to_std_string(path)).string()
+	const String lookedup_path = convert_to<String>(
+		game_singleton->get_dataloader().lookup_image_file(convert_to<std::string>(path)).string()
 	);
 	ERR_FAIL_COND_V_MSG(lookedup_path.is_empty(), nullptr, Utilities::format("Failed to look up image: %s", path));
 
@@ -160,8 +161,8 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	const String font_path = font_dir + name + font_ext;
-	const String lookedup_font_path = Utilities::std_to_godot_string(
-		game_singleton->get_dataloader().lookup_file(Utilities::godot_to_std_string(font_path)).string()
+	const String lookedup_font_path = convert_to<String>(
+		game_singleton->get_dataloader().lookup_file(convert_to<std::string>(font_path)).string()
 	);
 	if (lookedup_font_path.is_empty()) {
 		fonts.emplace(name, nullptr);
@@ -227,9 +228,9 @@ Ref<GFXSpriteTexture> AssetManager::get_currency_texture(real_t height) const {
 }
 
 Ref<ImageTexture> AssetManager::get_leader_texture_std(std::string_view name) {
-	return get_texture(Utilities::std_to_godot_string(CultureManager::make_leader_picture_path(name)));
+	return get_texture(convert_to<String>(CultureManager::make_leader_picture_path(name)));
 }
 
 Ref<ImageTexture> AssetManager::get_leader_texture(String const& name) {
-	return get_leader_texture_std(Utilities::godot_to_std_string(name));
+	return get_leader_texture_std(convert_to<std::string>(name));
 }

@@ -7,8 +7,8 @@
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
 
 namespace OpenVic {
 	template<typename MapType>
@@ -111,14 +111,14 @@ namespace OpenVic {
 			for (size_t index = 0; index < array.size(); ++index) {
 				auto const& [key, value] = sorted_distribution[index];
 
-				String identifier = Utilities::std_to_godot_string(key->get_identifier());
+				String identifier = convert_to<String>(key->get_identifier());
 				identifier += identifier_suffix;
 
 				Dictionary sub_dict;
 
 				sub_dict[_slice_tooltip_key()] = make_tooltip(key, identifier, value, total_weight);
 				sub_dict[_slice_identifier_key()] = std::move(identifier);
-				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
+				sub_dict[_slice_colour_key()] = convert_to<Color>(key->get_colour());
 				sub_dict[_slice_weight_key()] = value;
 
 				array[index] = std::move(sub_dict);

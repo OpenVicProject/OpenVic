@@ -6,6 +6,7 @@
 #include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
@@ -66,12 +67,12 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 		UnitInstanceGroup const* group = leader.get_unit_instance_group();
 		if (group != nullptr) {
-			leader_dict[military_info_leader_assignment_key] = Utilities::std_to_godot_string(group->get_name());
+			leader_dict[military_info_leader_assignment_key] = convert_to<String>(group->get_name());
 
 			ProvinceInstance const* location = group->get_position();
 			if (location != nullptr) {
 				leader_dict[military_info_leader_location_key] =
-					Utilities::std_to_godot_string(location->get_identifier());
+					convert_to<String>(location->get_identifier());
 			}
 		}
 	}
@@ -94,12 +95,12 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		default:
 			UtilityFunctions::push_error(
 				"Invalid branch type \"", static_cast<int64_t>(leader.get_branch()), "\" for leader \"",
-				Utilities::std_to_godot_string(leader.get_name()), "\""
+				convert_to<String>(leader.get_name()), "\""
 			);
 		}
 
 		// Name
-		String leader_name = Utilities::std_to_godot_string(leader.get_name());
+		String leader_name = convert_to<String>(leader.get_name());
 
 		// Make yellow then revert back to default (white)
 		static const String leader_name_prefix = GUILabel::get_colour_marker() + String { "Y" };
@@ -153,7 +154,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		String background;
 
 		if (leader.get_background() != nullptr) {
-			background = tr(Utilities::std_to_godot_string(leader.get_background()->get_identifier()));
+			background = tr(convert_to<String>(leader.get_background()->get_identifier()));
 			modifier_value += *leader.get_background();
 		} else {
 			static const StringName missing_background = "no_background";
@@ -175,7 +176,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		String personality;
 
 		if (leader.get_personality() != nullptr) {
-			personality = tr(Utilities::std_to_godot_string(leader.get_personality()->get_identifier()));
+			personality = tr(convert_to<String>(leader.get_personality()->get_identifier()));
 			modifier_value += *leader.get_personality();
 		} else {
 			static const StringName missing_personality = "no_personality";
@@ -238,10 +239,10 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 			leader_dict.get(military_info_leader_tooltip_key, String {});
 	}
 
-	unit_group_dict[military_info_unit_group_name_key] = Utilities::std_to_godot_string(unit_group.get_name());
+	unit_group_dict[military_info_unit_group_name_key] = convert_to<String>(unit_group.get_name());
 	if (unit_group.get_position() != nullptr) {
 		unit_group_dict[military_info_unit_group_location_key] =
-			Utilities::std_to_godot_string(unit_group.get_position()->get_identifier());
+			convert_to<String>(unit_group.get_position()->get_identifier());
 	}
 	unit_group_dict[military_info_unit_group_unit_count_key] = static_cast<uint64_t>(unit_group.get_unit_count());
 
@@ -258,7 +259,7 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 		unit_group_dict[military_info_unit_group_moving_tooltip_key] = tr(moving_localisation_key).replace(
 			moving_location_replace_key,
 			tr(GUINode::format_province_name(
-				destination != nullptr ? Utilities::std_to_godot_string(destination->get_identifier()) : String {}, false
+				destination != nullptr ? convert_to<String>(destination->get_identifier()) : String {}, false
 			))
 		).replace(moving_date_replace_key, Utilities::date_to_string(unit_group.get_movement_arrival_date()));
 	}
@@ -325,9 +326,9 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 
 	in_progress_unit_dict[military_info_unit_progress_key] = static_cast<real_t>(progress);
 	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->get_icon();
-	in_progress_unit_dict[military_info_unit_name_key] = Utilities::std_to_godot_string(unit_type->get_identifier());
+	in_progress_unit_dict[military_info_unit_name_key] = convert_to<String>(unit_type->get_identifier());
 	if (location != nullptr) {
-		in_progress_unit_dict[military_info_unit_location_key] = Utilities::std_to_godot_string(location->get_identifier());
+		in_progress_unit_dict[military_info_unit_location_key] = convert_to<String>(location->get_identifier());
 	}
 	in_progress_unit_dict[military_info_unit_eta_key] = Utilities::date_to_string(eta);
 
@@ -335,7 +336,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 
 	for (auto const& [good, required_amounts] : required_goods) {
 		if (required_amounts.first < required_amounts.second) {
-			tooltip += "\n" + tr(Utilities::std_to_godot_string(good->get_identifier())) + " - " +
+			tooltip += "\n" + tr(convert_to<String>(good->get_identifier())) + " - " +
 				Utilities::fixed_point_to_string_dp(required_amounts.first, 2) + "/" +
 				Utilities::fixed_point_to_string_dp(required_amounts.second, 2);
 		}
@@ -627,7 +628,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize military menu leaders array to the correct size (", leader_count, ") for country \"",
-				Utilities::std_to_godot_string(country->get_identifier()), "\""
+				convert_to<String>(country->get_identifier()), "\""
 			);
 		}
 	}
@@ -655,7 +656,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize military menu armies array to the correct size (", army_count, ") for country \"",
-				Utilities::std_to_godot_string(country->get_identifier()), "\""
+				convert_to<String>(country->get_identifier()), "\""
 			);
 		}
 	}
@@ -682,7 +683,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize military menu navies array to the correct size (", navy_count, ") for country \"",
-				Utilities::std_to_godot_string(country->get_identifier()), "\""
+				convert_to<String>(country->get_identifier()), "\""
 			);
 		}
 	}

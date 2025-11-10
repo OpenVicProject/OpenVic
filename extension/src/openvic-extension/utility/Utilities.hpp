@@ -24,14 +24,6 @@ namespace OpenVic {
 }
 
 namespace OpenVic::Utilities {
-	_FORCE_INLINE_ std::string godot_to_std_string(godot::String const& str) {
-		return str.utf8().get_data();
-	}
-
-	_FORCE_INLINE_ godot::String std_to_godot_string(std::string_view const& str) {
-		return godot::String::utf8(str.data(), str.length());
-	}
-
 	_FORCE_INLINE_ godot::String read_riff_str(godot::Ref<godot::FileAccess> const& file, int64_t size = 4) {
 		return file->get_buffer(size).get_string_from_ascii();
 	}
@@ -65,22 +57,6 @@ namespace OpenVic::Utilities {
 	godot::String date_to_string(Date date);
 
 	godot::String date_to_formatted_string(Date date, bool month_first);
-
-	_FORCE_INLINE_ godot::Color to_godot_color(IsColour auto colour) {
-		return { colour.redf(), colour.greenf(), colour.bluef(), colour.alphaf() };
-	}
-
-	_FORCE_INLINE_ godot::Vector2i to_godot_ivec2(ivec2_t const& vec) {
-		return { vec.x, vec.y };
-	}
-
-	_FORCE_INLINE_ godot::Vector2 to_godot_fvec2(fvec2_t const& vec) {
-		return { static_cast<real_t>(vec.x), static_cast<real_t>(vec.y) };
-	}
-
-	_FORCE_INLINE_ ivec2_t from_godot_ivec2(godot::Vector2i const& vec) {
-		return { vec.x, vec.y };
-	}
 
 	/* Loads a Resource from a file in the Godot project directory given by a path beginning with "res://". */
 	godot::Ref<godot::Resource> load_resource(godot::String const& path, godot::String const& type_hint = {});

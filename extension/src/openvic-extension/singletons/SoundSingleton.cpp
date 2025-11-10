@@ -17,10 +17,8 @@
 #include "openvic-simulation/utility/StringUtils.hpp"
 #include <openvic-extension/singletons/GameSingleton.hpp>
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include <openvic-extension/utility/Utilities.hpp>
-
-using OpenVic::Utilities::godot_to_std_string;
-using OpenVic::Utilities::std_to_godot_string;
 
 using namespace godot;
 using namespace OpenVic;
@@ -105,12 +103,12 @@ bool SoundSingleton::load_title_theme() {
 
 	for (std::filesystem::path const& file_name : music_files) {
 		// the path
-		String file = std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		// file name
 		String file_stem = to_define_file_name(file, music_folder);
 
 		if (file_stem == title_theme_name.data()) {
-			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", std_to_godot_string(file_name.string())));
+			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", convert_to<String>(file_name.string())));
 
 			String name = to_define_file_name(file, music_folder);
 			title_theme = name;
@@ -142,14 +140,14 @@ bool SoundSingleton::load_music() {
 	}
 
 	for (std::filesystem::path const& file_name : music_files) {
-		String file = std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		String name = to_define_file_name(file, music_folder);
 		if (name == title_theme_name.data()) {
 			continue;
 		}
 
 		if (!get_song(file).is_valid()) {
-			ERR_PRINT(Utilities::format("Failed to load song at path %s.", std_to_godot_string(file_name.string())));
+			ERR_PRINT(Utilities::format("Failed to load song at path %s.", convert_to<String>(file_name.string())));
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}
@@ -218,20 +216,20 @@ bool SoundSingleton::load_sounds() {
 		// UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		// the define its associated with also isn't used in game
 		if (full_path.empty()) {
-			WARN_PRINT(Utilities::format("The sound define %s points to non-existent file.", std_to_godot_string(sound_inst.get_identifier())));
+			WARN_PRINT(Utilities::format("The sound define %s points to non-existent file.", convert_to<String>(sound_inst.get_identifier())));
 			continue;
 		}
 
-		Ref<AudioStreamWAV> stream = get_sound(std_to_godot_string(full_path.string()));
+		Ref<AudioStreamWAV> stream = get_sound(convert_to<String>(full_path.string()));
 		if (stream.is_null()) {
-			ERR_PRINT(Utilities::format("Failed to load sound %s at path %s.", std_to_godot_string(sound_inst.get_identifier()), std_to_godot_string(full_path.string())));
+			ERR_PRINT(Utilities::format("Failed to load sound %s at path %s.", convert_to<String>(sound_inst.get_identifier()), convert_to<String>(full_path.string())));
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}
 
-		String name = to_define_file_name(std_to_godot_string(full_path.string()), sound_folder);
+		String name = to_define_file_name(convert_to<String>(full_path.string()), sound_folder);
 
-		StringName define_gd_name = std_to_godot_string(sound_inst.get_identifier());
+		StringName define_gd_name = convert_to<String>(sound_inst.get_identifier());
 		sfx_define[define_gd_name].audio_stream = get_sound(name);
 		sfx_define[define_gd_name].volume = sound_inst.get_volume();
 

@@ -7,6 +7,7 @@
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
 

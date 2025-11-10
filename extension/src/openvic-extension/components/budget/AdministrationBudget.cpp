@@ -7,6 +7,7 @@
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/types/fixed_point/FixedPoint.hpp"
@@ -126,10 +127,10 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 		reforms_part += Utilities::format(
 			reform_template,
 			administrative_efficiency_label.tr(
-				Utilities::std_to_godot_string(group.get_identifier())
+				convert_to<godot::String>(group.get_identifier())
 			),
 			administrative_efficiency_label.tr(
-				Utilities::std_to_godot_string(reform->get_identifier())
+				convert_to<godot::String>(reform->get_identifier())
 			),
 			Utilities::fixed_point_to_string_dp(100 * extra_administrator_percentage, 2)
 		);

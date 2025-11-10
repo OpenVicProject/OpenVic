@@ -9,6 +9,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -95,7 +96,7 @@ void NationalStockpileBudget::update_labels(CountryInstance& country) {
 			CountryInstance::good_data_t const& good_data = *good_data_ptr;
 			todays_actual_stockpile_spending_tooltip += Utilities::format(
 				godot::String::utf8("\n %s: §R%s§! (%s)"),
-				todays_actual_stockpile_spending_label.tr(Utilities::std_to_godot_string(good_instance.get_identifier())),
+				todays_actual_stockpile_spending_label.tr(convert_to<godot::String>(good_instance.get_identifier())),
 				Utilities::cash_to_string_dp_dynamic(-good_data.money_traded_yesterday),
 				Utilities::float_to_string_dp_dynamic(static_cast<float>(good_data.quantity_traded_yesterday))
 			);

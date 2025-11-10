@@ -9,6 +9,7 @@
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -40,7 +41,7 @@ StrataTaxBudget::StrataTaxBudget(
 		generate_slider_tooltip_localisation_key(new_strata),
 		Utilities::format(
 			"TAX_%s_DESC",
-			Utilities::std_to_godot_string(strata.get_identifier()).to_upper()
+			convert_to<godot::String>(strata.get_identifier()).to_upper()
 		)
 	);
 }
@@ -70,11 +71,11 @@ void StrataTaxBudget::on_slider_value_changed(const fixed_point_t scaled_value) 
 }
 
 godot::StringName StrataTaxBudget::generate_slider_tooltip_localisation_key(Strata const& strata) {
-	return "BUDGET_TAX_" + Utilities::std_to_godot_string(strata.get_identifier()).to_upper();
+	return "BUDGET_TAX_" + convert_to<godot::String>(strata.get_identifier()).to_upper();
 }
 
 godot::StringName StrataTaxBudget::generate_summary_localisation_key(Strata const& strata) {
-	return "TAXES_" + Utilities::std_to_godot_string(strata.get_identifier()).to_upper();
+	return "TAXES_" + convert_to<godot::String>(strata.get_identifier()).to_upper();
 }
 
 void StrataTaxBudget::update_slider_tooltip(

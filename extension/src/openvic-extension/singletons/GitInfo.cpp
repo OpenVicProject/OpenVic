@@ -5,7 +5,7 @@
 #include <godot_cpp/core/error_macros.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-extension/core/Convert.hpp"
 
 #include "gen/commit_info.gen.hpp"
 
@@ -16,11 +16,11 @@ GitInfo::GitInfo() {
 	ERR_FAIL_COND(_singleton != nullptr);
 	_singleton = this;
 
-	commit_hash = Utilities::std_to_godot_string(GAME_COMMIT_HASH);
+	commit_hash = convert_to<String>(GAME_COMMIT_HASH);
 	commit_timestamp = GAME_COMMIT_TIMESTAMP;
 	short_hash = commit_hash.substr(0, 7);
-	tag = Utilities::std_to_godot_string(GAME_TAG);
-	release_name = Utilities::std_to_godot_string(GAME_RELEASE);
+	tag = convert_to<String>(GAME_TAG);
+	release_name = convert_to<String>(GAME_RELEASE);
 }
 
 GitInfo::~GitInfo() {

@@ -4,8 +4,8 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -82,7 +82,7 @@ Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 
 	Error err = OK;
 
-	const StringName font_file = Utilities::std_to_godot_string(gfx_font->get_fontname());
+	const StringName font_file = convert_to<String>(gfx_font->get_fontname());
 	const Ref<Font> font = asset_manager->get_font(font_file);
 
 	if (font.is_valid()) {
@@ -99,7 +99,7 @@ Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 		"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
 	};
 
-	const Color colour = Utilities::to_godot_color(gfx_font->get_colour());
+	const Color colour = convert_to<Color>(gfx_font->get_colour());
 
 	for (StringName const& theme_name : button_font_themes) {
 		add_theme_color_override(theme_name, colour);

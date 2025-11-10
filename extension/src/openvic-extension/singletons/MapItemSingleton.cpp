@@ -7,6 +7,7 @@
 #include "godot_cpp/variant/packed_vector2_array.hpp"
 #include "godot_cpp/variant/typed_array.hpp"
 #include "godot_cpp/variant/vector2.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -63,8 +64,8 @@ void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, Typed
 
 	Dictionary dict;
 
-	dict[name_key] = Utilities::std_to_godot_string(billboard.get_name());
-	dict[texture_key] = Utilities::std_to_godot_string(billboard.get_texture_file());
+	dict[name_key] = convert_to<String>(billboard.get_name());
+	dict[texture_key] = convert_to<String>(billboard.get_texture_file());
 	dict[scale_key] = static_cast<real_t>(billboard.get_scale());
 	dict[no_of_frames_key] = billboard.get_no_of_frames();
 
@@ -99,8 +100,8 @@ void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, Ty
 
 	Dictionary dict;
 
-	dict[name_key] = Utilities::std_to_godot_string(projection.get_name());
-	dict[texture_key] = Utilities::std_to_godot_string(projection.get_texture_file());
+	dict[name_key] = convert_to<String>(projection.get_name());
+	dict[texture_key] = convert_to<String>(projection.get_texture_file());
 	dict[size_key] = static_cast<real_t>(projection.get_size());
 	dict[spin_key] = static_cast<real_t>(projection.get_spin());
 	dict[expanding_key] = static_cast<real_t>(projection.get_expanding());

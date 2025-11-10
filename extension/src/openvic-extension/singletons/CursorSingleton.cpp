@@ -16,6 +16,7 @@
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include <openvic-extension/utility/Utilities.hpp>
 
 #include <fmt/std.h>
@@ -142,7 +143,7 @@ static constexpr std::string_view cursor_directory = "gfx/cursors";
 static String _to_define_file_name(String const& path) {
 	static const String backslash = "\\";
 	static const String forwardslash = "/";
-	static const String cursor_directory_forwardslash = Utilities::std_to_godot_string(cursor_directory) + forwardslash;
+	static const String cursor_directory_forwardslash = convert_to<String>(cursor_directory) + forwardslash;
 	static const String dot = ".";
 	return path.replace(backslash, forwardslash).get_slice(cursor_directory_forwardslash, 1).get_slice(dot, 0);
 }
@@ -170,7 +171,7 @@ Error CursorSingleton::load_cursors() {
 	Error ret = OK;
 
 	for(fs::path const& file_name : cursor_files) {
-		String file = Utilities::std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_cur(name,file)){
@@ -180,7 +181,7 @@ Error CursorSingleton::load_cursors() {
 	}
 
 	for(fs::path const& file_name : animated_cursor_files) {
-		String file = Utilities::std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_ani(name,file)){

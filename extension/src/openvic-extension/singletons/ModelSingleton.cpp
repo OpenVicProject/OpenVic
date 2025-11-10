@@ -8,6 +8,7 @@
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/utility/Containers.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -45,7 +46,7 @@ GFX::Actor const* ModelSingleton::get_actor(std::string_view name, bool error_on
 		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
 
 	if (error_on_fail) {
-		ERR_FAIL_NULL_V_MSG(actor, nullptr, Utilities::format("Failed to find actor \"%s\"", Utilities::std_to_godot_string(name)));
+		ERR_FAIL_NULL_V_MSG(actor, nullptr, Utilities::format("Failed to find actor \"%s\"", convert_to<String>(name)));
 	}
 
 	return actor;
@@ -60,7 +61,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	ERR_FAIL_COND_V_MSG(
 		culture.empty() || name.empty(), nullptr, Utilities::format(
 			"Failed to find actor \"%s\" for culture \"%s\" - neither can be empty",
-			Utilities::std_to_godot_string(name), Utilities::std_to_godot_string(culture)
+			convert_to<String>(name), convert_to<String>(culture)
 		)
 	);
 
@@ -88,8 +89,8 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 
 	ERR_FAIL_NULL_V_MSG(
 		actor, nullptr, Utilities::format(
-			"Failed to find actor \"%s\" for culture \"%s\"", Utilities::std_to_godot_string(name),
-			Utilities::std_to_godot_string(culture)
+			"Failed to find actor \"%s\" for culture \"%s\"", convert_to<String>(name),
+			convert_to<String>(culture)
 		)
 	);
 
@@ -107,7 +108,7 @@ Dictionary ModelSingleton::get_animation_dict(GFX::Actor::Animation const& anima
 
 	Dictionary dict;
 
-	dict[file_key] = Utilities::std_to_godot_string(animation.get_file());
+	dict[file_key] = convert_to<String>(animation.get_file());
 	dict[time_key] = static_cast<real_t>(animation.get_scroll_time());
 
 	animation_cache.emplace(&animation, dict);
@@ -130,7 +131,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 
 	Dictionary dict;
 
-	dict[file_key] = Utilities::std_to_godot_string(actor.get_model_file());
+	dict[file_key] = convert_to<String>(actor.get_model_file());
 	dict[scale_key] = static_cast<real_t>(actor.get_scale());
 
 	const auto set_animation = [this, &dict](StringName const& key, std::optional<GFX::Actor::Animation> const& animation) {
@@ -162,14 +163,14 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				ERR_CONTINUE_MSG(
 					attachment_actor == nullptr, Utilities::format(
 						"Failed to find \"%s\" attachment actor for actor \"%s\"",
-						Utilities::std_to_godot_string(attachment.get_actor_name()),
-						Utilities::std_to_godot_string(actor.get_name())
+						convert_to<String>(attachment.get_actor_name()),
+						convert_to<String>(actor.get_name())
 					)
 				);
 
 				Dictionary attachment_dict;
 
-				attachment_dict[attachment_node_key] = Utilities::std_to_godot_string(attachment.get_attach_node());
+				attachment_dict[attachment_node_key] = convert_to<String>(attachment.get_attach_node());
 				attachment_dict[attachment_model_key] = get_model_dict(*attachment_actor);
 
 				attachments_array[idx] = std::move(attachment_dict);
@@ -183,7 +184,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize attachments array to the correct size (", static_cast<int64_t>(attachments.size()),
-				") for model for actor \"", Utilities::std_to_godot_string(actor.get_name()), "\""
+				") for model for actor \"", convert_to<String>(actor.get_name()), "\""
 			);
 		}
 	}
@@ -224,7 +225,7 @@ bool ModelSingleton::add_unit_dict(
 
 	/* Last unit to enter the province is shown on top. */
 	_UnitInstanceGroup const& unit = *units.back();
-	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())));
+	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", convert_to<String>(unit.get_name())));
 
 	CountryDefinition const& country_definition = unit.get_country()->get_country_definition();
 
@@ -232,7 +233,7 @@ bool ModelSingleton::add_unit_dict(
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
 		display_unit_type, false, Utilities::format(
-			"Failed to get display unit type for unit \"%s\"", Utilities::std_to_godot_string(unit.get_name())
+			"Failed to get display unit type for unit \"%s\"", convert_to<String>(unit.get_name())
 		)
 	);
 
@@ -254,9 +255,9 @@ bool ModelSingleton::add_unit_dict(
 		} else {
 			UtilityFunctions::push_error(
 				"Mount sprite and attach node must both be set or both be empty - regiment type \"",
-				Utilities::std_to_godot_string(regiment_type->get_identifier()), "\" has mount \"",
-				Utilities::std_to_godot_string(regiment_type->get_sprite_mount()), "\" and attach node \"",
-				Utilities::std_to_godot_string(regiment_type->get_sprite_mount_attach_node()), "\""
+				convert_to<String>(regiment_type->get_identifier()), "\" has mount \"",
+				convert_to<String>(regiment_type->get_sprite_mount()), "\" and attach node \"",
+				convert_to<String>(regiment_type->get_sprite_mount_attach_node()), "\""
 			);
 			ret = false;
 		}
@@ -271,15 +272,15 @@ bool ModelSingleton::add_unit_dict(
 	ERR_FAIL_NULL_V_MSG(
 		actor, false, Utilities::format(
 			"Failed to find \"%s\" actor of graphical culture type \"%s\" for unit \"%s\"",
-			Utilities::std_to_godot_string(display_unit_type->get_sprite()),
-			Utilities::std_to_godot_string(graphical_culture_type.get_identifier()),
-			Utilities::std_to_godot_string(unit.get_name())
+			convert_to<String>(display_unit_type->get_sprite()),
+			convert_to<String>(graphical_culture_type.get_identifier()),
+			convert_to<String>(unit.get_name())
 		)
 	);
 
 	Dictionary dict;
 
-	dict[culture_key] = Utilities::std_to_godot_string(graphical_culture_type.get_identifier());
+	dict[culture_key] = convert_to<String>(graphical_culture_type.get_identifier());
 
 	dict[model_key] = get_model_dict(*actor);
 
@@ -288,13 +289,13 @@ bool ModelSingleton::add_unit_dict(
 
 		if (mount_actor != nullptr) {
 			dict[mount_model_key] = get_model_dict(*mount_actor);
-			dict[mount_attach_node_key] = Utilities::std_to_godot_string(mount_attach_node_name);
+			dict[mount_attach_node_key] = convert_to<String>(mount_attach_node_name);
 		} else {
 			UtilityFunctions::push_error(Utilities::format(
 				"Failed to find \"%s\" mount actor of graphical culture type \"%s\" for unit \"%s\"",
-				Utilities::std_to_godot_string(mount_actor_name),
-				Utilities::std_to_godot_string(graphical_culture_type.get_identifier()),
-				Utilities::std_to_godot_string(unit.get_name())
+				convert_to<String>(mount_actor_name),
+				convert_to<String>(graphical_culture_type.get_identifier()),
+				convert_to<String>(unit.get_name())
 			));
 			ret = false;
 		}
@@ -314,9 +315,9 @@ bool ModelSingleton::add_unit_dict(
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
 	}
 
-	dict[primary_colour_key] = Utilities::to_godot_color(country_definition.get_primary_unit_colour());
-	dict[secondary_colour_key] = Utilities::to_godot_color(country_definition.get_secondary_unit_colour());
-	dict[tertiary_colour_key] = Utilities::to_godot_color(country_definition.get_tertiary_unit_colour());
+	dict[primary_colour_key] = convert_to<Color>(country_definition.get_primary_unit_colour());
+	dict[secondary_colour_key] = convert_to<Color>(country_definition.get_secondary_unit_colour());
+	dict[tertiary_colour_key] = convert_to<Color>(country_definition.get_tertiary_unit_colour());
 
 	// TODO - move dict into unit_array ?
 	unit_array.push_back(dict);
@@ -336,13 +337,13 @@ TypedArray<Dictionary> ModelSingleton::get_units() {
 		if (province.get_province_definition().is_water()) {
 			if (!add_unit_dict(std::span { province.get_navies() }, ret)) {
 				UtilityFunctions::push_error(
-					"Error adding navy to province \"", Utilities::std_to_godot_string(province.get_identifier()), "\""
+					"Error adding navy to province \"", convert_to<String>(province.get_identifier()), "\""
 				);
 			}
 		} else {
 			if (!add_unit_dict(std::span { province.get_armies() }, ret)) {
 				UtilityFunctions::push_error(
-					"Error adding army to province \"", Utilities::std_to_godot_string(province.get_identifier()), "\""
+					"Error adding army to province \"", convert_to<String>(province.get_identifier()), "\""
 				);
 			}
 		}
@@ -356,7 +357,7 @@ TypedArray<Dictionary> ModelSingleton::get_units() {
 Dictionary ModelSingleton::get_cultural_gun_model(String const& culture) {
 	static constexpr std::string_view gun_actor_name = "Gun1";
 
-	GFX::Actor const* actor = get_cultural_actor(Utilities::godot_to_std_string(culture), gun_actor_name, {});
+	GFX::Actor const* actor = get_cultural_actor(convert_to<std::string>(culture), gun_actor_name, {});
 
 	ERR_FAIL_NULL_V(actor, {});
 
@@ -366,7 +367,7 @@ Dictionary ModelSingleton::get_cultural_gun_model(String const& culture) {
 Dictionary ModelSingleton::get_cultural_helmet_model(String const& culture) {
 	static constexpr std::string_view helmet_actor_name = "Helmet1";
 
-	GFX::Actor const* actor = get_cultural_actor(Utilities::godot_to_std_string(culture), helmet_actor_name, {});
+	GFX::Actor const* actor = get_cultural_actor(convert_to<std::string>(culture), helmet_actor_name, {});
 
 	ERR_FAIL_NULL_V(actor, {});
 
@@ -437,8 +438,8 @@ bool ModelSingleton::add_building_dict(
 	ERR_FAIL_NULL_V_MSG(
 		actor, false, Utilities::format(
 			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"",
-			Utilities::std_to_godot_string(actor_name), Utilities::std_to_godot_string(building.get_identifier()),
-			Utilities::std_to_godot_string(province.get_identifier())
+			convert_to<String>(actor_name), convert_to<String>(building.get_identifier()),
+			convert_to<String>(province.get_identifier())
 		)
 	);
 
@@ -473,8 +474,8 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() {
 			for (BuildingInstance const& building : province.get_buildings()) {
 				if (!add_building_dict(building, province, ret)) {
 					UtilityFunctions::push_error(
-						"Error adding building \"", Utilities::std_to_godot_string(building.get_identifier()),
-						"\" to province \"", Utilities::std_to_godot_string(province.get_identifier()), "\""
+						"Error adding building \"", convert_to<String>(building.get_identifier()),
+						"\" to province \"", convert_to<String>(province.get_identifier()), "\""
 					);
 				}
 			}

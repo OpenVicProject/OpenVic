@@ -11,6 +11,7 @@
 #include <openvic-simulation/utility/Containers.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
@@ -123,24 +124,24 @@ void GameSingleton::setup_logger() {
 
 		switch (msg.level) {
 			using namespace spdlog::level;
-		case info:	   UtilityFunctions::print_rich("[[color=green]info[/color]] ", Utilities::std_to_godot_string(payload)); break;
+		case info:	   UtilityFunctions::print_rich("[[color=green]info[/color]] ", convert_to<String>(payload)); break;
 		case warn:
 			godot::_err_print_error(
-				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), false, true
+				msg.source.funcname, msg.source.filename, msg.source.line, convert_to<String>(payload), false, true
 			);
 			break;
 		case err:
 			godot::_err_print_error(
-				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), false, false
+				msg.source.funcname, msg.source.filename, msg.source.line, convert_to<String>(payload), false, false
 			);
 			break;
 		case critical:
 			godot::_err_print_error(
-				msg.source.funcname, msg.source.filename, msg.source.line, Utilities::std_to_godot_string(payload), true, true
+				msg.source.funcname, msg.source.filename, msg.source.line, convert_to<String>(payload), true, true
 			);
 			break;
 		case trace:
-		case debug: UtilityFunctions::print_verbose(Utilities::std_to_godot_string(payload));
+		case debug: UtilityFunctions::print_verbose(convert_to<String>(payload));
 		default:	break;
 		}
 	});
@@ -162,12 +163,12 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 	for (Mod const& mod : mod_manager.get_mods()) {
 		Dictionary mod_info_dictionary;
 
-		mod_info_dictionary[identifier_key] = Utilities::std_to_godot_string(mod.get_identifier());
+		mod_info_dictionary[identifier_key] = convert_to<String>(mod.get_identifier());
 
 		mod_info_dictionary[dependencies_key] = [&]() -> PackedStringArray {
 			PackedStringArray result;
 			for (std::string_view dep_id : mod.get_dependencies()) {
-				result.push_back(Utilities::std_to_godot_string(dep_id));
+				result.push_back(convert_to<String>(dep_id));
 			}
 			return result;
 		}();
@@ -192,7 +193,7 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 	for (Bookmark const& bookmark : bookmark_manager.get_bookmarks()) {
 		Dictionary bookmark_info;
 
-		bookmark_info[bookmark_info_name_key] = Utilities::std_to_godot_string(bookmark.get_name());
+		bookmark_info[bookmark_info_name_key] = convert_to<String>(bookmark.get_name());
 		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.get_date(), false);
 
 		results.push_back(std::move(bookmark_info));
@@ -262,7 +263,7 @@ bool GameSingleton::is_game_session_active() const {
 
 int32_t GameSingleton::get_province_number_from_uv_coords(Vector2 const& coords) const {
 	const Vector2 pos = coords.posmod(1.0f) * get_map_dims();
-	return get_definition_manager().get_map_definition().get_province_number_at(Utilities::from_godot_ivec2(pos));
+	return get_definition_manager().get_map_definition().get_province_number_at(convert_to<ivec2_t>(pos));
 }
 
 int32_t GameSingleton::get_map_width() const {
@@ -274,7 +275,7 @@ int32_t GameSingleton::get_map_height() const {
 }
 
 Vector2i GameSingleton::get_map_dims() const {
-	return Utilities::to_godot_ivec2(get_definition_manager().get_map_definition().get_dims());
+	return convert_to<Vector2i>(get_definition_manager().get_map_definition().get_dims());
 }
 
 float GameSingleton::get_map_aspect_ratio() const {
@@ -282,7 +283,7 @@ float GameSingleton::get_map_aspect_ratio() const {
 }
 
 Vector2 GameSingleton::normalise_map_position(fvec2_t const& position) const {
-	return Utilities::to_godot_fvec2(position) / get_map_dims();
+	return convert_to<Vector2>(position) / get_map_dims();
 }
 
 Vector2 GameSingleton::get_billboard_pos(ProvinceDefinition const& province) const {
@@ -412,7 +413,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 
 		Dictionary province_dict;
 
-		province_dict[identifier_key] = Utilities::std_to_godot_string(province.get_identifier());
+		province_dict[identifier_key] = convert_to<String>(province.get_identifier());
 		province_dict[position_key] = normalise_map_position(province.get_text_position());
 
 		const float rotation = static_cast<float>(province.get_text_rotation());
@@ -438,7 +439,7 @@ int32_t GameSingleton::get_mapmode_count() const {
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
 	Mapmode const* identifier_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
 	if (identifier_mapmode != nullptr) {
-		return Utilities::std_to_godot_string(identifier_mapmode->get_identifier());
+		return convert_to<String>(identifier_mapmode->get_identifier());
 	}
 	return String {};
 }
@@ -446,7 +447,7 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
 	Mapmode const* localisation_key_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
 	if (localisation_key_mapmode != nullptr) {
-		return Utilities::std_to_godot_string(localisation_key_mapmode->get_localisation_key());
+		return convert_to<String>(localisation_key_mapmode->get_localisation_key());
 	}
 	return String {};
 }
@@ -612,7 +613,7 @@ Error GameSingleton::_load_flag_sheet() {
 	/* Generate flag type - index lookup map */
 	flag_type_index_map.clear();
 	for (std::string_view const& type : government_type_manager.get_flag_types()) {
-		flag_type_index_map.emplace(Utilities::std_to_godot_string(type), static_cast<int32_t>(flag_type_index_map.size()));
+		flag_type_index_map.emplace(convert_to<String>(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
 	flag_sheet_count = country_definition_manager.get_country_definition_count() * flag_type_index_map.size();
@@ -624,7 +625,7 @@ Error GameSingleton::_load_flag_sheet() {
 
 	Error ret = OK;
 	for (CountryDefinition const& country : country_definition_manager.get_country_definitions()) {
-		const String country_name = Utilities::std_to_godot_string(country.get_identifier());
+		const String country_name = convert_to<String>(country.get_identifier());
 
 		for (auto const& [flag_type, flag_type_index] : flag_type_index_map) {
 			static const String flag_directory = "gfx/flags/";
@@ -700,7 +701,7 @@ Error GameSingleton::_load_flag_sheet() {
 }
 
 Error GameSingleton::set_compatibility_mode_roots(String const& path) {
-	Dataloader::path_vector_t roots { Utilities::godot_to_std_string(path) };
+	Dataloader::path_vector_t roots { convert_to<std::string>(path) };
 	ERR_FAIL_COND_V_MSG(!game_manager.set_base_path(roots), FAILED, "Failed to set dataloader roots!");
 	return OK;
 }
@@ -714,7 +715,7 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& mo
 	memory::vector<memory::string> std_mods;
 	std_mods.reserve(mods.size());
 	for (String const& mod : mods) {
-		std_mods.emplace_back(Utilities::godot_to_std_string(mod));
+		std_mods.emplace_back(convert_to<std::string>(mod));
 	}
 
 	ERR_FAIL_COND_V_MSG(!game_manager.load_mods(std_mods), FAILED, "Loading mods failed.");
@@ -747,9 +748,9 @@ Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& mo
 }
 
 String GameSingleton::search_for_game_path(String const& hint_path) {
-	return Utilities::std_to_godot_string(Dataloader::search_for_game_path(Utilities::godot_to_std_string(hint_path)).string());
+	return convert_to<String>(Dataloader::search_for_game_path(convert_to<std::string>(hint_path)).string());
 }
 
 String GameSingleton::lookup_file_path(String const& path) const {
-	return Utilities::std_to_godot_string(get_dataloader().lookup_file(Utilities::godot_to_std_string(path)).string());
+	return convert_to<String>(get_dataloader().lookup_file(convert_to<std::string>(path)).string());
 }

@@ -3,7 +3,9 @@
 #include <numbers>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -184,13 +186,13 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	ERR_FAIL_NULL_V_MSG(
 		new_pie_chart, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name,
-			Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(GFX::PieChart::get_type_static())
+			convert_to<String>(sprite->get_type()),
+			convert_to<String>(GFX::PieChart::get_type_static())
 		)
 	);
 	return set_gfx_pie_chart(new_pie_chart);
 }
 
 String GFXPieChartTexture::get_gfx_pie_chart_name() const {
-	return gfx_pie_chart != nullptr ? Utilities::std_to_godot_string(gfx_pie_chart->get_name()) : String {};
+	return gfx_pie_chart != nullptr ? convert_to<String>(gfx_pie_chart->get_name()) : String {};
 }
