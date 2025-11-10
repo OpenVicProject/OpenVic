@@ -1,8 +1,10 @@
 #include "GUILineChart.hpp"
 
 #include <godot_cpp/classes/gradient.hpp>
+#include <godot_cpp/variant/vector2i.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -70,7 +72,7 @@ Error GUILineChart::set_gfx_line_chart(GFX::LineChart const* new_gfx_line_chart)
 
 	gfx_line_chart = new_gfx_line_chart;
 
-	set_custom_minimum_size(Utilities::to_godot_ivec2(gfx_line_chart->get_size()));
+	set_custom_minimum_size(convert_to<godot::Vector2i>(gfx_line_chart->get_size()));
 
 	return OK;
 }
@@ -87,8 +89,8 @@ Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_nam
 	ERR_FAIL_NULL_V_MSG(
 		new_gfx_line_chart, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", new_gfx_line_chart_name,
-			Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(GFX::LineChart::get_type_static())
+			convert_to<String>(sprite->get_type()),
+			convert_to<String>(GFX::LineChart::get_type_static())
 		)
 	);
 
@@ -96,7 +98,7 @@ Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_nam
 }
 
 String GUILineChart::get_gfx_line_chart_name() const {
-	return gfx_line_chart != nullptr ? Utilities::std_to_godot_string(gfx_line_chart->get_name()) : String {};
+	return gfx_line_chart != nullptr ? convert_to<String>(gfx_line_chart->get_name()) : String {};
 }
 
 Error GUILineChart::set_gradient_line(PackedFloat32Array const& line_values, float central_value, float min_value_range) {

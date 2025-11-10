@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 #include "openvic-simulation/types/TextFormat.hpp"
@@ -106,7 +107,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 			)
 		);
 		Error err = OK;
-		const String gui_child_element_name = Utilities::std_to_godot_string(gui_child_element->get_name()) + "_";
+		const String gui_child_element_name = convert_to<String>(gui_child_element->get_name()) + "_";
 		do {
 			Control* child = nullptr;
 			const String name = gui_child_element_name + itos(child_count);
@@ -147,14 +148,14 @@ Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
 		return OK;
 	}
 
-	set_custom_minimum_size(Utilities::to_godot_fvec2(gui_overlapping_elements_box->get_size()));
+	set_custom_minimum_size(convert_to<Vector2>(gui_overlapping_elements_box->get_size()));
 	queue_sort();
 	return OK;
 }
 
 String GUIOverlappingElementsBox::get_gui_overlapping_elements_box_name() const {
 	return gui_overlapping_elements_box != nullptr
-		? Utilities::std_to_godot_string(gui_overlapping_elements_box->get_name())
+		? convert_to<String>(gui_overlapping_elements_box->get_name())
 		: String {};
 }
 
@@ -184,5 +185,5 @@ Error GUIOverlappingElementsBox::set_gui_child_element_name(
 }
 
 String GUIOverlappingElementsBox::get_gui_child_element_name() const {
-	return gui_child_element != nullptr ? Utilities::std_to_godot_string(gui_child_element->get_name()) : String {};
+	return gui_child_element != nullptr ? convert_to<String>(gui_child_element->get_name()) : String {};
 }

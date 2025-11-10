@@ -14,6 +14,7 @@
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -157,7 +158,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 
 				province_dict[type_key] = LIST_ENTRY_PROVINCE;
 				province_dict[index_key] = index;
-				province_dict[name_key] = Utilities::std_to_godot_string(province_entry.province.get_identifier());
+				province_dict[name_key] = convert_to<String>(province_entry.province.get_identifier());
 				province_dict[size_key] = province_entry.province.get_total_population();
 				province_dict[change_key] = 0;
 				province_dict[selected_key] = province_entry.selected;
@@ -583,7 +584,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 		sorted_items.resize(items.size());
 
 		for (size_t idx = 0; idx < items.size(); ++idx) {
-			String identifier = Utilities::std_to_godot_string(items[idx].get_identifier());
+			String identifier = convert_to<String>(items[idx].get_identifier());
 			if constexpr (std::is_same_v<T, ProvinceInstance>) {
 				identifier = GUINode::format_province_name(identifier);
 			}
@@ -610,7 +611,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 		sorted_items.resize(items.size());
 
 		for (size_t idx = 0; idx < items.size(); ++idx) {
-			String identifier = Utilities::std_to_godot_string(items[idx].get_identifier());
+			String identifier = convert_to<String>(items[idx].get_identifier());
 			if constexpr (std::is_same_v<T, ProvinceInstance>) {
 				identifier = GUINode::format_province_name(identifier);
 			}
@@ -706,7 +707,7 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 			}
 			String tooltip = Utilities::format(
 				pie_chart_tooltip_format_key,
-				tr(Utilities::std_to_godot_string(key_ptr->get_identifier()) + identifier_suffix),
+				tr(convert_to<String>(key_ptr->get_identifier()) + identifier_suffix),
 				Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
 			);
 			full_tooltip += "\n" + tooltip;
@@ -798,10 +799,10 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 
 		pop_dict[pop_size_key] = pop->get_size();
 		pop_dict[pop_type_icon_key] = pop->get_type()->get_sprite();
-		pop_dict[pop_culture_key] = Utilities::std_to_godot_string(pop->get_culture().get_identifier());
+		pop_dict[pop_culture_key] = convert_to<String>(pop->get_culture().get_identifier());
 		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
 		if (pop->get_location() != nullptr) {
-			pop_dict[pop_location_key] = Utilities::std_to_godot_string(pop->get_location()->get_identifier());
+			pop_dict[pop_location_key] = convert_to<String>(pop->get_location()->get_identifier());
 		}
 		pop_dict[pop_militancy_key] = static_cast<real_t>(pop->get_militancy());
 		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop->get_consciousness());

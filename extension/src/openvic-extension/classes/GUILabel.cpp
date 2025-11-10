@@ -8,6 +8,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
@@ -245,7 +246,7 @@ void GUILabel::clear() {
 }
 
 String GUILabel::get_gui_text_name() const {
-	return gui_text != nullptr ? Utilities::std_to_godot_string(gui_text->get_name()) : String {};
+	return gui_text != nullptr ? convert_to<godot::String>(gui_text->get_name()) : String {};
 }
 
 Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
@@ -260,7 +261,7 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	gui_text = new_gui_text;
 
-	set_text(Utilities::std_to_godot_string(gui_text->get_text()));
+	set_text(convert_to<String>(gui_text->get_text()));
 
 	using enum text_format_t;
 	static const ordered_map<text_format_t, HorizontalAlignment> format_map {
@@ -272,11 +273,11 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	const decltype(format_map)::const_iterator it = format_map.find(gui_text->get_format());
 	set_horizontal_alignment(it != format_map.end() ? it->second : HORIZONTAL_ALIGNMENT_LEFT);
 
-	set_max_size(Utilities::to_godot_fvec2(gui_text->get_max_size()));
-	set_border_size(Utilities::to_godot_fvec2(gui_text->get_border_size()));
+	set_max_size(convert_to<Vector2>(gui_text->get_max_size()));
+	set_border_size(convert_to<Vector2>(gui_text->get_border_size()));
 
 	colour_codes = override_colour_codes != nullptr ? override_colour_codes : &gui_text->get_font()->get_colour_codes();
-	set_default_colour(Utilities::to_godot_color(gui_text->get_font()->get_colour()));
+	set_default_colour(convert_to<Color>(gui_text->get_font()->get_colour()));
 
 	font.unref();
 	font_size = DEFAULT_FONT_SIZE;
@@ -285,7 +286,7 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	Error err = OK;
 
-	const StringName font_filepath = Utilities::std_to_godot_string(gui_text->get_font()->get_fontname());
+	const StringName font_filepath = convert_to<String>(gui_text->get_font()->get_fontname());
 
 	AssetManager& asset_manager = *AssetManager::get_singleton();
 	Ref<FontFile> font_file = asset_manager.get_font(font_filepath);
@@ -299,7 +300,7 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	}
 
 	if (!gui_text->get_texture_file().empty()) {
-		const StringName texture_path = Utilities::std_to_godot_string(gui_text->get_texture_file());
+		const StringName texture_path = convert_to<String>(gui_text->get_texture_file());
 		Ref<ImageTexture> texture = asset_manager.get_texture(texture_path);
 		if (texture.is_valid()) {
 			set_background_texture(texture);
@@ -358,7 +359,7 @@ void GUILabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_align
 }
 
 Size2 GUILabel::get_base_max_size() const {
-	return gui_text != nullptr ? Utilities::to_godot_fvec2(gui_text->get_max_size()) : Size2 {};
+	return gui_text != nullptr ? convert_to<Vector2>(gui_text->get_max_size()) : Size2 {};
 }
 
 void GUILabel::set_max_size(Size2 new_max_size) {
@@ -616,7 +617,7 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 				ERR_CONTINUE(colour_codes == nullptr);
 				const GFX::Font::colour_codes_t::const_iterator it = colour_codes->find(colour_it->second);
 				if (it != colour_codes->end()) {
-					new_colour = Utilities::to_godot_color(it->second);
+					new_colour = convert_to<Color>(it->second);
 				}
 			}
 		}
@@ -697,7 +698,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	if (instance_manager != nullptr) {
 		CountryInstance* country_instance =
 			instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-				Utilities::godot_to_std_string(identifier)
+				convert_to<std::string>(identifier) //convert_to<std::string>(identifier)
 			);
 
 		if (country_instance != nullptr) {
@@ -705,13 +706,13 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 
 			GovernmentType const* government_type = country_instance->flag_government_type.get_untracked();
 			if (government_type != nullptr) {
-				flag_type = Utilities::std_to_godot_string(government_type->get_flag_type());
+				flag_type = convert_to<String>(government_type->get_flag_type());
 			}
 		}
 	} else {
 		CountryDefinition const* country_definition =
 			game_singleton.get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
-				Utilities::godot_to_std_string(identifier)
+				convert_to<std::string>(identifier)
 			);
 
 		if (country_definition != nullptr) {

@@ -4,6 +4,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -78,7 +79,7 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 Error GUIListBox::_update_child_positions() {
 	const int32_t child_count = get_child_count();
 	const real_t max_height = get_size().height;
-	const Vector2 offset = gui_listbox != nullptr ? Utilities::to_godot_fvec2(gui_listbox->get_items_offset()) : Vector2 {};
+	const Vector2 offset = gui_listbox != nullptr ? convert_to<Vector2>(gui_listbox->get_items_offset()) : Vector2 {};
 
 	real_t height = 0.0_real;
 
@@ -137,7 +138,7 @@ GUIListBox::GUIListBox() : fixed_item_height { 0.0_real } {}
 
 Vector2 GUIListBox::_get_minimum_size() const {
 	if (gui_listbox != nullptr) {
-		Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
+		Size2 size = convert_to<Vector2>(gui_listbox->get_size());
 
 		if (scrollbar != nullptr) {
 			size.width += scrollbar->get_minimum_size().width;
@@ -257,7 +258,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 
 	gui_listbox = new_gui_listbox;
 
-	const String scrollbar_name = Utilities::std_to_godot_string(gui_listbox->get_scrollbar_name());
+	const String scrollbar_name = convert_to<String>(gui_listbox->get_scrollbar_name());
 
 	Error err = OK;
 
@@ -279,8 +280,8 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 			if (scrollbar != nullptr) {
 				add_child(scrollbar, false, INTERNAL_MODE_BACK);
 
-				const Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
-				Vector2 position = Utilities::to_godot_fvec2(gui_listbox->get_scrollbar_offset());
+				const Size2 size = convert_to<Vector2>(gui_listbox->get_size());
+				Vector2 position = convert_to<Vector2>(gui_listbox->get_scrollbar_offset());
 				position.x += size.width;
 				scrollbar->set_position(position);
 				scrollbar->set_length_override(size.height);
@@ -305,7 +306,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 }
 
 String GUIListBox::get_gui_listbox_name() const {
-	return gui_listbox != nullptr ? Utilities::std_to_godot_string(gui_listbox->get_name()) : String {};
+	return gui_listbox != nullptr ? convert_to<String>(gui_listbox->get_name()) : String {};
 }
 
 GUIScrollbar* GUIListBox::get_scrollbar() const {

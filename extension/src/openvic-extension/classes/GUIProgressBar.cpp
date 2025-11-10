@@ -2,6 +2,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -40,7 +41,7 @@ Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar)
 
 	Ref<ImageTexture> back_texture;
 	if (!progress_bar->get_back_texture_file().empty()) {
-		const StringName back_texture_file = Utilities::std_to_godot_string(progress_bar->get_back_texture_file());
+		const StringName back_texture_file = convert_to<String>(progress_bar->get_back_texture_file());
 		back_texture = asset_manager->get_texture(back_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 		if (back_texture.is_null()) {
 			UtilityFunctions::push_error(
@@ -50,7 +51,7 @@ Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar)
 		}
 	}
 	if (back_texture.is_null()) {
-		const Color back_colour = Utilities::to_godot_color(progress_bar->get_back_colour());
+		const Color back_colour = convert_to<Color>(progress_bar->get_back_colour());
 		back_texture = Utilities::make_solid_colour_texture(
 			back_colour, progress_bar->get_size().x, progress_bar->get_size().y
 		);
@@ -73,7 +74,7 @@ Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar)
 	Ref<ImageTexture> progress_texture;
 	if (!progress_bar->get_progress_texture_file().empty()) {
 		const StringName progress_texture_file =
-			Utilities::std_to_godot_string(progress_bar->get_progress_texture_file());
+			convert_to<String>(progress_bar->get_progress_texture_file());
 		progress_texture = asset_manager->get_texture(progress_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 		if (progress_texture.is_null()) {
 			UtilityFunctions::push_error(
@@ -84,7 +85,7 @@ Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar)
 		}
 	}
 	if (progress_texture.is_null()) {
-		const Color progress_colour = Utilities::to_godot_color(progress_bar->get_progress_colour());
+		const Color progress_colour = convert_to<Color>(progress_bar->get_progress_colour());
 		progress_texture = Utilities::make_solid_colour_texture(
 			progress_colour, progress_bar->get_size().x, progress_bar->get_size().y
 		);
@@ -107,7 +108,7 @@ Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar)
 
 	// TODO - work out why progress bar is missing bottom border pixel (e.g. province building expansion bar)
 	set_custom_minimum_size(
-		Utilities::to_godot_fvec2(static_cast<fvec2_t>(progress_bar->get_size()))
+		convert_to<Vector2>(progress_bar->get_size())
 	);
 
 	return err;

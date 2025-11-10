@@ -4,6 +4,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -99,7 +100,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 			array.push_back(good_dict);
 		}
 
-		ret[Utilities::std_to_godot_string(good_category.get_identifier())] = std::move(array);
+		ret[convert_to<String>(good_category.get_identifier())] = std::move(array);
 	}
 
 	return ret;
@@ -134,7 +135,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 
 	Dictionary ret;
 
-	ret[trade_detail_good_name_key] = Utilities::std_to_godot_string(good_instance->get_identifier());
+	ret[trade_detail_good_name_key] = convert_to<String>(good_instance->get_identifier());
 	ret[trade_detail_good_price_key] = static_cast<real_t>(good_instance->get_price());
 	ret[trade_detail_good_base_price_key] = static_cast<real_t>(good_instance->get_good_definition().get_base_price());
 	{
@@ -208,7 +209,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	for (GoodInstance const& good : good_instance_manager.get_good_instances()) {
 		static const StringName top_producers_localisation_key = "TRADE_TOP_PRODUCERS";
 
-		String tooltip = tr(Utilities::std_to_godot_string(good.get_identifier())) + get_tooltip_separator() +
+		String tooltip = tr(convert_to<String>(good.get_identifier())) + get_tooltip_separator() +
 			tr(top_producers_localisation_key);
 
 		for (size_t index = 0; index < 5; ++index) {
@@ -220,7 +221,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 
 			tooltip += Utilities::format(
 				top_producer_template_string,
-				Utilities::std_to_godot_string(country->get_identifier()),
+				convert_to<String>(country->get_identifier()),
 				Utilities::get_country_name(*this, *country),
 				Utilities::fixed_point_to_string_dp(fixed_point_t::parse(1000) / static_cast<int32_t>(index + 1), 2)
 			);

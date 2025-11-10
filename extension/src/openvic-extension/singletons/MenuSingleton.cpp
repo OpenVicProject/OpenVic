@@ -15,6 +15,7 @@
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
@@ -77,7 +78,7 @@ String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifi
 
 	for (auto const& [effect, value] : modifier.get_values()) {
 		if (value != fixed_point_t::_0) {
-			result += "\n" + tr(Utilities::std_to_godot_string(effect->get_localisation_key())) + ": " +
+			result += "\n" + tr(convert_to<String>(effect->get_localisation_key())) + ": " +
 				_make_modifier_effect_value_coloured(*effect, value, true);
 		}
 	}
@@ -109,12 +110,12 @@ String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 			if (effect.is_global()) {
 				ProvinceInstance const* province = modifier_entry.get_source_province();
 				if (province != nullptr) {
-					result += tr(GUINode::format_province_name(Utilities::std_to_godot_string(province->get_identifier())));
+					result += tr(GUINode::format_province_name(convert_to<String>(province->get_identifier())));
 					result += ": ";
 				}
 			}
 
-			result += tr(Utilities::std_to_godot_string(modifier_entry.modifier.get_identifier()));
+			result += tr(convert_to<String>(modifier_entry.modifier.get_identifier()));
 			result += ": ";
 			result += _make_modifier_effect_value_coloured(effect, value, true);
 			result += suffix;
@@ -149,7 +150,7 @@ String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 
 	for (auto const& [rule_group, rule_map] : rules.get_rule_groups()) {
 		for (auto const& [rule, enabled] : rule_map) {
-			result += "\n" + tr(Utilities::std_to_godot_string(rule->get_localisation_key()))
+			result += "\n" + tr(convert_to<String>(rule->get_localisation_key()))
 				+ (enabled ? enabled_text : disabled_text);
 		}
 	}
@@ -192,7 +193,7 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 	).replace(
 		mobilisation_impact_tooltip_replace_policy_key, tr(
 			war_policy_issue != nullptr
-				? StringName { Utilities::std_to_godot_string(war_policy_issue->get_identifier()) }
+				? StringName { convert_to<String>(war_policy_issue->get_identifier()) }
 				: no_issue
 		)
 	).replace(
@@ -359,7 +360,7 @@ String MenuSingleton::get_country_name_from_identifier(String const& country_ide
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	CountryInstance const* country = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-		Utilities::godot_to_std_string(country_identifier)
+		convert_to<std::string>(country_identifier)
 	);
 	ERR_FAIL_NULL_V(country, {});
 
@@ -378,7 +379,7 @@ String MenuSingleton::get_country_adjective_from_identifier(String const& countr
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	CountryInstance const* country = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-		Utilities::godot_to_std_string(country_identifier)
+		convert_to<std::string>(country_identifier)
 	);
 	ERR_FAIL_NULL_V(country, {});
 
@@ -441,7 +442,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 	} else {
 		UtilityFunctions::push_error(
 			"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()),
-			") for province ", Utilities::std_to_godot_string(province->get_identifier())
+			") for province ", convert_to<String>(province->get_identifier())
 		);
 	}
 
@@ -485,7 +486,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	}
 	Dictionary ret;
 
-	ret[province_info_province_key] = Utilities::std_to_godot_string(province->get_identifier());
+	ret[province_info_province_key] = convert_to<String>(province->get_identifier());
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
@@ -498,7 +499,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	TerrainType const* terrain_type = province->get_terrain_type();
 	if (terrain_type != nullptr) {
-		String terrain_type_string = Utilities::std_to_godot_string(terrain_type->get_identifier());
+		String terrain_type_string = convert_to<String>(terrain_type->get_identifier());
 
 		static const StringName terrain_type_localisation_key = "PROVINCEVIEW_TERRAIN";
 		static const String terrain_type_replace_key = "$TERRAIN$";
@@ -521,7 +522,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	CountryInstance const* controller = province->get_controller();
 	if (controller != nullptr) {
-		ret[province_info_controller_key] = Utilities::std_to_godot_string(controller->get_identifier());
+		ret[province_info_controller_key] = convert_to<String>(controller->get_identifier());
 
 		static const StringName controller_localisation_key = "PV_CONTROLLER";
 		static const String controller_template_string = "%s %s";
@@ -588,7 +589,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 					output_string += Utilities::format(
 						employee_effect_template_string,
 						tr(owners_localisation_key),
-						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
+						tr(convert_to<String>(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
 							*modifier_effect_cache.get_rgo_output_country(), effect_value, true
 						)
@@ -599,7 +600,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 					throughput_string += Utilities::format(
 						employee_effect_template_string,
 						tr(owners_localisation_key),
-						tr(Utilities::std_to_godot_string(owner_pop_type.get_identifier())),
+						tr(convert_to<String>(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
 							*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
 						)
@@ -623,7 +624,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 			amount_of_employees_by_pop_type += Utilities::format(
 				amount_of_employees_by_pop_type_template_string,
-				tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+				tr(convert_to<String>(pop_type.get_identifier())),
 				employees_of_type
 			);
 
@@ -646,7 +647,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 						output_string += Utilities::format(
 							employee_effect_template_string,
 							tr(workers_localisation_key),
-							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+							tr(convert_to<String>(pop_type.get_identifier())),
 							_make_modifier_effect_value_coloured(
 								*modifier_effect_cache.get_rgo_output_country(), effect_value, true
 							)
@@ -657,7 +658,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 						throughput_string += Utilities::format(
 							employee_effect_template_string,
 							tr(workers_localisation_key),
-							tr(Utilities::std_to_godot_string(pop_type.get_identifier())),
+							tr(convert_to<String>(pop_type.get_identifier())),
 							_make_modifier_effect_value_coloured(
 								*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
 							)
@@ -730,7 +731,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			if (size_from_terrain != fixed_point_t::_0) {
 				size_string = Utilities::format(
 					size_modifier_template_string,
-					tr(Utilities::std_to_godot_string(province->get_terrain_type()->get_identifier())),
+					tr(convert_to<String>(province->get_terrain_type()->get_identifier())),
 					_make_modifier_effect_value_coloured(
 						*modifier_effect_cache.get_farm_rgo_size_local(), size_from_terrain, false
 					)
@@ -843,7 +844,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ret[province_info_rgo_production_tooltip_key] = Utilities::format(
 			rgo_production_template_string,
 			tr(rgo_production_localisation_key).replace(
-				rgo_good_replace_key, tr(Utilities::std_to_godot_string(rgo_good.get_identifier()))
+				rgo_good_replace_key, tr(convert_to<String>(rgo_good.get_identifier()))
 			).replace(
 				Utilities::get_long_value_placeholder(),
 				Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)
@@ -890,7 +891,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	Crime const* crime = province->get_crime();
 	if (crime != nullptr) {
-		ret[province_info_crime_name_key] = Utilities::std_to_godot_string(crime->get_identifier());
+		ret[province_info_crime_name_key] = convert_to<String>(crime->get_identifier());
 		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
 	}
 
@@ -930,13 +931,13 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		PackedStringArray cores_array;
 		if (cores_array.resize(cores.size()) == OK) {
 			for (size_t idx = 0; idx < cores.size(); ++idx) {
-				cores_array[idx] = Utilities::std_to_godot_string(cores.data()[idx]->get_identifier());
+				cores_array[idx] = convert_to<String>(cores.data()[idx]->get_identifier());
 			}
 			ret[province_info_cores_key] = std::move(cores_array);
 		} else {
 			UtilityFunctions::push_error(
 				"Failed to resize cores array to the correct size (", static_cast<int64_t>(cores.size()), ") for province ",
-				Utilities::std_to_godot_string(province->get_identifier())
+				convert_to<String>(province->get_identifier())
 			);
 		}
 	}
@@ -967,7 +968,7 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 		building_index < 0 || building_index >= province_building_types.size(), {},
 		Utilities::format("Invalid province building index: %d", building_index)
 	);
-	return Utilities::std_to_godot_string(province_building_types[building_index]->get_identifier());
+	return convert_to<String>(province_building_types[building_index]->get_identifier());
 }
 
 int32_t MenuSingleton::get_slave_pop_icon_index() const {
@@ -1015,7 +1016,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName country_status_key = "country_status";
 	static const StringName total_rank_key = "total_rank";
 
-	ret[country_key] = Utilities::std_to_godot_string(country->get_identifier());
+	ret[country_key] = convert_to<String>(country->get_identifier());
 	ret[country_status_key] = static_cast<int32_t>(country->get_country_status());
 	ret[total_rank_key] = static_cast<uint64_t>(country->get_total_rank());
 
@@ -1042,7 +1043,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			static const String invested_replace_key = "$INVESTED$";
 			static const String cost_replace_key = "$COST$";
 
-			String current_tech_localised = tr(Utilities::std_to_godot_string(current_research->get_identifier()));
+			String current_tech_localised = tr(convert_to<String>(current_research->get_identifier()));
 
 			ret[research_tooltip_key] = tr(research_localisation_key).replace(
 				tech_replace_key, current_tech_localised
@@ -1090,7 +1091,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			daily_base_research_points += research_points;
 
 			research_points_tooltip += tr(pop_type_research_localisation_key).replace(
-				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
+				pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier()))
 			).replace(
 				Utilities::get_long_value_placeholder(),
 				Utilities::fixed_point_to_string_dp(research_points, 2)
@@ -1195,7 +1196,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			monthly_base_leadership_points += leadership_points;
 
 			leadership_tooltip += tr(pop_type_leadership_localisation_key).replace(
-				pop_type_replace_key, tr(Utilities::std_to_godot_string(pop_type->get_identifier()))
+				pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier()))
 			).replace(
 				Utilities::get_long_value_placeholder(),
 				Utilities::fixed_point_to_string_dp(leadership_points, 2)
@@ -1376,7 +1377,7 @@ Error MenuSingleton::generate_search_cache() {
 	search_panel.entry_cache.reserve(provinces.size() + state_sets.size() + countries.size());
 
 	for (ProvinceInstance const& province : provinces) {
-		String identifier = Utilities::std_to_godot_string(province.get_identifier());
+		String identifier = convert_to<String>(province.get_identifier());
 		String display_name = tr(GUINode::format_province_name(identifier));
 		String search_name = display_name.to_lower();
 
@@ -1405,7 +1406,7 @@ Error MenuSingleton::generate_search_cache() {
 
 			search_panel.entry_cache.push_back({
 				&country, std::move(display_name), std::move(search_name),
-				Utilities::std_to_godot_string(country.get_identifier()).to_lower()
+				convert_to<String>(country.get_identifier()).to_lower()
 			});
 		}
 	}

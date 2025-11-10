@@ -17,6 +17,7 @@
 #include <openvic-simulation/map/State.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -131,7 +132,7 @@ String Utilities::float_to_string_dp(float val, int32_t decimal_places) {
 
 String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_places) {
 	// We could use fixed point's own to_string method, but that allocates an intermediate string so better to go via float
-	// return Utilities::std_to_godot_string(val.to_string(decimal_places));
+	// return convert_to<String>(val.to_string(decimal_places));
 	return Utilities::float_to_string_dp(static_cast<float>(val), decimal_places);
 }
 
@@ -175,7 +176,7 @@ String Utilities::date_to_string(Date date) {
  *  - "January 1, 1836" (if month_first is true) */
 String Utilities::date_to_formatted_string(Date date, bool month_first) {
 	String day = String::num_int64(date.get_day());
-	String month = Utilities::std_to_godot_string(date.get_month_name());
+	String month = convert_to<String>(date.get_month_name());
 	TranslationServer const* server = TranslationServer::get_singleton();
 	if (server != nullptr) {
 		month = server->translate(month);
@@ -196,7 +197,7 @@ Ref<Resource> Utilities::load_resource(String const& path, String const& type_hi
 }
 
 static Ref<Image> load_dds_image(String const& path) {
-	const gli::texture dds_file = gli::load_dds(Utilities::godot_to_std_string(path));
+	const gli::texture dds_file = gli::load_dds(convert_to<std::string>(path));
 	ERR_FAIL_COND_V_MSG(dds_file.empty(), nullptr, Utilities::format("Failed to load DDS file: %s", path));
 	gli::texture2d texture { dds_file };
 	ERR_FAIL_COND_V_MSG(texture.empty(), nullptr, Utilities::format("Failed to create DDS texture: %s", path));
@@ -277,7 +278,7 @@ Variant Utilities::get_project_setting(godot::StringName const& p_path, godot::V
 godot::String Utilities::get_state_name(godot::Object const& translation_object, State const& state) {
 	StateSet const& state_set = state.get_state_set();
 
-	const String region_identifier = Utilities::std_to_godot_string(state_set.get_region().get_identifier());
+	const String region_identifier = convert_to<String>(state_set.get_region().get_identifier());
 
 	String name = translation_object.tr(region_identifier);
 
@@ -288,7 +289,7 @@ godot::String Utilities::get_state_name(godot::Object const& translation_object,
 	if (!named) {
 		// Capital province name
 		// TODO - confirm capital is never null?
-		name = translation_object.tr(GUINode::format_province_name(Utilities::std_to_godot_string(state.get_capital()->get_identifier())));
+		name = translation_object.tr(GUINode::format_province_name(convert_to<String>(state.get_capital()->get_identifier())));
 
 		if (!owned) {
 			static const StringName region_key = "REGION_NAME";
@@ -314,7 +315,7 @@ godot::String Utilities::get_state_name(godot::Object const& translation_object,
 godot::String Utilities::get_country_name(godot::Object const& translation_object, CountryInstance const& country) {
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_name_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+		const String government_name_key = convert_to<String>(StringUtils::append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier()
 		));
 
@@ -325,14 +326,14 @@ godot::String Utilities::get_country_name(godot::Object const& translation_objec
 		}
 	}
 
-	return translation_object.tr(Utilities::std_to_godot_string(country.get_identifier()));
+	return translation_object.tr(convert_to<String>(country.get_identifier()));
 }
 godot::String Utilities::get_country_adjective(godot::Object const& translation_object, CountryInstance const& country) {
 	static constexpr std::string_view adjective = "_ADJ";
 
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_adjective_key = Utilities::std_to_godot_string(StringUtils::append_string_views(
+		const String government_adjective_key = convert_to<String>(StringUtils::append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier(), adjective
 		));
 
@@ -343,7 +344,7 @@ godot::String Utilities::get_country_adjective(godot::Object const& translation_
 		}
 	}
 
-	return translation_object.tr(Utilities::std_to_godot_string(StringUtils::append_string_views(country.get_identifier(), adjective)));
+	return translation_object.tr(convert_to<String>(StringUtils::append_string_views(country.get_identifier(), adjective)));
 }
 
 godot::String Utilities::make_modifier_effect_value(

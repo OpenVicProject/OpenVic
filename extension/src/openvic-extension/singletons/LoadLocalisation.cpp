@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -136,8 +137,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 			translation, false, Utilities::format("Failed to get translation object: %s", Dataloader::locale_names[locale])
 		);
 	}
-	const StringName godot_key = Utilities::std_to_godot_string(key);
-	const StringName godot_localisation = Utilities::std_to_godot_string(localisation);
+	const StringName godot_key = convert_to<String>(key);
+	const StringName godot_localisation = convert_to<String>(localisation);
 	if (false) {
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {

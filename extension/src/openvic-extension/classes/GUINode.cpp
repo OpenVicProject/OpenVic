@@ -122,7 +122,7 @@ Error GUINode::add_gui_element(String const& gui_scene, String const& gui_elemen
 Vector2 GUINode::get_gui_position(String const& gui_scene, String const& gui_position) {
 	GUI::Position const* position = UITools::get_gui_position(gui_scene, gui_position);
 	ERR_FAIL_NULL_V(position, {});
-	return Utilities::to_godot_fvec2(position->get_position());
+	return convert_to<Vector2>(position->get_position());
 }
 
 template<std::derived_from<godot::Node> T>

@@ -42,6 +42,7 @@
 #include <openvic-simulation/utility/Typedefs.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 #include "gen/commit_info.gen.hpp"
@@ -359,7 +360,7 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 	}
 
 	String app_copyright =
-		"(c) " + Utilities::std_to_godot_string(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
+		"(c) " + convert_to<String>(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
 	if (p_is_rich) {
 		app_copyright = vformat("[color=gray]%s[/color]", app_copyright);
 	}
@@ -382,8 +383,8 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 	godot::String help = vformat(
 		"%s - %s - %s - %s\n%s\n%s\n\n%s\n  %s -- %s\n\n%s\n%s", //
 		app_name, //
-		Utilities::std_to_godot_string(GAME_TAG), //
-		Utilities::std_to_godot_string(GAME_COMMIT_HASH).substr(0, 7), //
+		convert_to<String>(GAME_TAG), //
+		convert_to<String>(GAME_COMMIT_HASH).substr(0, 7), //
 		app_website, //
 		app_description, //
 		app_copyright, //

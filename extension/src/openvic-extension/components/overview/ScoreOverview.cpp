@@ -11,6 +11,7 @@
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
@@ -243,7 +244,7 @@ godot::String ScoreOverview::generate_industrial_tooltip(CountryInstance& countr
 	std::vector<std::tuple<godot::String, godot::String, fixed_point_t>> industrial_power_from_investments;
 	for (auto const& [country, power] : country.get_industrial_power_from_investments()) {
 		industrial_power_from_investments.emplace_back(
-			Utilities::std_to_godot_string(country->get_identifier()),
+			convert_to<godot::String>(country->get_identifier()),
 			Utilities::get_country_name(industrial_score_label, *country),
 			power
 		);
