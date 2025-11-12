@@ -4,7 +4,7 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include "openvic-simulation/modifier/ModifierEffectCache.hpp"
-#include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/population/PopType.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"

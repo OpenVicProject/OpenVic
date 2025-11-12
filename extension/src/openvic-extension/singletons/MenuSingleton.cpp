@@ -6,7 +6,7 @@
 
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
-#include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/population/PopType.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
