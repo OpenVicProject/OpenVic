@@ -7,7 +7,7 @@
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
 #include <openvic-simulation/map/ProvinceDefinition.hpp>
-#include <openvic-simulation/pop/Culture.hpp>
+#include <openvic-simulation/population/Culture.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/OrderedContainersMath.hpp>

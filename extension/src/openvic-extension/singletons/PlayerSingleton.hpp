@@ -2,7 +2,7 @@
 
 #include <godot_cpp/classes/object.hpp>
 
-#include <openvic-simulation/pop/PopType.hpp>
+#include <openvic-simulation/population/PopType.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/utility/Getters.hpp>
 
