@@ -276,9 +276,9 @@ Variant Utilities::get_project_setting(godot::StringName const& p_path, godot::V
 }
 
 godot::String Utilities::get_state_name(godot::Object const& translation_object, State const& state) {
-	StateSet const& state_set = state.get_state_set();
+	StateSet const& state_set = state.state_set;
 
-	const String region_identifier = convert_to<String>(state_set.get_region().get_identifier());
+	const String region_identifier = convert_to<String>(state_set.region.get_identifier());
 
 	String name = translation_object.tr(region_identifier);
 
@@ -359,7 +359,7 @@ godot::String Utilities::make_modifier_effect_value(
 		result = "+";
 	}
 
-	const uint8_t format = static_cast<uint8_t>(format_effect.get_format());
+	const uint8_t format = static_cast<uint8_t>(format_effect.format);
 
 	// Apply multiplier format part
 	{
@@ -422,7 +422,7 @@ godot::String Utilities::make_modifier_effect_value_coloured(
 	godot::String result = GUILabel::get_colour_marker();
 
 	const bool is_positive_green = (
-		static_cast<uint8_t>(format_effect.get_format()) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)
+		static_cast<uint8_t>(format_effect.format) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)
 	) == static_cast<uint8_t>(ModifierEffect::format_t::FORMAT_PART_POS);
 
 	if (value == 0) {

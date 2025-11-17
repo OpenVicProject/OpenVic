@@ -172,7 +172,7 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 			continue;
 		}
 
-		billboard_pos[index++] = game_singleton->get_billboard_pos(country.get_capital()->get_province_definition());
+		billboard_pos[index++] = game_singleton->get_billboard_pos(country.get_capital()->province_definition);
 	}
 
 	billboard_pos.resize(index);
@@ -189,18 +189,18 @@ PackedByteArray MapItemSingleton::get_crime_icons() const {
 
 	PackedByteArray icons {};
 
-	icons.resize(map_instance.get_map_definition().get_land_province_count());
+	icons.resize(instance_manager->definition_manager.get_map_definition().get_land_province_count());
 
 	int64_t index = 0;
 
 	for (ProvinceInstance const& prov_inst : map_instance.get_province_instances()) {
-		if (prov_inst.get_province_definition().is_water()) {
+		if (prov_inst.province_definition.is_water()) {
 			// billboards dont appear over water, skip
 			continue;
 		}
 
 		Crime const* crime = prov_inst.get_crime();
-		icons[index++] = crime != nullptr ? crime->get_icon() : 0; // 0 if no crime in the province
+		icons[index++] = crime != nullptr ? crime->icon : 0; // 0 if no crime in the province
 	}
 
 	return icons;
@@ -215,18 +215,18 @@ PackedByteArray MapItemSingleton::get_rgo_icons() const {
 
 	PackedByteArray icons {};
 
-	icons.resize(map_instance.get_map_definition().get_land_province_count());
+	icons.resize(instance_manager->definition_manager.get_map_definition().get_land_province_count());
 
 	int64_t index = 0;
 
 	for (ProvinceInstance const& prov_inst : map_instance.get_province_instances()) {
-		if (prov_inst.get_province_definition().is_water()) {
+		if (prov_inst.province_definition.is_water()) {
 			// billboards dont appear over water, skip
 			continue;
 		}
 
 		GoodDefinition const* rgo_good = prov_inst.get_rgo_good();
-		icons[index++] = rgo_good != nullptr ? rgo_good->get_index() + 1 : 0; // 0 if no rgo good in the province
+		icons[index++] = rgo_good != nullptr ? rgo_good->index + 1 : 0; // 0 if no rgo good in the province
 	}
 
 	return icons;
@@ -250,12 +250,12 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 
 	PackedByteArray icons {};
 
-	icons.resize(map_instance.get_map_definition().get_land_province_count());
+	icons.resize(instance_manager->definition_manager.get_map_definition().get_land_province_count());
 
 	int64_t index = 0;
 
 	for (ProvinceInstance const& prov_inst : map_instance.get_province_instances()) {
-		if (prov_inst.get_province_definition().is_water()) {
+		if (prov_inst.province_definition.is_water()) {
 			// billboards dont appear over water, skip
 			continue;
 		}

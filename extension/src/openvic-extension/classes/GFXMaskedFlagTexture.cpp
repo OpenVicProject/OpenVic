@@ -178,7 +178,7 @@ Error GFXMaskedFlagTexture::set_flag_country_and_type(
 		GameSingleton const* game_singleton = GameSingleton::get_singleton();
 		ERR_FAIL_NULL_V(game_singleton, FAILED);
 
-		flag_image_rect = game_singleton->get_flag_sheet_rect(new_flag_country->get_index(), new_flag_type);
+		flag_image_rect = game_singleton->get_flag_sheet_rect(new_flag_country->index, new_flag_type);
 		ERR_FAIL_COND_V(!flag_image_rect.has_area(), FAILED);
 
 		flag_country = new_flag_country;
@@ -225,7 +225,7 @@ Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) 
 		? StringName { convert_to<String>(government_type->get_flag_type()) }
 		: StringName {};
 
-	return set_flag_country_and_type(&new_flag_country->get_country_definition(), new_flag_type);
+	return set_flag_country_and_type(&new_flag_country->country_definition, new_flag_type);
 }
 
 Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country_name) {

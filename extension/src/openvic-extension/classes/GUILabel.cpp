@@ -702,7 +702,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 			);
 
 		if (country_instance != nullptr) {
-			country_index = country_instance->get_country_definition().get_index();
+			country_index = country_instance->country_definition.index;
 
 			GovernmentType const* government_type = country_instance->flag_government_type.get_untracked();
 			if (government_type != nullptr) {
@@ -716,7 +716,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 			);
 
 		if (country_definition != nullptr) {
-			country_index = country_definition->get_index();
+			country_index = country_definition->index;
 		}
 	}
 
