@@ -102,7 +102,7 @@ String Utilities::float_to_string_suffixed(float val) {
 	const float abs_val = std::abs(val);
 
 	if (abs_val < 10'000.0f) {
-		return float_to_string_dp(val, 1);
+		return float_to_string_dp_dynamic(val);
 	}
 
 	if (abs_val < 1'000'000.0f) {
@@ -153,7 +153,7 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 
 String Utilities::cash_to_string_dp_dynamic(fixed_point_t val) {
 	return format_with_currency(
-		Utilities::float_to_string_dp_dynamic(
+		Utilities::float_to_string_suffixed(
 			static_cast<float>(val)
 		)
 	);
