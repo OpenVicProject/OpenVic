@@ -23,8 +23,8 @@ StrataTaxBudget::StrataTaxBudget(
 		parent,
 		generate_slider_tooltip_localisation_key(new_strata),
 		BALANCE,
-		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata.get_index())),
-		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata.get_index()))
+		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(new_strata.index)),
+		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(new_strata.index))
 	),
 	BudgetIncomeComponent(generate_summary_localisation_key(new_strata), 1),
 	strata{new_strata},
@@ -37,7 +37,7 @@ StrataTaxBudget::StrataTaxBudget(
 
 	GUILabel::set_text_and_tooltip(
 		parent,
-		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.get_index())),
+		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(new_strata.index)),
 		generate_slider_tooltip_localisation_key(new_strata),
 		Utilities::format(
 			"TAX_%s_DESC",

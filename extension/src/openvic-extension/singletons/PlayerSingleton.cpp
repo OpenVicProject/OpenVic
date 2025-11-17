@@ -98,7 +98,7 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	if (player_country != nullptr) {
 		instance_manager->queue_game_action(
 			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), true }
+			std::pair<uint64_t, bool> { player_country->index, true }
 		);
 	}
 
@@ -107,7 +107,7 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	if (player_country != nullptr) {
 		instance_manager->queue_game_action(
 			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->get_index(), false }
+			std::pair<uint64_t, bool> { player_country->index, false }
 		);
 	}
 
@@ -131,7 +131,7 @@ Vector2 PlayerSingleton::get_player_country_capital_position() const {
 		ProvinceInstance const* capital = player_country->get_capital();
 
 		if (capital != nullptr) {
-			return GameSingleton::get_singleton()->get_billboard_pos(capital->get_province_definition());
+			return GameSingleton::get_singleton()->get_billboard_pos(capital->province_definition);
 		}
 	}
 
@@ -174,7 +174,7 @@ void PlayerSingleton::unset_selected_province() {
 }
 
 int32_t PlayerSingleton::get_selected_province_number() const {
-	return selected_province != nullptr ? selected_province->get_province_definition().get_province_number() : ProvinceDefinition::NULL_INDEX;
+	return selected_province != nullptr ? selected_province->province_definition.get_province_number() : ProvinceDefinition::NULL_INDEX;
 }
 
 // Core
@@ -217,7 +217,7 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_EXPAND_PROVINCE_BUILDING,
-		std::pair<uint64_t, uint64_t> { selected_province->get_index(), building_index }
+		std::pair<uint64_t, uint64_t> { selected_province->index, building_index }
 	);
 }
 
@@ -229,7 +229,7 @@ void PlayerSingleton::set_##value_name##_slider_value(fixed_point_t const value)
 	} \
 	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action( \
 		game_action_type_t::GAME_ACTION_SET_##game_action_name, \
-		std::pair<uint64_t, fixed_point_t> { player_country->get_index(), value } \
+		std::pair<uint64_t, fixed_point_t> { player_country->index, value } \
 	); \
 }
 
@@ -250,7 +250,7 @@ void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fix
 	}
 	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
-		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->get_index(), strata.get_index(), value }
+		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->index, strata.index, value }
 	);
 }
 
@@ -269,7 +269,7 @@ void PlayerSingleton::set_good_automated(int32_t good_index, bool is_automated) 
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_GOOD_AUTOMATED,
-		std::tuple<uint64_t, uint64_t, bool> { player_country->get_index(), good_index, is_automated }
+		std::tuple<uint64_t, uint64_t, bool> { player_country->index, good_index, is_automated }
 	);
 }
 
@@ -282,7 +282,7 @@ void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, 
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_GOOD_TRADE_ORDER, std::tuple<uint64_t, uint64_t, bool, fixed_point_t> {
-			player_country->get_index(), good_index, is_selling,
+			player_country->index, good_index, is_selling,
 			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
 		}
 	);
@@ -299,7 +299,7 @@ void PlayerSingleton::create_leader(bool is_general) const {
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_CREATE_LEADER,
-		std::pair<uint64_t, bool> { player_country->get_index(), is_general }
+		std::pair<uint64_t, bool> { player_country->index, is_general }
 	);
 }
 
@@ -321,7 +321,7 @@ void PlayerSingleton::set_auto_create_leaders(bool value) const {
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_AUTO_CREATE_LEADERS,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { player_country->index, value }
 	);
 }
 
@@ -333,7 +333,7 @@ void PlayerSingleton::set_auto_assign_leaders(bool value) const {
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_AUTO_ASSIGN_LEADERS,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { player_country->index, value }
 	);
 }
 
@@ -345,6 +345,6 @@ void PlayerSingleton::set_mobilise(bool value) const {
 
 	instance_manager->queue_game_action(
 		game_action_type_t::GAME_ACTION_SET_MOBILISE,
-		std::pair<uint64_t, bool> { player_country->get_index(), value }
+		std::pair<uint64_t, bool> { player_country->index, value }
 	);
 }

@@ -60,8 +60,8 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 	{
 		// Generic data
-		leader_dict[military_info_leader_id_key] = leader.get_unique_id();
-		leader_dict[military_info_leader_branch_key] = static_cast<int32_t>(leader.get_branch());
+		leader_dict[military_info_leader_id_key] = leader.unique_id;
+		leader_dict[military_info_leader_branch_key] = static_cast<int32_t>(leader.branch);
 
 		leader_dict[military_info_leader_can_be_used_key] = leader.get_can_be_used();
 
@@ -81,7 +81,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		// Title
 		using enum unit_branch_t;
 
-		switch (leader.get_branch()) {
+		switch (leader.branch) {
 		case LAND: {
 			static const StringName general_localisation_key = "MILITARY_GENERAL_TOOLTIP";
 			tooltip = tr(general_localisation_key) + " ";
@@ -94,7 +94,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 		default:
 			UtilityFunctions::push_error(
-				"Invalid branch type \"", static_cast<int64_t>(leader.get_branch()), "\" for leader \"",
+				"Invalid branch type \"", static_cast<int64_t>(leader.branch), "\" for leader \"",
 				convert_to<String>(leader.get_name()), "\""
 			);
 		}
@@ -325,7 +325,7 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	Dictionary in_progress_unit_dict;
 
 	in_progress_unit_dict[military_info_unit_progress_key] = static_cast<real_t>(progress);
-	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->get_icon();
+	in_progress_unit_dict[military_info_unit_icon_key] = unit_type->icon;
 	in_progress_unit_dict[military_info_unit_name_key] = convert_to<String>(unit_type->get_identifier());
 	if (location != nullptr) {
 		in_progress_unit_dict[military_info_unit_location_key] = convert_to<String>(location->get_identifier());

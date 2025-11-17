@@ -25,7 +25,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	ERR_FAIL_NULL_V(instance_manager, {});
 
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
-	GoodDefinitionManager const& good_definition_manager = good_instance_manager.get_good_definition_manager();
+	GoodDefinitionManager const& good_definition_manager = instance_manager->definition_manager.get_economy_manager().get_good_definition_manager();
 
 	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
 
@@ -43,7 +43,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 
 			Dictionary good_dict;
 
-			good_dict[good_index_key] = static_cast<int32_t>(good_definition->get_index());
+			good_dict[good_index_key] = static_cast<int32_t>(good_definition->index);
 			good_dict[current_price_key] = static_cast<real_t>(good_instance.get_price());
 			good_dict[price_change_key] = static_cast<real_t>(good_instance.get_price_change_yesterday());
 
@@ -137,7 +137,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 
 	ret[trade_detail_good_name_key] = convert_to<String>(good_instance->get_identifier());
 	ret[trade_detail_good_price_key] = static_cast<real_t>(good_instance->get_price());
-	ret[trade_detail_good_base_price_key] = static_cast<real_t>(good_instance->get_good_definition().get_base_price());
+	ret[trade_detail_good_base_price_key] = static_cast<real_t>(good_instance->good_definition.base_price);
 	{
 		ValueHistory<fixed_point_t> const& good_price_history = good_instance->get_price_history();
 
@@ -271,7 +271,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			)
 		);
 
-		const float good_index = good.get_good_definition().get_index();
+		const float good_index = good.good_definition.index;
 
 		if (good_data.government_needs != fixed_point_t::_0) {
 			government_needs.push_back({

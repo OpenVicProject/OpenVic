@@ -300,7 +300,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 		}
 
 		bool operator()(population_menu_t::province_entry_t& province_entry) {
-			if (province_entry.province.get_province_definition().get_index() == _province_index) {
+			if (province_entry.province.province_definition.index == _province_index) {
 
 				if (state_entry_to_expand >= 0) {
 					ret &= menu_singleton.population_menu_toggle_expanded(state_entry_to_expand, false) == OK;
@@ -405,13 +405,13 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 		const fixed_point_t pop_size = fixed_point_t::parse(pop->get_size());
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
-		population_menu.religion_distribution[&pop->get_religion()] += pop_size;
+		population_menu.religion_distribution[&pop->religion] += pop_size;
 		for (auto const& [ideology, supporter_equivalents] : pop->get_supporter_equivalents_by_ideology()) {
 			if (supporter_equivalents > 0) {
 				population_menu.ideology_distribution[&ideology] += supporter_equivalents;
 			}
 		}
-		population_menu.culture_distribution[&pop->get_culture()] += pop_size;
+		population_menu.culture_distribution[&pop->culture] += pop_size;
 		population_menu.issue_distribution += pop->get_supporter_equivalents_by_issue();
 		population_menu.vote_distribution += pop->get_vote_equivalents_by_party();
 	}
@@ -471,11 +471,11 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	case SORT_CULTURE:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return ordered_map_lookup_less_than(population_menu.culture_sort_cache, a->get_culture(), b->get_culture());
+			return ordered_map_lookup_less_than(population_menu.culture_sort_cache, a->culture, b->culture);
 		};
 	case SORT_RELIGION:
 		return [this](Pop const* a, Pop const* b) -> bool {
-			return ordered_map_lookup_less_than(population_menu.religion_sort_cache, a->get_religion(), b->get_religion());
+			return ordered_map_lookup_less_than(population_menu.religion_sort_cache, a->religion, b->religion);
 		};
 	case SORT_LOCATION:
 		return [this](Pop const* a, Pop const* b) -> bool {
@@ -798,9 +798,9 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		Dictionary pop_dict;
 
 		pop_dict[pop_size_key] = pop->get_size();
-		pop_dict[pop_type_icon_key] = pop->get_type()->get_sprite();
-		pop_dict[pop_culture_key] = convert_to<String>(pop->get_culture().get_identifier());
-		pop_dict[pop_religion_icon_key] = pop->get_religion().get_icon();
+		pop_dict[pop_type_icon_key] = pop->get_type()->sprite;
+		pop_dict[pop_culture_key] = convert_to<String>(pop->culture.get_identifier());
+		pop_dict[pop_religion_icon_key] = pop->religion.icon;
 		if (pop->get_location() != nullptr) {
 			pop_dict[pop_location_key] = convert_to<String>(pop->get_location()->get_identifier());
 		}
@@ -817,7 +817,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_everyday_needs_key] = static_cast<real_t>(pop->get_everyday_needs_fulfilled());
 		pop_dict[pop_luxury_needs_key] = static_cast<real_t>(pop->get_luxury_needs_fulfilled());
 		if (pop->get_rebel_type() != nullptr) {
-			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->get_icon();
+			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->icon;
 		}
 		pop_dict[pop_size_change_key] = pop->get_total_change();
 		pop_dict[pop_literacy_key] = static_cast<real_t>(pop->get_literacy());
@@ -854,7 +854,7 @@ PackedInt32Array MenuSingleton::get_population_menu_pop_filter_setup_info() {
 	ERR_FAIL_COND_V(array.resize(population_menu.pop_filters.size()) != OK, {});
 
 	for (int32_t idx = 0; idx < array.size(); ++idx) {
-		array[idx] = population_menu.pop_filters.data()[idx].first->get_sprite();
+		array[idx] = population_menu.pop_filters.data()[idx].first->sprite;
 	}
 
 	return array;

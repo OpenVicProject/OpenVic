@@ -152,7 +152,7 @@ void ScoreOverview::update() {
 
 		InstanceManager const& instance_manager = *game_singleton.get_instance_manager();
 		ModifierEffect const* const colonial_points_modifier = instance_manager
-			.get_definition_manager()
+			.definition_manager
 			.get_modifier_manager()
 			.get_modifier_effect_cache()
 			.get_colonial_points();

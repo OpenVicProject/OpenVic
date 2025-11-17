@@ -539,7 +539,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ProductionType const& production_type = *rgo.get_production_type_nullable();
 		GoodDefinition const& rgo_good = *province->get_rgo_good();
 
-		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good.get_index());
+		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good.index);
 
 		ret[province_info_rgo_output_quantity_yesterday_key] = static_cast<real_t>(rgo.get_output_quantity_yesterday());
 		ret[province_info_rgo_revenue_yesterday_key] = static_cast<real_t>(rgo.get_revenue_yesterday());
@@ -751,7 +751,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			}
 
 			ModifierEffectCache::good_effects_t const& good_effects =
-				modifier_effect_cache.get_good_effects(production_type.get_output_good());
+				modifier_effect_cache.get_good_effects(production_type.output_good);
 
 			fixed_point_t output_from_tech =
 				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_output_tech()) +
@@ -838,7 +838,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		const fixed_point_t throughput_efficiency = throughput_from_workers * throughput_multiplier;
 		const fixed_point_t output_efficiency = output_from_workers * output_multiplier;
-		const fixed_point_t base_output = production_type.get_base_output_quantity();
+		const fixed_point_t base_output = production_type.base_output_quantity;
 		const fixed_point_t max_output = base_output * throughput_efficiency * output_efficiency;
 
 		ret[province_info_rgo_production_tooltip_key] = Utilities::format(
@@ -882,7 +882,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			),
 			amount_of_employees_by_pop_type,
 			tr(rgo_workforce_localisation_key),
-			production_type.get_base_workforce_size(),
+			production_type.base_workforce_size,
 			size_string,
 			tr(province_size_localisation_key),
 			static_cast<int32_t>(rgo.get_size_multiplier()) // TODO - remove cast once variable is an int32_t
@@ -892,7 +892,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	Crime const* crime = province->get_crime();
 	if (crime != nullptr) {
 		ret[province_info_crime_name_key] = convert_to<String>(crime->get_identifier());
-		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->get_icon());
+		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->icon);
 	}
 
 	ret[province_info_total_population_key] = province->get_total_population();
@@ -1100,7 +1100,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
-				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
+				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
 			) + "\n";
 		}
 
@@ -1205,7 +1205,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
 				)
 			).replace(
-				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->get_research_leadership_optimum(), 2)
+				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
 			) + "\n";
 		}
 
@@ -1480,7 +1480,7 @@ Vector2 MenuSingleton::get_search_result_position(int32_t result_index) const {
 
 	struct entry_visitor_t {
 		fvec2_t operator()(ProvinceInstance const* province) {
-			return province->get_province_definition().get_centre();
+			return province->province_definition.get_centre();
 		}
 
 		fvec2_t operator()(State const* state) {

@@ -194,7 +194,7 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 		Dictionary bookmark_info;
 
 		bookmark_info[bookmark_info_name_key] = convert_to<String>(bookmark.get_name());
-		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.get_date(), false);
+		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.date, false);
 
 		results.push_back(std::move(bookmark_info));
 	}
@@ -214,7 +214,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
 		province.set_crime(get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-			province.get_index() % get_definition_manager().get_crime_manager().get_crime_modifier_count()
+			province.index % get_definition_manager().get_crime_manager().get_crime_modifier_count()
 		));
 	}
 
@@ -299,7 +299,7 @@ Vector2 GameSingleton::get_bookmark_start_position() const {
 	Bookmark const* bookmark = instance_manager->get_bookmark();
 	ERR_FAIL_NULL_V(bookmark, {});
 
-	return normalise_map_position(bookmark->get_initial_camera_position());
+	return normalise_map_position(bookmark->initial_camera_position);
 }
 
 Ref<Texture2DArray> GameSingleton::get_terrain_texture() const {
@@ -453,7 +453,7 @@ String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
 }
 
 int32_t GameSingleton::get_current_mapmode_index() const {
-	return mapmode->get_index();
+	return mapmode->index;
 }
 
 Error GameSingleton::set_mapmode(int32_t index) {
@@ -461,7 +461,7 @@ Error GameSingleton::set_mapmode(int32_t index) {
 	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, Utilities::format("Failed to find mapmode with index: %d", index));
 	mapmode = new_mapmode;
 	const Error err = _update_colour_image();
-	emit_signal(_signal_mapmode_changed(), mapmode->get_index());
+	emit_signal(_signal_mapmode_changed(), mapmode->index);
 	return err;
 }
 

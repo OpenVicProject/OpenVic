@@ -112,11 +112,11 @@ fixed_point_t AdministrationBudget::calculate_budget_and_update_custom(
 
 	godot::String reforms_part = "";
 	for (auto const& [group, reform] : country.get_reforms()) {
-		if (!group.get_is_administrative() || reform == nullptr) {
+		if (!group.is_administrative || reform == nullptr) {
 			continue;
 		}
 
-		const fixed_point_t administrative_multiplier = reform->get_administrative_multiplier();
+		const fixed_point_t administrative_multiplier = reform->administrative_multiplier;
 		if (administrative_multiplier == 0) {
 			continue;
 		}

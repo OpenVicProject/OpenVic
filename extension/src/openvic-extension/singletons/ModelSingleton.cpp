@@ -227,9 +227,9 @@ bool ModelSingleton::add_unit_dict(
 	_UnitInstanceGroup const& unit = *units.back();
 	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", convert_to<String>(unit.get_name())));
 
-	CountryDefinition const& country_definition = unit.get_country()->get_country_definition();
+	CountryDefinition const& country_definition = unit.get_country()->country_definition;
 
-	GraphicalCultureType const& graphical_culture_type = country_definition.get_graphical_culture();
+	GraphicalCultureType const& graphical_culture_type = country_definition.graphical_culture;
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
 		display_unit_type, false, Utilities::format(
@@ -302,14 +302,14 @@ bool ModelSingleton::add_unit_dict(
 	}
 
 	// TODO - government type based flag type
-	dict[flag_index_key] = game_singleton->get_flag_sheet_index(country_definition.get_index(), {});
+	dict[flag_index_key] = game_singleton->get_flag_sheet_index(country_definition.index, {});
 
 	if (display_unit_type->has_floating_flag()) {
 		dict[flag_floating_key] = true;
 	}
 
 	dict[position_key] =
-		game_singleton->normalise_map_position(unit.get_position()->get_province_definition().get_unit_position());
+		game_singleton->normalise_map_position(unit.get_position()->province_definition.get_unit_position());
 
 	if (display_unit_type->get_unit_category() != UnitType::unit_category_t::INFANTRY) {
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
@@ -334,7 +334,7 @@ TypedArray<Dictionary> ModelSingleton::get_units() {
 	TypedArray<Dictionary> ret;
 
 	for (ProvinceInstance const& province : instance_manager->get_map_instance().get_province_instances()) {
-		if (province.get_province_definition().is_water()) {
+		if (province.province_definition.is_water()) {
 			if (!add_unit_dict(std::span { province.get_navies() }, ret)) {
 				UtilityFunctions::push_error(
 					"Error adding navy to province \"", convert_to<String>(province.get_identifier()), "\""
@@ -388,7 +388,7 @@ Dictionary ModelSingleton::get_flag_model(bool floating) {
 bool ModelSingleton::add_building_dict(
 	BuildingInstance const& building, ProvinceInstance const& province, TypedArray<Dictionary>& building_array
 ) {
-	ProvinceDefinition const& province_definition = province.get_province_definition();
+	ProvinceDefinition const& province_definition = province.province_definition;
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, false);
@@ -400,7 +400,7 @@ bool ModelSingleton::add_building_dict(
 	std::string suffix;
 
 	if (
-		&building.get_building_type() ==
+		&building.building_type ==
 			game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
 	) {
 		/* Port */
@@ -429,8 +429,8 @@ bool ModelSingleton::add_building_dict(
 		return true;
 	}
 
-	fvec2_t const* position_ptr = province_definition.get_building_position(&building.get_building_type());
-	const float rotation = static_cast<float>(province_definition.get_building_rotation(&building.get_building_type()));
+	fvec2_t const* position_ptr = province_definition.get_building_position(&building.building_type);
+	const float rotation = static_cast<float>(province_definition.get_building_rotation(&building.building_type));
 
 	const memory::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
 
@@ -470,7 +470,7 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() {
 	TypedArray<Dictionary> ret;
 
 	for (ProvinceInstance const& province : instance_manager->get_map_instance().get_province_instances()) {
-		if (!province.get_province_definition().is_water()) {
+		if (!province.province_definition.is_water()) {
 			for (BuildingInstance const& building : province.get_buildings()) {
 				if (!add_building_dict(building, province, ret)) {
 					UtilityFunctions::push_error(
