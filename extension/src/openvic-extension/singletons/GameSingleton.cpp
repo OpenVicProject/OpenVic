@@ -8,6 +8,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/dataloader/ModManager.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 #include <openvic-simulation/utility/Containers.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
@@ -19,6 +20,8 @@
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
+#include "openvic-simulation/DefinitionManager.hpp"
+#include "openvic-simulation/map/Crime.hpp"
 #include <range/v3/algorithm/contains.hpp>
 
 #include <spdlog/spdlog.h>
@@ -203,19 +206,21 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 }
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
-	Bookmark const* bookmark =
-		game_manager.get_definition_manager().get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index
-		);
+	DefinitionManager const& definition_manager = game_manager.get_definition_manager();
+	Bookmark const* bookmark = definition_manager.get_history_manager()
+		.get_bookmark_manager()
+		.get_bookmark_by_index(bookmark_index_t(bookmark_index));
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, Utilities::format("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.setup_instance(bookmark);
 
 	// TODO - remove this temporary crime assignment
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
+
+	CrimeManager const& crime_manager = definition_manager.get_crime_manager();
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
-		province.set_crime(get_definition_manager().get_crime_manager().get_crime_modifier_by_index(
-			province.index % get_definition_manager().get_crime_manager().get_crime_modifier_count()
-		));
+		const crime_index_t crime_index = crime_index_t(province.index % crime_manager.get_crime_modifier_count());
+		province.set_crime(crime_manager.get_crime_modifier_by_index(crime_index));
 	}
 
 	ret &= MenuSingleton::get_singleton()->_population_menu_update_provinces() == OK;
@@ -314,7 +319,7 @@ Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
 	return flag_sheet_texture;
 }
 
-int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, StringName const& flag_type) const {
+int32_t GameSingleton::get_flag_sheet_index(country_index_t country_index, StringName const& flag_type) const {
 	ERR_FAIL_COND_V_MSG(
 		country_index < 0 ||
 			country_index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(),
@@ -324,7 +329,7 @@ int32_t GameSingleton::get_flag_sheet_index(int32_t country_index, StringName co
 	const typename decltype(flag_type_index_map)::const_iterator it = flag_type_index_map.find(flag_type);
 	ERR_FAIL_COND_V_MSG(it == flag_type_index_map.end(), -1, Utilities::format("Invalid flag type %s", flag_type));
 
-	return flag_type_index_map.size() * country_index + it->second;
+	return flag_type_index_map.size() * type_safe::get(country_index) + it->second;
 }
 
 Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
@@ -335,7 +340,7 @@ Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
 	return { Vector2i { flag_index % flag_sheet_dims.x, flag_index / flag_sheet_dims.x } * flag_dims, flag_dims };
 }
 
-Rect2i GameSingleton::get_flag_sheet_rect(int32_t country_index, StringName const& flag_type) const {
+Rect2i GameSingleton::get_flag_sheet_rect(country_index_t country_index, StringName const& flag_type) const {
 	return get_flag_sheet_rect(get_flag_sheet_index(country_index, flag_type));
 }
 
@@ -408,7 +413,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 	TypedArray<Dictionary> ret;
 	ERR_FAIL_COND_V(ret.resize(map_definition.get_province_definition_count()) != OK, {});
 
-	for (int32_t index = 0; index < map_definition.get_province_definition_count(); ++index) {
+	for (province_index_t index = 0; index < map_definition.get_province_definition_count(); ++index) {
 		ProvinceDefinition const& province = map_definition.get_province_definitions()[index];
 
 		Dictionary province_dict;
@@ -437,7 +442,9 @@ int32_t GameSingleton::get_mapmode_count() const {
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* identifier_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	Mapmode const* identifier_mapmode = get_definition_manager()
+		.get_mapmode_manager()
+		.get_mapmode_by_index(map_mode_index_t(index));
 	if (identifier_mapmode != nullptr) {
 		return convert_to<String>(identifier_mapmode->get_identifier());
 	}
@@ -445,7 +452,9 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 }
 
 String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
-	Mapmode const* localisation_key_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	Mapmode const* localisation_key_mapmode = get_definition_manager()
+		.get_mapmode_manager()
+		.get_mapmode_by_index(map_mode_index_t(index));
 	if (localisation_key_mapmode != nullptr) {
 		return convert_to<String>(localisation_key_mapmode->get_localisation_key());
 	}
@@ -453,15 +462,17 @@ String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
 }
 
 int32_t GameSingleton::get_current_mapmode_index() const {
-	return mapmode->index;
+	return type_safe::get(mapmode->index);
 }
 
 Error GameSingleton::set_mapmode(int32_t index) {
-	Mapmode const* new_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(index);
+	Mapmode const* new_mapmode = get_definition_manager()
+		.get_mapmode_manager()
+		.get_mapmode_by_index(map_mode_index_t(index));
 	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, Utilities::format("Failed to find mapmode with index: %d", index));
 	mapmode = new_mapmode;
 	const Error err = _update_colour_image();
-	emit_signal(_signal_mapmode_changed(), mapmode->index);
+	emit_signal(_signal_mapmode_changed(), typesafe::get(mapmode->index));
 	return err;
 }
 
