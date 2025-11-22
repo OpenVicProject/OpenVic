@@ -6,6 +6,7 @@
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 namespace OpenVic {
 
@@ -106,9 +107,9 @@ namespace OpenVic {
 
 		/* The index of the flag in the flag sheet corresponding to the requested country / flag_type
 		 * combination, or -1 if no such flag can be found. */
-		int32_t get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const;
+		int32_t get_flag_sheet_index(country_index_t country_index, godot::StringName const& flag_type) const;
 		godot::Rect2i get_flag_sheet_rect(int32_t flag_index) const;
-		godot::Rect2i get_flag_sheet_rect(int32_t country_index, godot::StringName const& flag_type) const;
+		godot::Rect2i get_flag_sheet_rect(country_index_t country_index, godot::StringName const& flag_type) const;
 
 		/* Number of (vertical, horizontal) subdivisions the province shape image
 		 * was split into when making the province_shape_texture to ensure no

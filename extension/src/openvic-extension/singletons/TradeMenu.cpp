@@ -127,8 +127,8 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 
-	GoodInstance const* good_instance =
-		instance_manager->get_good_instance_manager().get_good_instance_by_index(trade_detail_good_index);
+	GoodInstance const* good_instance = instance_manager->get_good_instance_manager()
+		.get_good_instance_by_index(good_index_t(trade_detail_good_index));
 	ERR_FAIL_NULL_V(good_instance, {});
 
 	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();

@@ -1,11 +1,15 @@
 #include "GUILabel.hpp"
 
+#include <optional>
+
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/node_path.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
+
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/core/Convert.hpp"
@@ -690,7 +694,7 @@ void GUILabel::separate_currency_segments(
 GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	GameSingleton& game_singleton = *GameSingleton::get_singleton();
 
-	int32_t country_index = -1;
+	std::optional<country_index_t> country_index = std::nullopt;
 	StringName flag_type;
 
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
@@ -721,14 +725,14 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	}
 
 	// If no country with the given identifier can be found, fallback to country index 0 (usually REB) and empty flag type
-	if (country_index < 0) {
+	if (!country_index.has_value()) {
 		UtilityFunctions::push_warning(
 			"Failed to find country with identifier \"", identifier, "\" for GUILabel flag segment, falling back to index 0"
 		);
-		country_index = 0;
+		country_index = country_index_t(0);
 	}
 
-	const Rect2 flag_image_rect = game_singleton.get_flag_sheet_rect(country_index, flag_type);
+	const Rect2 flag_image_rect = game_singleton.get_flag_sheet_rect(country_index.value(), flag_type);
 	ERR_FAIL_COND_V(!flag_image_rect.has_area(), {});
 
 	flag_segment_t flag_segment;
