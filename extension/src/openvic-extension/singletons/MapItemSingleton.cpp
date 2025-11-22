@@ -226,7 +226,7 @@ PackedByteArray MapItemSingleton::get_rgo_icons() const {
 		}
 
 		GoodDefinition const* rgo_good = prov_inst.get_rgo_good();
-		icons[index++] = rgo_good != nullptr ? rgo_good->index + 1 : 0; // 0 if no rgo good in the province
+		icons[index++] = rgo_good != nullptr ? type_safe::get(rgo_good->index) + 1 : 0; // 0 if no rgo good in the province
 	}
 
 	return icons;
