@@ -1,6 +1,7 @@
 #include "MenuSingleton.hpp"
 
 #include <span>
+#include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -539,7 +540,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ProductionType const& production_type = *rgo.get_production_type_nullable();
 		GoodDefinition const& rgo_good = *province->get_rgo_good();
 
-		ret[province_info_rgo_icon_key] = static_cast<int32_t>(rgo_good.index);
+		ret[province_info_rgo_icon_key] = static_cast<uint64_t>(type_safe::get(rgo_good.index));
 
 		ret[province_info_rgo_output_quantity_yesterday_key] = static_cast<real_t>(rgo.get_output_quantity_yesterday());
 		ret[province_info_rgo_revenue_yesterday_key] = static_cast<real_t>(rgo.get_revenue_yesterday());

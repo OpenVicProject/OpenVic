@@ -2,12 +2,14 @@
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/misc/GameAction.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
+#include <openvic-simulation/utility/FormatValidate.hpp>
 
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
-#include "openvic-simulation/utility/FormatValidate.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -96,18 +98,16 @@ void PlayerSingleton::set_player_country(CountryInstance* new_player_country) {
 	ERR_FAIL_NULL(instance_manager);
 
 	if (player_country != nullptr) {
-		instance_manager->queue_game_action(
-			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->index, true }
+		instance_manager->queue_game_action<set_ai_argument_t>(
+			player_country->index, true
 		);
 	}
 
 	player_country = new_player_country;
 
 	if (player_country != nullptr) {
-		instance_manager->queue_game_action(
-			game_action_type_t::GAME_ACTION_SET_AI,
-			std::pair<uint64_t, bool> { player_country->index, false }
+		instance_manager->queue_game_action<set_ai_argument_t>(
+			player_country->index, false
 		);
 	}
 
@@ -150,7 +150,7 @@ void PlayerSingleton::set_selected_province(ProvinceInstance const* new_selected
 }
 
 void PlayerSingleton::set_selected_province_by_number(int32_t province_number) {
-	if (province_number == ProvinceDefinition::NULL_INDEX) {
+	if (province_number == ProvinceDefinition::NULL_PROVINCE_NUMBER) {
 		unset_selected_province();
 	} else {
 		InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
@@ -174,7 +174,9 @@ void PlayerSingleton::unset_selected_province() {
 }
 
 int32_t PlayerSingleton::get_selected_province_number() const {
-	return selected_province != nullptr ? selected_province->province_definition.get_province_number() : ProvinceDefinition::NULL_INDEX;
+	return selected_province == nullptr
+		? ProvinceDefinition::NULL_PROVINCE_NUMBER
+		: selected_province->province_definition.get_province_number();
 }
 
 // Core
@@ -182,8 +184,7 @@ void PlayerSingleton::toggle_paused() const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_PAUSE,
+	instance_manager->queue_game_action<set_pause_argument_t>(
 		!instance_manager->get_simulation_clock().is_paused()
 	);
 }
@@ -192,8 +193,7 @@ void PlayerSingleton::increase_speed() const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_SPEED,
+	instance_manager->queue_game_action<set_speed_argument_t>(
 		instance_manager->get_simulation_clock().get_simulation_speed() + 1
 	);
 }
@@ -202,8 +202,7 @@ void PlayerSingleton::decrease_speed() const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_SPEED,
+	instance_manager->queue_game_action<set_speed_argument_t>(
 		instance_manager->get_simulation_clock().get_simulation_speed() - 1
 	);
 }
@@ -215,32 +214,31 @@ void PlayerSingleton::expand_selected_province_building(int32_t building_index) 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_EXPAND_PROVINCE_BUILDING,
-		std::pair<uint64_t, uint64_t> { selected_province->index, building_index }
+	instance_manager->queue_game_action<expand_province_building_argument_t>(
+		selected_province->index, building_instance_index_t(building_index)
 	);
 }
 
 // Budget
-#define SET_SLIDER_GAME_ACTION(value_name, game_action_name) \
+#define SET_SLIDER_GAME_ACTION_EXPLICIT(value_name, argument_name) \
 void PlayerSingleton::set_##value_name##_slider_value(fixed_point_t const value) const { \
 	if (player_country == nullptr) { \
 		return; \
 	} \
-	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action( \
-		game_action_type_t::GAME_ACTION_SET_##game_action_name, \
-		std::pair<uint64_t, fixed_point_t> { player_country->index, value } \
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action<set_##argument_name##_argument_t>( \
+		player_country->index, value \
 	); \
 }
+#define SET_SLIDER_GAME_ACTION(value_name) SET_SLIDER_GAME_ACTION_EXPLICIT(value_name, value_name)
 
-SET_SLIDER_GAME_ACTION(administration_spending, ADMINISTRATION_SPENDING)
-SET_SLIDER_GAME_ACTION(education_spending, EDUCATION_SPENDING)
-SET_SLIDER_GAME_ACTION(military_spending, MILITARY_SPENDING)
-SET_SLIDER_GAME_ACTION(social_spending, SOCIAL_SPENDING)
-SET_SLIDER_GAME_ACTION(national_stockpile_army_spending, ARMY_SPENDING)
-SET_SLIDER_GAME_ACTION(national_stockpile_navy_spending, NAVY_SPENDING)
-SET_SLIDER_GAME_ACTION(national_stockpile_construction_spending, CONSTRUCTION_SPENDING)
-SET_SLIDER_GAME_ACTION(tariff_rate, TARIFF_RATE)
+SET_SLIDER_GAME_ACTION(administration_spending)
+SET_SLIDER_GAME_ACTION(education_spending)
+SET_SLIDER_GAME_ACTION(military_spending)
+SET_SLIDER_GAME_ACTION(social_spending)
+SET_SLIDER_GAME_ACTION_EXPLICIT(national_stockpile_army_spending, army_spending)
+SET_SLIDER_GAME_ACTION_EXPLICIT(national_stockpile_navy_spending, navy_spending)
+SET_SLIDER_GAME_ACTION_EXPLICIT(national_stockpile_construction_spending, construction_spending)
+SET_SLIDER_GAME_ACTION(tariff_rate)
 
 #undef SET_SLIDER_GAME_ACTION
 
@@ -248,9 +246,8 @@ void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fix
 	if (player_country == nullptr) {
 		return;
 	}
-	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_STRATA_TAX,
-		std::tuple<uint64_t, uint64_t, fixed_point_t> { player_country->index, strata.index, value }
+	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action<set_strata_tax_argument_t>(
+		player_country->index, strata.index, value
 	);
 }
 
@@ -267,9 +264,8 @@ void PlayerSingleton::set_good_automated(int32_t good_index, bool is_automated) 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_GOOD_AUTOMATED,
-		std::tuple<uint64_t, uint64_t, bool> { player_country->index, good_index, is_automated }
+	instance_manager->queue_game_action<set_good_automated_argument_t>(
+		player_country->index, good_index_t(good_index), is_automated
 	);
 }
 
@@ -280,11 +276,9 @@ void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, 
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_GOOD_TRADE_ORDER, std::tuple<uint64_t, uint64_t, bool, fixed_point_t> {
-			player_country->index, good_index, is_selling,
-			MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
-		}
+	instance_manager->queue_game_action<set_good_trade_order_argument_t>(
+		player_country->index, good_index_t(good_index), is_selling,
+		MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
 	);
 }
 
@@ -297,9 +291,8 @@ void PlayerSingleton::create_leader(bool is_general) const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_CREATE_LEADER,
-		std::pair<uint64_t, bool> { player_country->index, is_general }
+	instance_manager->queue_game_action<create_leader_argument_t>(
+		player_country->index, is_general ? unit_branch_t::LAND : unit_branch_t::NAVAL
 	);
 }
 
@@ -307,9 +300,8 @@ void PlayerSingleton::set_can_use_leader(uint64_t leader_id, bool can_use) const
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_USE_LEADER,
-		std::pair<uint64_t, bool> { leader_id, can_use }
+	instance_manager->queue_game_action<set_use_leader_argument_t>(
+		unique_id_t(leader_id), can_use
 	);
 }
 
@@ -319,9 +311,8 @@ void PlayerSingleton::set_auto_create_leaders(bool value) const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_AUTO_CREATE_LEADERS,
-		std::pair<uint64_t, bool> { player_country->index, value }
+	instance_manager->queue_game_action<set_auto_create_leaders_argument_t>(
+		player_country->index, value
 	);
 }
 
@@ -331,9 +322,8 @@ void PlayerSingleton::set_auto_assign_leaders(bool value) const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_AUTO_ASSIGN_LEADERS,
-		std::pair<uint64_t, bool> { player_country->index, value }
+	instance_manager->queue_game_action<set_auto_assign_leaders_argument_t>(
+		player_country->index, value
 	);
 }
 
@@ -343,8 +333,7 @@ void PlayerSingleton::set_mobilise(bool value) const {
 	InstanceManager* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_SET_MOBILISE,
-		std::pair<uint64_t, bool> { player_country->index, value }
+	instance_manager->queue_game_action<set_mobilise_argument_t>(
+		player_country->index, value
 	);
 }

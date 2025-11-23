@@ -11,6 +11,7 @@
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/OrderedContainersMath.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -261,7 +262,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 }
 
 Error MenuSingleton::population_menu_select_province(int32_t province_number) {
-	const ProvinceDefinition::index_t province_index = ProvinceDefinition::get_index_from_province_number(province_number);
+	const province_index_t  province_index = ProvinceDefinition::get_index_from_province_number(province_number);
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -276,7 +277,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 
 		MenuSingleton& menu_singleton;
 
-		const ProvinceDefinition::index_t _province_index = 0;
+		const province_index_t _province_index = province_index_t(0);
 
 		int32_t index = 0;
 

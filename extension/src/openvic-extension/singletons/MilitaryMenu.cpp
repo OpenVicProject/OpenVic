@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 #include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
@@ -308,16 +309,16 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	const fixed_point_t progress = fixed_point_t::_0_50;
 	const ordered_map<GoodDefinition const*, std::pair<fixed_point_t, fixed_point_t>> required_goods {
 		{
-			good_definition_manager.get_good_definition_by_index(0),
+			good_definition_manager.get_good_definition_by_index(good_index_t(0)),
 			{ fixed_point_t::parse(1234) / 100, fixed_point_t::parse(1900) / 100 }
 		}, {
-			good_definition_manager.get_good_definition_by_index(1),
+			good_definition_manager.get_good_definition_by_index(good_index_t(1)),
 			{ fixed_point_t::parse(888) / 100, fixed_point_t::parse(1444) / 100 }
 		}, {
-			good_definition_manager.get_good_definition_by_index(2),
+			good_definition_manager.get_good_definition_by_index(good_index_t(2)),
 			{ fixed_point_t::parse(1622) / 100, fixed_point_t::parse(1622) / 100 }
 		}, {
-			good_definition_manager.get_good_definition_by_index(3),
+			good_definition_manager.get_good_definition_by_index(good_index_t(3)),
 			{ fixed_point_t::parse(211) / 100, fixed_point_t::parse(805) / 100 }
 		}
 	};

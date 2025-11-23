@@ -1,5 +1,7 @@
 #include "MapItemSingleton.hpp"
 
+#include <type_safe/strong_typedef.hpp>
+
 #include <openvic-simulation/utility/Containers.hpp>
 
 #include "godot_cpp/core/error_macros.hpp"
@@ -226,7 +228,9 @@ PackedByteArray MapItemSingleton::get_rgo_icons() const {
 		}
 
 		GoodDefinition const* rgo_good = prov_inst.get_rgo_good();
-		icons[index++] = rgo_good != nullptr ? rgo_good->index + 1 : 0; // 0 if no rgo good in the province
+		icons[index++] = rgo_good != nullptr
+			? static_cast<uint64_t>(type_safe::get(rgo_good->index)) + 1
+			: 0; // 0 if no rgo good in the province
 	}
 
 	return icons;
