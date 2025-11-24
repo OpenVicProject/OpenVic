@@ -1,6 +1,10 @@
 #include "MenuSingleton.hpp"
 
+#include <type_safe/strong_typedef.hpp>
+
 #include <godot_cpp/variant/utility_functions.hpp>
+
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUIScrollbar.hpp"
@@ -43,7 +47,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 
 			Dictionary good_dict;
 
-			good_dict[good_index_key] = static_cast<int32_t>(good_definition->index);
+			good_dict[good_index_key] = static_cast<uint64_t>(type_safe::get(good_definition->index));
 			good_dict[current_price_key] = static_cast<real_t>(good_instance.get_price());
 			good_dict[price_change_key] = static_cast<real_t>(good_instance.get_price_change_yesterday());
 
@@ -127,8 +131,8 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 	InstanceManager const* instance_manager = GameSingleton::get_singleton()->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, {});
 
-	GoodInstance const* good_instance =
-		instance_manager->get_good_instance_manager().get_good_instance_by_index(trade_detail_good_index);
+	GoodInstance const* good_instance = instance_manager->get_good_instance_manager()
+		.get_good_instance_by_index(good_index_t(trade_detail_good_index));
 	ERR_FAIL_NULL_V(good_instance, {});
 
 	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
@@ -213,7 +217,9 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			tr(top_producers_localisation_key);
 
 		for (size_t index = 0; index < 5; ++index) {
-			CountryInstance const* country = country_instance_manager.get_country_instance_by_index(index + 1);
+			CountryInstance const* country = country_instance_manager.get_country_instance_by_index(
+				country_index_t(index + 1)
+			);
 
 			ERR_CONTINUE(country == nullptr);
 
@@ -271,7 +277,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			)
 		);
 
-		const float good_index = good.good_definition.index;
+		const float good_index = type_safe::get(good.good_definition.index);
 
 		if (good_data.government_needs != fixed_point_t::_0) {
 			government_needs.push_back({
