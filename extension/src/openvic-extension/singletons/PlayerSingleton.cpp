@@ -1,10 +1,10 @@
 #include "PlayerSingleton.hpp"
 
+#include <openvic-simulation/core/FormatValidate.hpp>
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/misc/GameAction.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
-#include <openvic-simulation/utility/FormatValidate.hpp>
 
 #include "openvic-extension/classes/GUIScrollbar.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"

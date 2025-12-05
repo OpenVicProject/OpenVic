@@ -601,7 +601,11 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 
 		IndexedFlatMap<T, size_t> sorted_cache { items };
 		for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
-			sorted_cache.at_index(sorted_items[idx]) = idx;
+			sorted_cache.at_index(
+				static_cast<typename get_index_t<T>::type>(
+					sorted_items[idx]
+				)
+			) = idx;
 		}
 		cache = std::move(sorted_cache);
 	};

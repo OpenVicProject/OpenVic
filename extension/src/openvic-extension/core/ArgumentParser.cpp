@@ -39,7 +39,7 @@
 #include <godot_cpp/variant/vector4.hpp>
 #include <godot_cpp/variant/vector4i.hpp>
 
-#include <openvic-simulation/utility/Typedefs.hpp>
+#include <openvic-simulation/core/Typedefs.hpp>
 
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"

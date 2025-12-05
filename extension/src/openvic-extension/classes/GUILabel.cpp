@@ -9,8 +9,8 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/ui/TextFormat.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
-#include <openvic-simulation/types/TextFormat.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/core/Convert.hpp"
