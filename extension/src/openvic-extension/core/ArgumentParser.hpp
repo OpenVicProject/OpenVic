@@ -12,7 +12,7 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
-#include <openvic-simulation/utility/Typedefs.hpp>
+#include <openvic-simulation/core/Typedefs.hpp>
 
 namespace OpenVic {
 	class ArgumentOption : public godot::RefCounted {

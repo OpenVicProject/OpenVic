@@ -5,6 +5,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/string/Utility.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/utility/Containers.hpp>
 
@@ -65,7 +66,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 		)
 	);
 
-	memory::string actor_name = StringUtils::append_string_views(culture, name);
+	memory::string actor_name = append_string_views(culture, name);
 
 	GFX::Actor const* actor = get_actor(actor_name, false);
 
@@ -77,7 +78,7 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 			.get_culture_manager().get_default_graphical_culture_type();
 
 		if (default_graphical_culture_type != nullptr && default_graphical_culture_type->get_identifier() != culture) {
-			actor_name = StringUtils::append_string_views(default_graphical_culture_type->get_identifier(), name);
+			actor_name = append_string_views(default_graphical_culture_type->get_identifier(), name);
 
 			actor = get_actor(actor_name, false);
 		}
@@ -432,7 +433,7 @@ bool ModelSingleton::add_building_dict(
 	fvec2_t const* position_ptr = province_definition.get_building_position(&building.building_type);
 	const float rotation = static_cast<float>(province_definition.get_building_rotation(&building.building_type));
 
-	const memory::string actor_name = StringUtils::append_string_views("building_", building.get_identifier(), suffix);
+	const memory::string actor_name = append_string_views("building_", building.get_identifier(), suffix);
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(

@@ -2,8 +2,8 @@
 
 #include <godot_cpp/classes/object.hpp>
 
+#include <openvic-simulation/core/portable/ForwardableSpan.hpp>
 #include <openvic-simulation/types/Signal.hpp>
-#include <openvic-simulation/utility/ForwardableSpan.hpp>
 
 #include "openvic-extension/components/budget/AdministrationBudget.hpp"
 #include "openvic-extension/components/budget/DiplomaticBudget.hpp"
@@ -50,7 +50,7 @@ namespace OpenVic {
 	public:
 		BudgetMenu(
 			GUINode const& parent,
-			utility::forwardable_span<const Strata> strata_keys,
+			forwardable_span<const Strata> strata_keys,
 			ModifierEffectCache const& modifier_effect_cache,
 			CountryDefines const& country_defines
 		);

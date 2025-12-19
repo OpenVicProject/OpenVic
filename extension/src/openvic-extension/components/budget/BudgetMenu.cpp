@@ -15,7 +15,7 @@ using namespace OpenVic;
 
 BudgetMenu::BudgetMenu(
 	GUINode const& parent,
-	utility::forwardable_span<const Strata> strata_keys,
+	forwardable_span<const Strata> strata_keys,
 	ModifierEffectCache const& modifier_effect_cache,
 	CountryDefines const& country_defines
 ) : cash_stockpile_label{*parent.get_gui_label_from_nodepath("./country_budget/total_funds_val")},

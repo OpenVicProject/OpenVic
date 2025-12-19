@@ -11,14 +11,14 @@
 
 #include <openvic-dataloader/v2script/AbstractSyntaxTree.hpp>
 
+#include <openvic-simulation/core/string/Utility.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
 #include <openvic-simulation/dataloader/NodeTools.hpp>
 
-#include "openvic-simulation/utility/StringUtils.hpp"
-#include <openvic-extension/singletons/GameSingleton.hpp>
+#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
-#include <openvic-extension/utility/Utilities.hpp>
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;

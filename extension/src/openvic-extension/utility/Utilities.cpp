@@ -315,7 +315,7 @@ godot::String Utilities::get_state_name(godot::Object const& translation_object,
 godot::String Utilities::get_country_name(godot::Object const& translation_object, CountryInstance const& country) {
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_name_key = convert_to<String>(StringUtils::append_string_views(
+		const String government_name_key = convert_to<String>(append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier()
 		));
 
@@ -333,7 +333,7 @@ godot::String Utilities::get_country_adjective(godot::Object const& translation_
 
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_adjective_key = convert_to<String>(StringUtils::append_string_views(
+		const String government_adjective_key = convert_to<String>(append_string_views(
 			country.get_identifier(), "_", government_type->get_identifier(), adjective
 		));
 
@@ -344,7 +344,7 @@ godot::String Utilities::get_country_adjective(godot::Object const& translation_
 		}
 	}
 
-	return translation_object.tr(convert_to<String>(StringUtils::append_string_views(country.get_identifier(), adjective)));
+	return translation_object.tr(convert_to<String>(append_string_views(country.get_identifier(), adjective)));
 }
 
 godot::String Utilities::make_modifier_effect_value(
