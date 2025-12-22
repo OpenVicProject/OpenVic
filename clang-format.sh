@@ -1,4 +1,4 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 
 echo "\n\nFormatting openvic-extension with clang-format:\n"
 find ./extension/src/ -iname *.hpp -o -iname *.cpp | xargs clang-format --verbose -i

@@ -3,17 +3,32 @@
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+#include <openvic-simulation/types/Colour.hpp>
+#include <openvic-simulation/types/IndexedFlatMap.hpp>
+#include <openvic-simulation/utility/Logger.hpp>
 
-#include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-extension/core/Convert.hpp"
+#include "openvic-extension/utility/MapHelpers.hpp"
 
 namespace OpenVic {
+	template<typename MapType>
+	concept IsPieChartDistribution = (
+			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
+			specialization_of<MapType, tsl::ordered_map>
+			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
+			|| specialization_of<MapType, IndexedFlatMap>
+		)
+		&& has_get_identifier_and_colour<std::remove_pointer_t<map_key_t<MapType>>>
+		&& requires { static_cast<float>(std::declval<map_value_t<MapType>>()); };
+
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
 
 	public:
 		using godot_pie_chart_data_t = godot::TypedArray<godot::Dictionary>;
 		struct slice_t {
-			godot::String name;
+			godot::String identifier;
+			godot::String tooltip;
 			godot::Color colour;
 			float weight;
 		};
@@ -25,6 +40,7 @@ namespace OpenVic {
 		godot::Ref<godot::Image> pie_chart_image;
 
 		static godot::StringName const& _slice_identifier_key();
+		static godot::StringName const& _slice_tooltip_key();
 		static godot::StringName const& _slice_colour_key();
 		static godot::StringName const& _slice_weight_key();
 
@@ -33,61 +49,79 @@ namespace OpenVic {
 	public:
 		/* Generate slice data from a distribution of objects satisfying HasGetIdentifierAndGetColour, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
-		template<typename Container>
-		static godot_pie_chart_data_t distribution_to_slices_array(Container const& dist)
-		requires(
-			(
-				/* ordered_map<T const*, mapped_type>, T derived from HasIdentifierAndColour */
-				utility::is_specialization_of_v<Container, tsl::ordered_map>
-				/* IndexedMap<T, mapped_type>, T derived from HasIdentifierAndColour */
-				|| utility::is_specialization_of_v<Container, IndexedMap>
-			)
-			&& HasGetIdentifierAndGetColour<std::remove_pointer_t<typename Container::key_type>>
-			&& std::convertible_to<typename Container::mapped_type, float>
+		template<IsPieChartDistribution MapType>
+		static godot_pie_chart_data_t distribution_to_slices_array(
+			MapType const& distribution,
+			NodeTools::Functor<
+				// return tooltip; args: key const*, identifier, weight, total weight
+				godot::String, std::remove_pointer_t<map_key_t<MapType>> const*, godot::String const&, float, float
+			> auto make_tooltip,
+			godot::String const& identifier_suffix = {}
 		) {
 			using namespace godot;
 
-			using key_type = std::remove_pointer_t<typename Container::key_type>;
+			using key_type = std::remove_pointer_t<map_key_t<MapType>>;
 			using entry_t = std::pair<key_type const*, float>;
 
-			std::vector<entry_t> sorted_dist;
-			sorted_dist.reserve(dist.size());
-
-			if constexpr (utility::is_specialization_of_v<Container, tsl::ordered_map>) {
-				for (auto const& [key, non_float_value] : dist) {
-					const float value = static_cast<float>(non_float_value);
-
-					ERR_CONTINUE_MSG(key == nullptr, vformat("Null distribution key with value %f", value));
-
-					if (value != 0.0f) {
-						sorted_dist.emplace_back(key, value);
-					}
-				}
+			std::vector<entry_t> sorted_distribution;
+			if constexpr (specialization_of<MapType, IndexedFlatMap>) {
+				sorted_distribution.reserve(distribution.get_count());
 			} else {
-				for (size_t index = 0; index < dist.size(); ++index) {
-					const float value = static_cast<float>(dist[index]);
+				sorted_distribution.reserve(distribution.size());
+			}
 
-					if (value != 0.0f) {
-						key_type const* key = &dist(index);
-						sorted_dist.emplace_back(key, value);
-					}
+			float total_weight = 0.0f;
+
+			for (auto [key_ref_or_ptr, non_float_value] : distribution) {
+				key_type const* key_ptr;
+				if constexpr (std::same_as<decltype(key_ptr), decltype(key_ref_or_ptr)>) {
+					key_ptr = key_ref_or_ptr;
+				} else {
+					key_ptr = &key_ref_or_ptr;
+				}
+				const float value = static_cast<float>(non_float_value);
+
+				if (value > 0.0f) {
+					sorted_distribution.emplace_back(key_ptr, value);
+
+					total_weight += value;
+				} else if (value < 0.0f) {
+					spdlog::error_s(
+						"Negative distribution value {} for key \"{}\"",
+						value, *key_ptr
+					);
 				}
 			}
 
-			std::sort(sorted_dist.begin(), sorted_dist.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
-				return lhs.first < rhs.first;
-			});
+			// To avoid division by zero.
+			if (total_weight == 0.0f) {
+				total_weight = 1.0f;
+			}
+
+			std::sort(
+				sorted_distribution.begin(), sorted_distribution.end(),
+				[](entry_t const& lhs, entry_t const& rhs) -> bool {
+					return lhs.first < rhs.first;
+				}
+			);
 
 			godot_pie_chart_data_t array;
-			ERR_FAIL_COND_V(array.resize(sorted_dist.size()) != OK, {});
+			ERR_FAIL_COND_V(array.resize(sorted_distribution.size()) != OK, {});
 
-			for (size_t idx = 0; idx < array.size(); ++idx) {
-				auto const& [key, value] = sorted_dist[idx];
+			for (size_t index = 0; index < array.size(); ++index) {
+				auto const& [key, value] = sorted_distribution[index];
+
+				String identifier = convert_to<String>(key->get_identifier());
+				identifier += identifier_suffix;
+
 				Dictionary sub_dict;
-				sub_dict[_slice_identifier_key()] = Utilities::std_to_godot_string(key->get_identifier());
-				sub_dict[_slice_colour_key()] = Utilities::to_godot_color(key->get_colour());
+
+				sub_dict[_slice_tooltip_key()] = make_tooltip(key, identifier, value, total_weight);
+				sub_dict[_slice_identifier_key()] = std::move(identifier);
+				sub_dict[_slice_colour_key()] = convert_to<Color>(key->get_colour());
 				sub_dict[_slice_weight_key()] = value;
-				array[idx] = std::move(sub_dict);
+
+				array[index] = std::move(sub_dict);
 			}
 			return array;
 		}

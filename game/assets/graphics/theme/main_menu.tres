@@ -1,55 +1,20 @@
-[gd_resource type="Theme" load_steps=37 format=3 uid="uid://qoi3oec48jp0"]
+[gd_resource type="Theme" load_steps=36 format=3 uid="uid://qoi3oec48jp0"]
 
-[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
-[ext_resource type="Script" path="res://src/Game/Theme/TextureSetting.gd" id="2_7bwl2"]
+[ext_resource type="Script" uid="uid://d2etcw6vfl0k3" path="res://src/UI/Shared/Theme/StyleBoxCombinedTexture.gd" id="1_axke7"]
+[ext_resource type="Script" uid="uid://bho74dnf1rq0x" path="res://src/UI/Shared/Theme/TextureSetting.gd" id="2_7bwl2"]
 [ext_resource type="Texture2D" uid="uid://dapuqgpjs56bs" path="res://assets/graphics/main_menu_background.png" id="3_cpatd"]
 [ext_resource type="Texture2D" uid="uid://q25s41oavuxw" path="res://assets/graphics/main_menu_border_paper.png" id="4_sl60o"]
 [ext_resource type="Texture2D" uid="uid://c0p34i3d3b0pw" path="res://assets/graphics/main_menu_button.png" id="5_xj7ql"]
 [ext_resource type="StyleBox" uid="uid://blwilunhmyvpq" path="res://assets/graphics/theme/main_menu_button_normal.tres" id="6_dx0aj"]
-[ext_resource type="Script" path="res://src/Game/Theme/StyleBoxWithSound.gd" id="7_qo00e"]
 [ext_resource type="AudioStream" uid="uid://bsldcs3l8s7ug" path="res://addons/kenney_ui_audio/click3.wav" id="8_etuft"]
 
 [sub_resource type="Resource" id="Resource_hxpog"]
 script = ExtResource("2_7bwl2")
 texture = ExtResource("3_cpatd")
-draw_center = true
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-expand_margin_left = 0.0
-expand_margin_top = 0.0
-expand_margin_right = 0.0
-expand_margin_bottom = 0.0
-axis_stretch_horizontal = 0
-axis_stretch_vertical = 0
-region_rect = Rect2(0, 0, 0, 0)
-modulate_color = Color(1, 1, 1, 1)
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
 
 [sub_resource type="Resource" id="Resource_c0k5l"]
 script = ExtResource("2_7bwl2")
 texture = ExtResource("4_sl60o")
-draw_center = true
-texture_margin_left = 0.0
-texture_margin_top = 0.0
-texture_margin_right = 0.0
-texture_margin_bottom = 0.0
-expand_margin_left = 0.0
-expand_margin_top = 0.0
-expand_margin_right = 0.0
-expand_margin_bottom = 0.0
-axis_stretch_horizontal = 0
-axis_stretch_vertical = 0
-region_rect = Rect2(0, 0, 0, 0)
-modulate_color = Color(1, 1, 1, 1)
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
 
 [sub_resource type="StyleBox" id="StyleBox_odacv"]
 resource_local_to_scene = false
@@ -129,16 +94,10 @@ content_margin_bottom = 14.0
 texture = ExtResource("5_xj7ql")
 modulate_color = Color(0.85098, 0.85098, 0.85098, 1)
 
-[sub_resource type="StyleBox" id="StyleBox_uuspe"]
-resource_local_to_scene = false
-resource_name = ""
-content_margin_left = -1.0
-content_margin_top = -1.0
-content_margin_right = -1.0
-content_margin_bottom = -1.0
-script = ExtResource("7_qo00e")
+[sub_resource type="StyleBoxWithSound" id="StyleBoxWithSound_uuspe"]
 style_box = SubResource("StyleBoxTexture_l2rw3")
-sound = ExtResource("8_etuft")
+audio_bus = &"SFX_BUS"
+audio_stream = ExtResource("8_etuft")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xdtca"]
 
@@ -207,7 +166,7 @@ TitleButton/styles/disabled = SubResource("StyleBoxTexture_dd2b8")
 TitleButton/styles/focus = SubResource("StyleBoxFlat_2txce")
 TitleButton/styles/hover = SubResource("StyleBoxTexture_3efxh")
 TitleButton/styles/normal = ExtResource("6_dx0aj")
-TitleButton/styles/pressed = SubResource("StyleBox_uuspe")
+TitleButton/styles/pressed = SubResource("StyleBoxWithSound_uuspe")
 VersionLabel/base_type = &"Button"
 VersionLabel/colors/font_hover_color = Color(0.360784, 0.360784, 0.360784, 1)
 VersionLabel/colors/font_hover_pressed_color = Color(0.215686, 0.215686, 0.215686, 1)

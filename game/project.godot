@@ -12,9 +12,9 @@ config_version=5
 
 config/name="OpenVic"
 config/description="A faithful recreation of Victoria 2: Heart of Darkness with a focus on enhancing performance, multiplayer stability, and modability for modern machines."
-run/main_scene="res://src/Game/GameStart.tscn"
+run/main_scene="res://src/Systems/Startup/GameStart.tscn"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
 boot_splash/image="res://assets/graphics/splash_image.png"
@@ -29,17 +29,16 @@ buses/default_bus_layout="res://assets/audio/default_bus_layout.tres"
 
 [autoload]
 
-Resolution="*res://src/Game/Autoload/Resolution.gd"
-ArgumentParser="*res://src/Game/Autoload/Argument/ArgumentParser.tscn"
-WindowOverride="*res://src/Game/Autoload/WindowOverride.gd"
-Events="*res://src/Game/Autoload/Events.gd"
-GameLoader="*res://src/Game/Autoload/GameLoader.gd"
-SoundManager="*res://src/Game/Autoload/SoundManager.gd"
-MusicConductor="*res://src/Game/MusicConductor/MusicConductor.tscn"
+Resolution="*res://src/Autoload/Resolution.gd"
+WindowOverride="*res://src/Autoload/WindowOverride.gd"
+GuiScale="*res://src/Autoload/GuiScale.gd"
+Events="*res://src/Autoload/Events/Events.gd"
+GameLoader="*res://src/Autoload/GameLoader.gd"
+SoundManager="*res://src/Autoload/SoundManager.gd"
+MusicManager="*res://src/Autoload/MusicManager/MusicManager.tscn"
+SaveManager="*res://src/Autoload/SaveManager.gd"
+CursorManager="*res://src/Autoload/CursorManager.gd"
 Keychain="*res://addons/keychain/Keychain.gd"
-GuiScale="*res://src/Game/Autoload/GuiScale.gd"
-SaveManager="*res://src/Game/Autoload/SaveManager.gd"
-CursorManager="*res://src/Game/Autoload/CursorManager.gd"
 
 [display]
 
@@ -54,10 +53,13 @@ window/size/window_height_override=1
 window/stretch/mode="canvas_items"
 window/stretch/aspect="ignore"
 window/per_pixel_transparency/allowed=true
+window/size/mode.editor=0
+window/size/window_width_override.editor=0
+window/size/window_height_override.editor=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/keychain/plugin.cfg", "res://addons/openvic-plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/keychain/plugin.cfg")
 
 [filesystem]
 
@@ -142,6 +144,11 @@ menu_pause={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194305,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+select_add={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
 
 [internationalization]
 
@@ -164,6 +171,12 @@ limits/message_queue/max_size_kb=16384
 settings/settings_file_path="user://settings.cfg"
 data/saves_directory="user://saves"
 project_file_req_comment.editor="FS-2, FS-20, FS-21, FS-22"
+settings/ips_file_path="user://ips.cfg"
+
+[physics]
+
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
 
 [rendering]
 

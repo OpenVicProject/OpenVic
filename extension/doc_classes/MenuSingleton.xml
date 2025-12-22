@@ -7,6 +7,12 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="calculate_trade_menu_stockpile_cutoff_amount" qualifiers="static">
+			<return type="float" />
+			<param index="0" name="slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
 		<method name="can_decrease_speed" qualifiers="const">
 			<return type="bool" />
 			<description>
@@ -14,17 +20,6 @@
 		</method>
 		<method name="can_increase_speed" qualifiers="const">
 			<return type="bool" />
-			<description>
-			</description>
-		</method>
-		<method name="decrease_speed">
-			<return type="void" />
-			<description>
-			</description>
-		</method>
-		<method name="expand_selected_province_building">
-			<return type="int" enum="Error" />
-			<param index="0" name="building_index" type="int" />
 			<description>
 			</description>
 		</method>
@@ -52,6 +47,11 @@
 		</method>
 		<method name="get_longform_date" qualifiers="const">
 			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_military_menu_info">
+			<return type="Dictionary" />
 			<description>
 			</description>
 		</method>
@@ -110,9 +110,9 @@
 			<description>
 			</description>
 		</method>
-		<method name="get_province_info_from_index" qualifiers="const">
+		<method name="get_province_info_from_number" qualifiers="const">
 			<return type="Dictionary" />
-			<param index="0" name="index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>
@@ -159,18 +159,42 @@
 			<description>
 			</description>
 		</method>
-		<method name="hide_tooltip">
-			<return type="void" />
+		<method name="get_trade_menu_good_categories_info" qualifiers="const">
+			<return type="Dictionary" />
 			<description>
 			</description>
 		</method>
-		<method name="increase_speed">
+		<method name="get_trade_menu_tables_info" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_trade_menu_trade_details_info" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="trade_detail_good_index" type="int" />
+			<param index="1" name="stockpile_cutoff_slider" type="GUIScrollbar" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_tooltip">
 			<return type="void" />
 			<description>
 			</description>
 		</method>
 		<method name="is_paused" qualifiers="const">
 			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="link_budget_menu_to_cpp">
+			<return type="void" />
+			<param index="0" name="godot_budget_menu" type="GUINode" />
+			<description>
+			</description>
+		</method>
+		<method name="link_top_bar_to_cpp">
+			<return type="void" />
+			<param index="0" name="godot_top_bar" type="GUINode" />
 			<description>
 			</description>
 		</method>
@@ -186,7 +210,7 @@
 		</method>
 		<method name="population_menu_select_province">
 			<return type="int" enum="Error" />
-			<param index="0" name="province_index" type="int" />
+			<param index="0" name="province_number" type="int" />
 			<description>
 			</description>
 		</method>
@@ -221,12 +245,6 @@
 			<description>
 			</description>
 		</method>
-		<method name="set_paused">
-			<return type="void" />
-			<param index="0" name="paused" type="bool" />
-			<description>
-			</description>
-		</method>
 		<method name="show_control_tooltip">
 			<return type="void" />
 			<param index="0" name="text" type="String" />
@@ -243,7 +261,12 @@
 			<description>
 			</description>
 		</method>
-		<method name="toggle_paused">
+		<method name="unlink_budget_menu_from_cpp">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="unlink_top_bar_from_cpp">
 			<return type="void" />
 			<description>
 			</description>
@@ -325,6 +348,14 @@
 		<constant name="SORT_SIZE_CHANGE" value="16" enum="PopSortKey">
 		</constant>
 		<constant name="SORT_LITERACY" value="17" enum="PopSortKey">
+		</constant>
+		<constant name="TRADE_SETTING_NONE" value="0" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_AUTOMATED" value="1" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_BUYING" value="2" enum="TradeSettingBit">
+		</constant>
+		<constant name="TRADE_SETTING_SELLING" value="4" enum="TradeSettingBit">
 		</constant>
 	</constants>
 </class>

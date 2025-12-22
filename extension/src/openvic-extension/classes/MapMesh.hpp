@@ -11,7 +11,6 @@ namespace OpenVic {
 
 	protected:
 		static void _bind_methods();
-		void _request_update();
 
 	public:
 		void set_aspect_ratio(float ratio);

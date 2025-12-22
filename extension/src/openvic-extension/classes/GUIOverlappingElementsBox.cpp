@@ -2,10 +2,12 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include <openvic-simulation/core/ui/TextFormat.hpp>
+
+#include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "openvic-simulation/types/TextFormat.hpp"
 
 using namespace OpenVic;
 using namespace godot;
@@ -23,7 +25,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 	const float child_width = _get_child(0)->get_size().x;
 
 	const float max_spacing = box_width / (child_count + 1);
-	const float default_spacing = child_width + gui_overlapping_elements_box->get_spacing().to_float();
+	const float default_spacing = child_width + static_cast<float>(gui_overlapping_elements_box->get_spacing());
 
 	const float spacing = std::min(max_spacing, default_spacing);
 
@@ -101,12 +103,12 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 		return OK;
 	} else {
 		ERR_FAIL_NULL_V_MSG(
-			gui_child_element, FAILED, vformat(
+			gui_child_element, FAILED, Utilities::format(
 				"GUIOverlappingElementsBox child element is null (child_count = %d, new_count = %d)", child_count, new_count
 			)
 		);
 		Error err = OK;
-		const String gui_child_element_name = Utilities::std_to_godot_string(gui_child_element->get_name()) + "_";
+		const String gui_child_element_name = convert_to<String>(gui_child_element->get_name()) + "_";
 		do {
 			Control* child = nullptr;
 			const String name = gui_child_element_name + itos(child_count);
@@ -115,7 +117,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 				err = FAILED;
 			}
 			ERR_FAIL_NULL_V_MSG(
-				child, FAILED, vformat(
+				child, FAILED, Utilities::format(
 					"Failed to generate GUIOverlappingElementsBox child element %s (child_count = %d, new_count = %d)",
 					name, child_count, new_count
 				)
@@ -147,14 +149,14 @@ Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
 		return OK;
 	}
 
-	set_custom_minimum_size(Utilities::to_godot_fvec2(gui_overlapping_elements_box->get_size()));
+	set_custom_minimum_size(convert_to<Vector2>(gui_overlapping_elements_box->get_size()));
 	queue_sort();
 	return OK;
 }
 
 String GUIOverlappingElementsBox::get_gui_overlapping_elements_box_name() const {
 	return gui_overlapping_elements_box != nullptr
-		? Utilities::std_to_godot_string(gui_overlapping_elements_box->get_name())
+		? convert_to<String>(gui_overlapping_elements_box->get_name())
 		: String {};
 }
 
@@ -172,11 +174,11 @@ Error GUIOverlappingElementsBox::set_gui_child_element_name(
 	}
 	ERR_FAIL_COND_V_MSG(
 		gui_child_element_file.is_empty(), FAILED,
-		vformat("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
+		Utilities::format("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
 	);
 	ERR_FAIL_COND_V_MSG(
 		gui_child_element_name.is_empty(), FAILED,
-		vformat("GUI child element name is empty but file name is not: %s", gui_child_element_file)
+		Utilities::format("GUI child element name is empty but file name is not: %s", gui_child_element_file)
 	);
 	GUI::Element const* const new_gui_child_element = UITools::get_gui_element(gui_child_element_file, gui_child_element_name);
 	ERR_FAIL_NULL_V(new_gui_child_element, FAILED);
@@ -184,5 +186,5 @@ Error GUIOverlappingElementsBox::set_gui_child_element_name(
 }
 
 String GUIOverlappingElementsBox::get_gui_child_element_name() const {
-	return gui_child_element != nullptr ? Utilities::std_to_godot_string(gui_child_element->get_name()) : String {};
+	return gui_child_element != nullptr ? convert_to<String>(gui_child_element->get_name()) : String {};
 }

@@ -25,7 +25,7 @@ namespace OpenVic {
 
 	public:
 		//An intermediate data type to help with loading cursors.
-		//The size of images/hotspots arrays corresponds to resolutionsPerCursor.
+		//The size of images/hotspots arrays corresponds to resolutions_per_cursor.
 		struct image_hotspot_pair_asset_t {
 			std::vector<godot::Vector2i> hotspots;
 			std::vector<godot::Ref<godot::ImageTexture>> images;
@@ -38,8 +38,8 @@ namespace OpenVic {
 			std::vector<godot::TypedArray<godot::ImageTexture>> images;
 			godot::PackedVector2Array resolutions;
 			int32_t animation_length; //1 for static cursors
-			std::optional<godot::PackedFloat32Array> display_rates;
-			std::optional<godot::PackedInt32Array> sequence;
+			godot::PackedFloat32Array display_rates;
+			godot::PackedInt32Array sequence;
 		};
 
 		//map of "subfolder/fileName.cur/.ani" -> cursor_asset. Subfolder comes after gfx/cursor

@@ -1,11 +1,18 @@
+[![🖥️ Builds](https://github.com/OpenVicProject/OpenVic/actions/workflows/builds.yml/badge.svg)](https://github.com/OpenVicProject/OpenVic/actions/workflows/builds.yml)
+
 # OpenVic
 Main Repo for the OpenVic Project
+
+### Links
+- Website: https://www.openvic.com/
+- Discord: https://discord.gg/vM4E3BFkqH
+- Youtube: [@OpenVicProject](https://www.youtube.com/@OpenVicProject)
 
 ## Quickstart Guide
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
 
 ## System Requirements
-* [Godot 4.3](https://github.com/godotengine/godot/releases/tag/4.3-stable)
+* [Godot 4.5](https://github.com/godotengine/godot/releases/tag/4.5-stable)
 * [scons](https://scons.org/)
 
 > [!WARNING]
@@ -24,7 +31,7 @@ See [Cloning](docs/contribution/cloning.md).
 ## [Godot Documentation](https://docs.godotengine.org/en/latest/)
 
 ## Build/Run Instructions
-1. Install [Godot 4.3](https://github.com/godotengine/godot/releases/tag/4.3-stable) and [scons](https://scons.org/) for your system.
+1. Install [Godot 4.5](https://github.com/godotengine/godot/releases/tag/4.5-stable) and [scons](https://scons.org/) for your system.
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Run `scons` in the project root, you should see a libopenvic file in `game/bin/openvic`.
 4. Open with Godot 4, click import and navigate to the `game` directory.

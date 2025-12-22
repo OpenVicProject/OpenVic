@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GUILineChart" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_coloured_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="line_values" type="PackedFloat32Array" />
+			<param index="1" name="line_colour" type="Color" />
+			<description>
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_lines">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_tooltip">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_gfx_line_chart_name" qualifiers="const">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_max_value" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_min_value" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="scale_coloured_lines">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gfx_line_chart_name">
+			<return type="int" enum="Error" />
+			<param index="0" name="new_gfx_line_chart_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_gradient_line">
+			<return type="int" enum="Error" />
+			<param index="0" name="line_values" type="PackedFloat32Array" />
+			<param index="1" name="central_value" type="float" default="0.0" />
+			<param index="2" name="min_value_range" type="float" default="0.0" />
+			<description>
+			</description>
+		</method>
+		<method name="set_tooltip_string_and_substitution_dict">
+			<return type="void" />
+			<param index="0" name="new_tooltip_string" type="String" />
+			<param index="1" name="new_tooltip_substitution_dict" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="clip_contents" type="bool" setter="set_clip_contents" getter="is_clipping_contents" overrides="Control" default="true" />
+		<member name="mouse_filter" type="int" setter="set_mouse_filter" getter="get_mouse_filter" overrides="Control" enum="Control.MouseFilter" default="2" />
+		<member name="tooltip_active" type="bool" setter="" getter="is_tooltip_active" default="false">
+		</member>
+		<member name="tooltip_string" type="String" setter="set_tooltip_string" getter="get_tooltip_string" default="&quot;&quot;">
+		</member>
+		<member name="tooltip_substitution_dict" type="Dictionary" setter="set_tooltip_substitution_dict" getter="get_tooltip_substitution_dict" default="{}">
+		</member>
+	</members>
+</class>

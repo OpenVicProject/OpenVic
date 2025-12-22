@@ -1,0 +1,183 @@
+[gd_scene load_steps=9 format=3 uid="uid://bq3awxxjn1tuw"]
+
+[ext_resource type="Script" uid="uid://baata5fx7gs5h" path="res://src/UI/GameMenu/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
+[ext_resource type="Script" uid="uid://d2baocaag5ifg" path="res://src/UI/GameMenu/OptionMenu/VideoTab.gd" id="1_jvv62"]
+[ext_resource type="Script" uid="uid://c1sayjwmkvd46" path="res://src/UI/GameMenu/OptionMenu/ScreenModeSelector.gd" id="2_wa7vw"]
+[ext_resource type="Script" uid="uid://bt8wuvopl1kqv" path="res://src/UI/GameMenu/OptionMenu/GuiScaleSelector.gd" id="3_pgc5d"]
+[ext_resource type="Script" uid="uid://b1bxjetbdem3j" path="res://src/UI/GameMenu/OptionMenu/MonitorDisplaySelector.gd" id="3_y6lyb"]
+[ext_resource type="Script" uid="uid://dhgxcqr7tlicj" path="res://src/UI/GameMenu/OptionMenu/RefreshRateSelector.gd" id="4_381mg"]
+[ext_resource type="Script" uid="uid://fggqr3vjg8rd" path="res://src/UI/GameMenu/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
+[ext_resource type="Script" uid="uid://cmym81ujx2s8a" path="res://src/UI/GameMenu/OptionMenu/SettingRevertDialog.gd" id="8_ug5mo"]
+
+[node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
+editor_description = "UI-46"
+alignment = 1
+script = ExtResource("1_jvv62")
+initial_focus = NodePath("VideoSettingList/VideoSettingGrid/ResolutionSelector")
+
+[node name="VideoSettingList" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="VideoSettingList"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="VideoSettingGrid" type="GridContainer" parent="VideoSettingList"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="ResolutionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_RESOLUTION"
+
+[node name="ResolutionSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+editor_description = "UI-19"
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../ScreenModeSelector")
+selected = 0
+item_count = 1
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("1_i8nro")
+revert_dialog = NodePath("../../../VideoRevertDialog")
+section_name = "video"
+setting_name = "resolution"
+
+[node name="GuiScaleLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_GUI_SCALE"
+
+[node name="GuiScaleSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+editor_description = "UI-23"
+layout_mode = 2
+focus_neighbor_bottom = NodePath("../ScreenModeSelector")
+selected = 0
+item_count = 1
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("3_pgc5d")
+section_name = "video"
+setting_name = "gui_scale"
+
+[node name="ScreenModeLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+editor_description = "UI-44"
+layout_mode = 2
+text = "OPTIONS_VIDEO_SCREEN_MODE"
+
+[node name="ScreenModeSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+layout_mode = 2
+focus_neighbor_top = NodePath("../ResolutionSelector")
+focus_neighbor_bottom = NodePath("../MonitorDisplaySelector")
+selected = 0
+item_count = 3
+popup/item_0/text = "OPTIONS_VIDEO_FULLSCREEN"
+popup/item_0/id = 0
+popup/item_1/text = "OPTIONS_VIDEO_BORDERLESS"
+popup/item_1/id = 1
+popup/item_2/text = "OPTIONS_VIDEO_WINDOWED"
+popup/item_2/id = 2
+script = ExtResource("2_wa7vw")
+revert_dialog = NodePath("../../../VideoRevertDialog")
+section_name = "video"
+setting_name = "mode_selected"
+
+[node name="MonitorSelectionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_MONITOR_SELECTION"
+
+[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+layout_mode = 2
+focus_neighbor_top = NodePath("../ScreenModeSelector")
+focus_neighbor_bottom = NodePath("../RefreshRateSelector")
+selected = 0
+item_count = 1
+popup/item_0/text = "MISSING"
+popup/item_0/id = 0
+script = ExtResource("3_y6lyb")
+revert_dialog = NodePath("../../../VideoRevertDialog")
+section_name = "video"
+setting_name = "current_screen"
+
+[node name="RefreshRateLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_REFRESH_RATE"
+
+[node name="RefreshRateSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+editor_description = "UI-18, UIFUN-20"
+layout_mode = 2
+tooltip_text = "OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP"
+focus_neighbor_top = NodePath("../MonitorDisplaySelector")
+focus_neighbor_bottom = NodePath("../QualityPresetSelector")
+selected = 0
+item_count = 8
+popup/item_0/text = "VSYNC"
+popup/item_0/id = 0
+popup/item_1/text = "30hz"
+popup/item_1/id = 1
+popup/item_2/text = "60hz"
+popup/item_2/id = 2
+popup/item_3/text = "90hz"
+popup/item_3/id = 3
+popup/item_4/text = "120hz"
+popup/item_4/id = 4
+popup/item_5/text = "144hz"
+popup/item_5/id = 5
+popup/item_6/text = "365hz"
+popup/item_6/id = 6
+popup/item_7/text = "Unlimited"
+popup/item_7/id = 7
+script = ExtResource("4_381mg")
+section_name = "video"
+setting_name = "refresh_rate"
+default_selected = 0
+
+[node name="QualityPresetLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+layout_mode = 2
+text = "OPTIONS_VIDEO_QUALITY"
+
+[node name="QualityPresetSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+editor_description = "UI-21, UIFUN-22"
+layout_mode = 2
+focus_neighbor_top = NodePath("../RefreshRateSelector")
+selected = 1
+item_count = 5
+popup/item_0/text = "OPTIONS_VIDEO_QUALITY_LOW"
+popup/item_0/id = 0
+popup/item_1/text = "OPTIONS_VIDEO_QUALITY_MEDIUM"
+popup/item_1/id = 1
+popup/item_2/text = "OPTIONS_VIDEO_QUALITY_HIGH"
+popup/item_2/id = 2
+popup/item_3/text = "OPTIONS_VIDEO_QUALITY_ULTRA"
+popup/item_3/id = 3
+popup/item_4/text = "OPTIONS_VIDEO_QUALITY_CUSTOM"
+popup/item_4/id = 4
+script = ExtResource("5_srg4v")
+section_name = "video"
+setting_name = "quality_preset"
+default_selected = 1
+
+[node name="VideoRevertDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("timer")]
+editor_description = "UI-873"
+disable_3d = true
+title = "OPTIONS_VIDEO_REVERT_DIALOG_TITLE"
+size = Vector2i(730, 100)
+ok_button_text = "DIALOG_OK"
+cancel_button_text = "DIALOG_CANCEL"
+script = ExtResource("8_ug5mo")
+dialog_text_key = "OPTIONS_VIDEO_REVERT_DIALOG_TEXT"
+timer = NodePath("VideoRevertTimer")
+
+[node name="VideoRevertTimer" type="Timer" parent="VideoRevertDialog"]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/ResolutionSelector" to="VideoSettingList/VideoSettingGrid/ResolutionSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/GuiScaleSelector" to="VideoSettingList/VideoSettingGrid/GuiScaleSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/ScreenModeSelector" to="VideoSettingList/VideoSettingGrid/ScreenModeSelector" method="_on_option_selected"]
+[connection signal="option_selected" from="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" to="VideoSettingList/VideoSettingGrid/MonitorDisplaySelector" method="_on_option_selected"]
+[connection signal="canceled" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="close_requested" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_canceled_or_close_requested"]
+[connection signal="confirmed" from="VideoRevertDialog" to="VideoRevertDialog" method="_on_confirmed"]
+[connection signal="timeout" from="VideoRevertDialog/VideoRevertTimer" to="VideoRevertDialog" method="_on_resolution_revert_timer_timeout"]

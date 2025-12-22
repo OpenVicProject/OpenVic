@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ArgumentOption" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		OpenVic commandline options for [ArgumentParser].
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_help_string" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="is_rich" type="bool" />
+			<description>
+				Returns the [ArgumentOption]'s help string formatted for printing.
+				If [param is_rich] is [code]true[/code] then the string will include BBCode color formatting.
+			</description>
+		</method>
+		<method name="has_alias" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="alias" type="String" />
+			<description>
+				Returns [code]true[/code] if [param alias] is in [member aliases].
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="aliases" type="PackedStringArray" setter="" getter="get_aliases" default="PackedStringArray()">
+			The alternative names the option can be known by.
+		</member>
+		<member name="default_value" type="Variant" setter="" getter="get_default_value" default="null">
+			The default value the option returns if not set.
+		</member>
+		<member name="description" type="String" setter="" getter="get_description" default="&quot;&quot;">
+			The description for the option.
+		</member>
+		<member name="name" type="StringName" setter="" getter="get_name" default="&amp;&quot;&quot;">
+			The name for the option.
+		</member>
+		<member name="option_arguments" type="String" setter="" getter="get_option_arguments" default="&quot;&quot;">
+			The suffix arguments of the option following its name.
+			If an argument contains "[lb]" and "[rb]", [method ArgumentOption.get_help_string]'s rich text formatting will give it a cyan BBCode color tag for the argument.
+			If an argument contains "&lt;" and "&gt;", [method ArgumentOption.get_help_string]'s rich text formatting will give it a magenta BBCode color tag for the argument.
+		</member>
+		<member name="type" type="int" setter="" getter="get_type" enum="Variant.Type" default="0">
+			The expected type of option.
+		</member>
+	</members>
+</class>

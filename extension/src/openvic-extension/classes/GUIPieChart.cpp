@@ -2,9 +2,9 @@
 
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 
-#include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -18,24 +18,7 @@ void GUIPieChart::_update_tooltip() {
 		GFXPieChartTexture::slice_t const* slice = gfx_pie_chart_texture->get_slice(tooltip_position);
 
 		if (slice != nullptr) {
-			static const String tooltip_identifier_key = "ID";
-			static const String tooltip_percent_key = "PC";
-			// "§Y$ID$§!: $PC$%"
-			static const String tooltip_string =
-				GUILabel::get_colour_marker() + String { "Y" } + GUILabel::get_substitution_marker() + tooltip_identifier_key
-				+ GUILabel::get_substitution_marker() + GUILabel::get_colour_marker() + "!: "
-				+ GUILabel::get_substitution_marker() + tooltip_percent_key + GUILabel::get_substitution_marker() + "%";
-
-			Dictionary substitution_dict;
-			substitution_dict[tooltip_identifier_key] = slice->name;
-
-			float percent = slice->weight * 100.0f;
-			if (gfx_pie_chart_texture->get_total_weight() > 0.0f) {
-				percent /= gfx_pie_chart_texture->get_total_weight();
-			}
-			substitution_dict[tooltip_percent_key] = Utilities::float_to_string_dp(percent, 2);
-
-			menu_singleton->show_control_tooltip(tooltip_string, substitution_dict, this);
+			menu_singleton->show_control_tooltip(slice->tooltip, {}, this);
 
 			tooltip_active = true;
 			return;

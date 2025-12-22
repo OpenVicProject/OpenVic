@@ -6,7 +6,7 @@
 #include <openvic-simulation/utility/Getters.hpp>
 
 #include "openvic-extension/singletons/MenuSingleton.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 
 /* To add tooltip functionality to a class:
  *  - the class must be derived from Control.

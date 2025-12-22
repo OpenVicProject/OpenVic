@@ -29,7 +29,7 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector2i.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -48,7 +48,8 @@ using namespace OpenVic;
 	F(GUIOverlappingElementsBox, gui_overlapping_elements_box) \
 	F(GUIScrollbar, gui_scrollbar) \
 	F(GUIListBox, gui_listbox) \
-	F(LineEdit, line_edit)
+	F(LineEdit, line_edit) \
+	F(GUILineChart, gui_line_chart)
 
 void GUINode::_bind_methods() {
 	OV_BIND_SMETHOD(generate_gui_element, { "gui_scene", "gui_element", "name" }, DEFVAL(String {}));
@@ -66,6 +67,7 @@ void GUINode::_bind_methods() {
 
 #define GET_BINDINGS(type, name) \
 	OV_BIND_SMETHOD(get_##name##_from_node, { "node" }); \
+	OV_BIND_SMETHOD(get_##name##_from_node_and_path, { "node", "path" }); \
 	OV_BIND_METHOD(GUINode::get_##name##_from_nodepath, { "path" });
 
 	APPLY_TO_CHILD_TYPES(GET_BINDINGS)
@@ -82,10 +84,11 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::remove_nodes, { "paths" });
 
 	OV_BIND_SMETHOD(int_to_string_suffixed, { "val" });
+	OV_BIND_SMETHOD(int_to_string_commas, { "val" });
 	OV_BIND_SMETHOD(float_to_string_suffixed, { "val" });
 	OV_BIND_SMETHOD(float_to_string_dp, { "val", "decimal_places" });
 	OV_BIND_SMETHOD(float_to_string_dp_dynamic, { "val" });
-	OV_BIND_SMETHOD(format_province_name, { "province_identifier" });
+	OV_BIND_SMETHOD(format_province_name, { "province_identifier", "ignore_empty" }, DEFVAL(false));
 }
 
 GUINode::GUINode() {
@@ -119,7 +122,7 @@ Error GUINode::add_gui_element(String const& gui_scene, String const& gui_elemen
 Vector2 GUINode::get_gui_position(String const& gui_scene, String const& gui_position) {
 	GUI::Position const* position = UITools::get_gui_position(gui_scene, gui_position);
 	ERR_FAIL_NULL_V(position, {});
-	return Utilities::to_godot_fvec2(position->get_position());
+	return convert_to<Vector2>(position->get_position());
 }
 
 template<std::derived_from<godot::Node> T>
@@ -128,7 +131,7 @@ static T* _cast_node(Node* node) {
 	T* result = Object::cast_to<T>(node);
 	ERR_FAIL_NULL_V_MSG(
 		result, nullptr,
-		vformat("Failed to cast node %s from type %s to %s", node->get_name(), node->get_class(), T::get_class_static())
+		Utilities::format("Failed to cast node %s from type %s to %s", node->get_name(), node->get_class(), T::get_class_static())
 	);
 	return result;
 }
@@ -136,6 +139,9 @@ static T* _cast_node(Node* node) {
 #define CHILD_GET_FUNCTIONS(type, name) \
 	type* GUINode::get_##name##_from_node(Node* node) { \
 		return _cast_node<type>(node); \
+	} \
+	type* GUINode::get_##name##_from_node_and_path(Node* node, NodePath const& path) { \
+		return _cast_node<type>(node->get_node_internal(path)); \
 	} \
 	type* GUINode::get_##name##_from_nodepath(NodePath const& path) const { \
 		return _cast_node<type>(get_node_internal(path)); \
@@ -151,29 +157,29 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 	ERR_FAIL_NULL_V(node, nullptr);
 	if (TextureRect const* texture_rect = Object::cast_to<TextureRect>(node); texture_rect != nullptr) {
 		const Ref<Texture2D> texture = texture_rect->get_texture();
-		ERR_FAIL_NULL_V_MSG(texture, nullptr, vformat("Failed to get Texture2D from TextureRect %s", node->get_name()));
+		ERR_FAIL_NULL_V_MSG(texture, nullptr, Utilities::format("Failed to get Texture2D from TextureRect %s", node->get_name()));
 		return texture;
 	} else if (GUIButton const* button = Object::cast_to<GUIButton>(node); button != nullptr) {
 		static const StringName theme_name_normal = "normal";
 		const Ref<StyleBox> stylebox = button->get_theme_stylebox(theme_name_normal);
 		ERR_FAIL_NULL_V_MSG(
-			stylebox, nullptr, vformat("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
+			stylebox, nullptr, Utilities::format("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
 		);
 		const Ref<StyleBoxTexture> stylebox_texture = stylebox;
 		ERR_FAIL_NULL_V_MSG(
-			stylebox_texture, nullptr, vformat(
+			stylebox_texture, nullptr, Utilities::format(
 				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
 			)
 		);
 		const Ref<Texture2D> result = stylebox_texture->get_texture();
 		ERR_FAIL_NULL_V_MSG(
 			result, nullptr,
-			vformat("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name())
+			Utilities::format("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name())
 		);
 		return result;
 	}
 	ERR_FAIL_V_MSG(
-		nullptr, vformat(
+		nullptr, Utilities::format(
 			"Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
 		)
 	);
@@ -233,6 +239,10 @@ String GUINode::int_to_string_suffixed(int64_t val) {
 	return Utilities::int_to_string_suffixed(val);
 }
 
+String GUINode::int_to_string_commas(int64_t val) {
+	return Utilities::int_to_string_commas(val);
+}
+
 String GUINode::float_to_string_suffixed(float val) {
 	return Utilities::float_to_string_suffixed(val);
 }
@@ -245,13 +255,15 @@ String GUINode::float_to_string_dp_dynamic(float val) {
 	return Utilities::float_to_string_dp_dynamic(val);
 }
 
-String GUINode::format_province_name(String const& province_identifier) {
+String GUINode::format_province_name(String const& province_identifier, bool ignore_empty) {
 	if (!province_identifier.is_empty()) {
 		static const String province_prefix = "PROV";
 		return province_prefix + province_identifier;
-	} else {
+	} else if (!ignore_empty) {
 		static const String no_province = "NO PROVINCE";
 		return no_province;
+	} else {
+		return {};
 	}
 }
 
@@ -263,6 +275,7 @@ void GUINode::set_click_mask(Ref<BitMap> const& mask) {
 	if (_click_mask == mask) {
 		return;
 	}
+	_mask_controls.clear();
 	_click_mask = mask;
 	queue_redraw();
 	update_minimum_size();
@@ -271,7 +284,7 @@ void GUINode::set_click_mask(Ref<BitMap> const& mask) {
 bool GUINode::_update_click_mask_for(Ref<Image> const& img, int index) {
 	ERR_FAIL_INDEX_V(index, _mask_controls.size(), false);
 	Control* control = _mask_controls[index];
-	if (!UtilityFunctions::is_instance_valid(control) && !control->is_inside_tree()) {
+	if (!ObjectDB::get_instance(control->get_instance_id()) && !control->is_inside_tree()) {
 		_mask_controls.remove_at(index);
 		return false;
 	}

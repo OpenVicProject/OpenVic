@@ -1,19 +1,37 @@
 #include "GUILabel.hpp"
 
+#include <optional>
+
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
+#include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/node_path.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/ui/TextFormat.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
+
+#include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/singletons/GameSingleton.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "openvic-simulation/types/TextFormat.hpp"
 
 using namespace OpenVic;
 using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
+GUILabel::string_segment_t::string_segment_t(String&& new_text, Color const& new_colour, real_t new_width)
+	: text { std::move(new_text) }, colour { new_colour }, width { new_width } {}
+
+GUILabel::string_segment_t::string_segment_t(String const& new_text, Color const& new_colour, real_t new_width)
+	: text { new_text }, colour { new_colour }, width { new_width } {}
+
 static constexpr int32_t DEFAULT_FONT_SIZE = 16;
+static const Vector2 FLAG_DRAW_DIMS { 23.0_real, 11.0_real };
+static const real_t FLAG_SEGMENT_WIDTH = FLAG_DRAW_DIMS.width + 1.0_real;
 
 GUI_TOOLTIP_IMPLEMENTATIONS(GUILabel)
 
@@ -35,6 +53,24 @@ String const& GUILabel::get_substitution_marker() {
 String const& GUILabel::get_flag_marker() {
 	static const String FLAG_MARKER = String::chr(0x40); // @
 	return FLAG_MARKER;
+}
+
+void GUILabel::set_text_and_tooltip(
+	GUINode const& parent,
+	godot::NodePath const& path,
+	godot::StringName const& text_localisation_key,
+	godot::StringName const& tooltip_localisation_key
+) {
+	GUILabel* label_nullable = parent.get_gui_label_from_nodepath(path);
+	if (label_nullable != nullptr) {
+		GUILabel& label = *label_nullable;
+		label.set_text(
+			label.tr(text_localisation_key)
+		);
+		label.set_tooltip_string(
+			label.tr(tooltip_localisation_key)
+		);
+	}
 }
 
 void GUILabel::_bind_methods() {
@@ -136,6 +172,8 @@ void GUILabel::_notification(int what) {
 		const Vector2 offset = base_offset + adjusted_rect.position + border_size;
 		Vector2 position = offset;
 
+		const float ascent = font->get_ascent(font_size), descent = font->get_descent(font_size);
+
 		for (line_t const& line : lines) {
 			position.x = offset.x;
 			switch (horizontal_alignment) {
@@ -150,30 +188,34 @@ void GUILabel::_notification(int what) {
 				break;
 			}
 
-			position.y += font->get_ascent(font_size);
+			position.y += ascent;
 
 			for (segment_t const& segment : line.segments) {
-				string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment);
-
-				if (string_segment == nullptr) {
-					if (currency_texture.is_valid()) {
-						currency_texture->draw(
-							ci, position - Vector2 {
-								1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real
-							}
-						);
-						position.x += currency_texture->get_width();
-					}
-				} else {
+				if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
 					font->draw_string(
 						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size,
 						string_segment->colour
 					);
+
 					position.x += string_segment->width;
+				} else if (flag_segment_t const* flag_segment = std::get_if<flag_segment_t>(&segment)) {
+					(*flag_segment)->draw_rect(ci, Rect2 {
+						position - Vector2 { 1.0_real, ascent - 4.0_real }, FLAG_DRAW_DIMS
+					}, false);
+
+					position.x += FLAG_SEGMENT_WIDTH;
+				} else if (currency_texture.is_valid()) {
+					currency_texture->draw(
+						ci, position - Vector2 {
+							1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real
+						}
+					);
+
+					position.x += currency_texture->get_width();
 				}
 			}
 
-			position.y += font->get_descent(font_size);
+			position.y += descent;
 		}
 
 	} break;
@@ -208,7 +250,7 @@ void GUILabel::clear() {
 }
 
 String GUILabel::get_gui_text_name() const {
-	return gui_text != nullptr ? Utilities::std_to_godot_string(gui_text->get_name()) : String {};
+	return gui_text != nullptr ? convert_to<godot::String>(gui_text->get_name()) : String {};
 }
 
 Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
@@ -223,7 +265,7 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	gui_text = new_gui_text;
 
-	set_text(Utilities::std_to_godot_string(gui_text->get_text()));
+	set_text(convert_to<String>(gui_text->get_text()));
 
 	using enum text_format_t;
 	static const ordered_map<text_format_t, HorizontalAlignment> format_map {
@@ -235,11 +277,11 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	const decltype(format_map)::const_iterator it = format_map.find(gui_text->get_format());
 	set_horizontal_alignment(it != format_map.end() ? it->second : HORIZONTAL_ALIGNMENT_LEFT);
 
-	set_max_size(Utilities::to_godot_fvec2(gui_text->get_max_size()));
-	set_border_size(Utilities::to_godot_fvec2(gui_text->get_border_size()));
+	set_max_size(convert_to<Vector2>(gui_text->get_max_size()));
+	set_border_size(convert_to<Vector2>(gui_text->get_border_size()));
 
 	colour_codes = override_colour_codes != nullptr ? override_colour_codes : &gui_text->get_font()->get_colour_codes();
-	set_default_colour(Utilities::to_godot_color(gui_text->get_font()->get_colour()));
+	set_default_colour(convert_to<Color>(gui_text->get_font()->get_colour()));
 
 	font.unref();
 	font_size = DEFAULT_FONT_SIZE;
@@ -248,32 +290,28 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	Error err = OK;
 
-	AssetManager* asset_manager = AssetManager::get_singleton();
-	if (asset_manager != nullptr) {
-		const StringName font_filepath = Utilities::std_to_godot_string(gui_text->get_font()->get_fontname());
-		Ref<FontFile> font_file = asset_manager->get_font(font_filepath);
-		if (font_file.is_valid()) {
-			if (set_font_file(font_file) != OK) {
-				err = FAILED;
-			}
-		} else {
-			UtilityFunctions::push_error("Failed to load font \"", font_filepath, "\" for GUILabel");
+	const StringName font_filepath = convert_to<String>(gui_text->get_font()->get_fontname());
+
+	AssetManager& asset_manager = *AssetManager::get_singleton();
+	Ref<FontFile> font_file = asset_manager.get_font(font_filepath);
+	if (font_file.is_valid()) {
+		if (set_font_file(font_file) != OK) {
 			err = FAILED;
 		}
-
-		if (!gui_text->get_texture_file().empty()) {
-			const StringName texture_path = Utilities::std_to_godot_string(gui_text->get_texture_file());
-			Ref<ImageTexture> texture = asset_manager->get_texture(texture_path);
-			if (texture.is_valid()) {
-				set_background_texture(texture);
-			} else {
-				UtilityFunctions::push_error("Failed to load texture \"", texture_path, "\" for GUILabel ", get_name());
-				err = FAILED;
-			}
-		}
 	} else {
-		UtilityFunctions::push_error("Failed to get AssetManager singleton for GUILabel");
+		UtilityFunctions::push_error("Failed to load font \"", font_filepath, "\" for GUILabel");
 		err = FAILED;
+	}
+
+	if (!gui_text->get_texture_file().empty()) {
+		const StringName texture_path = convert_to<String>(gui_text->get_texture_file());
+		Ref<ImageTexture> texture = asset_manager.get_texture(texture_path);
+		if (texture.is_valid()) {
+			set_background_texture(texture);
+		} else {
+			UtilityFunctions::push_error("Failed to load texture \"", texture_path, "\" for GUILabel ", get_name());
+			err = FAILED;
+		}
 	}
 
 	_queue_line_update();
@@ -325,7 +363,7 @@ void GUILabel::set_horizontal_alignment(HorizontalAlignment new_horizontal_align
 }
 
 Size2 GUILabel::get_base_max_size() const {
-	return gui_text != nullptr ? Utilities::to_godot_fvec2(gui_text->get_max_size()) : Size2 {};
+	return gui_text != nullptr ? convert_to<Vector2>(gui_text->get_max_size()) : Size2 {};
 }
 
 void GUILabel::set_max_size(Size2 new_max_size) {
@@ -382,10 +420,8 @@ Error GUILabel::set_font_size(int32_t new_font_size) {
 
 	_queue_line_update();
 
-	AssetManager* asset_manager = AssetManager::get_singleton();
-	ERR_FAIL_NULL_V_MSG(asset_manager, FAILED, "Failed to get AssetManager singleton for GUILabel");
-
-	currency_texture = asset_manager->get_currency_texture(font_size);
+	AssetManager& asset_manager = *AssetManager::get_singleton();
+	currency_texture = asset_manager.get_currency_texture(font_size);
 	ERR_FAIL_NULL_V(currency_texture, FAILED);
 
 	return OK;
@@ -443,6 +479,8 @@ real_t GUILabel::get_string_width(String const& string) const {
 real_t GUILabel::get_segment_width(segment_t const& segment) const {
 	if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
 		return string_segment->width;
+	} else if (std::get_if<flag_segment_t>(&segment) != nullptr) {
+		return FLAG_SEGMENT_WIDTH;
 	} else if (currency_texture.is_valid()) {
 		return currency_texture->get_width();
 	} else {
@@ -573,16 +611,19 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 
 	for (int64_t idx = 0; idx < display_text.length(); ++idx) {
 		Color new_colour = current_colour;
-		while (colour_it != colour_instructions.end() && idx == colour_it->first) {
+		for (; colour_it != colour_instructions.end(); colour_it++) {
+			if (idx != colour_it->first) {
+				break;
+			}
 			if (colour_it->second == RESET_COLOUR_CODE) {
 				new_colour = default_colour;
 			} else {
+				ERR_CONTINUE(colour_codes == nullptr);
 				const GFX::Font::colour_codes_t::const_iterator it = colour_codes->find(colour_it->second);
 				if (it != colour_codes->end()) {
-					new_colour = Utilities::to_godot_color(it->second);
+					new_colour = convert_to<Color>(it->second);
 				}
 			}
-			++colour_it;
 		}
 
 		if (current_colour != new_colour) {
@@ -629,6 +670,84 @@ void GUILabel::separate_lines(
 void GUILabel::separate_currency_segments(
 	String const& string, Color const& colour, line_t& line
 ) const {
+	int64_t start_pos = 0;
+	int64_t marker_pos;
+
+	const real_t currency_width = currency_texture.is_valid() ? currency_texture->get_width() : 0.0_real;
+
+	while ((marker_pos = string.find(get_currency_marker(), start_pos)) != -1) {
+		if (start_pos < marker_pos) {
+			separate_flag_segments(string.substr(start_pos, marker_pos - start_pos), colour, line);
+		}
+
+		line.segments.push_back(currency_segment_t {});
+		line.width += currency_width;
+
+		start_pos = marker_pos + get_currency_marker().length();
+	}
+
+	if (start_pos < string.length()) {
+		separate_flag_segments(string.substr(start_pos), colour, line);
+	}
+}
+
+GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
+	GameSingleton& game_singleton = *GameSingleton::get_singleton();
+
+	std::optional<country_index_t> country_index = std::nullopt;
+	StringName flag_type;
+
+	InstanceManager* instance_manager = game_singleton.get_instance_manager();
+
+	if (instance_manager != nullptr) {
+		CountryInstance* country_instance =
+			instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
+				convert_to<std::string>(identifier) //convert_to<std::string>(identifier)
+			);
+
+		if (country_instance != nullptr) {
+			country_index = country_instance->country_definition.index;
+
+			GovernmentType const* government_type = country_instance->flag_government_type.get_untracked();
+			if (government_type != nullptr) {
+				flag_type = convert_to<String>(government_type->get_flag_type());
+			}
+		}
+	} else {
+		CountryDefinition const* country_definition =
+			game_singleton.get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
+				convert_to<std::string>(identifier)
+			);
+
+		if (country_definition != nullptr) {
+			country_index = country_definition->index;
+		}
+	}
+
+	// If no country with the given identifier can be found, fallback to country index 0 (usually REB) and empty flag type
+	if (!country_index.has_value()) {
+		UtilityFunctions::push_warning(
+			"Failed to find country with identifier \"", identifier, "\" for GUILabel flag segment, falling back to index 0"
+		);
+		country_index = country_index_t(0);
+	}
+
+	const Rect2 flag_image_rect = game_singleton.get_flag_sheet_rect(country_index.value(), flag_type);
+	ERR_FAIL_COND_V(!flag_image_rect.has_area(), {});
+
+	flag_segment_t flag_segment;
+	flag_segment.instantiate();
+	ERR_FAIL_NULL_V(flag_segment, {});
+
+	flag_segment->set_region(flag_image_rect);
+	flag_segment->set_atlas(game_singleton.get_flag_sheet_texture());
+
+	return flag_segment;
+}
+
+void GUILabel::separate_flag_segments(
+	String const& string, Color const& colour, line_t& line
+) const {
 	const auto push_string_segment = [this, &string, &colour, &line](int64_t start, int64_t end) -> void {
 		String substring = string.substr(start, end - start);
 		const real_t width = get_string_width(substring);
@@ -639,17 +758,31 @@ void GUILabel::separate_currency_segments(
 	int64_t start_pos = 0;
 	int64_t marker_pos;
 
-	const real_t currency_width = currency_texture.is_valid() ? currency_texture->get_width() : 0.0_real;
+	static const int64_t FLAG_IDENTIFIER_LENGTH = 3;
 
-	while ((marker_pos = string.find(get_currency_marker(), start_pos)) != -1) {
+	while ((marker_pos = string.find(get_flag_marker(), start_pos)) != -1) {
 		if (start_pos < marker_pos) {
 			push_string_segment(start_pos, marker_pos);
 		}
 
-		line.segments.push_back(currency_segment_t {});
-		line.width += currency_width;
+		marker_pos += get_flag_marker().length();
 
-		start_pos = marker_pos + get_currency_marker().length();
+		start_pos = marker_pos + FLAG_IDENTIFIER_LENGTH;
+
+		if (start_pos >= string.length()) {
+			UtilityFunctions::push_warning(
+				"Incomplete flag identifier \"", string.substr(marker_pos), "\" at end of line \"", string,
+				"\" in GUILabel text - discarding!"
+			);
+			return;
+		}
+
+		const flag_segment_t flag_segment = make_flag_segment(string.substr(marker_pos, FLAG_IDENTIFIER_LENGTH));
+
+		if (flag_segment.is_valid()) {
+			line.segments.push_back(flag_segment);
+			line.width += FLAG_SEGMENT_WIDTH;
+		}
 	}
 
 	if (start_pos < string.length()) {

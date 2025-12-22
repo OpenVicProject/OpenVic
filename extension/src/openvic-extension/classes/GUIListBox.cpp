@@ -3,7 +3,8 @@
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -63,7 +64,11 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 
 	ERR_FAIL_NULL_V(scrollbar, FAILED);
 
-	scrollbar->set_limits(0, max_scroll_index, false);
+	const bool was_blocking_signals = scrollbar->is_blocking_signals();
+	scrollbar->set_block_signals(true);
+	scrollbar->set_step_count(max_scroll_index);
+	scrollbar->set_block_signals(was_blocking_signals);
+
 	scrollbar->set_visible(max_scroll_index > 0);
 
 	set_scroll_index(scrollbar->get_value(), signal);
@@ -74,7 +79,7 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 Error GUIListBox::_update_child_positions() {
 	const int32_t child_count = get_child_count();
 	const real_t max_height = get_size().height;
-	const Vector2 offset = gui_listbox != nullptr ? Utilities::to_godot_fvec2(gui_listbox->get_items_offset()) : Vector2 {};
+	const Vector2 offset = gui_listbox != nullptr ? convert_to<Vector2>(gui_listbox->get_items_offset()) : Vector2 {};
 
 	real_t height = 0.0_real;
 
@@ -116,6 +121,7 @@ void GUIListBox::_bind_methods() {
 
 	OV_BIND_METHOD(GUIListBox::get_gui_listbox_name);
 	OV_BIND_METHOD(GUIListBox::get_scrollbar);
+	OV_BIND_METHOD(GUIListBox::sort_children, { "callable" });
 
 	ADD_SIGNAL(MethodInfo(_signal_scroll_index_changed(), PropertyInfo(Variant::INT, "value")));
 }
@@ -132,7 +138,7 @@ GUIListBox::GUIListBox() : fixed_item_height { 0.0_real } {}
 
 Vector2 GUIListBox::_get_minimum_size() const {
 	if (gui_listbox != nullptr) {
-		Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
+		Size2 size = convert_to<Vector2>(gui_listbox->get_size());
 
 		if (scrollbar != nullptr) {
 			size.width += scrollbar->get_minimum_size().width;
@@ -196,9 +202,10 @@ void GUIListBox::clear_children(int32_t remaining_child_count) {
 		child->queue_free();
 	}
 
-	if (scrollbar != nullptr) {
-		scrollbar->set_value(0);
-	}
+	// Scrollbar value is left unchanged so we don't jump back to the top of the list when re-generating the same number
+	// of entries. In cases where the value is greater than the new maximum scroll level, it will be clamped by
+	// set_scroll_index, called via _calculate_max_scroll_index by _notification(NOTIFICATION_SORT_CHILDREN) after all the new
+	// children have been added but before the same frame.
 }
 
 void GUIListBox::set_scroll_index(int32_t new_scroll_index, bool signal) {
@@ -207,7 +214,10 @@ void GUIListBox::set_scroll_index(int32_t new_scroll_index, bool signal) {
 	scroll_index = std::clamp(new_scroll_index, 0, max_scroll_index);
 
 	if (scrollbar != nullptr && scrollbar->get_value() != scroll_index) {
-		scrollbar->set_value(scroll_index, false);
+		const bool was_blocking_signals = scrollbar->is_blocking_signals();
+		scrollbar->set_block_signals(true);
+		scrollbar->set_value(scroll_index);
+		scrollbar->set_block_signals(was_blocking_signals);
 	}
 
 	if (signal && scroll_index != old_scroll_index) {
@@ -248,7 +258,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 
 	gui_listbox = new_gui_listbox;
 
-	const String scrollbar_name = Utilities::std_to_godot_string(gui_listbox->get_scrollbar_name());
+	const String scrollbar_name = convert_to<String>(gui_listbox->get_scrollbar_name());
 
 	Error err = OK;
 
@@ -270,8 +280,8 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 			if (scrollbar != nullptr) {
 				add_child(scrollbar, false, INTERNAL_MODE_BACK);
 
-				const Size2 size = Utilities::to_godot_fvec2(gui_listbox->get_size());
-				Vector2 position = Utilities::to_godot_fvec2(gui_listbox->get_scrollbar_offset());
+				const Size2 size = convert_to<Vector2>(gui_listbox->get_size());
+				Vector2 position = convert_to<Vector2>(gui_listbox->get_scrollbar_offset());
 				position.x += size.width;
 				scrollbar->set_position(position);
 				scrollbar->set_length_override(size.height);
@@ -296,9 +306,30 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 }
 
 String GUIListBox::get_gui_listbox_name() const {
-	return gui_listbox != nullptr ? Utilities::std_to_godot_string(gui_listbox->get_name()) : String {};
+	return gui_listbox != nullptr ? convert_to<String>(gui_listbox->get_name()) : String {};
 }
 
 GUIScrollbar* GUIListBox::get_scrollbar() const {
 	return scrollbar;
+}
+
+Error GUIListBox::sort_children(Callable const& callable) {
+	TypedArray<Node> children;
+	ERR_FAIL_COND_V(children.resize(get_child_count()) != OK, FAILED);
+
+	for (int64_t index = children.size() - 1; index >= 0; --index) {
+		Node* child = get_child(index);
+
+		children[index] = child;
+
+		remove_child(child);
+	}
+
+	children.sort_custom(callable);
+
+	for (int64_t index = 0; index < children.size(); ++index) {
+		add_child(Object::cast_to<Node>(children[index]));
+	}
+
+	return OK;
 }

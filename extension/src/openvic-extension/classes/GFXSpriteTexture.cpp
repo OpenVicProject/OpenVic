@@ -3,8 +3,9 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -56,14 +57,14 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 		AssetManager* asset_manager = AssetManager::get_singleton();
 		ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-		const StringName texture_file = Utilities::std_to_godot_string(new_gfx_texture_sprite->get_texture_file());
+		const StringName texture_file = convert_to<String>(new_gfx_texture_sprite->get_texture_file());
 
 		/* Needed for GFXButtonStateTexture, AssetManager::get_texture will re-use this image from its internal cache. */
 		const Ref<Image> image = asset_manager->get_image(texture_file);
-		ERR_FAIL_NULL_V_MSG(image, FAILED, vformat("Failed to load image: %s", texture_file));
+		ERR_FAIL_NULL_V_MSG(image, FAILED, Utilities::format("Failed to load image: %s", texture_file));
 
 		const Ref<ImageTexture> texture = asset_manager->get_texture(texture_file);
-		ERR_FAIL_NULL_V_MSG(texture, FAILED, vformat("Failed to load texture: %s", texture_file));
+		ERR_FAIL_NULL_V_MSG(texture, FAILED, Utilities::format("Failed to load texture: %s", texture_file));
 
 		button_image = image;
 		gfx_texture_sprite = new_gfx_texture_sprite;
@@ -80,7 +81,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 		GFX::CorneredTileTextureSprite const* const cornered_tile_texture_sprite =
 			gfx_texture_sprite->cast_to<GFX::CorneredTileTextureSprite>();
 		if (cornered_tile_texture_sprite != nullptr) {
-			cornered_tile_border_size = Utilities::to_godot_ivec2(cornered_tile_texture_sprite->get_border_size());
+			cornered_tile_border_size = convert_to<Vector2i>(cornered_tile_texture_sprite->get_border_size());
 		} else {
 			cornered_tile_border_size = {};
 		}
@@ -96,17 +97,17 @@ Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sp
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
-		new_texture_sprite, FAILED, vformat(
+		new_texture_sprite, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
-			Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(GFX::TextureSprite::get_type_static())
+			convert_to<String>(sprite->get_type()),
+			convert_to<String>(GFX::TextureSprite::get_type_static())
 		)
 	);
 	return set_gfx_texture_sprite(new_texture_sprite, icon);
 }
 
 String GFXSpriteTexture::get_gfx_texture_sprite_name() const {
-	return gfx_texture_sprite != nullptr ? Utilities::std_to_godot_string(gfx_texture_sprite->get_name()) : String {};
+	return gfx_texture_sprite != nullptr ? convert_to<String>(gfx_texture_sprite->get_name()) : String {};
 }
 
 Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {

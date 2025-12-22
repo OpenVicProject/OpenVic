@@ -15,8 +15,11 @@
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
-#include <openvic-extension/utility/ClassBindings.hpp>
+#include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include <openvic-extension/utility/Utilities.hpp>
+
+#include <fmt/std.h>
 
 using namespace godot;
 using namespace OpenVic;
@@ -59,59 +62,59 @@ TypedArray<StringName> CursorSingleton::get_cursor_names() const {
 
 TypedArray<ImageTexture> CursorSingleton::get_frames(StringName const& name, int32_t res_index) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
 	std::vector<TypedArray<ImageTexture>> const& images = it->second.images;
-	ERR_FAIL_INDEX_V_MSG(res_index, images.size(), {}, vformat("Invalid image index for cursor \"%s\": %d", name, res_index));
+	ERR_FAIL_INDEX_V_MSG(res_index, images.size(), {}, Utilities::format("Invalid image index for cursor \"%s\": %d", name, res_index));
 
 	return images[res_index];
 }
 
 PackedVector2Array CursorSingleton::get_hotspots(StringName const& name, int32_t res_index) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
 	std::vector<PackedVector2Array> const& hotspots = it->second.hotspots;
-	ERR_FAIL_INDEX_V_MSG(res_index, hotspots.size(), {}, vformat("Invalid hotspot index for cursor \"%s\": %d", name, res_index));
+	ERR_FAIL_INDEX_V_MSG(res_index, hotspots.size(), {}, Utilities::format("Invalid hotspot index for cursor \"%s\": %d", name, res_index));
 
 	return hotspots[res_index];
 }
 
 int32_t CursorSingleton::get_animation_length(StringName const& name) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 	
 	return it->second.animation_length;
 }
 
 PackedVector2Array CursorSingleton::get_resolutions(StringName const& name) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
 	return it->second.resolutions;
 }
 
 PackedFloat32Array CursorSingleton::get_display_rates(StringName const& name) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	return it->second.display_rates.value_or(PackedFloat32Array());
+	return it->second.display_rates;
 }
 
 PackedInt32Array CursorSingleton::get_sequence(StringName const& name) const {
 	const cursor_map_t::const_iterator it = cursors.find(name);
-	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	return it->second.sequence.value_or(PackedInt32Array());
+	return it->second.sequence;
 }
 
 void CursorSingleton::generate_resolution(StringName const& name, int32_t base_res_index, Vector2 target_res) {
 	cursor_map_t::iterator it = cursors.find(name);
-	ERR_FAIL_COND_MSG(it == cursors.end(), vformat("Cursor \"%s\" not found", name));
+	ERR_FAIL_COND_MSG(it == cursors.end(), Utilities::format("Cursor \"%s\" not found", name));
 	cursor_asset_t& cursor = it.value();
 
 	ERR_FAIL_INDEX_MSG(
-		base_res_index, cursor.images.size(), vformat("Invalid image index for cursor \"%s\": %d", name, base_res_index)
+		base_res_index, cursor.images.size(), Utilities::format("Invalid image index for cursor \"%s\": %d", name, base_res_index)
 	);
 
 	TypedArray<ImageTexture> const& images = cursor.images[base_res_index];
@@ -140,7 +143,7 @@ static constexpr std::string_view cursor_directory = "gfx/cursors";
 static String _to_define_file_name(String const& path) {
 	static const String backslash = "\\";
 	static const String forwardslash = "/";
-	static const String cursor_directory_forwardslash = Utilities::std_to_godot_string(cursor_directory) + forwardslash;
+	static const String cursor_directory_forwardslash = convert_to<String>(cursor_directory) + forwardslash;
 	static const String dot = ".";
 	return path.replace(backslash, forwardslash).get_slice(cursor_directory_forwardslash, 1).get_slice(dot, 0);
 }
@@ -162,30 +165,27 @@ Error CursorSingleton::load_cursors() {
 
 	Dataloader::path_vector_t animated_cursor_files = game_singleton->get_dataloader()
 		.lookup_files_in_dir_recursive(cursor_directory, ".ani");
-	
-	if (cursor_files.empty() && animated_cursor_files.empty()){
-		Logger::error("failed to load cursors: no files in cursors directory");
-		return FAILED;
-	}
+
+	ERR_FAIL_COND_V_MSG(cursor_files.empty() && animated_cursor_files.empty(), FAILED, "No files in cursors directory");
 
 	Error ret = OK;
 
 	for(fs::path const& file_name : cursor_files) {
-		String file = Utilities::std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_cur(name,file)){
-			Logger::error("failed to load normal cursor at path ", file_name);
+			spdlog::error_s("Failed to load normal cursor at path {}", file_name);
 			ret = FAILED;
 		}
 	}
 
 	for(fs::path const& file_name : animated_cursor_files) {
-		String file = Utilities::std_to_godot_string(file_name.string());
+		String file = convert_to<String>(file_name.string());
 		StringName name = _to_define_file_name(file);
 
 		if (!_load_cursor_ani(name,file)){
-			Logger::error("failed to load animated cursor at path ", file_name);
+			spdlog::error_s("Failed to load animated cursor at path {}", file_name);
 			ret = FAILED;
 		}
 	}
@@ -225,10 +225,7 @@ static constexpr int32_t _get_row_start(int32_t x_coord, int32_t y_coord, int32_
 static constexpr int32_t _select_bits(uint8_t const* data, int32_t row_start, int32_t first_bit, int32_t bit_count) {
 	int32_t byte_index = first_bit >> 3;
 	int32_t bit_in_byte_index = first_bit & 0b111;
-	if (bit_in_byte_index + bit_count > 8) {
-		Logger::error("Attempted to select bits outside of a byte.");
-		return 0;
-	}
+	ERR_FAIL_COND_V_MSG(bit_in_byte_index + bit_count > 8, 0, "Attempted to select bits outside of a byte.");
 	int32_t byte = _reverse_bits(*(data+row_start+byte_index));
 	int32_t selected = (byte >> bit_in_byte_index) & ((1 << bit_count) - 1);
 
@@ -254,12 +251,11 @@ static void _pixel_palette_lookup(
 	
 	int32_t row_start = _get_row_start(x_dimension, coord_y, bits_per_pixel);
 	int32_t pixel_bits = _select_bits(data.ptr(), row_start + offset, coord_x*bits_per_pixel, bits_per_pixel);
-	
-	if ((pixel_bits+1)*4 > palette.size()){
-		Logger::error("attempted to select invalid colour palette entry, ", pixel_bits);
-		return;
-	}
-	
+
+	ERR_FAIL_COND_MSG(
+		(pixel_bits + 1) * 4 > palette.size(), vformat("Attempted to select invalid colour palette entry %s", pixel_bits)
+	);
+
 	//pixel bits serves as an index into the colour palette. We need to multiply the index by the number of bytes per colour (4)
 	pixel_data[(i*4) + 0] = palette[pixel_bits*4 + 0];
 	pixel_data[(i*4) + 1] = palette[pixel_bits*4 + 1];
@@ -276,11 +272,10 @@ So emit a warning when trying to load one of these
 static void _read_24bit_pixel(
 	PackedByteArray const& image_data, PackedByteArray& pixel_data,
 	int32_t i, int32_t offset, bool opaque) {
-
-	if((i+1)*3 > image_data.size()){
-		Logger::error("Pixel ", i, "tried to read from a pixel data array of max size ", pixel_data.size());
-		return;
-	}
+	ERR_FAIL_COND_MSG(
+		(i + 1) * 3 > image_data.size(),
+		vformat("Pixel %d tried to read from a pixel data array of max size %d", i, pixel_data.size())
+	);
 
 	pixel_data[(i*4) + 0] = image_data[offset + (i*3) + 2]; //r
 	pixel_data[(i*4) + 1] = image_data[offset + (i*3) + 1]; //g
@@ -291,11 +286,10 @@ static void _read_24bit_pixel(
 static void _read_32bit_pixel(
 	PackedByteArray const& image_data, PackedByteArray& pixel_data,
 	int32_t i, int32_t offset, bool opaque) {
-
-	if((i+1)*4 > image_data.size()){
-		Logger::error("Pixel ", i, "tried to read from a pixel data array of max size ", pixel_data.size());
-		return;
-	}
+	ERR_FAIL_COND_MSG(
+		(i + 1) * 4 > image_data.size(),
+		vformat("Pixel %d tried to read from a pixel data array of max size %d", i, pixel_data.size())
+	);
 
 	pixel_data[(i*4) + 0] = image_data[offset + (i*4) + 2]; //r
 	pixel_data[(i*4) + 1] = image_data[offset + (i*4) + 1]; //g
@@ -352,10 +346,13 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 			//int32_t colour_planes = image_data.decode_u16(12);
 			int32_t bits_per_pixel = image_data.decode_u16(14);
 			if (bits_per_pixel <= 8 || bits_per_pixel == 24){
-				Logger::warning("Attempting to import ", bits_per_pixel, "bit cursor, this isn't guaranteed to work");
+				spdlog::warn_s("Attempting to import {} bit cursor, this isn't guaranteed to work", bits_per_pixel);
 			}
 			else if (bits_per_pixel != 32){
-				Logger::error("Invalid or Unsupported bits per pixel while loading cursor image, bpp: ", bits_per_pixel, "loading blank image instead");
+				spdlog::error_s(
+					"Unsupported bits per pixel while loading cursor image with {} bits per pixel, loading blank image",
+					bits_per_pixel
+				);
 			}
 
 			int32_t size = image_data.decode_u32(20);
@@ -422,7 +419,7 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 		image_texture = image_texture->create_from_image(image);
 		
 		if (image_texture.is_null()){
-			Logger::error("Image Texture ",Utilities::godot_to_std_string(file->get_path())," was null!");
+			spdlog::error_s("Image Texture {} was null!", file->get_path());
 		}
 
 		pairs.hotspots.push_back(hotspot);
@@ -438,7 +435,7 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 
 	const Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
-		err != OK || file.is_null(), false, vformat("Failed to open ani file: \"%s\"", path)
+		err != OK || file.is_null(), false, Utilities::format("Failed to open ani file: \"%s\"", path)
 	);
 
 	//read the RIFF container
@@ -475,7 +472,7 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 		else if (id == "anih"){
 			//hack for some files, there's likely a better way
 			if (size == 36){ 
-				int32_t headerSize = file->get_32();
+				file->get_32(); // header_size
 			}
 			num_frames = file->get_32();
 			num_steps = file->get_32();
@@ -511,10 +508,9 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 			}
 			else {
 				if (pair.images.size() != frames_by_resolution.size()){
-					Logger::error(
-						"Malformatted .ani cursor file ",
-						Utilities::godot_to_std_string(name),
-						" had inconsistent number of images per cursor"
+					spdlog::error_s(
+						"Malformatted .ani cursor file {} had inconsistent number of images per cursor",
+						name
 					);
 				}
 				for(int32_t i=0; i<pair.images.size(); i++){
@@ -580,7 +576,7 @@ bool CursorSingleton::_load_cursor_cur(StringName const& name, String const& pat
 	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
 	const Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
-		err != OK || file.is_null(), false, vformat("Failed to open cur file: \"%s\"", path)
+		err != OK || file.is_null(), false, Utilities::format("Failed to open cur file: \"%s\"", path)
 	);
 
 	image_hotspot_pair_asset_t pair = _load_pair(file);

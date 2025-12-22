@@ -19,7 +19,6 @@
 		</method>
 		<method name="decrement_value">
 			<return type="void" />
-			<param index="0" name="signal" type="bool" default="true" />
 			<description>
 			</description>
 		</method>
@@ -38,28 +37,8 @@
 			<description>
 			</description>
 		</method>
-		<method name="get_max_value" qualifiers="const">
-			<return type="int" />
-			<description>
-			</description>
-		</method>
-		<method name="get_min_value" qualifiers="const">
-			<return type="int" />
-			<description>
-			</description>
-		</method>
 		<method name="get_orientation" qualifiers="const">
 			<return type="int" enum="Orientation" />
-			<description>
-			</description>
-		</method>
-		<method name="get_range_limit_max" qualifiers="const">
-			<return type="int" />
-			<description>
-			</description>
-		</method>
-		<method name="get_range_limit_min" qualifiers="const">
-			<return type="int" />
 			<description>
 			</description>
 		</method>
@@ -73,9 +52,13 @@
 			<description>
 			</description>
 		</method>
+		<method name="get_value_scaled" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
 		<method name="increment_value">
 			<return type="void" />
-			<param index="0" name="signal" type="bool" default="true" />
 			<description>
 			</description>
 		</method>
@@ -85,7 +68,7 @@
 			</description>
 		</method>
 		<method name="reset">
-			<return type="int" enum="Error" />
+			<return type="void" />
 			<description>
 			</description>
 		</method>
@@ -102,19 +85,9 @@
 			<description>
 			</description>
 		</method>
-		<method name="set_limits">
-			<return type="int" enum="Error" />
-			<param index="0" name="new_min_value" type="int" />
-			<param index="1" name="new_max_value" type="int" />
-			<param index="2" name="signal" type="bool" default="true" />
-			<description>
-			</description>
-		</method>
-		<method name="set_range_limits">
-			<return type="int" enum="Error" />
-			<param index="0" name="new_range_limit_min" type="int" />
-			<param index="1" name="new_range_limit_max" type="int" />
-			<param index="2" name="signal" type="bool" default="true" />
+		<method name="set_step_count">
+			<return type="void" />
+			<param index="0" name="new_step_count" type="int" />
 			<description>
 			</description>
 		</method>
@@ -128,14 +101,12 @@
 		<method name="set_value">
 			<return type="void" />
 			<param index="0" name="new_value" type="int" />
-			<param index="1" name="signal" type="bool" default="true" />
 			<description>
 			</description>
 		</method>
 		<method name="set_value_as_ratio">
 			<return type="void" />
 			<param index="0" name="new_ratio" type="float" />
-			<param index="1" name="signal" type="bool" default="true" />
 			<description>
 			</description>
 		</method>

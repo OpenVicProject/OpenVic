@@ -18,6 +18,7 @@
 #include "openvic-extension/classes/GUIIcon.hpp"
 #include "openvic-extension/classes/GUIIconButton.hpp"
 #include "openvic-extension/classes/GUILabel.hpp"
+#include "openvic-extension/classes/GUILineChart.hpp"
 #include "openvic-extension/classes/GUIListBox.hpp"
 #include "openvic-extension/classes/GUIMaskedFlag.hpp"
 #include "openvic-extension/classes/GUIMaskedFlagButton.hpp"
@@ -63,6 +64,26 @@ namespace OpenVic {
 		static GUIScrollbar* get_gui_scrollbar_from_node(godot::Node* node);
 		static GUIListBox* get_gui_listbox_from_node(godot::Node* node);
 		static godot::LineEdit* get_line_edit_from_node(godot::Node* node);
+		static GUILineChart* get_gui_line_chart_from_node(godot::Node* node);
+
+		// These expect a non-null node!
+		static GUIIconButton* get_gui_icon_button_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node_and_path(
+			godot::Node* node, godot::NodePath const& path
+		);
+		static GUILabel* get_gui_label_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static godot::Panel* get_panel_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIProgressBar* get_gui_progress_bar_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIIcon* get_gui_icon_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIMaskedFlag* get_gui_masked_flag_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIPieChart* get_gui_pie_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node_and_path(
+			godot::Node* node, godot::NodePath const& path
+		);
+		static GUIScrollbar* get_gui_scrollbar_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUIListBox* get_gui_listbox_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static godot::LineEdit* get_line_edit_from_node_and_path(godot::Node* node, godot::NodePath const& path);
+		static GUILineChart* get_gui_line_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 
 		GUIIconButton* get_gui_icon_button_from_nodepath(godot::NodePath const& path) const;
 		GUIMaskedFlagButton* get_gui_masked_flag_button_from_nodepath(godot::NodePath const& path) const;
@@ -76,6 +97,7 @@ namespace OpenVic {
 		GUIScrollbar* get_gui_scrollbar_from_nodepath(godot::NodePath const& path) const;
 		GUIListBox* get_gui_listbox_from_nodepath(godot::NodePath const& path) const;
 		godot::LineEdit* get_line_edit_from_nodepath(godot::NodePath const& path) const;
+		GUILineChart* get_gui_line_chart_from_nodepath(godot::NodePath const& path) const;
 
 		/* Helper functions to get textures from TextureRects and GUIButtons. */
 		static godot::Ref<godot::Texture2D> get_texture_from_node(godot::Node* node);
@@ -88,11 +110,14 @@ namespace OpenVic {
 		godot::Error remove_nodes(godot::TypedArray<godot::NodePath> const& paths) const;
 
 		static godot::String int_to_string_suffixed(int64_t val);
+		static godot::String int_to_string_commas(int64_t val);
 		static godot::String float_to_string_suffixed(float val);
 		static godot::String float_to_string_dp(float val, int32_t decimal_places);
 		// 3dp if abs(val) < 2 else 2dp if abs(val) < 10 else 1dp
 		static godot::String float_to_string_dp_dynamic(float val);
-		static godot::String format_province_name(godot::String const& province_identifier);
+		// The "ignore_empty" argument refers to what this function produces when given an empty string - if the argument
+		// is false then empty inputs are replaced with "NO PROVINCE", otherwise they return the empty string unchanged.
+		static godot::String format_province_name(godot::String const& province_identifier, bool ignore_empty = false);
 
 		godot::Ref<godot::BitMap> get_click_mask() const;
 		void set_click_mask(godot::Ref<godot::BitMap> const& mask);

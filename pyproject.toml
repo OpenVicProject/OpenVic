@@ -33,12 +33,14 @@ default.extend-ignore-re = [
 	"(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on", # Multiline check disable with // spellchecker:off // spellchecker:on (can also use #)
 	"(?s)(/\\*)\\s*spellchecker:off.*?\\s*spellchecker:on\\s*(\\*/)",    # Multiline check disable with /* spellchecker:off ... spellchecker:on */
 	"uid://\\S+",                                                        # Ignore engine uids
+	"id=\"[^\"]+\"",                                                     # Ignore scene ids
+	"ExtResource\\(\"[^\"]+\"\\)",                                       # Ignore scene ids
 ]
 type.xml.locale = "en-us"
 type.xml.check-filename = false
 type.xml.extend-ignore-re = [
-	"<.* name=\".+\" .+>",
-	"\\[(param|member|method)?.+\\]",
+	'<.* name="[^"]+".*>',
+	'\[(param|member|method)?.+\]',
 ]
 [tool.typos.default.extend-identifiers]
 PNGs = "PNGs"

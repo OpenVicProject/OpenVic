@@ -2,9 +2,11 @@
 
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/texture2d_array.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 
 #include <openvic-simulation/GameManager.hpp>
 #include <openvic-simulation/dataloader/Dataloader.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 namespace OpenVic {
 
@@ -14,8 +16,6 @@ namespace OpenVic {
 		static inline GameSingleton* singleton = nullptr;
 
 		GameManager game_manager;
-
-		CountryInstance const* PROPERTY(viewed_country, nullptr);
 
 		godot::Vector2i image_subdivisions;
 		godot::Ref<godot::Texture2DArray> province_shape_texture;
@@ -32,24 +32,18 @@ namespace OpenVic {
 		ordered_map<godot::StringName, int32_t> flag_type_index_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
-		static godot::StringName const& _signal_province_selected();
-		static godot::StringName const& _signal_clock_state_changed();
 		static godot::StringName const& _signal_mapmode_changed();
 
 		godot::Error _load_map_images();
 		godot::Error _load_terrain_variants();
 		godot::Error _load_flag_sheet();
 
-		/* Generate the province_colour_texture from the current mapmode. */
-		godot::Error _update_colour_image();
-		void _on_gamestate_updated();
-		void _on_clock_state_changed();
-
 	protected:
 		static void _bind_methods();
 
 	public:
 		static GameSingleton* get_singleton();
+		signal_property<GameSingleton> gamestate_updated;
 
 		GameSingleton();
 		~GameSingleton();
@@ -74,19 +68,28 @@ namespace OpenVic {
 
 		/* Load the game's defines in compatibility mode from the filepath
 		 * pointing to the defines folder. */
-		godot::Error set_compatibility_mode_roots(godot::PackedStringArray const& file_paths);
-		godot::Error load_defines_compatibility_mode();
+		godot::Error set_compatibility_mode_roots(godot::String const& path);
+		godot::Error load_defines_compatibility_mode(godot::PackedStringArray const& mods = {});
 
 		static godot::String search_for_game_path(godot::String const& hint_path = {});
 		godot::String lookup_file_path(godot::String const& path) const;
 
+		godot::TypedArray<godot::Dictionary> get_mod_info() const;
+
 		godot::TypedArray<godot::Dictionary> get_bookmark_info() const;
 
-		/* Post-load/restart game setup - reset the game to post-load state and load the specified bookmark. */
+		/* After initial load or resigning a previous session game setup, all mutable components of the simulation
+		   are reset and reinitialised to their initial states, then updated by the history instructions of the
+		   chosen bookmark. */
 		godot::Error setup_game(int32_t bookmark_index);
-		godot::Error start_game_session();
+		bool is_game_instance_setup() const;
+		bool is_bookmark_loaded() const;
 
-		int32_t get_province_index_from_uv_coords(godot::Vector2 const& coords) const;
+		godot::Error start_game_session();
+		godot::Error end_game_session();
+		bool is_game_session_active() const;
+
+		int32_t get_province_number_from_uv_coords(godot::Vector2 const& coords) const;
 
 		int32_t get_map_width() const;
 		int32_t get_map_height() const;
@@ -104,9 +107,9 @@ namespace OpenVic {
 
 		/* The index of the flag in the flag sheet corresponding to the requested country / flag_type
 		 * combination, or -1 if no such flag can be found. */
-		int32_t get_flag_sheet_index(int32_t country_index, godot::StringName const& flag_type) const;
+		int32_t get_flag_sheet_index(const country_index_t country_index, godot::StringName const& flag_type) const;
 		godot::Rect2i get_flag_sheet_rect(int32_t flag_index) const;
-		godot::Rect2i get_flag_sheet_rect(int32_t country_index, godot::StringName const& flag_type) const;
+		godot::Rect2i get_flag_sheet_rect(const country_index_t country_index, godot::StringName const& flag_type) const;
 
 		/* Number of (vertical, horizontal) subdivisions the province shape image
 		 * was split into when making the province_shape_texture to ensure no
@@ -129,14 +132,10 @@ namespace OpenVic {
 		int32_t get_current_mapmode_index() const;
 		godot::Error set_mapmode(int32_t index);
 		bool is_parchment_mapmode_allowed() const;
-		int32_t get_selected_province_index() const;
-		void set_selected_province(int32_t index);
-		void unset_selected_province();
-
-		void set_viewed_country(CountryInstance const* new_viewed_country);
-		void set_viewed_country_by_province_index(int32_t province_index);
-		godot::Vector2 get_viewed_country_capital_position() const;
 
 		godot::Error update_clock();
+		/* Generate the province_colour_texture from the current mapmode. */
+		godot::Error _update_colour_image();
+		void _on_gamestate_updated();
 	};
 }

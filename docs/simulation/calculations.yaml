@@ -65,8 +65,13 @@ Economy:
         FACTORY_PURCHASE_DRAWDOWN_FACTOR: defines.economy.FACTORY_PURCHASE_DRAWDOWN_FACTOR
     Resource gathering operation:
       base workforce: defined in common/production_types.txt as workforce
+      rgo size modifier:
+        formula: sum of good rgo size modifiers + sum of farm size modifiers + sum of mine size modifiers
+        good rgo size modifiers: from tech, example rgo_size = { coal = 0.1 }
+        farm size modifiers: farm_rgo_size if farm=yes for province modifier and for tech also no mine=yes
+        mine size modifiers: mine_rgo_size if mine=yes for tech or no farm=yes for province modifier
       rgo size:
-        formula: floor(1.5 * ceil(n_workers_in_province / (base workforce * (1 + terrain rgo size modifier)))
+        formula: floor(1.5 * ceil(n_workers_in_province / (base workforce * (1 + rgo size modifier)))
         n_workers_in_province: Total size of POPs in province where POP type is in employees (common/production_types.txt).
         note: Calculated when starting a new game.
       Output:
@@ -78,7 +83,6 @@ Economy:
         workforce:
           formula: base workforce * rgo size * (1 + rgo size modifier)
           base workforce: Defined in common/production_types.txt as workforce.
-          rgo size modifier: sum of rgo size modifiers + sum of farm size modifiers (if farm=yes) + sum of mine size modifiers (if mine=yes)
         job portion of workforce:
           formula: employees with job / workforce
           employees with job: Number of POPs employed with the job. Job being an entry in employees in common/production_types.txt.
@@ -98,6 +102,7 @@ Economy:
           n_owners_in_state: total size of owner POPs in state
           n_pops_in_state: total size of all POPs in state
           note: included in throughput or output modifier
+      Gold rgo income: output * price * defines.country.GOLD_TO_WORKER_PAY_RATE
     Human resource management:
       Vacancies: max employees - employees count
       Maximum employees hired per day:
@@ -208,11 +213,12 @@ POPs:
       local clergy factor: ((clergy POPs in province / total POPs in province) - defines.pops.BASE_CLERGY_FOR_LITERACY) / (defines.pops.MAX_CLERGY_FOR_LITERACY - defines.pops.BASE_CLERGY_FOR_LITERACY)
       note: clergy POPs are all pop types with can_reduce_consciousness = yes
   Needs:
-    Base needs scalar: (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand) * defines.pop.BASE_GOODS_DEMAND * POP size / 200000
-    Life needs scalar: Base needs scalar * (1 + <strata>_life_needs modifier)
+    Base needs scalar:  defines.pop.BASE_GOODS_DEMAND * POP size / 200000
+    Shared needs scalar: Base needs scalar * (1 + Plurality) * (1 + 2 * Consciousness / defines.pops.PDEF_BASE_CON) * (1 + sum of goods_demand)
+    Life needs scalar: Shared needs scalar * (1 + <strata>_life_needs modifier)
     Invention needs scalar: 1 + number of inventions * defines.pops.INVENTION_IMPACT_ON_DEMAND
-    Everyday needs scalar: Base needs scalar * Invention needs scalar * (1 + <strata>_everyday_needs modifier)
-    Luxury needs scalar: Base needs scalar * Invention needs scalar * (1 + <strata>_luxury_needs modifier)
+    Everyday needs scalar: Shared needs scalar * Invention needs scalar * (1 + <strata>_everyday_needs modifier)
+    Luxury needs scalar: Shared needs scalar * Invention needs scalar * (1 + <strata>_luxury_needs modifier)
   POP income:
     Base life needs costs: Base needs scalar * sum of (life need quantity * good price)
     Pensions: 2 * pension_level * administrative efficiency * social spending slider * Base life needs costs * (1 - effective tax) * POP size / 200000

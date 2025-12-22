@@ -1,4 +1,4 @@
-name: Builds
+name: 🖥️ Builds
 
 on:
   push:
@@ -15,10 +15,17 @@ on:
       - 'LICENSE-EXCEPTIONS.md'
       - 'LICENSE.md'
       - 'README.md'
+  merge_group:
+    paths-ignore:
+      - '.vscode/**'
+      - 'docs/**'
+      - 'LICENSE-EXCEPTIONS.md'
+      - 'LICENSE.md'
+      - 'README.md'
 
 env:
   GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
-  GODOT_VERSION: 4.3
+  GODOT_VERSION: 4.5
   GODOT_VERSION_TYPE: stable
   OPENVIC_BASE_BRANCH: master
 
@@ -45,9 +52,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
+          git config diff.wsErrorHighlight all
+          if [ "${{ github.event_name }}" == "pull_request" -o "${{ github.event.forced }}" == "true" -o "${{ github.event.created }}" == "true" ]; then
             files=$(git diff-tree --no-commit-id --name-only -r HEAD^1..HEAD 2> /dev/null || true)
-          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.forced }}" == "false" -a "${{ github.event.created }}" == "false" ]; then
+          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.created }}" == "false" ]; then
             files=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }}..${{ github.event.after }} 2> /dev/null || true)
           fi
           echo "$files" >> changed.txt
@@ -144,7 +152,7 @@ jobs:
         if: ${{ matrix.platform == 'linux' }}
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -qqq build-essential pkg-config
+          sudo apt-get install -qqq build-essential pkg-config libtbb-dev
           g++ --version
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
           sudo update-alternatives --set g++ /usr/bin/g++-12
@@ -214,7 +222,7 @@ jobs:
           cd game
           ${{ steps.export_game.outputs.executable_path }} --doctool --headless ../extension --gdextension-docs 2>&1 > /dev/null || true
           cd ..
-          git diff --color --exit-code && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
+          git diff --color --exit-code -- '*.xml' && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
 
       - name: Upload pack artifact
         uses: actions/upload-artifact@v4.3.0

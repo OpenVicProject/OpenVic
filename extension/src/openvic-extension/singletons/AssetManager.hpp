@@ -25,14 +25,10 @@ namespace OpenVic {
 			LOAD_FLAG_FLIP_Y        = 1 << 2
 		};
 
-		constexpr friend LoadFlags operator|(LoadFlags lhs, LoadFlags rhs) {
-			return static_cast<LoadFlags>(static_cast<int>(lhs) | static_cast<int>(rhs));
-		}
-
 	private:
 		struct image_asset_t {
-			std::optional<godot::Ref<godot::Image>> image;
-			std::optional<godot::Ref<godot::ImageTexture>> texture;
+			godot::Ref<godot::Image> image;
+			godot::Ref<godot::ImageTexture> texture;
 		};
 		/* deque_ordered_map to avoid the need to reallocate. */
 		using image_asset_map_t = deque_ordered_map<godot::StringName, image_asset_t>;
@@ -57,7 +53,7 @@ namespace OpenVic {
 		 * load flag is set then the loaded image will be stored in the AssetManager's image cache for future access; if the
 		 * flip y load flag is set then the image will be flipped vertically before being returned (if the image is already
 		 * in the cache then no flipping will occur, regardless of whether it was originally flipped or not). */
-		godot::Ref<godot::Image> get_image(godot::StringName const& path, LoadFlags load_flags = LOAD_FLAG_CACHE_IMAGE);
+		godot::Ref<godot::Image> get_image(godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_IMAGE);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking the
 		 * AssetManager's texture cache in case it has already been loaded, and returning nullptr if image loading or texture
@@ -67,7 +63,7 @@ namespace OpenVic {
 		 * vertically before being used to create the texture (if the image is already in the cache then no flipping will
 		 * occur, regardless of whether it was originally flipped or not). */
 		godot::Ref<godot::ImageTexture> get_texture(
-			godot::StringName const& path, LoadFlags load_flags = LOAD_FLAG_CACHE_TEXTURE
+			godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_TEXTURE
 		);
 
 		static godot::Ref<godot::StyleBoxTexture> make_stylebox_texture(
@@ -83,12 +79,17 @@ namespace OpenVic {
 		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_medium); // 24x24
 		godot::Ref<GFXSpriteTexture> PROPERTY(currency_texture_small);  // 16x16
 
+		godot::Ref<GFXSpriteTexture> PROPERTY(missing_leader_texture);
+
 	public:
 		godot::Error preload_textures();
 
 		/* Get the largest currency texture with height less than the specified font height. */
 		godot::Ref<GFXSpriteTexture> get_currency_texture(real_t height) const;
+
+		godot::Ref<godot::ImageTexture> get_leader_texture_std(std::string_view name);
+		godot::Ref<godot::ImageTexture> get_leader_texture(godot::String const& name);
 	};
 }
 
-VARIANT_ENUM_CAST(OpenVic::AssetManager::LoadFlags);
+VARIANT_BITFIELD_CAST(OpenVic::AssetManager::LoadFlags);

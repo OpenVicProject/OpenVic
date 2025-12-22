@@ -2,8 +2,10 @@
 
 #include <numbers>
 
-#include "openvic-extension/utility/ClassBindings.hpp"
+#include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/UITools.hpp"
+#include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -12,6 +14,10 @@ using namespace OpenVic::Utilities::literals;
 StringName const& GFXPieChartTexture::_slice_identifier_key() {
 	static const StringName slice_identifier_key = "identifier";
 	return slice_identifier_key;
+}
+StringName const& GFXPieChartTexture::_slice_tooltip_key() {
+	static const StringName slice_tooltip_key = "tooltip";
+	return slice_tooltip_key;
 }
 StringName const& GFXPieChartTexture::_slice_colour_key() {
 	static const StringName slice_colour_key = "colour";
@@ -56,7 +62,7 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 	ERR_FAIL_NULL_V(gfx_pie_chart, FAILED);
 	ERR_FAIL_COND_V_MSG(
 		gfx_pie_chart->get_size() <= 0, FAILED,
-		vformat("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
+		Utilities::format("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
 	);
 
 	const int32_t pie_chart_radius = gfx_pie_chart->get_size();
@@ -113,12 +119,13 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_colour_key())
-				|| !slice_dict.has(_slice_weight_key()),
-			vformat("Invalid slice keys at index %d", i)
+			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_tooltip_key()) ||
+				!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
+			Utilities::format("Invalid slice keys at index %d", i)
 		);
 		const slice_t slice {
-			slice_dict[_slice_identifier_key()], slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()]
+			slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()], slice_dict[_slice_colour_key()],
+			slice_dict[_slice_weight_key()]
 		};
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
@@ -177,15 +184,15 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::PieChart const* new_pie_chart = sprite->cast_to<GFX::PieChart>();
 	ERR_FAIL_NULL_V_MSG(
-		new_pie_chart, FAILED, vformat(
+		new_pie_chart, FAILED, Utilities::format(
 			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name,
-			Utilities::std_to_godot_string(sprite->get_type()),
-			Utilities::std_to_godot_string(GFX::PieChart::get_type_static())
+			convert_to<String>(sprite->get_type()),
+			convert_to<String>(GFX::PieChart::get_type_static())
 		)
 	);
 	return set_gfx_pie_chart(new_pie_chart);
 }
 
 String GFXPieChartTexture::get_gfx_pie_chart_name() const {
-	return gfx_pie_chart != nullptr ? Utilities::std_to_godot_string(gfx_pie_chart->get_name()) : String {};
+	return gfx_pie_chart != nullptr ? convert_to<String>(gfx_pie_chart->get_name()) : String {};
 }
