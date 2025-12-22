@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <variant>
 
 #include <godot_cpp/classes/control.hpp>
@@ -129,6 +130,18 @@ namespace OpenVic {
 		godot::String make_modifier_effects_tooltip(ModifierValue const& modifier) const;
 		godot::String make_rules_tooltip(RuleSet const& rules) const;
 
+		/* Ledger */
+		godot::TypedArray<godot::Array> get_nation_rankings();
+		godot::TypedArray<godot::Array> get_nation_comparison();
+		godot::TypedArray<godot::Array> get_political_systems();
+		godot::TypedArray<godot::Array> get_political_reforms();
+		godot::TypedArray<godot::Array> get_social_reforms();
+		godot::TypedArray<godot::Array> get_country_population();
+		godot::TypedArray<godot::Array> get_provinces();
+		godot::TypedArray<godot::Array> get_province_population();
+		godot::TypedArray<godot::Array> get_province_production();
+		godot::TypedArray<godot::Array> get_factory_production();
+
 	protected:
 		static void _bind_methods();
 
@@ -213,6 +226,9 @@ namespace OpenVic {
 		godot::PackedStringArray get_search_result_rows(int32_t start, int32_t count) const;
 		int32_t get_search_result_row_count() const;
 		godot::Vector2 get_search_result_position(int32_t result_index) const;
+
+		/* Ledger */
+		godot::TypedArray<godot::Array> get_ledger_data(int32_t page_index);
 	};
 }
 

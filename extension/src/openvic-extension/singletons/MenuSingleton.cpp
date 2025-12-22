@@ -286,6 +286,9 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_search_result_position, { "result_index" });
 
 	ADD_SIGNAL(MethodInfo(_signal_search_cache_changed()));
+
+	/* Ledger */
+	OV_BIND_METHOD(MenuSingleton::get_ledger_data, { "page_index" });
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {

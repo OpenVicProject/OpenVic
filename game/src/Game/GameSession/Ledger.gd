@@ -126,6 +126,8 @@ func toggle_visibility() -> void:
 		_update_info()
 
 func _generate_header_row() -> void:
+	for child in _header_row.get_children():
+		child.queue_free()
 	var label : GUILabel
 	var sort_button : GUIButton
 	var pop_icon : GUIIconButton
@@ -146,11 +148,34 @@ func _generate_header_row() -> void:
 		sort_button.position.x = _column_x_positions[_current_page][i]
 		sort_button.position.y = 9
 
+func _generate_body(sorting: int):
+	_entries_listbox.clear_children()
+	var label : GUILabel
+	var row : Panel
+	var data := MenuSingleton.get_ledger_data(_current_page)
+	data.sort_custom(func(a, b): a[sorting] < b[sorting])
+	for arr in data:
+		row = generate_gui_element("v2ledger", "default_listbox_entry")
+		for i in arr.size():
+			if arr[i] is not String:
+			#if false:
+				label = generate_gui_element("v2ledger", "ledger_default_textbox")
+				label.text = int_to_string_suffixed(arr[i]) if arr[i] is int else str(arr[i])
+			else:
+				label = generate_gui_element("v2ledger", "ledger_default_textbox")
+				label.text = arr[i]
+			row.add_child(label)
+		
+			label.position.x = _column_x_positions[_current_page][i]
+			if str(_column_headers[_current_page][i]) == "Country":
+				var flag : GUIMaskedFlag = generate_gui_element("v2ledger", "ledger_default_flag")
+				flag.set_flag_country_name(arr[i])
+				row.add_child(flag)
+				label.position.x += flag.get_gfx_masked_flag_texture().get_width()+1
+		_entries_listbox.add_child(row)
+
 func _update_info() -> void:
 	if !is_visible(): return
-	_entries_listbox.clear_children()
-	for child in _header_row.get_children():
-		child.queue_free()
 	if _page_title_label:
 		_page_title_label.set_text(_page_titles[_current_page])
 	if _page_number_label:
@@ -159,15 +184,4 @@ func _update_info() -> void:
 	_linegraph_bg.visible = _current_page == Page.PRICE_HISTORY
 
 	_generate_header_row()
-
-	var label : GUILabel
-	var row : Panel
-	match _current_page:
-		Page.NATION_RANKING:
-			row = generate_gui_element("v2ledger", "default_listbox_entry")
-			label = generate_gui_element("v2ledger", "ledger_default_textbox")
-			label.text = "entry yo"
-			row.add_child(label)
-			_entries_listbox.add_child(row)
-		_:
-			pass
+	_generate_body(0)
