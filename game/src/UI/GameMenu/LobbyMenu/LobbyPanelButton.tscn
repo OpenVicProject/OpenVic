@@ -1,11 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://k71f5gibwmtc"]
+[gd_scene format=3 uid="uid://k71f5gibwmtc"]
 
 [ext_resource type="Script" uid="uid://c0vxramabbnv6" path="res://src/UI/GameMenu/LobbyMenu/LobbyPanelButton.gd" id="1_327u2"]
 
 [sub_resource type="FontVariation" id="FontVariation_xwn8e"]
 variation_embolden = 1.0
 
-[node name="LobbyPanelButton" type="Container" node_paths=PackedStringArray("background_button", "name_label", "date_label")]
+[node name="LobbyPanelButton" type="Container" unique_id=1702414962 node_paths=PackedStringArray("background_button", "name_label", "date_label")]
 editor_description = "UI-41"
 offset_right = 113.0
 offset_bottom = 48.0
@@ -14,16 +14,16 @@ background_button = NodePath("BackgroundButton")
 name_label = NodePath("SaveList/NameLabel")
 date_label = NodePath("SaveList/DateLabel")
 
-[node name="BackgroundButton" type="Button" parent="."]
+[node name="BackgroundButton" type="Button" parent="." unique_id=159228912]
 layout_mode = 2
 theme_type_variation = &"ButtonContainer"
 
-[node name="SaveList" type="VBoxContainer" parent="."]
+[node name="SaveList" type="VBoxContainer" parent="." unique_id=1600299973]
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
 
-[node name="NameLabel" type="Label" parent="SaveList"]
+[node name="NameLabel" type="Label" parent="SaveList" unique_id=1708130441]
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_fonts/font = SubResource("FontVariation_xwn8e")
@@ -31,7 +31,7 @@ theme_override_font_sizes/font_size = 18
 text = "PLACEHOLDER"
 vertical_alignment = 1
 
-[node name="DateLabel" type="Label" parent="SaveList"]
+[node name="DateLabel" type="Label" parent="SaveList" unique_id=537725019]
 layout_mode = 2
 size_flags_vertical = 1
 text = "PLACEHOLDER"

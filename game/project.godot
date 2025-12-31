@@ -8,13 +8,17 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="OpenVic"
 config/description="A faithful recreation of Victoria 2: Heart of Darkness with a focus on enhancing performance, multiplayer stability, and modability for modern machines."
 run/main_scene="res://src/Systems/Startup/GameStart.tscn"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 0)
 boot_splash/show_image=false
 boot_splash/image="res://assets/graphics/splash_image.png"
@@ -38,7 +42,7 @@ SoundManager="*res://src/Autoload/SoundManager.gd"
 MusicManager="*res://src/Autoload/MusicManager/MusicManager.tscn"
 SaveManager="*res://src/Autoload/SaveManager.gd"
 CursorManager="*res://src/Autoload/CursorManager.gd"
-Keychain="*res://addons/keychain/Keychain.gd"
+Keychain="*uid://ba4bw6vqtoail"
 
 [display]
 

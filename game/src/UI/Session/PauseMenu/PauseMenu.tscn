@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dvdynl6eir40o"]
+[gd_scene format=3 uid="uid://dvdynl6eir40o"]
 
 [ext_resource type="Theme" uid="uid://cqrfmjt5yeti7" path="res://assets/graphics/theme/game_session_menu.tres" id="1_2onog"]
 [ext_resource type="Script" uid="uid://c4b4lyevxpefr" path="res://src/UI/Session/PauseMenu/PauseMenu.gd" id="1_usq6o"]
 [ext_resource type="PackedScene" uid="uid://o4u142w4qkln" path="res://src/UI/GameMenu/GameMenu/GameMenu.tscn" id="2_xi6a4"]
 
-[node name="GameSessionMenu" type="PanelContainer" node_paths=PackedStringArray("_main_menu_dialog", "_quit_dialog")]
+[node name="GameSessionMenu" type="PanelContainer" unique_id=725807089 node_paths=PackedStringArray("_main_menu_dialog", "_quit_dialog")]
 process_mode = 3
 editor_description = "UI-68"
 mouse_force_pass_scroll_events = false
@@ -15,57 +15,57 @@ _main_menu_scene = ExtResource("2_xi6a4")
 _main_menu_dialog = NodePath("MainMenuDialog")
 _quit_dialog = NodePath("QuitDialog")
 
-[node name="ButtonListMargin" type="MarginContainer" parent="."]
+[node name="ButtonListMargin" type="MarginContainer" parent="." unique_id=321886105]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="ButtonList" type="VBoxContainer" parent="ButtonListMargin"]
+[node name="ButtonList" type="VBoxContainer" parent="ButtonListMargin" unique_id=492886671]
 layout_mode = 2
 
-[node name="SaveButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="SaveButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=1037346645]
 editor_description = "UI-69"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_SAVE"
 
-[node name="LoadButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="LoadButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=805586651]
 editor_description = "UI-70"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_LOAD"
 
-[node name="OptionsButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="OptionsButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=342275540]
 editor_description = "UI-10"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_OPTIONS"
 
-[node name="MainMenuButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="MainMenuButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=619425452]
 editor_description = "UI-71"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_MAINMENU"
 
-[node name="QuitButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="QuitButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=1503267683]
 editor_description = "UI-72"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_QUIT"
 
-[node name="CloseSeparator" type="HSeparator" parent="ButtonListMargin/ButtonList"]
+[node name="CloseSeparator" type="HSeparator" parent="ButtonListMargin/ButtonList" unique_id=1227771272]
 layout_mode = 2
 theme_type_variation = &"SessionSeparator"
 
-[node name="CloseButton" type="Button" parent="ButtonListMargin/ButtonList"]
+[node name="CloseButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=2004614969]
 editor_description = "SS-64, UI-80, UIFUN-79"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
 text = "GAMESESSIONMENU_CLOSE"
 
-[node name="MainMenuDialog" type="ConfirmationDialog" parent="."]
+[node name="MainMenuDialog" type="ConfirmationDialog" parent="." unique_id=739307228]
 disable_3d = true
 title = "GAMESESSIONMENU_MAINMENU_DIALOG_TITLE"
 size = Vector2i(384, 100)
@@ -73,7 +73,7 @@ ok_button_text = "DIALOG_OK"
 dialog_text = "GAMESESSIONMENU_MAINMENU_DIALOG_TEXT"
 cancel_button_text = "DIALOG_CANCEL"
 
-[node name="QuitDialog" type="ConfirmationDialog" parent="."]
+[node name="QuitDialog" type="ConfirmationDialog" parent="." unique_id=2097588504]
 disable_3d = true
 title = "GAMESESSIONMENU_QUIT_DIALOG_TITLE"
 ok_button_text = "DIALOG_OK"

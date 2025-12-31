@@ -72,15 +72,15 @@ String SoundSingleton::to_define_file_name(String const& path, std::string_view 
 Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
 	String name = to_define_file_name(path, music_folder);
 
-	const song_asset_map_t::const_iterator it = tracks.find(name);
+	const song_asset_map_t::Iterator it = tracks.find(name);
 	if (it != tracks.end()) { // it->first = key, it->second = value
-		return it->second;
+		return it->value;
 	}
 
 	const Ref<AudioStreamMP3> song = AudioStreamMP3::load_from_file(path);
 
-	ERR_FAIL_NULL_V_MSG(song, nullptr, Utilities::format("Failed to load music file: %s", path));
-	tracks.emplace(std::move(name), song);
+	ERR_FAIL_NULL_V_MSG(song, Ref<AudioStreamMP3>(), Utilities::format("Failed to load music file: %s", path));
+	tracks.insert(std::move(name), song);
 
 	return song;
 }
@@ -161,29 +161,29 @@ bool SoundSingleton::load_music() {
 Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 	String name = to_define_file_name(path, sound_folder);
 
-	const sfx_asset_map_t::const_iterator it = sfx.find(name);
+	const sfx_asset_map_t::Iterator it = sfx.find(name);
 	if (it != sfx.end()) { // it->first = key, it->second = value
-		return it->second;
+		return it->value;
 	}
 
 	const Ref<AudioStreamWAV> sound = AudioStreamWAV::load_from_file(path);
 
 	ERR_FAIL_NULL_V_MSG(
-		sound, nullptr, Utilities::format("Failed to load sound file %s", path) // named %s, path
+		sound, Ref<AudioStreamMP3>(), Utilities::format("Failed to load sound file %s", path) // named %s, path
 	);
 
-	sfx.emplace(std::move(name), sound);
+	sfx.insert(std::move(name), sound);
 	return sound;
 }
 
 // Get a sound by its define name
 Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
-	sfx_define_map_t::iterator it = sfx_define.find(path);
+	sfx_define_map_t::Iterator it = sfx_define.find(path);
 	ERR_FAIL_COND_V_MSG(
-		it == sfx_define.end(), nullptr, Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
+		it == sfx_define.end(), Ref<AudioStreamMP3>(), Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
 	);
 
-	return it.value().audio_stream;
+	return it->value.audio_stream;
 }
 
 // get the base volume of a sound from its define name

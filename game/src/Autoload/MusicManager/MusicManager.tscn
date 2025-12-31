@@ -1,14 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://b1h31mnn8n2nu"]
+[gd_scene format=3 uid="uid://b1h31mnn8n2nu"]
 
 [ext_resource type="Script" uid="uid://l8djqhtmig5e" path="res://src/Autoload/MusicManager/MusicManager.gd" id="1_56t1b"]
 
-[node name="MusicManager" type="Node" node_paths=PackedStringArray("_audio_stream_player")]
+[node name="MusicManager" type="Node" unique_id=1194687083 node_paths=PackedStringArray("_audio_stream_player")]
 script = ExtResource("1_56t1b")
 music_directory = "res://assets/audio/music"
 first_song_name = "The_Crown"
 _audio_stream_player = NodePath("AudioStreamPlayer")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1602795467]
 bus = &"MUSIC_BUS"
 
 [connection signal="finished" from="AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]

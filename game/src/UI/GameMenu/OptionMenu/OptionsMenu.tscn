@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cnbfxjy1m6wja"]
+[gd_scene format=3 uid="uid://cnbfxjy1m6wja"]
 
 [ext_resource type="Theme" uid="uid://fbxssqcg1s0m" path="res://assets/graphics/theme/options_menu.tres" id="1_0up1d"]
 [ext_resource type="Script" uid="uid://i4sj0j5sss2a" path="res://src/UI/GameMenu/OptionMenu/OptionsMenu.gd" id="1_tlein"]
@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dp2grvybtecqu" path="res://src/UI/GameMenu/OptionMenu/OtherTab.tscn" id="5_ahefp"]
 [ext_resource type="PackedScene" uid="uid://cka0tjqrek13" path="res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.tscn" id="6_f7qfn"]
 
-[node name="OptionsMenu" type="PanelContainer" node_paths=PackedStringArray("_tab_container")]
+[node name="OptionsMenu" type="PanelContainer" unique_id=2001550106 node_paths=PackedStringArray("_tab_container")]
 editor_description = "UI-25"
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,39 +20,39 @@ theme_type_variation = &"BackgroundPanel"
 script = ExtResource("1_tlein")
 _tab_container = NodePath("Margin/Tab")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=1213664740]
 layout_mode = 2
 theme_type_variation = &"TabMargin"
 
-[node name="Tab" type="TabContainer" parent="Margin"]
+[node name="Tab" type="TabContainer" parent="Margin" unique_id=1265448633]
 editor_description = "UI-45"
 layout_mode = 2
 tab_alignment = 1
 current_tab = 0
 use_hidden_tabs_for_min_size = true
 
-[node name="General" parent="Margin/Tab" instance=ExtResource("3_6gvf6")]
+[node name="General" parent="Margin/Tab" unique_id=498602338 instance=ExtResource("3_6gvf6")]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Video" parent="Margin/Tab" instance=ExtResource("2_ji8xr")]
+[node name="Video" parent="Margin/Tab" unique_id=683372802 instance=ExtResource("2_ji8xr")]
 editor_description = "UI-46, UIFUN-43"
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Sound" parent="Margin/Tab" instance=ExtResource("3_4w35t")]
+[node name="Sound" parent="Margin/Tab" unique_id=588606448 instance=ExtResource("3_4w35t")]
 editor_description = "UI-47, UIFUN-44"
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="Controls" parent="Margin/Tab" instance=ExtResource("6_f7qfn")]
+[node name="Controls" parent="Margin/Tab" unique_id=1771990114 instance=ExtResource("6_f7qfn")]
 editor_description = "SS-27, UI-49, UIFUN-46"
 visible = false
 layout_mode = 2
 metadata/_tab_index = 3
 
-[node name="Other" parent="Margin/Tab" instance=ExtResource("5_ahefp")]
+[node name="Other" parent="Margin/Tab" unique_id=1256534261 instance=ExtResource("5_ahefp")]
 layout_mode = 2
 metadata/_tab_index = 4

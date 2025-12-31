@@ -43,7 +43,7 @@ namespace OpenVic {
 		};
 
 		//map of "subfolder/fileName.cur/.ani" -> cursor_asset. Subfolder comes after gfx/cursor
-		using cursor_map_t = deque_ordered_map<godot::StringName, cursor_asset_t>;
+		using cursor_map_t = godot::HashMap<godot::StringName, cursor_asset_t>;
 		cursor_map_t cursors;
 
 		godot::TypedArray<godot::StringName> cursor_names;

@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/classes/style_box_texture.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
@@ -31,8 +32,8 @@ namespace OpenVic {
 			godot::Ref<godot::ImageTexture> texture;
 		};
 		/* deque_ordered_map to avoid the need to reallocate. */
-		using image_asset_map_t = deque_ordered_map<godot::StringName, image_asset_t>;
-		using font_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::FontFile>>;
+		using image_asset_map_t = godot::HashMap<godot::StringName, image_asset_t>;
+		using font_map_t = godot::HashMap<godot::StringName, godot::Ref<godot::FontFile>>;
 
 		image_asset_map_t image_assets;
 		font_map_t fonts;

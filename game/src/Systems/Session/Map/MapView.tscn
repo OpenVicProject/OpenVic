@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dkehmdnuxih2r"]
+[gd_scene format=3 uid="uid://dkehmdnuxih2r"]
 
 [ext_resource type="Script" uid="uid://bk5kuepyebwq5" path="res://src/Systems/Session/Map/MapView.gd" id="1_exccw"]
 [ext_resource type="Shader" uid="uid://cgm5ffev0il7n" path="res://src/Systems/Session/Map/TerrainMap.gdshader" id="1_upocn"]
@@ -53,7 +53,7 @@ albedo_color = Color(0, 0, 0, 1)
 material = SubResource("StandardMaterial3D_irk50")
 size = Vector2(6, 2)
 
-[node name="MapView" type="Node3D" node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance", "_map_text", "validMoveMarkers", "selectionMarkers")]
+[node name="MapView" type="Node3D" unique_id=661427404 node_paths=PackedStringArray("_camera", "_map_mesh_instance", "_map_background_instance", "_map_text", "validMoveMarkers", "selectionMarkers")]
 editor_description = "SS-73"
 script = ExtResource("1_exccw")
 _camera = NodePath("MapCamera")
@@ -63,44 +63,44 @@ _map_text = NodePath("MapText")
 validMoveMarkers = NodePath("ProjectionManager/ValidMoveMarkers")
 selectionMarkers = NodePath("ProjectionManager/SelectionMarkers")
 
-[node name="MapCamera" type="Camera3D" parent="."]
+[node name="MapCamera" type="Camera3D" parent="." unique_id=2016531432]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0.25, 1.5, -2.75)
 near = 0.01
 
-[node name="ProjectionManager" type="Node3D" parent="." node_paths=PackedStringArray("selectionMarkers", "moveMarkers")]
+[node name="ProjectionManager" type="Node3D" parent="." unique_id=150732854 node_paths=PackedStringArray("selectionMarkers", "moveMarkers")]
 script = ExtResource("2_xnmdg")
 selectionMarkers = NodePath("SelectionMarkers")
 moveMarkers = NodePath("ValidMoveMarkers")
 
-[node name="SelectionMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" node_paths=PackedStringArray("manager")]
+[node name="SelectionMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" unique_id=524297599 node_paths=PackedStringArray("manager")]
 cast_shadow = 0
 gi_mode = 0
 multimesh = SubResource("MultiMesh_rytvv")
 script = ExtResource("3_fi78k")
 manager = NodePath("..")
 
-[node name="ValidMoveMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" node_paths=PackedStringArray("manager")]
+[node name="ValidMoveMarkers" type="MultiMeshInstance3D" parent="ProjectionManager" unique_id=205387674 node_paths=PackedStringArray("manager")]
 cast_shadow = 0
 gi_mode = 0
 multimesh = SubResource("MultiMesh_cq0pk")
 script = ExtResource("5_h3t3v")
 manager = NodePath("..")
 
-[node name="MapText" type="Node3D" parent="." node_paths=PackedStringArray("_map_view")]
+[node name="MapText" type="Node3D" parent="." unique_id=2042147220 node_paths=PackedStringArray("_map_view")]
 script = ExtResource("2_13bgq")
 _map_view = NodePath("..")
 
-[node name="MapMeshInstance" type="MeshInstance3D" parent="."]
+[node name="MapMeshInstance" type="MeshInstance3D" parent="." unique_id=530948748]
 editor_description = "FS-343"
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_tayeg")
 mesh = SubResource("MapMesh_3gtsd")
 
-[node name="MapBackgroundInstance" type="MeshInstance3D" parent="."]
+[node name="MapBackgroundInstance" type="MeshInstance3D" parent="." unique_id=932258182]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -1, 0)
 mesh = SubResource("PlaneMesh_fnhgl")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=630205757]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 10)
 light_energy = 1.5
 light_bake_mode = 0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://1udsn4mggep2"]
+[gd_scene format=3 uid="uid://1udsn4mggep2"]
 
 [ext_resource type="Script" uid="uid://cu1lrjpc5wbvc" path="res://src/Systems/Startup/GameStart.gd" id="1_e0cos"]
 [ext_resource type="PackedScene" uid="uid://3kktdpfnc0sn" path="res://src/Systems/Startup/LoadingScreen.tscn" id="2_h0oiw"]
@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cgdnixsyh7bja" path="res://assets/graphics/splash_image.png" id="4_5b6yq"]
 [ext_resource type="VideoStream" uid="uid://bj077egtjnlfr" path="res://assets/graphics/splash_startup.ogv" id="5_8euyy"]
 
-[node name="GameStartup" type="Control" node_paths=PackedStringArray("loading_screen", "vic2_dir_dialog")]
+[node name="GameStartup" type="Control" unique_id=561399280 node_paths=PackedStringArray("loading_screen", "vic2_dir_dialog")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,11 +18,11 @@ script = ExtResource("1_e0cos")
 loading_screen = NodePath("LoadingScreen")
 vic2_dir_dialog = NodePath("Vic2DirDialog")
 
-[node name="LoadingScreen" parent="." instance=ExtResource("2_h0oiw")]
+[node name="LoadingScreen" parent="." unique_id=337902464 instance=ExtResource("2_h0oiw")]
 visible = false
 layout_mode = 1
 
-[node name="SplashContainer" type="AspectRatioContainer" parent="." node_paths=PackedStringArray("_splash_finish", "_splash_image", "_splash_video")]
+[node name="SplashContainer" type="AspectRatioContainer" parent="." unique_id=1402149308 node_paths=PackedStringArray("_splash_finish", "_splash_image", "_splash_video")]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,23 +36,23 @@ _splash_finish = NodePath("SplashFinish")
 _splash_image = NodePath("SplashImage")
 _splash_video = NodePath("SplashVideo")
 
-[node name="SplashFinish" type="TextureRect" parent="SplashContainer"]
+[node name="SplashFinish" type="TextureRect" parent="SplashContainer" unique_id=227562310]
 layout_mode = 2
 texture = ExtResource("3_qfv12")
 expand_mode = 1
 
-[node name="SplashImage" type="TextureRect" parent="SplashContainer"]
+[node name="SplashImage" type="TextureRect" parent="SplashContainer" unique_id=2059224353]
 layout_mode = 2
 texture = ExtResource("4_5b6yq")
 expand_mode = 1
 
-[node name="SplashVideo" type="VideoStreamPlayer" parent="SplashContainer"]
+[node name="SplashVideo" type="VideoStreamPlayer" parent="SplashContainer" unique_id=1592615470]
 layout_mode = 2
 stream = ExtResource("5_8euyy")
 autoplay = true
 expand = true
 
-[node name="Vic2DirDialog" type="FileDialog" parent="."]
+[node name="Vic2DirDialog" type="FileDialog" parent="." unique_id=1644780236]
 process_mode = 2
 disable_3d = true
 title = "VIC2_DIR_DIALOG_TITLE"

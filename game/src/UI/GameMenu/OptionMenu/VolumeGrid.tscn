@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://dy4si8comamnv"]
+[gd_scene format=3 uid="uid://dy4si8comamnv"]
 
 [ext_resource type="Script" uid="uid://dopkfnjx2idjr" path="res://src/UI/GameMenu/OptionMenu/VolumeGrid.gd" id="1_wb64h"]
 
-[node name="VolumeGrid" type="GridContainer"]
+[node name="VolumeGrid" type="GridContainer" unique_id=1663583968]
 size_flags_vertical = 0
 columns = 2
 script = ExtResource("1_wb64h")

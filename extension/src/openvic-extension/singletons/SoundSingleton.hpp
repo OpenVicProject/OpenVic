@@ -23,11 +23,11 @@ namespace OpenVic {
 
 		// cache of songs
 		// names will be like "subfolder/songname", with "music/" base folder and the extension (.mp3) being excluded
-		using song_asset_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::AudioStreamMP3>>;
+		using song_asset_map_t = godot::HashMap<godot::StringName, godot::Ref<godot::AudioStreamMP3>>;
 		song_asset_map_t tracks;
 
 		// cache of sfx (map file name to an audio stream), only used temporarily until the sfx_define_map is built
-		using sfx_asset_map_t = deque_ordered_map<godot::StringName, godot::Ref<godot::AudioStreamWAV>>;
+		using sfx_asset_map_t = godot::HashMap<godot::StringName, godot::Ref<godot::AudioStreamWAV>>;
 		sfx_asset_map_t sfx;
 
 		// define name, stream ref, volume for sound effects so we can get these properties with a simple call in godot
@@ -35,7 +35,7 @@ namespace OpenVic {
 			godot::Ref<godot::AudioStreamWAV> audio_stream;
 			std::optional<fixed_point_t> volume;
 		};
-		using sfx_define_map_t = deque_ordered_map<godot::StringName, sound_asset_t>;
+		using sfx_define_map_t = godot::HashMap<godot::StringName, sound_asset_t>;
 		sfx_define_map_t sfx_define;
 
 		static constexpr std::string_view title_theme_name = "thecoronation_titletheme.mp3";

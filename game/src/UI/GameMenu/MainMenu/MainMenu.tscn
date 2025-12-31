@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bp5n3mlu45ygw"]
+[gd_scene format=3 uid="uid://bp5n3mlu45ygw"]
 
 [ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://assets/graphics/theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" uid="uid://d0t3iw73mpivr" path="res://src/UI/GameMenu/MainMenu/MainMenu.gd" id="2_nm1fq"]
@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/UI/GameMenu/GameMenu/LocaleButton.tscn" id="3_amonp"]
 [ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn" id="3_km0er"]
 
-[node name="MainMenu" type="Control" node_paths=PackedStringArray("_new_game_button")]
+[node name="MainMenu" type="Control" unique_id=318440097 node_paths=PackedStringArray("_new_game_button")]
 editor_description = "UI-13"
 layout_mode = 3
 anchors_preset = 15
@@ -18,7 +18,7 @@ theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton")
 
-[node name="MenuPanel" type="PanelContainer" parent="."]
+[node name="MenuPanel" type="PanelContainer" parent="." unique_id=1123691100]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,10 +27,10 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"BackgroundPanel"
 
-[node name="MenuList" type="VBoxContainer" parent="MenuPanel"]
+[node name="MenuList" type="VBoxContainer" parent="MenuPanel" unique_id=435700558]
 layout_mode = 2
 
-[node name="TitleIcon" type="TextureRect" parent="MenuPanel/MenuList"]
+[node name="TitleIcon" type="TextureRect" parent="MenuPanel/MenuList" unique_id=1635616367]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.75
@@ -38,19 +38,19 @@ texture = ExtResource("3_58ess")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ButtonListMargin" type="MarginContainer" parent="MenuPanel/MenuList"]
+[node name="ButtonListMargin" type="MarginContainer" parent="MenuPanel/MenuList" unique_id=489174160]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_right = 12
 
-[node name="ButtonList" type="HBoxContainer" parent="MenuPanel/MenuList/ButtonListMargin"]
+[node name="ButtonList" type="HBoxContainer" parent="MenuPanel/MenuList/ButtonListMargin" unique_id=1052392643]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_type_variation = &"HBox_MainMenu_ButtonList"
 theme_override_constants/separation = 18
 alignment = 1
 
-[node name="NewGameButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="NewGameButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=1643935785]
 editor_description = "UI-26"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -63,7 +63,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_NEW_GAME"
 clip_text = true
 
-[node name="ContinueButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="ContinueButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=555029268]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_neighbor_left = NodePath("../NewGameButton")
@@ -75,7 +75,7 @@ disabled = true
 text = "MAINMENU_CONTINUE"
 clip_text = true
 
-[node name="MultiplayerButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="MultiplayerButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=1085497212]
 editor_description = "UI-27"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -87,7 +87,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_MULTIPLAYER"
 clip_text = true
 
-[node name="OptionsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="OptionsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=1917354155]
 editor_description = "UI-5"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -99,7 +99,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_OPTIONS"
 clip_text = true
 
-[node name="CreditsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="CreditsButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=1623923207]
 editor_description = "UI-32"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -111,7 +111,7 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_CREDITS"
 clip_text = true
 
-[node name="ExitButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList"]
+[node name="ExitButton" type="Button" parent="MenuPanel/MenuList/ButtonListMargin/ButtonList" unique_id=488636852]
 editor_description = "UI-3"
 layout_mode = 2
 size_flags_horizontal = 3
@@ -123,19 +123,19 @@ theme_type_variation = &"TitleButton"
 text = "MAINMENU_EXIT"
 clip_text = true
 
-[node name="BottomSpace" type="Control" parent="MenuPanel/MenuList"]
+[node name="BottomSpace" type="Control" parent="MenuPanel/MenuList" unique_id=2012956161]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.35
 
-[node name="BottomMargin" type="MarginContainer" parent="MenuPanel/MenuList"]
+[node name="BottomMargin" type="MarginContainer" parent="MenuPanel/MenuList" unique_id=393652640]
 layout_mode = 2
 theme_type_variation = &"BottomMargin"
 
-[node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_km0er")]
+[node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin" unique_id=1710064563 instance=ExtResource("3_km0er")]
 layout_mode = 2
 
-[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" instance=ExtResource("3_amonp")]
+[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" unique_id=1657101050 instance=ExtResource("3_amonp")]
 editor_description = "SS-87"
 layout_mode = 2
 size_flags_horizontal = 8

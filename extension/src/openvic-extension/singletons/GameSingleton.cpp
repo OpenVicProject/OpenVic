@@ -329,10 +329,10 @@ int32_t GameSingleton::get_flag_sheet_index(const country_index_t country_index,
 		-1, Utilities::format("Invalid country index: %d", index)
 	);
 
-	const typename decltype(flag_type_index_map)::const_iterator it = flag_type_index_map.find(flag_type);
+	const typename decltype(flag_type_index_map)::ConstIterator it = flag_type_index_map.find(flag_type);
 	ERR_FAIL_COND_V_MSG(it == flag_type_index_map.end(), -1, Utilities::format("Invalid flag type %s", flag_type));
 
-	return flag_type_index_map.size() * index + it->second;
+	return flag_type_index_map.size() * index + it->value;
 }
 
 Rect2i GameSingleton::get_flag_sheet_rect(int32_t flag_index) const {
@@ -625,7 +625,7 @@ Error GameSingleton::_load_flag_sheet() {
 	/* Generate flag type - index lookup map */
 	flag_type_index_map.clear();
 	for (std::string_view const& type : government_type_manager.get_flag_types()) {
-		flag_type_index_map.emplace(convert_to<String>(type), static_cast<int32_t>(flag_type_index_map.size()));
+		flag_type_index_map.insert(convert_to<String>(type), static_cast<int32_t>(flag_type_index_map.size()));
 	}
 
 	flag_sheet_count = country_definition_manager.get_country_definition_count() * flag_type_index_map.size();

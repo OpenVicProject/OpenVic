@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://br26w6mwqilyr"]
+[gd_scene format=3 uid="uid://br26w6mwqilyr"]
 
 [ext_resource type="Script" uid="uid://dvmrp0ohbbg5l" path="res://src/UI/GameMenu/MultiplayerMenu/DirectConnectionEntry.gd" id="1_8v0qa"]
 [ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/UI/GameMenu/MultiplayerMenu/SecretEdit.tscn" id="2_3yivm"]
 
-[node name="DirectConnectionEntry" type="HBoxContainer" node_paths=PackedStringArray("ip_edit", "name_edit", "connect_button", "delete_button")]
+[node name="DirectConnectionEntry" type="HBoxContainer" unique_id=802263483 node_paths=PackedStringArray("ip_edit", "name_edit", "connect_button", "delete_button")]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 31.0
@@ -14,33 +14,33 @@ name_edit = NodePath("EditName")
 connect_button = NodePath("Connect")
 delete_button = NodePath("Delete")
 
-[node name="EditName" type="LineEdit" parent="."]
+[node name="EditName" type="LineEdit" parent="." unique_id=239235701]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Game1"
 max_length = 32
 editable = false
 
-[node name="VSeparator" type="VSeparator" parent="."]
+[node name="VSeparator" type="VSeparator" parent="." unique_id=1090574429]
 layout_mode = 2
 
-[node name="SecretEdit" parent="." instance=ExtResource("2_3yivm")]
+[node name="SecretEdit" parent="." unique_id=760750879 instance=ExtResource("2_3yivm")]
 layout_mode = 2
 size_flags_horizontal = 3
 editable = false
 
-[node name="VSeparator2" type="VSeparator" parent="."]
+[node name="VSeparator2" type="VSeparator" parent="." unique_id=109705719]
 layout_mode = 2
 
-[node name="Connect" type="Button" parent="."]
+[node name="Connect" type="Button" parent="." unique_id=892920296]
 layout_mode = 2
 text = "MP_DIRECT_CONNECT"
 
-[node name="Edit" type="CheckButton" parent="."]
+[node name="Edit" type="CheckButton" parent="." unique_id=1540247119]
 layout_mode = 2
 text = "MP_DIRECT_EDIT"
 
-[node name="Delete" type="Button" parent="."]
+[node name="Delete" type="Button" parent="." unique_id=355171276]
 layout_mode = 2
 text = "MP_DIRECT_DELETE"
 

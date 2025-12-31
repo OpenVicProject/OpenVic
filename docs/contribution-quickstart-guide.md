@@ -34,7 +34,7 @@
 ![](images/installation/scons-install.png)
 
 ## 4. [Godot](https://github.com/godotengine/godot/releases/latest)
-- Download Godot 4.5 The current version for the project will be on the [main README](../README.md) page.
+- Download Godot 4.6 The current version for the project will be on the [main README](../README.md) page.
 
 ![](images/installation/godot-dl-page.png)
 
