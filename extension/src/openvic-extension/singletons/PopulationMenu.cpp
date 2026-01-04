@@ -403,7 +403,7 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	}
 
 	for (Pop const* pop : population_menu.filtered_pops) {
-		const fixed_point_t pop_size = fixed_point_t::parse(pop->get_size());
+		const fixed_point_t pop_size = fixed_point_t(pop->get_size());
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
 		population_menu.religion_distribution[&pop->religion] += pop_size;

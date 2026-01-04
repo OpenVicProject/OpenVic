@@ -310,16 +310,16 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	const ordered_map<GoodDefinition const*, std::pair<fixed_point_t, fixed_point_t>> required_goods {
 		{
 			good_definition_manager.get_good_definition_by_index(good_index_t(0)),
-			{ fixed_point_t::parse(1234) / 100, fixed_point_t::parse(1900) / 100 }
+			{ fixed_point_t(1234) / 100, fixed_point_t(1900) / 100 }
 		}, {
 			good_definition_manager.get_good_definition_by_index(good_index_t(1)),
-			{ fixed_point_t::parse(888) / 100, fixed_point_t::parse(1444) / 100 }
+			{ fixed_point_t(888) / 100, fixed_point_t(1444) / 100 }
 		}, {
 			good_definition_manager.get_good_definition_by_index(good_index_t(2)),
-			{ fixed_point_t::parse(1622) / 100, fixed_point_t::parse(1622) / 100 }
+			{ fixed_point_t(1622) / 100, fixed_point_t(1622) / 100 }
 		}, {
 			good_definition_manager.get_good_definition_by_index(good_index_t(3)),
-			{ fixed_point_t::parse(211) / 100, fixed_point_t::parse(805) / 100 }
+			{ fixed_point_t(211) / 100, fixed_point_t(805) / 100 }
 		}
 	};
 
@@ -483,12 +483,12 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		*country, *modifier_effect_cache.get_unit_recruitment_time()
 	);
 
-	ret[military_info_combat_width_key] = country->get_combat_width();
+	ret[military_info_combat_width_key] = type_safe::get(country->get_combat_width());
 	{
 		static const StringName base_value_combat_width_localisation_key = "COMWID_BASE";
 		String combat_width_tooltip = tr(base_value_combat_width_localisation_key).replace(
 			Utilities::get_short_value_placeholder(), String::num_uint64(
-				definition_manager.get_define_manager().get_military_defines().get_base_combat_width()
+				type_safe::get(definition_manager.get_define_manager().get_military_defines().get_base_combat_width())
 			)
 		);
 		const fixed_point_t combat_width = country->get_modifier_effect_value(

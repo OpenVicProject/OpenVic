@@ -140,7 +140,7 @@ void ScoreOverview::update() {
 		//TODO get data from sim
 
 		const long available_colonial_power = 123;
-		const long colonial_power_from_technology = 200;
+		const int32_t colonial_power_from_technology = 200;
 		const fixed_point_t colonial_power_invested = 60;
 		const fixed_point_t colonial_power_maintenance = 40;
 

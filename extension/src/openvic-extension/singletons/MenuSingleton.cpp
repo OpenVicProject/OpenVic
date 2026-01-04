@@ -635,7 +635,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				}
 
 				const fixed_point_t effect_multiplier = job.get_effect_multiplier();
-				fixed_point_t relative_to_workforce = fixed_point_t::parse(employees_of_type) / max_employee_count;
+				fixed_point_t relative_to_workforce = fixed_point_t(employees_of_type) / max_employee_count;
 				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1
 					? relative_to_workforce
 					: effect_multiplier * std::min(relative_to_workforce, job.get_amount());
