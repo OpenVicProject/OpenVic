@@ -116,7 +116,7 @@ int32_t GUIScrollbar::_fp_to_value(const fixed_point_t val) const {
 }
 
 fixed_point_t GUIScrollbar::_get_scaled_value(const int32_t val) const {
-	return offset + fixed_point_t::parse(val) * scale_numerator / scale_denominator;
+	return offset + fixed_point_t(val) * scale_numerator / scale_denominator;
 }
 
 void GUIScrollbar::_calculate_rects() {

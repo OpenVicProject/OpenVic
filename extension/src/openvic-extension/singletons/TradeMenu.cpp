@@ -229,7 +229,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 				top_producer_template_string,
 				convert_to<String>(country->get_identifier()),
 				Utilities::get_country_name(*this, *country),
-				Utilities::fixed_point_to_string_dp(fixed_point_t::parse(1000) / static_cast<int32_t>(index + 1), 2)
+				Utilities::fixed_point_to_string_dp(fixed_point_t(1000) / static_cast<int32_t>(index + 1), 2)
 			);
 		}
 
