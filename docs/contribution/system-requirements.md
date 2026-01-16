@@ -45,6 +45,7 @@ apt-get install \
   libudev-dev \
   libxi-dev \
   libxrandr-dev \
+  libtbb-dev \
   g++-12
 
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
