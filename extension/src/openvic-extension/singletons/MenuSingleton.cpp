@@ -432,7 +432,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 			BuildingInstance const& building = buildings[idx];
 
 			Dictionary building_dict;
-			building_dict[building_info_level_key] = static_cast<int32_t>(building.get_level());
+			building_dict[building_info_level_key] = static_cast<int32_t>(type_safe::get(building.get_level()));
 			building_dict[building_info_expansion_state_key] = static_cast<int32_t>(building.get_expansion_state());
 			building_dict[building_info_start_date_key] = Utilities::date_to_string(building.get_start_date());
 			building_dict[building_info_end_date_key] = Utilities::date_to_string(building.get_end_date());
@@ -519,7 +519,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ret[province_info_terrain_type_key] = std::move(terrain_type_string);
 	}
 
-	ret[province_info_life_rating_key] = province->get_life_rating();
+	ret[province_info_life_rating_key] = type_safe::get(province->get_life_rating());
 
 	CountryInstance const* controller = province->get_controller();
 	if (controller != nullptr) {
@@ -544,7 +544,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		ret[province_info_rgo_output_quantity_yesterday_key] = static_cast<real_t>(rgo.get_output_quantity_yesterday());
 		ret[province_info_rgo_revenue_yesterday_key] = static_cast<real_t>(rgo.get_revenue_yesterday());
-		ret[province_info_rgo_total_employees_key] = rgo.get_total_employees_count_cache();
+		ret[province_info_rgo_total_employees_key] = type_safe::get(rgo.get_total_employees_count_cache());
 		const pop_size_t max_employee_count = rgo.get_max_employee_count_cache();
 		if (max_employee_count == 0) {
 			ret[province_info_rgo_employment_percentage_key] = 100.0f;
@@ -576,11 +576,12 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 					*province, owner_pop_type
 				);
 			} else {
-				fixed_point_t effect_value = owner_job->get_effect_multiplier() * state->get_population_by_type(owner_pop_type);
-
-				if (effect_value != fixed_point_t::_0) {
-					effect_value /= state->get_total_population();
-				}
+				const fixed_point_t effect_value = state->get_total_population() == 0
+					? fixed_point_t::_0
+					: owner_job->get_effect_multiplier().mul_div(
+						state->get_population_by_type(owner_pop_type),
+						state->get_total_population()
+					);
 
 				static const StringName owners_localisation_key = "PRODUCTION_FACTOR_OWNER";
 
@@ -626,7 +627,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			amount_of_employees_by_pop_type += Utilities::format(
 				amount_of_employees_by_pop_type_template_string,
 				tr(convert_to<String>(pop_type.get_identifier())),
-				employees_of_type
+				type_safe::get(employees_of_type)
 			);
 
 			for (Job const& job : production_type.get_jobs()) {
@@ -635,7 +636,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				}
 
 				const fixed_point_t effect_multiplier = job.get_effect_multiplier();
-				fixed_point_t relative_to_workforce = fixed_point_t(employees_of_type) / max_employee_count;
+				fixed_point_t relative_to_workforce = fixed_point_t::from_fraction(employees_of_type, max_employee_count);
 				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1
 					? relative_to_workforce
 					: effect_multiplier * std::min(relative_to_workforce, job.get_amount());
@@ -877,13 +878,13 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			rgo_employment_template_string,
 			tr(employment_localisation_key).replace(Utilities::get_long_value_placeholder(), {}),
 			tr(employee_count_localisation_key).replace(
-				employee_replace_key, String::num_int64(rgo.get_total_employees_count_cache())
+				employee_replace_key, String::num_int64(type_safe::get(rgo.get_total_employees_count_cache()))
 			).replace(
-				employee_max_replace_key, String::num_int64(rgo.get_max_employee_count_cache())
+				employee_max_replace_key, String::num_int64(type_safe::get(rgo.get_max_employee_count_cache()))
 			),
 			amount_of_employees_by_pop_type,
 			tr(rgo_workforce_localisation_key),
-			production_type.base_workforce_size,
+			type_safe::get(production_type.base_workforce_size),
 			size_string,
 			tr(province_size_localisation_key),
 			static_cast<int32_t>(rgo.get_size_multiplier()) // TODO - remove cast once variable is an int32_t
@@ -896,7 +897,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ret[province_info_crime_icon_key] = static_cast<int32_t>(crime->icon);
 	}
 
-	ret[province_info_total_population_key] = province->get_total_population();
+	ret[province_info_total_population_key] = type_safe::get(province->get_total_population());
 
 	const auto make_pie_chart_tooltip = [this](
 		has_get_identifier_and_colour auto const* key, String const& identifier, float weight, float total_weight
@@ -1098,7 +1099,10 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::from_fraction(
+						100 * country->get_population_by_type(*pop_type),
+						country->get_total_population()
+					), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
@@ -1203,7 +1207,10 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fixed_point_t::_100 * country->get_population_by_type(*pop_type) / country->get_total_population(), 2
+					fixed_point_t::from_fraction(
+						100 * country->get_population_by_type(*pop_type),
+						country->get_total_population()
+					), 2
 				)
 			).replace(
 				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)

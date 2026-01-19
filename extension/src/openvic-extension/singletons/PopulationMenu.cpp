@@ -3,10 +3,12 @@
 #include <type_traits>
 
 #include <godot_cpp/variant/utility_functions.hpp>
+#include <type_safe/strong_typedef.hpp>
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
 #include <openvic-simulation/map/ProvinceDefinition.hpp>
+#include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/population/Culture.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
@@ -118,7 +120,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				country_dict[type_key] = LIST_ENTRY_COUNTRY;
 				country_dict[index_key] = index;
 				country_dict[name_key] = Utilities::get_country_name(menu_singleton, country_entry.country);
-				country_dict[size_key] = country_entry.country.get_total_population();
+				country_dict[size_key] = type_safe::get(country_entry.country.get_total_population());
 				country_dict[change_key] = 0;
 				country_dict[selected_key] = country_entry.selected;
 
@@ -139,7 +141,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				state_dict[type_key] = LIST_ENTRY_STATE;
 				state_dict[index_key] = index;
 				state_dict[name_key] = Utilities::get_state_name(menu_singleton, state_entry.state);
-				state_dict[size_key] = state_entry.state.get_total_population();
+				state_dict[size_key] = type_safe::get(state_entry.state.get_total_population());
 				state_dict[change_key] = 0;
 				state_dict[selected_key] = state_entry.selected;
 				state_dict[expanded_key] = state_entry.expanded;
@@ -160,7 +162,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 				province_dict[type_key] = LIST_ENTRY_PROVINCE;
 				province_dict[index_key] = index;
 				province_dict[name_key] = convert_to<String>(province_entry.province.get_identifier());
-				province_dict[size_key] = province_entry.province.get_total_population();
+				province_dict[size_key] = type_safe::get(province_entry.province.get_total_population());
 				province_dict[change_key] = 0;
 				province_dict[selected_key] = province_entry.selected;
 
@@ -403,7 +405,7 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	}
 
 	for (Pop const* pop : population_menu.filtered_pops) {
-		const fixed_point_t pop_size = fixed_point_t(pop->get_size());
+		const fixed_point_t pop_size = fixed_point_t(type_safe::get(pop->get_size()));
 
 		population_menu.workforce_distribution[pop->get_type()] += pop_size;
 		population_menu.religion_distribution[&pop->religion] += pop_size;
@@ -802,7 +804,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		Pop const* pop = population_menu.filtered_pops[start + idx];
 		Dictionary pop_dict;
 
-		pop_dict[pop_size_key] = pop->get_size();
+		pop_dict[pop_size_key] = type_safe::get(pop->get_size());
 		pop_dict[pop_type_icon_key] = pop->get_type()->sprite;
 		pop_dict[pop_culture_key] = convert_to<String>(pop->culture.get_identifier());
 		pop_dict[pop_religion_icon_key] = pop->religion.icon;
@@ -824,7 +826,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		if (pop->get_rebel_type() != nullptr) {
 			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->icon;
 		}
-		pop_dict[pop_size_change_key] = pop->get_total_change();
+		pop_dict[pop_size_change_key] = type_safe::get(pop->get_total_change());
 		pop_dict[pop_literacy_key] = static_cast<real_t>(pop->get_literacy());
 
 		array[idx] = std::move(pop_dict);
@@ -878,8 +880,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 
 		Dictionary filter_dict;
 
-		filter_dict[pop_filter_count_key] = filter.count;
-		filter_dict[pop_filter_change_key] = filter.promotion_demotion_change;
+		filter_dict[pop_filter_count_key] = type_safe::get(filter.count);
+		filter_dict[pop_filter_change_key] = type_safe::get(filter.promotion_demotion_change);
 		filter_dict[pop_filter_selected_key] = filter.selected;
 
 		array[idx] = std::move(filter_dict);
