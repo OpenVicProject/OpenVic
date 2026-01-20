@@ -409,8 +409,8 @@ bool ModelSingleton::add_building_dict(
 			return true;
 		}
 
-		if (building.get_level() > 0) {
-			suffix = std::to_string(building.get_level());
+		if (building.get_level() > building_level_t(0)) {
+			suffix = std::to_string(type_safe::get(building.get_level()));
 		}
 
 		if (!province.get_navies().empty()) {
@@ -418,12 +418,12 @@ bool ModelSingleton::add_building_dict(
 		}
 	} else if (building.get_identifier() == "fort") {
 		/* Fort */
-		if (building.get_level() < 1) {
+		if (building.get_level() < building_level_t(1)) {
 			return true;
 		}
 
-		if (building.get_level() > 1) {
-			suffix = std::to_string(building.get_level());
+		if (building.get_level() > building_level_t(1)) {
+			suffix = std::to_string(type_safe::get(building.get_level()));
 		}
 	} else {
 		// TODO - railroad (trainstations)

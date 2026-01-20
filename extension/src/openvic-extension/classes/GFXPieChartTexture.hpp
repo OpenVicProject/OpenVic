@@ -9,6 +9,7 @@
 
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
+#include "openvic-simulation/core/template/Concepts.hpp"
 
 namespace OpenVic {
 	template<typename MapType>
@@ -19,7 +20,13 @@ namespace OpenVic {
 			|| specialization_of<MapType, IndexedFlatMap>
 		)
 		&& has_get_identifier_and_colour<std::remove_pointer_t<map_key_t<MapType>>>
-		&& requires { static_cast<float>(std::declval<map_value_t<MapType>>()); };
+		&& (
+			requires { static_cast<float>(std::declval<map_value_t<MapType>>()); }
+			|| (
+				is_strongly_typed<map_value_t<MapType>>
+				&& requires { static_cast<float>(type_safe::get(std::declval<map_value_t<MapType>>())); }
+			)
+		);
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
@@ -79,7 +86,13 @@ namespace OpenVic {
 				} else {
 					key_ptr = &key_ref_or_ptr;
 				}
-				const float value = static_cast<float>(non_float_value);
+
+				float value;
+				if constexpr (is_strongly_typed<decltype(non_float_value)>) {
+					value = static_cast<float>(type_safe::get(non_float_value));
+				} else {
+					value = static_cast<float>(non_float_value);
+				}
 
 				if (value > 0.0f) {
 					sorted_distribution.emplace_back(key_ptr, value);
