@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://fbxssqcg1s0m"]
+[gd_resource type="Theme" format=3 uid="uid://fbxssqcg1s0m"]
 
 [ext_resource type="Script" uid="uid://d2etcw6vfl0k3" path="res://src/UI/Shared/Theme/StyleBoxCombinedTexture.gd" id="1_6eqg5"]
 [ext_resource type="Script" uid="uid://bho74dnf1rq0x" path="res://src/UI/Shared/Theme/TextureSetting.gd" id="2_d0e1t"]

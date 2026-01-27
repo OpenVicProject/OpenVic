@@ -65,9 +65,9 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 
 Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing image entry indicating a previous load attempt, whether successful or not. */
-	const image_asset_map_t::const_iterator it = image_assets.find(path);
-	if (it != image_assets.end() && it.value().image.is_valid()) {
-		return it.value().image;
+	const image_asset_map_t::Iterator it = image_assets.find(path);
+	if (it != image_assets.end() && it->value.image.is_valid()) {
+		return it->value.image;
 	}
 
 	/* No load attempt has been made yet, so we try now. */
@@ -89,9 +89,9 @@ Ref<Image> AssetManager::get_image(StringName const& path, BitField<LoadFlags> l
 
 Ref<ImageTexture> AssetManager::get_texture(StringName const& path, BitField<LoadFlags> load_flags) {
 	/* Check for an existing texture entry indicating a previous creation attempt, whether successful or not. */
-	const image_asset_map_t::const_iterator it = image_assets.find(path);
-	if (it != image_assets.end() && it.value().texture.is_valid()) {
-		return it.value().texture;
+	const image_asset_map_t::Iterator it = image_assets.find(path);
+	if (it != image_assets.end() && it->value.texture.is_valid()) {
+		return it->value.texture;
 	}
 
 	/* No creation attempt has yet been made, so we try now starting by finding the corresponding image. */
@@ -138,11 +138,11 @@ Ref<StyleBoxTexture> AssetManager::make_stylebox_texture(Ref<Texture2D> const& t
 }
 
 Ref<FontFile> AssetManager::get_font(StringName const& name) {
-	const font_map_t::const_iterator it = fonts.find(name);
+	const font_map_t::Iterator it = fonts.find(name);
 	if (it != fonts.end()) {
-		ERR_FAIL_NULL_V_MSG(it->second, nullptr, Utilities::format("Failed to load font previously: %s", name));
+		ERR_FAIL_NULL_V_MSG(it->value, nullptr, Utilities::format("Failed to load font previously: %s", name));
 
-		return it->second;
+		return it->value;
 	}
 
 	static const String font_dir = "gfx/fonts/";
@@ -152,35 +152,35 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	const StringName image_path = font_dir + name + image_ext;
 	const Ref<Image> image = get_image(image_path, LOAD_FLAG_NONE);
 	if (image.is_null()) {
-		fonts.emplace(name, nullptr);
+		fonts.insert(name, Ref<FontFile>());
 
-		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to load font image %s for the font named %s", image_path, name));
+		ERR_FAIL_V_MSG(Ref<FontFile>(), Utilities::format("Failed to load font image %s for the font named %s", image_path, name));
 	}
 
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
-	ERR_FAIL_NULL_V(game_singleton, nullptr);
+	ERR_FAIL_NULL_V(game_singleton, Ref<FontFile>());
 
 	const String font_path = font_dir + name + font_ext;
 	const String lookedup_font_path = convert_to<String>(
 		game_singleton->get_dataloader().lookup_file(convert_to<std::string>(font_path)).string()
 	);
 	if (lookedup_font_path.is_empty()) {
-		fonts.emplace(name, nullptr);
+		fonts.insert(name, Ref<FontFile>());
 
-		ERR_FAIL_V_MSG(nullptr, Utilities::format("Failed to look up font: %s", font_path));
+		ERR_FAIL_V_MSG(Ref<FontFile>(), Utilities::format("Failed to look up font: %s", font_path));
 	}
 
 	const Ref<FontFile> font = Utilities::load_godot_font(lookedup_font_path, image);
 	if (font.is_null()) {
-		fonts.emplace(name, nullptr);
+		fonts.insert(name, Ref<FontFile>());
 
 		ERR_FAIL_V_MSG(
-			nullptr,
+			Ref<FontFile>(),
 			Utilities::format("Failed to load font file %s (looked up: %s) for the font named %s", font_path, lookedup_font_path, name)
 		);
 	}
 
-	fonts.emplace(name, font);
+	fonts.insert(name, font);
 	return font;
 }
 

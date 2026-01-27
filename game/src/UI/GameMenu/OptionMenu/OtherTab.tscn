@@ -1,18 +1,18 @@
 [gd_scene format=3 uid="uid://dp2grvybtecqu"]
 
-[node name="Other" type="Control"]
+[node name="Other" type="Control" unique_id=901785660]
 visible = false
 layout_mode = 3
 anchors_preset = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=2103943180]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="Label" type="Label" parent="HBoxContainer"]
+[node name="Label" type="Label" parent="HBoxContainer" unique_id=1044986875]
 layout_mode = 2
 text = "Spinbox Example :)"
 
-[node name="SpinBox" type="SpinBox" parent="HBoxContainer"]
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer" unique_id=278098148]
 layout_mode = 2

@@ -1,32 +1,32 @@
-[gd_scene load_steps=3 format=3 uid="uid://cbtgwpx2wxi33"]
+[gd_scene format=3 uid="uid://cbtgwpx2wxi33"]
 
 [ext_resource type="PackedScene" uid="uid://dy4si8comamnv" path="res://src/UI/GameMenu/OptionMenu/VolumeGrid.tscn" id="1_okpft"]
 [ext_resource type="Script" uid="uid://cuk60t6htfhxu" path="res://src/UI/GameMenu/OptionMenu/SettingNodes/SettingCheckBox.gd" id="2_f3aj4"]
 
-[node name="Sound" type="HBoxContainer"]
+[node name="Sound" type="HBoxContainer" unique_id=848250411]
 alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1260106103]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="VBoxContainer"]
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=58781728]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="VolumeGrid" parent="VBoxContainer" instance=ExtResource("1_okpft")]
+[node name="VolumeGrid" parent="VBoxContainer" unique_id=1166324459 instance=ExtResource("1_okpft")]
 layout_mode = 2
 
-[node name="ButtonGrid" type="GridContainer" parent="VBoxContainer"]
+[node name="ButtonGrid" type="GridContainer" parent="VBoxContainer" unique_id=591022586]
 layout_mode = 2
 size_flags_vertical = 2
 columns = 2
 
-[node name="Spacer" type="Control" parent="VBoxContainer/ButtonGrid"]
+[node name="Spacer" type="Control" parent="VBoxContainer/ButtonGrid" unique_id=742251692]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="EarExploder" type="CheckBox" parent="VBoxContainer/ButtonGrid"]
+[node name="EarExploder" type="CheckBox" parent="VBoxContainer/ButtonGrid" unique_id=372950547]
 layout_mode = 2
 text = "OPTIONS_SOUND_EXPLODE_EARS"
 script = ExtResource("2_f3aj4")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://o4u142w4qkln"]
+[gd_scene format=3 uid="uid://o4u142w4qkln"]
 
 [ext_resource type="Script" uid="uid://bf36b41ip0jyu" path="res://src/UI/GameMenu/GameMenu/GameMenu.gd" id="1_cafwe"]
 [ext_resource type="PackedScene" uid="uid://bp5n3mlu45ygw" path="res://src/UI/GameMenu/MainMenu/MainMenu.tscn" id="2_2jbkh"]
@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://btri1i0hkhdsh" path="res://src/UI/GameMenu/MultiplayerMenu/MultiplayerMenu.tscn" id="4_s7nkl"]
 [ext_resource type="PackedScene" uid="uid://cvl76duuym1wq" path="res://src/UI/Shared/MusicMenu/MusicMenu.tscn" id="6_lts1m"]
 
-[node name="GameMenu" type="Control" node_paths=PackedStringArray("_main_menu", "_options_menu", "_multiplayer_menu", "_lobby_menu", "_credits_menu")]
+[node name="GameMenu" type="Control" unique_id=1509164618 node_paths=PackedStringArray("_main_menu", "_options_menu", "_multiplayer_menu", "_lobby_menu", "_credits_menu")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,27 +23,27 @@ _multiplayer_menu = NodePath("MultiplayerMenu")
 _lobby_menu = NodePath("LobbyMenu")
 _credits_menu = NodePath("CreditsMenu")
 
-[node name="MainMenu" parent="." instance=ExtResource("2_2jbkh")]
+[node name="MainMenu" parent="." unique_id=1990679934 instance=ExtResource("2_2jbkh")]
 layout_mode = 1
 metadata/_edit_vertical_guides_ = [251.0, 269.0, 504.0, 523.0, 15.0, 759.0, 777.0]
 
-[node name="OptionsMenu" parent="." instance=ExtResource("3_111lv")]
+[node name="OptionsMenu" parent="." unique_id=845734036 instance=ExtResource("3_111lv")]
 visible = false
 layout_mode = 1
 
-[node name="MultiplayerMenu" parent="." instance=ExtResource("4_s7nkl")]
+[node name="MultiplayerMenu" parent="." unique_id=480471960 instance=ExtResource("4_s7nkl")]
 visible = false
 layout_mode = 1
 
-[node name="LobbyMenu" parent="." instance=ExtResource("4_nofk1")]
+[node name="LobbyMenu" parent="." unique_id=1042620858 instance=ExtResource("4_nofk1")]
 visible = false
 layout_mode = 1
 
-[node name="CreditsMenu" parent="." instance=ExtResource("4_n0hoo")]
+[node name="CreditsMenu" parent="." unique_id=1817082213 instance=ExtResource("4_n0hoo")]
 visible = false
 layout_mode = 1
 
-[node name="MusicPlayer" parent="." instance=ExtResource("6_lts1m")]
+[node name="MusicPlayer" parent="." unique_id=2082714743 instance=ExtResource("6_lts1m")]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0

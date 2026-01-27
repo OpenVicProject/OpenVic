@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://d3g6wbvwflmyk"]
+[gd_scene format=3 uid="uid://d3g6wbvwflmyk"]
 
 [ext_resource type="Script" uid="uid://f4w5734blvbb" path="res://src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd" id="1_3jkds"]
 [ext_resource type="PackedScene" uid="uid://d2s7roinx2or7" path="res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn" id="2_fc6r3"]
@@ -10,7 +10,7 @@ pressed = true
 [sub_resource type="Shortcut" id="Shortcut_o1f2l"]
 events = [SubResource("InputEventAction_8vo2t")]
 
-[node name="SaveLoadMenu" type="MarginContainer" node_paths=PackedStringArray("_label", "_scroll_list", "_save_line_edit", "_save_load_button", "_tag_selection_tab", "_delete_dialog", "_overwrite_dialog")]
+[node name="SaveLoadMenu" type="MarginContainer" unique_id=1434975039 node_paths=PackedStringArray("_label", "_scroll_list", "_save_line_edit", "_save_load_button", "_tag_selection_tab", "_delete_dialog", "_overwrite_dialog")]
 editor_description = "UI-82, UI-89"
 anchors_preset = 15
 anchor_right = 1.0
@@ -31,55 +31,56 @@ _tag_selection_tab = NodePath("SaveLoadPanel/SaveLoadList/TagSelectionList/TagSe
 _delete_dialog = NodePath("DeleteDialog")
 _overwrite_dialog = NodePath("OverwriteDialog")
 
-[node name="SaveLoadPanel" type="PanelContainer" parent="."]
+[node name="SaveLoadPanel" type="PanelContainer" parent="." unique_id=493467719]
 layout_mode = 2
 mouse_force_pass_scroll_events = false
 
-[node name="SaveLoadList" type="VBoxContainer" parent="SaveLoadPanel"]
+[node name="SaveLoadList" type="VBoxContainer" parent="SaveLoadPanel" unique_id=601752729]
 layout_mode = 2
 
-[node name="TitleBarList" type="HBoxContainer" parent="SaveLoadPanel/SaveLoadList"]
+[node name="TitleBarList" type="HBoxContainer" parent="SaveLoadPanel/SaveLoadList" unique_id=463458981]
 layout_mode = 2
 alignment = 2
 
-[node name="SaveLoadLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TitleBarList"]
+[node name="SaveLoadLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TitleBarList" unique_id=664891856]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "SAVELOADMENU_SAVE_TITLE"
 
-[node name="CloseButton" type="Button" parent="SaveLoadPanel/SaveLoadList/TitleBarList"]
+[node name="CloseButton" type="Button" parent="SaveLoadPanel/SaveLoadList/TitleBarList" unique_id=1849136111]
 editor_description = "UI-87, UI-94"
 layout_mode = 2
 text = "X"
 
-[node name="TagSelectionList" type="HBoxContainer" parent="SaveLoadPanel/SaveLoadList"]
+[node name="TagSelectionList" type="HBoxContainer" parent="SaveLoadPanel/SaveLoadList" unique_id=2033832089]
 layout_mode = 2
 
-[node name="TagSelectionLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TagSelectionList"]
+[node name="TagSelectionLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TagSelectionList" unique_id=1194915598]
 layout_mode = 2
 text = "SAVELOADMENU_SESSION"
 
-[node name="TagSelectionTabBar" type="TabBar" parent="SaveLoadPanel/SaveLoadList/TagSelectionList"]
+[node name="TagSelectionTabBar" type="TabBar" parent="SaveLoadPanel/SaveLoadList/TagSelectionList" unique_id=114034506]
 layout_mode = 2
 size_flags_horizontal = 3
+current_tab = 0
 tab_count = 1
 tab_0/title = "SAVELOADMENU_TABSELECTIONTABBAR_ALL"
 
-[node name="SaveLoadScroll" type="ScrollContainer" parent="SaveLoadPanel/SaveLoadList"]
+[node name="SaveLoadScroll" type="ScrollContainer" parent="SaveLoadPanel/SaveLoadList" unique_id=999219138]
 editor_description = "UI-83, UI-90"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SaveLoadScrollList" type="VBoxContainer" parent="SaveLoadPanel/SaveLoadList/SaveLoadScroll"]
+[node name="SaveLoadScrollList" type="VBoxContainer" parent="SaveLoadPanel/SaveLoadList/SaveLoadScroll" unique_id=1674752311]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="SaveLineEdit" type="LineEdit" parent="SaveLoadPanel/SaveLoadList"]
+[node name="SaveLineEdit" type="LineEdit" parent="SaveLoadPanel/SaveLoadList" unique_id=871670149]
 editor_description = "UI-85, UI-92"
 layout_mode = 2
 
-[node name="SaveLoadButton" type="Button" parent="SaveLoadPanel/SaveLoadList"]
+[node name="SaveLoadButton" type="Button" parent="SaveLoadPanel/SaveLoadList" unique_id=1760518330]
 editor_description = "UIFUN-82, UIFUN-87"
 layout_mode = 2
 size_flags_horizontal = 4
@@ -87,14 +88,14 @@ shortcut = SubResource("Shortcut_o1f2l")
 shortcut_feedback = false
 text = "SAVELOADMENU_SAVE_BUTTON"
 
-[node name="DeleteDialog" type="ConfirmationDialog" parent="."]
+[node name="DeleteDialog" type="ConfirmationDialog" parent="." unique_id=214640647]
 disable_3d = true
 title = "SAVELOADMENU_DELETE_DIALOG_TITLE"
 ok_button_text = "DIALOG_OK"
 dialog_text = "SAVELOADMENU_DELETE_DIALOG_TEXT"
 cancel_button_text = "DIALOG_CANCEL"
 
-[node name="OverwriteDialog" type="ConfirmationDialog" parent="."]
+[node name="OverwriteDialog" type="ConfirmationDialog" parent="." unique_id=180565257]
 disable_3d = true
 title = "SAVELOADMENU_OVERWRITE_DIALOG_TITLE"
 ok_button_text = "DIALOG_OK"

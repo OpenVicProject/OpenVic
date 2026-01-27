@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://d2s7roinx2or7"]
+[gd_scene format=3 uid="uid://d2s7roinx2or7"]
 
 [ext_resource type="Script" uid="uid://y0spc6xdwnsv" path="res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.gd" id="1_rtuo6"]
 
-[node name="SavePanelButton" type="Container" node_paths=PackedStringArray("country_flag", "delete_button", "background_button", "name_label", "date_label")]
+[node name="SavePanelButton" type="Container" unique_id=1430736640 node_paths=PackedStringArray("country_flag", "delete_button", "background_button", "name_label", "date_label")]
 editor_description = "SS-18, UI-40, UI-84, UI-86, UI-91, UI-93"
 offset_right = 276.0
 offset_bottom = 48.0
@@ -13,40 +13,40 @@ background_button = NodePath("BackgroundButton")
 name_label = NodePath("SaveList/NameLabel")
 date_label = NodePath("SaveList/DateLabel")
 
-[node name="BackgroundButton" type="Button" parent="."]
+[node name="BackgroundButton" type="Button" parent="." unique_id=1525503079]
 layout_mode = 2
 theme_type_variation = &"ButtonContainer"
 
-[node name="SaveList" type="HBoxContainer" parent="."]
+[node name="SaveList" type="HBoxContainer" parent="." unique_id=1889547982]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CountryFlag" type="TextureRect" parent="SaveList"]
+[node name="CountryFlag" type="TextureRect" parent="SaveList" unique_id=418746646]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
 
-[node name="NameLabel" type="Label" parent="SaveList"]
+[node name="NameLabel" type="Label" parent="SaveList" unique_id=1255761504]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 1
 text = "PLACEHOLDER"
 vertical_alignment = 1
 
-[node name="DateLabel" type="Label" parent="SaveList"]
+[node name="DateLabel" type="Label" parent="SaveList" unique_id=1451025777]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 1
 text = "00.00.0000"
 vertical_alignment = 1
 
-[node name="Separator" type="Control" parent="SaveList"]
+[node name="Separator" type="Control" parent="SaveList" unique_id=1376457524]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="DeleteButton" type="Button" parent="SaveList"]
+[node name="DeleteButton" type="Button" parent="SaveList" unique_id=332973034]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "x"

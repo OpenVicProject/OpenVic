@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://3kktdpfnc0sn"]
+[gd_scene format=3 uid="uid://3kktdpfnc0sn"]
 
 [ext_resource type="Script" uid="uid://b4kd4qvtrpdkb" path="res://src/Systems/Startup/LoadingScreen.gd" id="1_b0p3w"]
 [ext_resource type="Texture2D" uid="uid://doji17mxxmikl" path="res://assets/graphics/loading_screen.png" id="2_ny153"]
@@ -58,7 +58,7 @@ _data = {
 &"loadingscreen_gear": SubResource("Animation_3ktkq")
 }
 
-[node name="LoadingScreen" type="Control" node_paths=PackedStringArray("progress_bar", "quote_label", "animation_player")]
+[node name="LoadingScreen" type="Control" unique_id=2058468856 node_paths=PackedStringArray("progress_bar", "quote_label", "animation_player")]
 editor_description = "UI-24"
 layout_mode = 3
 anchors_preset = 15
@@ -72,7 +72,7 @@ progress_bar = NodePath("PanelContainer/MarginContainer/ProgressBar")
 quote_label = NodePath("PanelContainer/MarginContainer/PanelContainer/QuoteLabel")
 animation_player = NodePath("AnimationPlayer")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=627078987]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -82,7 +82,7 @@ grow_vertical = 2
 mouse_default_cursor_shape = 5
 theme = SubResource("Theme_f5c3e")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=210854241]
 layout_mode = 2
 mouse_default_cursor_shape = 5
 theme_override_constants/margin_left = 16
@@ -90,21 +90,21 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MarginContainer"]
+[node name="ProgressBar" type="ProgressBar" parent="PanelContainer/MarginContainer" unique_id=1605980489]
 layout_mode = 2
 size_flags_vertical = 8
 mouse_default_cursor_shape = 5
 step = 1.0
 rounded = true
 
-[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/MarginContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/MarginContainer" unique_id=847836773]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
 mouse_default_cursor_shape = 5
 theme_override_styles/panel = SubResource("StyleBoxFlat_yaf7e")
 
-[node name="QuoteLabel" type="Label" parent="PanelContainer/MarginContainer/PanelContainer"]
+[node name="QuoteLabel" type="Label" parent="PanelContainer/MarginContainer/PanelContainer" unique_id=1914789861]
 custom_minimum_size = Vector2(700, 80)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -115,7 +115,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 text_overrun_behavior = 3
 
-[node name="Gear" type="TextureRect" parent="."]
+[node name="Gear" type="TextureRect" parent="." unique_id=55712395]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -135,7 +135,7 @@ mouse_default_cursor_shape = 5
 texture = ExtResource("3_avohi")
 expand_mode = 1
 
-[node name="Globe" type="TextureRect" parent="."]
+[node name="Globe" type="TextureRect" parent="." unique_id=180542606]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -152,7 +152,5 @@ mouse_default_cursor_shape = 5
 texture = ExtResource("4_eyeeb")
 expand_mode = 1
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_wo8l0")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1679481215]
+libraries/ = SubResource("AnimationLibrary_wo8l0")

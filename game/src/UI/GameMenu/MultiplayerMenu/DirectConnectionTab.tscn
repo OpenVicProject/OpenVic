@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://28ummh3fgokc"]
+[gd_scene format=3 uid="uid://28ummh3fgokc"]
 
 [ext_resource type="Script" uid="uid://cgoyv71lmwhuw" path="res://src/UI/GameMenu/MultiplayerMenu/DirectConnectionTab.gd" id="1_154ba"]
 [ext_resource type="PackedScene" uid="uid://dcsy6w6ow2xxg" path="res://src/UI/GameMenu/MultiplayerMenu/SecretEdit.tscn" id="2_xhui1"]
 
-[node name="DirectConnectionTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus", "ip_edit", "player_name_edit", "game_name_edit", "IP_grid")]
+[node name="DirectConnectionTab" type="HBoxContainer" unique_id=696732711 node_paths=PackedStringArray("initial_focus", "ip_edit", "player_name_edit", "game_name_edit", "IP_grid")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,87 +18,87 @@ player_name_edit = NodePath("VBoxContainer/UsernameEntryGrid/PlayerNameEntry")
 game_name_edit = NodePath("VBoxContainer/NewIPEntryGrid/GameNameEdit")
 IP_grid = NodePath("VBoxContainer/ScrollContainer/SavedIPGrid")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1940921215]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="UsernameEntryGrid" type="GridContainer" parent="VBoxContainer"]
+[node name="UsernameEntryGrid" type="GridContainer" parent="VBoxContainer" unique_id=1966394858]
 layout_mode = 2
 columns = 2
 
-[node name="UserName" type="Label" parent="VBoxContainer/UsernameEntryGrid"]
+[node name="UserName" type="Label" parent="VBoxContainer/UsernameEntryGrid" unique_id=680446602]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MP_USERNAME_ENTRY"
 
-[node name="PlayerNameEntry" type="LineEdit" parent="VBoxContainer/UsernameEntryGrid"]
+[node name="PlayerNameEntry" type="LineEdit" parent="VBoxContainer/UsernameEntryGrid" unique_id=1229593490]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Player1"
 max_length = 32
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=801390674]
 layout_mode = 2
 
-[node name="NewIPEntryGrid" type="GridContainer" parent="VBoxContainer"]
+[node name="NewIPEntryGrid" type="GridContainer" parent="VBoxContainer" unique_id=889262011]
 layout_mode = 2
 columns = 2
 
-[node name="UserName" type="Label" parent="VBoxContainer/NewIPEntryGrid"]
+[node name="UserName" type="Label" parent="VBoxContainer/NewIPEntryGrid" unique_id=1292031344]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MP_DIRECT_NAME_ENTRY"
 
-[node name="GameNameEdit" type="LineEdit" parent="VBoxContainer/NewIPEntryGrid"]
+[node name="GameNameEdit" type="LineEdit" parent="VBoxContainer/NewIPEntryGrid" unique_id=622124334]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Game1"
 max_length = 32
 
-[node name="IP" type="Label" parent="VBoxContainer/NewIPEntryGrid"]
+[node name="IP" type="Label" parent="VBoxContainer/NewIPEntryGrid" unique_id=401626560]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MP_DIRECT_IP_ENTRY"
 
-[node name="IPEdit" parent="VBoxContainer/NewIPEntryGrid" instance=ExtResource("2_xhui1")]
+[node name="IPEdit" parent="VBoxContainer/NewIPEntryGrid" unique_id=360758151 instance=ExtResource("2_xhui1")]
 layout_mode = 2
 
-[node name="Add_ip" type="Button" parent="VBoxContainer/NewIPEntryGrid"]
+[node name="Add_ip" type="Button" parent="VBoxContainer/NewIPEntryGrid" unique_id=2112400512]
 layout_mode = 2
 text = "MP_DIRECT_ADD_IP"
 
-[node name="Connect" type="Button" parent="VBoxContainer/NewIPEntryGrid"]
+[node name="Connect" type="Button" parent="VBoxContainer/NewIPEntryGrid" unique_id=970918691]
 layout_mode = 2
 text = "MP_DIRECT_CONNECT"
 
-[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer" unique_id=1764050253]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1756016786]
 layout_mode = 2
 text = "MP_DIRECT_SAVED_IPS"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer" unique_id=1712862346]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SavedIPGrid" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+[node name="SavedIPGrid" type="VBoxContainer" parent="VBoxContainer/ScrollContainer" unique_id=2061118889]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="bottomGrid" type="GridContainer" parent="VBoxContainer"]
+[node name="bottomGrid" type="GridContainer" parent="VBoxContainer" unique_id=1291526243]
 layout_mode = 2
 columns = 2
 
-[node name="revert_ips" type="Button" parent="VBoxContainer/bottomGrid"]
+[node name="revert_ips" type="Button" parent="VBoxContainer/bottomGrid" unique_id=693592158]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MP_DIRECT_REVERT_IPS"
 
-[node name="save_ips" type="Button" parent="VBoxContainer/bottomGrid"]
+[node name="save_ips" type="Button" parent="VBoxContainer/bottomGrid" unique_id=1552593181]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MP_DIRECT_SAVE_IPS"

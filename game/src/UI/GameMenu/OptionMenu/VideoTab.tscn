@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bq3awxxjn1tuw"]
+[gd_scene format=3 uid="uid://bq3awxxjn1tuw"]
 
 [ext_resource type="Script" uid="uid://baata5fx7gs5h" path="res://src/UI/GameMenu/OptionMenu/ResolutionSelector.gd" id="1_i8nro"]
 [ext_resource type="Script" uid="uid://d2baocaag5ifg" path="res://src/UI/GameMenu/OptionMenu/VideoTab.gd" id="1_jvv62"]
@@ -9,30 +9,30 @@
 [ext_resource type="Script" uid="uid://fggqr3vjg8rd" path="res://src/UI/GameMenu/OptionMenu/QualityPresetSelector.gd" id="5_srg4v"]
 [ext_resource type="Script" uid="uid://cmym81ujx2s8a" path="res://src/UI/GameMenu/OptionMenu/SettingRevertDialog.gd" id="8_ug5mo"]
 
-[node name="Video" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
+[node name="Video" type="HBoxContainer" unique_id=1406273878 node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-46"
 alignment = 1
 script = ExtResource("1_jvv62")
 initial_focus = NodePath("VideoSettingList/VideoSettingGrid/ResolutionSelector")
 
-[node name="VideoSettingList" type="VBoxContainer" parent="."]
+[node name="VideoSettingList" type="VBoxContainer" parent="." unique_id=358688510]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="VideoSettingList"]
+[node name="Control" type="Control" parent="VideoSettingList" unique_id=277801617]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="VideoSettingGrid" type="GridContainer" parent="VideoSettingList"]
+[node name="VideoSettingGrid" type="GridContainer" parent="VideoSettingList" unique_id=1448783179]
 layout_mode = 2
 size_flags_vertical = 3
 columns = 2
 
-[node name="ResolutionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="ResolutionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=902590164]
 layout_mode = 2
 text = "OPTIONS_VIDEO_RESOLUTION"
 
-[node name="ResolutionSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+[node name="ResolutionSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=1406125022 node_paths=PackedStringArray("revert_dialog")]
 editor_description = "UI-19"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../ScreenModeSelector")
@@ -45,11 +45,11 @@ revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "resolution"
 
-[node name="GuiScaleLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="GuiScaleLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=1004691853]
 layout_mode = 2
 text = "OPTIONS_VIDEO_GUI_SCALE"
 
-[node name="GuiScaleSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+[node name="GuiScaleSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=1231600790]
 editor_description = "UI-23"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../ScreenModeSelector")
@@ -61,12 +61,12 @@ script = ExtResource("3_pgc5d")
 section_name = "video"
 setting_name = "gui_scale"
 
-[node name="ScreenModeLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="ScreenModeLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=1576159469]
 editor_description = "UI-44"
 layout_mode = 2
 text = "OPTIONS_VIDEO_SCREEN_MODE"
 
-[node name="ScreenModeSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+[node name="ScreenModeSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=1604517552 node_paths=PackedStringArray("revert_dialog")]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResolutionSelector")
 focus_neighbor_bottom = NodePath("../MonitorDisplaySelector")
@@ -83,11 +83,11 @@ revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "mode_selected"
 
-[node name="MonitorSelectionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="MonitorSelectionLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=1936849369]
 layout_mode = 2
 text = "OPTIONS_VIDEO_MONITOR_SELECTION"
 
-[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" node_paths=PackedStringArray("revert_dialog")]
+[node name="MonitorDisplaySelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=535768394 node_paths=PackedStringArray("revert_dialog")]
 layout_mode = 2
 focus_neighbor_top = NodePath("../ScreenModeSelector")
 focus_neighbor_bottom = NodePath("../RefreshRateSelector")
@@ -100,11 +100,11 @@ revert_dialog = NodePath("../../../VideoRevertDialog")
 section_name = "video"
 setting_name = "current_screen"
 
-[node name="RefreshRateLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="RefreshRateLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=1383296993]
 layout_mode = 2
 text = "OPTIONS_VIDEO_REFRESH_RATE"
 
-[node name="RefreshRateSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+[node name="RefreshRateSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=1722236592]
 editor_description = "UI-18, UIFUN-20"
 layout_mode = 2
 tooltip_text = "OPTIONS_VIDEO_REFRESH_RATE_TOOLTIP"
@@ -133,11 +133,11 @@ section_name = "video"
 setting_name = "refresh_rate"
 default_selected = 0
 
-[node name="QualityPresetLabel" type="Label" parent="VideoSettingList/VideoSettingGrid"]
+[node name="QualityPresetLabel" type="Label" parent="VideoSettingList/VideoSettingGrid" unique_id=2146844500]
 layout_mode = 2
 text = "OPTIONS_VIDEO_QUALITY"
 
-[node name="QualityPresetSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid"]
+[node name="QualityPresetSelector" type="OptionButton" parent="VideoSettingList/VideoSettingGrid" unique_id=251436011]
 editor_description = "UI-21, UIFUN-22"
 layout_mode = 2
 focus_neighbor_top = NodePath("../RefreshRateSelector")
@@ -158,7 +158,7 @@ section_name = "video"
 setting_name = "quality_preset"
 default_selected = 1
 
-[node name="VideoRevertDialog" type="ConfirmationDialog" parent="." node_paths=PackedStringArray("timer")]
+[node name="VideoRevertDialog" type="ConfirmationDialog" parent="." unique_id=1494559472 node_paths=PackedStringArray("timer")]
 editor_description = "UI-873"
 disable_3d = true
 title = "OPTIONS_VIDEO_REVERT_DIALOG_TITLE"
@@ -169,7 +169,7 @@ script = ExtResource("8_ug5mo")
 dialog_text_key = "OPTIONS_VIDEO_REVERT_DIALOG_TEXT"
 timer = NodePath("VideoRevertTimer")
 
-[node name="VideoRevertTimer" type="Timer" parent="VideoRevertDialog"]
+[node name="VideoRevertTimer" type="Timer" parent="VideoRevertDialog" unique_id=555804643]
 wait_time = 5.0
 one_shot = true
 

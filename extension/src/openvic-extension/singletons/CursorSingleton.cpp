@@ -61,57 +61,57 @@ TypedArray<StringName> CursorSingleton::get_cursor_names() const {
 }
 
 TypedArray<ImageTexture> CursorSingleton::get_frames(StringName const& name, int32_t res_index) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	std::vector<TypedArray<ImageTexture>> const& images = it->second.images;
+	std::vector<TypedArray<ImageTexture>> const& images = it->value.images;
 	ERR_FAIL_INDEX_V_MSG(res_index, images.size(), {}, Utilities::format("Invalid image index for cursor \"%s\": %d", name, res_index));
 
 	return images[res_index];
 }
 
 PackedVector2Array CursorSingleton::get_hotspots(StringName const& name, int32_t res_index) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	std::vector<PackedVector2Array> const& hotspots = it->second.hotspots;
+	std::vector<PackedVector2Array> const& hotspots = it->value.hotspots;
 	ERR_FAIL_INDEX_V_MSG(res_index, hotspots.size(), {}, Utilities::format("Invalid hotspot index for cursor \"%s\": %d", name, res_index));
 
 	return hotspots[res_index];
 }
 
 int32_t CursorSingleton::get_animation_length(StringName const& name) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 	
-	return it->second.animation_length;
+	return it->value.animation_length;
 }
 
 PackedVector2Array CursorSingleton::get_resolutions(StringName const& name) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	return it->second.resolutions;
+	return it->value.resolutions;
 }
 
 PackedFloat32Array CursorSingleton::get_display_rates(StringName const& name) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	return it->second.display_rates;
+	return it->value.display_rates;
 }
 
 PackedInt32Array CursorSingleton::get_sequence(StringName const& name) const {
-	const cursor_map_t::const_iterator it = cursors.find(name);
+	const cursor_map_t::ConstIterator it = cursors.find(name);
 	ERR_FAIL_COND_V_MSG(it == cursors.end(), {}, Utilities::format("Cursor \"%s\" not found", name));
 
-	return it->second.sequence;
+	return it->value.sequence;
 }
 
 void CursorSingleton::generate_resolution(StringName const& name, int32_t base_res_index, Vector2 target_res) {
-	cursor_map_t::iterator it = cursors.find(name);
+	cursor_map_t::Iterator it = cursors.find(name);
 	ERR_FAIL_COND_MSG(it == cursors.end(), Utilities::format("Cursor \"%s\" not found", name));
-	cursor_asset_t& cursor = it.value();
+	cursor_asset_t& cursor = it->value;
 
 	ERR_FAIL_INDEX_MSG(
 		base_res_index, cursor.images.size(), Utilities::format("Invalid image index for cursor \"%s\": %d", name, base_res_index)
@@ -556,7 +556,7 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 		}
 	}
 
-	cursors.emplace(
+	cursors.insert(
 		name,
 		cursor_asset_t {
 			std::move(hotspots_by_resolution),
@@ -598,7 +598,7 @@ bool CursorSingleton::_load_cursor_cur(StringName const& name, String const& pat
 		hotspots_by_resolution.push_back(hotspots);
 	}
 
-	cursors.emplace(
+	cursors.insert(
 		name,
 		cursor_asset_t {
 			std::move(hotspots_by_resolution),

@@ -25,7 +25,7 @@ on:
 
 env:
   GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
-  GODOT_VERSION: 4.5
+  GODOT_VERSION: 4.6
   GODOT_VERSION_TYPE: stable
   OPENVIC_BASE_BRANCH: master
 

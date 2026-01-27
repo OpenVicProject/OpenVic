@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://cen7wkmn6og66"]
+[gd_scene format=3 uid="uid://cen7wkmn6og66"]
 
 [ext_resource type="Script" uid="uid://b0dpf7vhtv85w" path="res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd" id="1_y2djw"]
 
@@ -11,7 +11,7 @@ vertical = true
 [sub_resource type="Theme" id="Theme_une4m"]
 VSeparator/styles/separator = SubResource("StyleBoxLine_07plf")
 
-[node name="ReleaseInfoBox" type="HBoxContainer" node_paths=PackedStringArray("_version_label", "_commit_label", "_checksum_label")]
+[node name="ReleaseInfoBox" type="HBoxContainer" unique_id=772445697 node_paths=PackedStringArray("_version_label", "_commit_label", "_checksum_label")]
 editor_description = "UI-31"
 theme = SubResource("Theme_une4m")
 script = ExtResource("1_y2djw")
@@ -19,16 +19,16 @@ _version_label = NodePath("VersionButton")
 _commit_label = NodePath("CommitButton")
 _checksum_label = NodePath("ChecksumButton")
 
-[node name="GameInfoButton" type="Button" parent="."]
+[node name="GameInfoButton" type="Button" parent="." unique_id=180827051]
 layout_mode = 2
 theme_type_variation = &"GameInfoButton"
 text = "MAINMENU_GAME_INFO"
 flat = true
 
-[node name="VSeparator" type="VSeparator" parent="."]
+[node name="VSeparator" type="VSeparator" parent="." unique_id=570681538]
 layout_mode = 2
 
-[node name="VersionButton" type="Button" parent="."]
+[node name="VersionButton" type="Button" parent="." unique_id=133473529]
 editor_description = "UI-869, UI-870"
 layout_mode = 2
 tooltip_text = "VERSION_MISSING"
@@ -38,10 +38,10 @@ text = "VERSION_MISSING"
 flat = true
 alignment = 0
 
-[node name="VSeparator2" type="VSeparator" parent="."]
+[node name="VSeparator2" type="VSeparator" parent="." unique_id=1503995737]
 layout_mode = 2
 
-[node name="CommitButton" type="Button" parent="."]
+[node name="CommitButton" type="Button" parent="." unique_id=1491923438]
 editor_description = "UI-871, UI-872"
 layout_mode = 2
 focus_mode = 0
@@ -50,10 +50,10 @@ text = "????????"
 flat = true
 alignment = 0
 
-[node name="VSeparator3" type="VSeparator" parent="."]
+[node name="VSeparator3" type="VSeparator" parent="." unique_id=600957476]
 layout_mode = 2
 
-[node name="ChecksumButton" type="Button" parent="."]
+[node name="ChecksumButton" type="Button" parent="." unique_id=89477046]
 editor_description = "UI-111"
 layout_mode = 2
 tooltip_text = "CHECKSUM_MISSING"

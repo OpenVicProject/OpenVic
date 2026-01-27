@@ -1,34 +1,34 @@
-[gd_scene load_steps=5 format=3 uid="uid://duwjal7sd7p6w"]
+[gd_scene format=3 uid="uid://duwjal7sd7p6w"]
 
 [ext_resource type="Script" uid="uid://dg8y1dvid41mm" path="res://src/UI/GameMenu/OptionMenu/GeneralTab.gd" id="1_gbutn"]
 [ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/UI/GameMenu/GameMenu/LocaleButton.tscn" id="2_5cfd7"]
 [ext_resource type="Script" uid="uid://b06h8rw7shprx" path="res://src/UI/GameMenu/OptionMenu/SettingNodes/SettingOptionButton.gd" id="2_msx2u"]
 [ext_resource type="Script" uid="uid://si04yyqrxja4" path="res://src/UI/GameMenu/OptionMenu/AutosaveIntervalSelector.gd" id="2_t06tb"]
 
-[node name="GeneralTab" type="HBoxContainer" node_paths=PackedStringArray("initial_focus")]
+[node name="GeneralTab" type="HBoxContainer" unique_id=1892269527 node_paths=PackedStringArray("initial_focus")]
 editor_description = "UI-48, UIFUN-45"
 alignment = 1
 script = ExtResource("1_gbutn")
 initial_focus = NodePath("VBoxContainer/GridContainer/SavegameFormatSelector")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1333184019]
 layout_mode = 2
 
-[node name="Control" type="Control" parent="VBoxContainer"]
+[node name="Control" type="Control" parent="VBoxContainer" unique_id=1211064786]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer" unique_id=930258876]
 layout_mode = 2
 size_flags_vertical = 3
 columns = 2
 
-[node name="SavegameFormatLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="SavegameFormatLabel" type="Label" parent="VBoxContainer/GridContainer" unique_id=886608465]
 layout_mode = 2
 text = "OPTIONS_GENERAL_SAVEFORMAT"
 
-[node name="SavegameFormatSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="SavegameFormatSelector" type="OptionButton" parent="VBoxContainer/GridContainer" unique_id=807681088]
 editor_description = "UI-50"
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../AutosaveIntervalSelector")
@@ -43,11 +43,11 @@ section_name = "general"
 setting_name = "savegame_format"
 default_selected = 0
 
-[node name="AutosaveIntervalLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="AutosaveIntervalLabel" type="Label" parent="VBoxContainer/GridContainer" unique_id=407389934]
 layout_mode = 2
 text = "OPTIONS_GENERAL_AUTOSAVE"
 
-[node name="AutosaveIntervalSelector" type="OptionButton" parent="VBoxContainer/GridContainer"]
+[node name="AutosaveIntervalSelector" type="OptionButton" parent="VBoxContainer/GridContainer" unique_id=1634806442]
 editor_description = "UI-15, UIFUN-19"
 layout_mode = 2
 focus_neighbor_top = NodePath("../SavegameFormatSelector")
@@ -69,11 +69,11 @@ section_name = "general"
 setting_name = "autosave_interval"
 default_selected = 0
 
-[node name="LocaleLabel" type="Label" parent="VBoxContainer/GridContainer"]
+[node name="LocaleLabel" type="Label" parent="VBoxContainer/GridContainer" unique_id=218400055]
 layout_mode = 2
 text = "OPTIONS_GENERAL_LANGUAGE"
 
-[node name="LocaleButton" parent="VBoxContainer/GridContainer" instance=ExtResource("2_5cfd7")]
+[node name="LocaleButton" parent="VBoxContainer/GridContainer" unique_id=36180585 instance=ExtResource("2_5cfd7")]
 editor_description = "UI-79"
 layout_mode = 2
 focus_neighbor_top = NodePath("../AutosaveIntervalSelector")

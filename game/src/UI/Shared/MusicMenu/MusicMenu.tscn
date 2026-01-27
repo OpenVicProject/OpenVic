@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cvl76duuym1wq"]
+[gd_scene format=3 uid="uid://cvl76duuym1wq"]
 
 [ext_resource type="Script" uid="uid://8jeht8ufkjqk" path="res://src/UI/Shared/MusicMenu/MusicMenu.gd" id="1_gcm4m"]
 
-[node name="MusicPlayer" type="BoxContainer" node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visibility_button")]
+[node name="MusicPlayer" type="BoxContainer" unique_id=2083940038 node_paths=PackedStringArray("_song_selector_button", "_progress_slider", "_previous_song_button", "_play_pause_button", "_next_song_button", "_visibility_button")]
 editor_description = "UI-104"
 offset_right = 150.0
 offset_bottom = 110.0
@@ -16,7 +16,7 @@ _play_pause_button = NodePath("ButtonList/PlayPauseButton")
 _next_song_button = NodePath("ButtonList/NextSongButton")
 _visibility_button = NodePath("MusicUIVisibilityButton")
 
-[node name="SongSelectorButton" type="OptionButton" parent="."]
+[node name="SongSelectorButton" type="OptionButton" parent="." unique_id=1733339237]
 editor_description = "UI-105, UI-107, UI-110, UIFUN-92"
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
@@ -26,36 +26,36 @@ alignment = 1
 text_overrun_behavior = 3
 fit_to_longest_item = false
 
-[node name="ProgressSlider" type="HSlider" parent="."]
+[node name="ProgressSlider" type="HSlider" parent="." unique_id=1704310301]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 1
 focus_mode = 0
 
-[node name="ButtonList" type="HBoxContainer" parent="."]
+[node name="ButtonList" type="HBoxContainer" parent="." unique_id=1985269196]
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
 
-[node name="PreviousSongButton" type="Button" parent="ButtonList"]
+[node name="PreviousSongButton" type="Button" parent="ButtonList" unique_id=1310203700]
 editor_description = "UI-109"
 layout_mode = 2
 focus_mode = 0
 text = "<"
 
-[node name="PlayPauseButton" type="Button" parent="ButtonList"]
+[node name="PlayPauseButton" type="Button" parent="ButtonList" unique_id=562542639]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 focus_mode = 0
 text = "▶"
 
-[node name="NextSongButton" type="Button" parent="ButtonList"]
+[node name="NextSongButton" type="Button" parent="ButtonList" unique_id=1557725520]
 editor_description = "UI-108"
 layout_mode = 2
 focus_mode = 0
 text = ">"
 
-[node name="MusicUIVisibilityButton" type="Button" parent="."]
+[node name="MusicUIVisibilityButton" type="Button" parent="." unique_id=679146514]
 editor_description = "UI-106"
 layout_mode = 2
 size_flags_horizontal = 4

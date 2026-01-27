@@ -29,7 +29,7 @@ namespace OpenVic {
 		godot::Vector2i flag_sheet_dims; /* The size of the flag sheet in flags, rather than pixels. */
 		godot::Ref<godot::Image> flag_sheet_image;
 		godot::Ref<godot::ImageTexture> flag_sheet_texture;
-		ordered_map<godot::StringName, int32_t> flag_type_index_map;
+		godot::HashMap<godot::StringName, int32_t> flag_type_index_map;
 
 		static godot::StringName const& _signal_gamestate_updated();
 		static godot::StringName const& _signal_mapmode_changed();
