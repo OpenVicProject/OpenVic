@@ -87,7 +87,7 @@ String MenuSingleton::_make_modifier_effect_value_coloured(
 }
 
 String MenuSingleton::_make_modifier_effect_tooltip(ModifierEffect const& effect, const fixed_point_t value) const {
-	return tr(Utilities::std_to_godot_string(effect.get_localisation_key())) + ": " +
+	return tr(effect.get_localisation_key().data()) + ": " +
 		_make_modifier_effect_value_coloured(effect, value, true);
 }
 
