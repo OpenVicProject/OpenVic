@@ -264,16 +264,16 @@ void PlayerSingleton::start_research(String const& technology_identifier) const 
 
 	Technology const* technology =
 		game_singleton.get_definition_manager().get_research_manager().get_technology_manager().get_technology_by_identifier(
-			Utilities::godot_to_std_string(technology_identifier)
+			technology_identifier.utf8().get_data()
 		);
 	ERR_FAIL_NULL(technology);
 
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 	ERR_FAIL_NULL(instance_manager);
 
-	instance_manager->queue_game_action(
-		game_action_type_t::GAME_ACTION_START_RESEARCH,
-		std::pair<uint64_t, uint64_t> { player_country->get_index(), technology->get_index() }
+	instance_manager->queue_game_action<start_research_argument_t>(
+		player_country->index,
+		technology->index
 	);
 }
 

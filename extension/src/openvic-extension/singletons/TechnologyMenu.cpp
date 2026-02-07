@@ -24,7 +24,7 @@ Dictionary MenuSingleton::get_technology_menu_defines() const {
 
 	Dictionary ret;
 
-	std::vector<OpenVic::TechnologyFolder> const& tech_folders = GameSingleton::get_singleton()->get_definition_manager()
+	memory::vector<TechnologyFolder> const& tech_folders = GameSingleton::get_singleton()->get_definition_manager()
 		.get_research_manager().get_technology_manager().get_technology_folders();
 
 	PackedStringArray tech_folder_identifiers {};
@@ -32,17 +32,17 @@ Dictionary MenuSingleton::get_technology_menu_defines() const {
 	Array tech_identifiers {};
 	PackedInt32Array folder_tech_count {};
 	for (TechnologyFolder const& folder : tech_folders) {
-		tech_folder_identifiers.push_back(Utilities::std_to_godot_string(folder.get_identifier()));
+		tech_folder_identifiers.push_back(folder.get_identifier().data());
 		int32_t num_in_folder = 0;
 
 		PackedStringArray folder_areas {};
 		TypedArray<PackedStringArray> tech_folder_nested_array {}; // tech_identifiers has three levels of nested arrays :P
 		for (TechnologyArea const* area : folder.get_technology_areas()) {
-			folder_areas.push_back(Utilities::std_to_godot_string(area->get_identifier()));
+			folder_areas.push_back(area->get_identifier().data());
 
 			PackedStringArray area_technologies {};
 			for (Technology const* tech : area->get_technologies()) {
-				area_technologies.push_back(Utilities::std_to_godot_string(tech->get_identifier()));
+				area_technologies.push_back(tech->get_identifier().data());
 				num_in_folder++;
 			}
 			tech_folder_nested_array.push_back(std::move(area_technologies));
@@ -85,17 +85,17 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 
 	Dictionary ret;
 
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance* country = PlayerSingleton::get_singleton()->get_player_country();
 	if (country == nullptr) {
 		return ret;
 	}
 
-	TechnologySchool const* tech_school = country->get_tech_school();
+	TechnologySchool const* tech_school = country->get_tech_school().get_untracked();
 	if (tech_school == nullptr) {
 		tech_school = tech_manager.get_technology_school_by_index(0);
 	}
 	if (tech_school != nullptr) {
-		ret[tech_school_key] = Utilities::std_to_godot_string(tech_school->get_identifier());
+		ret[tech_school_key] = tech_school->get_identifier().data();
 		PackedFloat32Array school_modifier_values;
 		PackedInt32Array school_modifier_icons;
 		PackedStringArray school_modifier_tt;
@@ -104,9 +104,9 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 				definition_manager.get_modifier_manager().get_modifier_effect_cache().get_research_bonus_effects()
 		) {
 			const fixed_point_t research_bonus_value = tech_school->get_effect(*research_bonus_effect);
-			if (research_bonus_value != fixed_point_t::_0()) {
-				school_modifier_values.push_back(research_bonus_value.to_float());
-				school_modifier_icons.push_back(1 + tech_folder.get_index());
+			if (research_bonus_value != fixed_point_t::_0) {
+				school_modifier_values.push_back(static_cast<float>(research_bonus_value));
+				school_modifier_icons.push_back(1 + tech_folder.index.value_);
 				school_modifier_tt.push_back(_make_modifier_effect_tooltip(*research_bonus_effect, research_bonus_value));
 			}
 		}
@@ -119,26 +119,26 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 	PackedStringArray researchable_technologies {};
 	for (Technology const& tech : tech_manager.get_technologies()) {
 		if (country->is_technology_unlocked(tech)) {
-			researched_technologies.push_back(Utilities::std_to_godot_string(tech.get_identifier()));
+			researched_technologies.push_back(tech.get_identifier().data());
 		}
 		if (country->can_research_tech(tech, instance_manager->get_today())) {
-			researchable_technologies.push_back(Utilities::std_to_godot_string(tech.get_identifier()));
+			researchable_technologies.push_back(tech.get_identifier().data());
 		}
 	}
 	ret[researched_technologies_key] = std::move(researched_technologies);
 	ret[researchable_technologies_key] = std::move(researchable_technologies);
 
-	Technology const* current_research = country->get_current_research();
+	Technology const* current_research = country->get_current_research().get_untracked();
 	if (current_research != nullptr) {
-		ret[current_research_tech_key] = Utilities::std_to_godot_string(current_research->get_identifier());
+		ret[current_research_tech_key] = current_research->get_identifier().data();
 		ret[current_research_cat_key] =
-			tr(Utilities::std_to_godot_string(current_research->get_area().get_folder().get_identifier())) + ", " +
-			tr(Utilities::std_to_godot_string(current_research->get_area().get_identifier()));
-		ret[current_research_finish_date_key] = Utilities::date_to_string(country->get_expected_research_completion_date());
-		ret[current_research_invested_key] = country->get_invested_research_points().to_int32_t();
-		ret[current_research_cost_key] = country->get_current_research_cost().to_int32_t();
+			tr(current_research->area.folder.get_identifier().data()) + ", " +
+			tr(current_research->area.get_identifier().data());
+		ret[current_research_finish_date_key] = Utilities::date_to_string(country->get_expected_research_completion_date().get_untracked());
+		ret[current_research_invested_key] = static_cast<int32_t>(country->get_invested_research_points().get_untracked());
+		ret[current_research_cost_key] = static_cast<int32_t>(country->get_current_research_cost().get_untracked());
 		ret[current_research_effect_tt_key] = _make_modifier_effects_tooltip(*current_research).trim_prefix("\n");
-		ret[current_research_progress_key] = country->get_research_progress().to_float();
+		ret[current_research_progress_key] = static_cast<float>(country->research_progress.get_untracked());
 	}
 
 	return ret;
@@ -156,7 +156,7 @@ Dictionary MenuSingleton::get_specific_technology_info(String technology_identif
 
 	Technology const* technology =
 		definition_manager.get_research_manager().get_technology_manager().get_technology_by_identifier(
-			Utilities::godot_to_std_string(technology_identifier)
+			technology_identifier.utf8().get_data()
 		);
 	CountryInstance const* player_country = PlayerSingleton::get_singleton()->get_player_country();
 	if (technology == nullptr || player_country == nullptr) {
@@ -164,14 +164,14 @@ Dictionary MenuSingleton::get_specific_technology_info(String technology_identif
 	}
 
 	ret[effect_tooltip_key] = _make_modifier_effects_tooltip(*technology).trim_prefix("\n");
-	ret[research_points_key] = player_country->calculate_research_cost(
-		*technology, definition_manager.get_modifier_manager().get_modifier_effect_cache()
-	).to_int32_t();
+	ret[research_points_key] = static_cast<int32_t>(player_country->calculate_research_cost(
+		*technology
+	));
 	ret[start_year_key] = technology->get_year();
-	if (technology->get_index_in_area() > 0) {
-		ret[prerequisite_key] = Utilities::std_to_godot_string(
-			technology->get_area().get_technologies()[technology->get_index_in_area() - 1]->get_identifier()
-		);
+	if (technology->index_in_area > 0) {
+		ret[prerequisite_key] =
+			technology->area.get_technologies()[technology->index_in_area - 1]->get_identifier().data()
+		;
 	}
 
 	return ret;
