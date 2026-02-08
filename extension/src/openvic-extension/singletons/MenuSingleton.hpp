@@ -249,7 +249,8 @@ namespace OpenVic {
 		/* TECHNOLOGY MENU */
 		godot::Dictionary get_technology_menu_defines() const;
 		godot::Dictionary get_technology_menu_info() const;
-		godot::Dictionary get_specific_technology_info(godot::String technology_identifier) const;
+		godot::Dictionary get_specific_technology_info(const godot::String& technology_identifier) const;
+		godot::Dictionary get_specific_invention_info(const godot::String& invention_identifier) const;
 
 		/* TRADE MENU */
 		godot::Dictionary get_trade_menu_good_categories_info() const;

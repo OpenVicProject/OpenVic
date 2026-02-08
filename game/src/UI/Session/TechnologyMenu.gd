@@ -26,6 +26,7 @@ var _selected_tech_label : GUILabel
 var _selected_tech_effects : GUILabel
 var _selected_tech_research_points : GUILabel
 var _selected_tech_unlock_year : GUILabel
+var _selected_tech_inventions_list : GUIListBox
 
 var _start_research_button : GUIIconButton
 
@@ -167,6 +168,8 @@ func _ready() -> void:
 	_selected_tech_effects = get_gui_label_from_nodepath(^"./country_technology/selected_tech_window/effect")
 	_selected_tech_research_points = get_gui_label_from_nodepath(^"./country_technology/selected_tech_window/diff")
 	_selected_tech_unlock_year = get_gui_label_from_nodepath(^"./country_technology/selected_tech_window/year")
+	_selected_tech_inventions_list = get_gui_listbox_from_nodepath(^"./country_technology/selected_tech_window/inventions")
+	
 	_start_research_button = get_gui_icon_button_from_nodepath(^"./country_technology/selected_tech_window/start")
 	if _start_research_button:
 		_start_research_button.pressed.connect(
@@ -269,6 +272,7 @@ func _update_info() -> void:
 		const research_points_key : StringName = &"research_points"
 		const start_year_key : StringName = &"start_year"
 		const prerequisite_key : StringName = &"prerequisite"
+		const inventions_key : StringName = &"inventions"
 
 		for ix : int in range(_technologies.size()):
 			var folder_number_discovered = 0
@@ -278,6 +282,7 @@ func _update_info() -> void:
 					var tech_identifier : String = _technologies[ix][iy][iz]
 					var tech_info : Dictionary = MenuSingleton.get_specific_technology_info(tech_identifier)
 					var tech : GUIIconButton = get_gui_icon_button_from_nodepath("./country_technology/{y}/{z}/start_research".format({"y":_tech_areas[ix][iy], "z":tech_identifier}))
+					
 					if tech:
 						if researched_techs.has(tech_identifier):
 							tech.set_icon_index(2)
@@ -288,8 +293,30 @@ func _update_info() -> void:
 							tech.set_icon_index(3)
 						else:
 							tech.set_icon_index(4)
-						tech.set_tooltip_string("§Y{tech}§W\n".format({ "tech": tr(tech_identifier) }) + tech_info.get(effect_tooltip_key, "") + MenuSingleton.get_tooltip_separator() + tr(&"TECH_INVENTIONS_TOOLTIP") + "\nTODO: Inventions")
-			# spellchecker:on
+							
+						var inv_text = ""
+						if tech_info.has(inventions_key):
+							var inv_list = tech_info[inventions_key]
+							if not inv_list.is_empty():
+								inv_text = tr("TECH_INVENTIONS_TOOLTIP")
+								for inv_id in inv_list:
+									var inv_data = MenuSingleton.get_specific_invention_info(inv_id)
+									var status = inv_data.get("status", 0)
+									var tooltip = inv_data.get("effects_tooltip", "")
+									
+									var color
+									
+									match status:
+										1:
+											color = "§W"
+										2:
+											color = "§G"
+										_:
+											color = "§g"
+									inv_text += "\n" + color + tr(inv_id) + "§W"
+									if tooltip != "":
+										inv_text += "\n" + tooltip
+						tech.set_tooltip_string("§Y{tech}§W\n".format({ "tech": tr(tech_identifier) }) + tech_info.get(effect_tooltip_key, "") + MenuSingleton.get_tooltip_separator() + inv_text)
 			var label : GUILabel = _tech_folder_number_discovered_labels[ix]
 			if label:
 				label.set_text("{r}/{a}".format({"r":folder_number_discovered,"a":_folder_tech_counts[ix]}))
@@ -302,8 +329,43 @@ func _update_info() -> void:
 			_selected_tech_label.set_text(_selected_technology)
 		if _selected_tech_picture and _selected_technology:
 			_selected_tech_picture.set_texture(AssetManager.get_texture("gfx/pictures/tech/{a}.tga".format({ "a": _selected_technology })))
+		
 		if _selected_tech_effects:
 			_selected_tech_effects.set_text(_selected_technology_info.get(effect_tooltip_key, ""))
+				
+		if _selected_tech_inventions_list:
+			# Clear old items
+			for child in _selected_tech_inventions_list.get_children():
+				child.queue_free()
+			
+			if _selected_technology_info.has(inventions_key):
+				for child in _selected_tech_inventions_list.get_children():
+					child.queue_free()
+					
+				if _selected_technology_info.has(inventions_key):
+					var inv_list = _selected_technology_info[inventions_key]
+					for inv_id in inv_list:
+						var inv_data = MenuSingleton.get_specific_invention_info(inv_id)
+						var status = inv_data.get("status", 0) 
+						var tooltip = inv_data.get("effects_tooltip", "")
+						
+						add_gui_element("country_technology", "invention_icon_window")
+						
+						var item = get_node_or_null("./invention_icon_window")
+						if item:
+							item.reparent(_selected_tech_inventions_list)
+							item.name = "inv_" + inv_id
+							var label = GUINode.get_gui_label_from_node_and_path(item, "i_invention_name")
+							if label:
+								label.set_text(tr(inv_id))
+								label.set_tooltip_string(tr(inv_id) + "\n" + tooltip)
+							
+							var icon = GUINode.get_gui_icon_from_node_and_path(item, "invention_icon")
+							if icon:
+								icon.set_icon_index(status)
+							
+							
+				
 		if _selected_tech_research_points:
 			_selected_tech_research_points.set_text(str(_selected_technology_info.get(research_points_key, 0)))
 		var start_year_string : String = str(_selected_technology_info.get(start_year_key, 0))

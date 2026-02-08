@@ -341,6 +341,7 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::get_technology_menu_defines);
 	OV_BIND_METHOD(MenuSingleton::get_technology_menu_info);
 	OV_BIND_METHOD(MenuSingleton::get_specific_technology_info, { "technology_identifier" });
+	OV_BIND_METHOD(MenuSingleton::get_specific_invention_info, { "invention_identifier "});
 }
 
 MenuSingleton* MenuSingleton::get_singleton() {

@@ -1,6 +1,7 @@
 #include "MenuSingleton.hpp"
 #include "godot_cpp/variant/typed_array.hpp"
 #include "openvic-simulation/research/Technology.hpp"
+#include "openvic-simulation/research/Invention.hpp"
 
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
@@ -144,13 +145,14 @@ Dictionary MenuSingleton::get_technology_menu_info() const {
 	return ret;
 }
 
-Dictionary MenuSingleton::get_specific_technology_info(String technology_identifier) const {
+Dictionary MenuSingleton::get_specific_technology_info(const String& technology_identifier) const {
 	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 
 	static const StringName effect_tooltip_key = "effects_tooltip";
 	static const StringName research_points_key = "research_points";
 	static const StringName start_year_key = "start_year";
 	static const StringName prerequisite_key = "prerequisite";
+	static const StringName inventions_key = "inventions";
 
 	Dictionary ret;
 
@@ -173,6 +175,42 @@ Dictionary MenuSingleton::get_specific_technology_info(String technology_identif
 			technology->area.get_technologies()[technology->index_in_area - 1]->get_identifier().data()
 		;
 	}
+	Array inventions_list;
+	for (Invention const* invention : technology->get_inventions()) {
+		if (invention) {
+			inventions_list.push_back(invention->get_identifier().data());
+		}
+	}
+	ret[inventions_key] = inventions_list;
+
+	return ret;
+}
+
+Dictionary MenuSingleton::get_specific_invention_info(const String& invention_identifier) const {
+	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
+
+	static const StringName effect_tooltip_key = "effects_tooltip";
+	static const StringName status_key = "status";
+	static const StringName name_key = "name";
+
+	Dictionary ret;
+
+	Invention const* invention =
+	   definition_manager.get_research_manager().get_invention_manager().get_invention_by_identifier(
+		  invention_identifier.utf8().get_data()
+	   );
+
+	CountryInstance const* player_country = PlayerSingleton::get_singleton()->get_player_country();
+
+	if (invention == nullptr || player_country == nullptr) {
+		return ret;
+	}
+
+	ret[effect_tooltip_key] = _make_modifier_effects_tooltip(*invention).trim_prefix("\n");
+	ret[name_key] = invention->get_identifier().data();
+
+	// TODO: Invention status
+	ret[status_key] = 0;
 
 	return ret;
 }
