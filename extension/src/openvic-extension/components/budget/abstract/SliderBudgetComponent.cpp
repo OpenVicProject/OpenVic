@@ -1,6 +1,7 @@
 #include "SliderBudgetComponent.hpp"
 
 #include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
 #include <openvic-simulation/country/CountryInstance.hpp>
 
@@ -14,7 +15,7 @@ using namespace OpenVic;
 
 SliderBudgetComponent::SliderBudgetComponent(
 	GUINode const& parent,
-	godot::String&& new_slider_tooltip_localisation_key,
+	godot::StringName&& new_slider_tooltip_localisation_key,
 	const BudgetType new_budget_type,
 	godot::NodePath const& slider_path,
 	godot::NodePath const& budget_label_path,

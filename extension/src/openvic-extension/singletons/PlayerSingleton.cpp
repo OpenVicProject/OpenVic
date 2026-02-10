@@ -7,6 +7,7 @@
 #include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GUIScrollbar.hpp"
+#include "openvic-extension/core/StaticString.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
@@ -17,8 +18,7 @@ using namespace godot;
 /* StringNames cannot be constructed until Godot has called StringName::setup(),
  * so we must use these wrapper functions to delay their initialisation. */
 StringName const& PlayerSingleton::_signal_province_selected() {
-	static const StringName signal_province_selected = "province_selected";
-	return signal_province_selected;
+	return OV_SNAME(province_selected);
 }
 
 void PlayerSingleton::_bind_methods() {

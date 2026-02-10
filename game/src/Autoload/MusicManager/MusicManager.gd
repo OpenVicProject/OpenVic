@@ -171,7 +171,7 @@ func _ready() -> void:
 	for key : String in settings.get_section_keys("audio"):
 		if not key.ends_with("_BUS"): continue
 		var bus_name := key
-		if key == "MASTER_BUS": bus_name = "Master"
+		if key == "MASTER_BUS": bus_name = &"Master"
 		var bus_index := AudioServer.get_bus_index(bus_name)
 		if bus_index == -1:
 			push_error("Could not find bus '%s'.", bus_name)
