@@ -358,7 +358,7 @@ func _update_info() -> void:
 							var label = GUINode.get_gui_label_from_node_and_path(item, "i_invention_name")
 							if label:
 								label.set_text(tr(inv_id))
-								label.set_tooltip_string(tr(inv_id) + "\n" + tooltip)
+								label.set_tooltip_string(tr("TECHNOLOGYVIEW_UNDISCOVERED_INVENTION_TOOLTIP").replace("INVENTION", tr(inv_id)) + "\n" + tooltip)
 							
 							var icon = GUINode.get_gui_icon_from_node_and_path(item, "invention_icon")
 							if icon:
