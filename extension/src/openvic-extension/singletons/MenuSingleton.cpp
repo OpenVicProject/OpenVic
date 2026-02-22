@@ -134,26 +134,19 @@ template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tool
 ) const;
 
 String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
-	if (rules.empty()) {
-		return {};
-	}
-
 	static const StringName yes_key = "YES";
 	static const StringName no_key = "NO";
-
-	static const String start_text = ": " + GUILabel::get_colour_marker();
-	static const String end_text = GUILabel::get_colour_marker() + String { "!" };
-
-	const String enabled_text = start_text + String { "G" } + tr(yes_key) + end_text;
-	const String disabled_text = start_text + String { "R" } + tr(no_key) + end_text;
+	static const String line_format = "\n%s: "+GUILabel::get_colour_marker()+"%s%s"+GUILabel::get_colour_marker()+"!";
 
 	String result;
-
-	for (auto const& [rule_group, rule_map] : rules.get_rule_groups()) {
-		for (auto const& [rule, enabled] : rule_map) {
-			result += "\n" + tr(convert_to<String>(rule->get_localisation_key()))
-				+ (enabled ? enabled_text : disabled_text);
-		}
+	for (auto const& [rule_localisation_key, is_enabled] : rules.get_localisation_keys_and_values()) {
+		const bool is_bad_to_enable = rule_localisation_key == "RULE_SLAVERY_ALLOWED";
+		result += Utilities::format(
+			line_format,
+			tr(convert_to<String>(rule_localisation_key)),
+			is_bad_to_enable ? "R" : "G",
+			tr(is_enabled ? yes_key : no_key)
+		);
 	}
 
 	return result;
@@ -565,9 +558,9 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		using enum Job::effect_t;
 
-		std::optional<Job> const& owner_job = production_type.get_owner();
+		std::optional<Job> const& owner_job = production_type.owner;
 		if (owner_job.has_value()) {
-			PopType const& owner_pop_type = *owner_job->get_pop_type();
+			PopType const& owner_pop_type = *owner_job->pop_type;
 			State const* state = province->get_state();
 
 			if (unlikely(state == nullptr)) {
@@ -578,14 +571,14 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			} else {
 				const fixed_point_t effect_value = state->get_total_population() == 0
 					? fixed_point_t::_0
-					: owner_job->get_effect_multiplier().mul_div(
+					: owner_job->effect_multiplier.mul_div(
 						state->get_population_by_type(owner_pop_type),
 						state->get_total_population()
 					);
 
 				static const StringName owners_localisation_key = "PRODUCTION_FACTOR_OWNER";
 
-				switch (owner_job->get_effect_type()) {
+				switch (owner_job->effect_type) {
 				case OUTPUT:
 					output_multiplier += effect_value;
 					output_string += Utilities::format(
@@ -631,19 +624,19 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			);
 
 			for (Job const& job : production_type.get_jobs()) {
-				if (job.get_pop_type() != &pop_type) {
+				if (job.pop_type != nullptr && *job.pop_type != pop_type) {
 					continue;
 				}
 
-				const fixed_point_t effect_multiplier = job.get_effect_multiplier();
+				const fixed_point_t effect_multiplier = job.effect_multiplier;
 				fixed_point_t relative_to_workforce = fixed_point_t::from_fraction(employees_of_type, max_employee_count);
 				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1
 					? relative_to_workforce
-					: effect_multiplier * std::min(relative_to_workforce, job.get_amount());
+					: effect_multiplier * std::min(relative_to_workforce, job.amount);
 
 				static const StringName workers_localisation_key = "PRODUCTION_FACTOR_WORKER";
 
-				switch (job.get_effect_type()) {
+				switch (job.effect_type) {
 					case OUTPUT:
 						output_from_workers += effect_value;
 						output_string += Utilities::format(

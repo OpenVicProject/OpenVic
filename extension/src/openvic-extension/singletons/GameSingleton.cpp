@@ -479,7 +479,7 @@ Error GameSingleton::set_mapmode(int32_t index) {
 
 bool GameSingleton::is_parchment_mapmode_allowed() const {
 	/* Disallows parchment mapmode, e.g. for the cosmetic terrain mapmode */
-	return mapmode->is_parchment_mapmode_allowed();
+	return mapmode->is_parchment_mapmode_allowed;
 }
 
 Error GameSingleton::update_clock() {

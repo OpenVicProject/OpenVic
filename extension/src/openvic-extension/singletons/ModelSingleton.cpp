@@ -305,14 +305,14 @@ bool ModelSingleton::add_unit_dict(
 	// TODO - government type based flag type
 	dict[flag_index_key] = game_singleton->get_flag_sheet_index(country_definition.index, {});
 
-	if (display_unit_type->has_floating_flag()) {
+	if (display_unit_type->has_floating_flag) {
 		dict[flag_floating_key] = true;
 	}
 
 	dict[position_key] =
 		game_singleton->normalise_map_position(unit.get_position()->province_definition.get_unit_position());
 
-	if (display_unit_type->get_unit_category() != UnitType::unit_category_t::INFANTRY) {
+	if (display_unit_type->unit_category != UnitType::unit_category_t::INFANTRY) {
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
 	}
 
