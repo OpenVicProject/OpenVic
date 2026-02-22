@@ -320,7 +320,7 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 	else if(province->is_water()){
 		// search the adjacent provinces for ones with ports
 		for(ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
-			ProvinceDefinition const* adjacent_province = adjacency.get_to();
+			const type_safe::object_ref<const ProvinceDefinition> adjacent_province = adjacency.get_to();
 			if(!adjacent_province->has_port()) { 
 				continue; // skip provinces without ports (ie. other water provinces)
 			}
