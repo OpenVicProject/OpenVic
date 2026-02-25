@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <variant>
 
 #include <godot_cpp/classes/control.hpp>
@@ -101,7 +102,7 @@ namespace OpenVic {
 			IndexedFlatMap<ProvinceInstance, size_t> province_sort_cache;
 			IndexedFlatMap<RebelType, size_t> rebel_type_sort_cache;
 
-			std::vector<Pop const*> pops, filtered_pops;
+			std::vector<std::reference_wrapper<const Pop>> pops, filtered_pops;
 			population_menu_t();
 		};
 
@@ -217,7 +218,7 @@ namespace OpenVic {
 
 		godot::Error _population_menu_update_pops();
 		godot::Error _population_menu_update_filtered_pops();
-		using sort_func_t = std::function<bool(Pop const*, Pop const*)>;
+		using sort_func_t = std::function<bool(Pop const&, Pop const&)>;
 		sort_func_t _get_population_menu_sort_func(PopSortKey sort_key) const;
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();

@@ -70,11 +70,8 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		if (group != nullptr) {
 			leader_dict[military_info_leader_assignment_key] = convert_to<String>(group->get_name());
 
-			ProvinceInstance const* location = group->get_position();
-			if (location != nullptr) {
-				leader_dict[military_info_leader_location_key] =
-					convert_to<String>(location->get_identifier());
-			}
+			ProvinceInstance const& location = group->get_location();
+			leader_dict[military_info_leader_location_key] = convert_to<String>(location.get_identifier());
 		}
 	}
 
@@ -241,10 +238,7 @@ Dictionary MenuSingleton::make_unit_group_dict(UnitInstanceGroupBranched<Branch>
 	}
 
 	unit_group_dict[military_info_unit_group_name_key] = convert_to<String>(unit_group.get_name());
-	if (unit_group.get_position() != nullptr) {
-		unit_group_dict[military_info_unit_group_location_key] =
-			convert_to<String>(unit_group.get_position()->get_identifier());
-	}
+	unit_group_dict[military_info_unit_group_location_key] = convert_to<String>(unit_group.get_location().get_identifier());
 	unit_group_dict[military_info_unit_group_unit_count_key] = static_cast<uint64_t>(unit_group.get_unit_count());
 
 	unit_group_dict[military_info_unit_group_organisation_key] = static_cast<real_t>(unit_group.get_organisation_proportion());
@@ -619,10 +613,10 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		if (leaders.resize(leader_count) == OK) {
 
 			for (size_t index = 0; index < general_count; ++index) {
-				leaders[index] = make_leader_dict(*country->get_generals()[index]);
+				leaders[index] = make_leader_dict(country->get_generals()[index]);
 			}
 			for (size_t index = 0; index < admiral_count; ++index) {
-				leaders[general_count + index] = make_leader_dict(*country->get_admirals()[index]);
+				leaders[general_count + index] = make_leader_dict(country->get_admirals()[index]);
 			}
 
 			ret[military_info_leaders_list_key] = std::move(leaders);
@@ -650,7 +644,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		if (armies.resize(army_count) == OK) {
 
 			for (size_t index = 0; index < army_count; ++index) {
-				armies[index] = make_unit_group_dict(*country->get_armies()[index]);
+				armies[index] = make_unit_group_dict(country->get_armies()[index].get());
 			}
 
 			ret[military_info_armies_key] = std::move(armies);
@@ -677,7 +671,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		if (navies.resize(navy_count) == OK) {
 
 			for (size_t index = 0; index < navy_count; ++index) {
-				navies[index] = make_unit_group_dict(*country->get_navies()[index]);
+				navies[index] = make_unit_group_dict(country->get_navies()[index].get());
 			}
 
 			ret[military_info_navies_key] = std::move(navies);

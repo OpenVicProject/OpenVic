@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <range/v3/algorithm/contains.hpp>
 #include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/classes/time.hpp>
@@ -163,7 +164,7 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 	TypedArray<Dictionary> results;
 
 	ModManager const& mod_manager = game_manager.get_mod_manager();
-	memory::vector<Mod const*> const& loaded_mods = mod_manager.get_loaded_mods();
+	const forwardable_span<const std::reference_wrapper<const Mod>> loaded_mods = mod_manager.get_loaded_mods();
 
 	for (Mod const& mod : mod_manager.get_mods()) {
 		Dictionary mod_info_dictionary;
@@ -178,8 +179,11 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 			return result;
 		}();
 
-		mod_info_dictionary[is_loaded_key] = ranges::contains(loaded_mods, &mod);
-
+		mod_info_dictionary[is_loaded_key] = ranges::contains(
+			loaded_mods,
+			mod,
+			[](Mod const& x) -> decltype(auto) { return x; }
+		);
 		results.push_back(std::move(mod_info_dictionary));
 	}
 

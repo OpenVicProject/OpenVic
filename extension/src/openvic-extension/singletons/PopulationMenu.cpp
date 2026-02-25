@@ -54,8 +54,8 @@ Error MenuSingleton::_population_menu_update_provinces() {
 				population_menu.province_list_entries.emplace_back(population_menu_t::state_entry_t { state });
 				population_menu.visible_province_list_entries++;
 
-				for (ProvinceInstance const* province : state.get_provinces()) {
-					population_menu.province_list_entries.emplace_back(population_menu_t::province_entry_t { *province });
+				for (ProvinceInstance const& province : state.get_provinces()) {
+					population_menu.province_list_entries.emplace_back(population_menu_t::province_entry_t { province });
 				}
 			}
 		}
@@ -377,8 +377,8 @@ Error MenuSingleton::_population_menu_update_pops() {
 
 		if (province_entry != nullptr && province_entry->selected) {
 			for (Pop const& pop : province_entry->province.get_pops()) {
-				population_menu.pops.push_back(&pop);
-				population_menu_t::pop_filter_t& filter = population_menu.pop_filters[pop.get_type()];
+				population_menu.pops.push_back(pop);
+				population_menu_t::pop_filter_t& filter = population_menu.pop_filters[&pop.get_type()];
 				filter.count += pop.get_size();
 				// TODO - set filter.promotion_demotion_change
 			}
@@ -398,25 +398,25 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 	population_menu.issue_distribution.clear();
 	population_menu.vote_distribution.clear();
 
-	for (Pop const* pop : population_menu.pops) {
-		if (population_menu.pop_filters[pop->get_type()].selected) {
+	for (Pop const& pop : population_menu.pops) {
+		if (population_menu.pop_filters[&pop.get_type()].selected) {
 			population_menu.filtered_pops.push_back(pop);
 		}
 	}
 
-	for (Pop const* pop : population_menu.filtered_pops) {
-		const fixed_point_t pop_size = fixed_point_t(type_safe::get(pop->get_size()));
+	for (Pop const& pop : population_menu.filtered_pops) {
+		const fixed_point_t pop_size = fixed_point_t(type_safe::get(pop.get_size()));
 
-		population_menu.workforce_distribution[pop->get_type()] += pop_size;
-		population_menu.religion_distribution[&pop->religion] += pop_size;
-		for (auto const& [ideology, supporter_equivalents] : pop->get_supporter_equivalents_by_ideology()) {
+		population_menu.workforce_distribution[&pop.get_type()] += pop_size;
+		population_menu.religion_distribution[&pop.religion] += pop_size;
+		for (auto const& [ideology, supporter_equivalents] : pop.get_supporter_equivalents_by_ideology()) {
 			if (supporter_equivalents > 0) {
 				population_menu.ideology_distribution[&ideology] += supporter_equivalents;
 			}
 		}
-		population_menu.culture_distribution[&pop->culture] += pop_size;
-		population_menu.issue_distribution += pop->get_supporter_equivalents_by_issue();
-		population_menu.vote_distribution += pop->get_vote_equivalents_by_party();
+		population_menu.culture_distribution[&pop.culture] += pop_size;
+		population_menu.issue_distribution += pop.get_supporter_equivalents_by_issue();
+		population_menu.vote_distribution += pop.get_vote_equivalents_by_party();
 	}
 
 	normalise_fixed_point_map(population_menu.workforce_distribution);
@@ -465,83 +465,83 @@ static ordered_map<KeyType const*, ValueType> copy_non_default_to_ordered_map(In
 MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSortKey sort_key) const {
 	switch (sort_key) {
 	case SORT_SIZE:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_size() < b->get_size();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_size() < b.get_size();
 		};
 	case SORT_TYPE:
-		return [this](Pop const* a, Pop const* b) -> bool {
-			return indexed_map_lookup_less_than(population_menu.pop_type_sort_cache, a->get_type(), b->get_type());
+		return [this](Pop const& a, Pop const& b) -> bool {
+			return indexed_map_lookup_less_than(population_menu.pop_type_sort_cache, a.get_type(), b.get_type());
 		};
 	case SORT_CULTURE:
-		return [this](Pop const* a, Pop const* b) -> bool {
-			return ordered_map_lookup_less_than(population_menu.culture_sort_cache, a->culture, b->culture);
+		return [this](Pop const& a, Pop const& b) -> bool {
+			return ordered_map_lookup_less_than(population_menu.culture_sort_cache, a.culture, b.culture);
 		};
 	case SORT_RELIGION:
-		return [this](Pop const* a, Pop const* b) -> bool {
-			return ordered_map_lookup_less_than(population_menu.religion_sort_cache, a->religion, b->religion);
+		return [this](Pop const& a, Pop const& b) -> bool {
+			return ordered_map_lookup_less_than(population_menu.religion_sort_cache, a.religion, b.religion);
 		};
 	case SORT_LOCATION:
-		return [this](Pop const* a, Pop const* b) -> bool {
-			return indexed_map_lookup_less_than(population_menu.province_sort_cache, a->get_location(), b->get_location());
+		return [this](Pop const& a, Pop const& b) -> bool {
+			return indexed_map_lookup_less_than(population_menu.province_sort_cache, a.get_location(), b.get_location());
 		};
 	case SORT_MILITANCY:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_militancy() < b->get_militancy();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_militancy() < b.get_militancy();
 		};
 	case SORT_CONSCIOUSNESS:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_consciousness() < b->get_consciousness();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_consciousness() < b.get_consciousness();
 		};
 	case SORT_IDEOLOGY:
-		return [](Pop const* a, Pop const* b) -> bool {
+		return [](Pop const& a, Pop const& b) -> bool {
 			return sorted_fixed_map_less_than(
-				copy_non_default_to_ordered_map(a->get_supporter_equivalents_by_ideology()),
-				copy_non_default_to_ordered_map(b->get_supporter_equivalents_by_ideology())
+				copy_non_default_to_ordered_map(a.get_supporter_equivalents_by_ideology()),
+				copy_non_default_to_ordered_map(b.get_supporter_equivalents_by_ideology())
 			);
 		};
 	case SORT_ISSUES:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return sorted_fixed_map_less_than(a->get_supporter_equivalents_by_issue(), b->get_supporter_equivalents_by_issue());
+		return [](Pop const& a, Pop const& b) -> bool {
+			return sorted_fixed_map_less_than(a.get_supporter_equivalents_by_issue(), b.get_supporter_equivalents_by_issue());
 		};
 	case SORT_UNEMPLOYMENT:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_unemployment_fraction() < b->get_unemployment_fraction();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_unemployment_fraction() < b.get_unemployment_fraction();
 		};
 	case SORT_CASH:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_cash().get_copy_of_value() < b->get_cash().get_copy_of_value();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_cash().get_copy_of_value() < b.get_cash().get_copy_of_value();
 		};
 	case SORT_LIFE_NEEDS:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_life_needs_fulfilled() < b->get_life_needs_fulfilled();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_life_needs_fulfilled() < b.get_life_needs_fulfilled();
 		};
 	case SORT_EVERYDAY_NEEDS:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_everyday_needs_fulfilled() < b->get_everyday_needs_fulfilled();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_everyday_needs_fulfilled() < b.get_everyday_needs_fulfilled();
 		};
 	case SORT_LUXURY_NEEDS:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_luxury_needs_fulfilled() < b->get_luxury_needs_fulfilled();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_luxury_needs_fulfilled() < b.get_luxury_needs_fulfilled();
 		};
 	case SORT_REBEL_FACTION:
-		return [this](Pop const* a, Pop const* b) -> bool {
+		return [this](Pop const& a, Pop const& b) -> bool {
 			// TODO - include country adjective for [pan-]nationalist rebels
 			// TODO - handle social/political reform movements
 			return indexed_map_lookup_less_than(
-				population_menu.rebel_type_sort_cache, a->get_rebel_type(), b->get_rebel_type()
+				population_menu.rebel_type_sort_cache, a.get_rebel_type(), b.get_rebel_type()
 			);
 		};
 	case SORT_SIZE_CHANGE:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_total_change() < b->get_total_change();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_total_change() < b.get_total_change();
 		};
 	case SORT_LITERACY:
-		return [](Pop const* a, Pop const* b) -> bool {
-			return a->get_literacy() < b->get_literacy();
+		return [](Pop const& a, Pop const& b) -> bool {
+			return a.get_literacy() < b.get_literacy();
 		};
 	default:
 		UtilityFunctions::push_error("Invalid population menu sort key: ", sort_key);
-		return [](Pop const* a, Pop const* b) -> bool { return false; };
+		return [](Pop const& a, Pop const& b) -> bool { return false; };
 	}
 }
 
@@ -561,7 +561,7 @@ Error MenuSingleton::_population_menu_sort_pops() {
 
 		const sort_func_t sort_func = population_menu.sort_descending
 			? base_sort_func
-			: [base_sort_func](Pop const* a, Pop const* b) { return base_sort_func(b, a); };
+			: [base_sort_func](Pop const& a, Pop const& b) { return base_sort_func(b, a); };
 
 		std::sort(population_menu.filtered_pops.begin(), population_menu.filtered_pops.end(), sort_func);
 	}
@@ -801,33 +801,31 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 	ERR_FAIL_COND_V(array.resize(count) != OK, {});
 
 	for (int32_t idx = 0; idx < count; ++idx) {
-		Pop const* pop = population_menu.filtered_pops[start + idx];
+		Pop const& pop = population_menu.filtered_pops[start + idx];
 		Dictionary pop_dict;
 
-		pop_dict[pop_size_key] = type_safe::get(pop->get_size());
-		pop_dict[pop_type_icon_key] = pop->get_type()->sprite;
-		pop_dict[pop_culture_key] = convert_to<String>(pop->culture.get_identifier());
-		pop_dict[pop_religion_icon_key] = pop->religion.icon;
-		if (pop->get_location() != nullptr) {
-			pop_dict[pop_location_key] = convert_to<String>(pop->get_location()->get_identifier());
-		}
-		pop_dict[pop_militancy_key] = static_cast<real_t>(pop->get_militancy());
-		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop->get_consciousness());
-		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop->get_supporter_equivalents_by_ideology());
+		pop_dict[pop_size_key] = type_safe::get(pop.get_size());
+		pop_dict[pop_type_icon_key] = pop.get_type().sprite;
+		pop_dict[pop_culture_key] = convert_to<String>(pop.culture.get_identifier());
+		pop_dict[pop_religion_icon_key] = pop.religion.icon;
+		pop_dict[pop_location_key] = convert_to<String>(pop.get_location().get_identifier());
+		pop_dict[pop_militancy_key] = static_cast<real_t>(pop.get_militancy());
+		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop.get_consciousness());
+		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data(pop.get_supporter_equivalents_by_ideology());
 		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(
-			pop->get_supporter_equivalents_by_issue(), get_issue_identifier_suffix()
+			pop.get_supporter_equivalents_by_issue(), get_issue_identifier_suffix()
 		);
-		pop_dict[pop_unemployment_key] = static_cast<real_t>(pop->get_unemployment_fraction());
-		pop_dict[pop_cash_key] = static_cast<real_t>(pop->get_cash().get_copy_of_value());
-		pop_dict[pop_daily_money_key] = static_cast<real_t>(pop->get_income());
-		pop_dict[pop_life_needs_key] = static_cast<real_t>(pop->get_life_needs_fulfilled());
-		pop_dict[pop_everyday_needs_key] = static_cast<real_t>(pop->get_everyday_needs_fulfilled());
-		pop_dict[pop_luxury_needs_key] = static_cast<real_t>(pop->get_luxury_needs_fulfilled());
-		if (pop->get_rebel_type() != nullptr) {
-			pop_dict[pop_rebel_icon_key] = pop->get_rebel_type()->icon;
+		pop_dict[pop_unemployment_key] = static_cast<real_t>(pop.get_unemployment_fraction());
+		pop_dict[pop_cash_key] = static_cast<real_t>(pop.get_cash().get_copy_of_value());
+		pop_dict[pop_daily_money_key] = static_cast<real_t>(pop.get_income());
+		pop_dict[pop_life_needs_key] = static_cast<real_t>(pop.get_life_needs_fulfilled());
+		pop_dict[pop_everyday_needs_key] = static_cast<real_t>(pop.get_everyday_needs_fulfilled());
+		pop_dict[pop_luxury_needs_key] = static_cast<real_t>(pop.get_luxury_needs_fulfilled());
+		if (pop.get_rebel_type() != nullptr) {
+			pop_dict[pop_rebel_icon_key] = pop.get_rebel_type()->icon;
 		}
-		pop_dict[pop_size_change_key] = type_safe::get(pop->get_total_change());
-		pop_dict[pop_literacy_key] = static_cast<real_t>(pop->get_literacy());
+		pop_dict[pop_size_change_key] = type_safe::get(pop.get_total_change());
+		pop_dict[pop_literacy_key] = static_cast<real_t>(pop.get_literacy());
 
 		array[idx] = std::move(pop_dict);
 	}

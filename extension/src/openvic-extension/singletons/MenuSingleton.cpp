@@ -153,11 +153,13 @@ String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 }
 
 String MenuSingleton::_make_mobilisation_impact_tooltip() const {
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
+	CountryInstance const* country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 
-	if (country == nullptr) {
+	if (country_ptr == nullptr) {
 		return {};
 	}
+
+	CountryInstance const& country = *country_ptr;
 
 	IssueManager const& issue_manager =
 		GameSingleton::get_singleton()->get_definition_manager().get_politics_manager().get_issue_manager();
@@ -176,9 +178,9 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 	PartyPolicyGroup const* war_policy_issue_group = issue_manager.get_party_policy_group_by_identifier("war_policy");
 	PartyPolicy const* war_policy_issue = war_policy_issue_group == nullptr
 		? nullptr
-		: country->get_ruling_party_untracked()->get_policies(*war_policy_issue_group);
+		: country.get_ruling_party_untracked()->get_policies(*war_policy_issue_group);
 
-	const String impact_string = Utilities::fixed_point_to_string_dp(country->get_mobilisation_impact() * 100, 1) + "%";
+	const String impact_string = Utilities::fixed_point_to_string_dp(country.get_mobilisation_impact() * 100, 1) + "%";
 
 	return tr(
 		mobilisation_impact_tooltip_localisation_key
@@ -192,11 +194,11 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 		)
 	).replace(
 		mobilisation_impact_tooltip_replace_units_key,
-		String::num_uint64(country->get_mobilisation_max_regiment_count())
+		String::num_uint64(country.get_mobilisation_max_regiment_count())
 	) + "\n" + tr(
 		mobilisation_impact_tooltip2_localisation_key
 	).replace(
-		mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country->get_regiment_count())
+		mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country.get_regiment_count())
 	).replace(
 		mobilisation_impact_tooltip2_replace_impact_key, impact_string
 	);
@@ -996,10 +998,12 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 /* TOPBAR */
 
 Dictionary MenuSingleton::get_topbar_info() const {
-	CountryInstance* country = PlayerSingleton::get_singleton()->get_player_country();
-	if (country == nullptr) {
+	CountryInstance* country_ptr = PlayerSingleton::get_singleton()->get_player_country();
+	if (country_ptr == nullptr) {
 		return {};
 	}
+
+	CountryInstance& country = *country_ptr;
 
 	DefinitionManager const& definition_manager = GameSingleton::get_singleton()->get_definition_manager();
 	ModifierEffectCache const& modifier_effect_cache = definition_manager.get_modifier_manager().get_modifier_effect_cache();
@@ -1011,9 +1015,9 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName country_status_key = "country_status";
 	static const StringName total_rank_key = "total_rank";
 
-	ret[country_key] = convert_to<String>(country->get_identifier());
-	ret[country_status_key] = static_cast<int32_t>(country->get_country_status());
-	ret[total_rank_key] = static_cast<uint64_t>(country->get_total_rank());
+	ret[country_key] = convert_to<String>(country.get_identifier());
+	ret[country_status_key] = static_cast<int32_t>(country.get_country_status());
+	ret[total_rank_key] = static_cast<uint64_t>(country.get_total_rank());
 
 	// Production
 
@@ -1029,7 +1033,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName research_points_key = "research_points";
 		static const StringName research_points_tooltip_key = "research_points_tooltip";
 
-		Technology const* current_research = country->get_current_research_untracked();
+		Technology const* current_research = country.get_current_research_untracked();
 		if (current_research != nullptr) {
 			static const StringName research_localisation_key = "TECHNOLOGYVIEW_RESEARCH_TOOLTIP";
 			static const String tech_replace_key = "$TECH$";
@@ -1043,15 +1047,15 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			ret[research_tooltip_key] = tr(research_localisation_key).replace(
 				tech_replace_key, current_tech_localised
 			).replace(
-				date_replace_key, Utilities::date_to_formatted_string(country->get_expected_research_completion_date_untracked(), false)
+				date_replace_key, Utilities::date_to_formatted_string(country.get_expected_research_completion_date_untracked(), false)
 			) + "\n" + tr(research_invested_localisation_key).replace(
-				invested_replace_key, String::num_uint64(country->get_invested_research_points_untracked().truncate<int64_t>())
-			).replace(cost_replace_key, String::num_uint64(country->get_current_research_cost_untracked().truncate<int64_t>()));
+				invested_replace_key, String::num_uint64(country.get_invested_research_points_untracked().truncate<int64_t>())
+			).replace(cost_replace_key, String::num_uint64(country.get_current_research_cost_untracked().truncate<int64_t>()));
 
 			ret[research_key] = std::move(current_tech_localised);
 
-			ret[research_progress_key] = static_cast<real_t>(country->research_progress.get_untracked());
-		} else if (country->is_civilised()) {
+			ret[research_progress_key] = static_cast<real_t>(country.research_progress.get_untracked());
+		} else if (country.is_civilised()) {
 			static const StringName civilised_no_research_localisation_key = "TB_TECH_NO_CURRENT";
 			static const StringName civilised_no_research_tooltip_localisation_key = "TECHNOLOGYVIEW_NO_RESEARCH_TOOLTIP";
 
@@ -1067,17 +1071,17 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			ret[research_tooltip_key] = tr(uncivilised_no_research_tooltip_localisation_key);
 		}
 
-		ret[literacy_key] = static_cast<real_t>(country->get_average_literacy());
+		ret[literacy_key] = static_cast<real_t>(country.get_average_literacy());
 		// TODO - set monthly literacy change (test for precision issues)
 		ret[literacy_change_key] = 0.0f;
 
-		ret[research_points_key] = static_cast<real_t>(country->get_daily_research_points_untracked());
+		ret[research_points_key] = static_cast<real_t>(country.get_daily_research_points_untracked());
 
 		String research_points_tooltip;
 
 		fixed_point_t daily_base_research_points;
 
-		for (auto const& [pop_type, research_points] : country->get_research_points_from_pop_types()) {
+		for (auto const& [pop_type, research_points] : country.get_research_points_from_pop_types()) {
 			static const StringName pop_type_research_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOOLTIP";
 			static const String pop_type_replace_key = "$POPTYPE$";
 			static const String fraction_replace_key = "$FRACTION$";
@@ -1093,8 +1097,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
 					fixed_point_t::from_fraction(
-						100 * country->get_population_by_type(*pop_type),
-						country->get_total_population()
+						100 * country.get_population_by_type(*pop_type),
+						country.get_total_population()
 					), 2
 				)
 			).replace(
@@ -1105,7 +1109,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
 		// guaranteed daily base research points line. All contributions are added to daily_base_research_points.
 		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_research_points(), &daily_base_research_points, {}, "\n"
+			country, *modifier_effect_cache.get_research_points(), &daily_base_research_points, {}, "\n"
 		);
 
 		// The daily base research points line is guaranteed to be present, but those directly above and below it aren't,
@@ -1118,11 +1122,12 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		);
 
 		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_research_points_modifier()
+			country, *modifier_effect_cache.get_research_points_modifier()
 		);
 
-		const fixed_point_t research_points_modifier_from_tech =
-			country->get_modifier_effect_value(*modifier_effect_cache.get_increase_research());
+		const fixed_point_t research_points_modifier_from_tech = country.get_modifier_effect_value(
+			*modifier_effect_cache.get_increase_research()
+		);
 		if (research_points_modifier_from_tech != fixed_point_t::_0) {
 			static const StringName from_technology_localisation_key = "FROM_TECHNOLOGY";
 			research_points_tooltip += "\n" + tr(from_technology_localisation_key) + ": " +
@@ -1134,7 +1139,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName daily_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOTAL_TOOLTIP";
 		research_points_tooltip += "\n" + tr(daily_research_points_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country->get_daily_research_points_untracked(), 2)
+			Utilities::fixed_point_to_string_dp(country.get_daily_research_points_untracked(), 2)
 		);
 
 		// In the base game this section is only shown when no research is set, but it's useful to show it always
@@ -1143,7 +1148,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName accumulated_research_points_localisation_key = "RP_ACCUMULATED";
 		research_points_tooltip += tr(accumulated_research_points_localisation_key).replace(
 			Utilities::get_short_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country->get_research_point_stockpile_untracked(), 1)
+			Utilities::fixed_point_to_string_dp(country.get_research_point_stockpile_untracked(), 1)
 		);
 
 		ret[research_points_tooltip_key] = std::move(research_points_tooltip);
@@ -1161,17 +1166,17 @@ Dictionary MenuSingleton::get_topbar_info() const {
 	static const StringName regiment_count_key = "regiment_count";
 	static const StringName max_supported_regiments_key = "max_supported_regiments";
 
-	ret[regiment_count_key] = static_cast<uint64_t>(country->get_regiment_count());
-	ret[max_supported_regiments_key] = static_cast<uint64_t>(country->get_max_supported_regiment_count());
+	ret[regiment_count_key] = static_cast<uint64_t>(country.get_regiment_count());
+	ret[max_supported_regiments_key] = static_cast<uint64_t>(country.get_max_supported_regiment_count());
 
 	static const StringName is_mobilised_key = "is_mobilised";
 	static const StringName mobilisation_regiments_key = "mobilisation_regiments";
 	static const StringName mobilisation_impact_tooltip_key = "mobilisation_impact_tooltip";
 
-	if (country->is_mobilised()) {
+	if (country.is_mobilised()) {
 		ret[is_mobilised_key] = true;
 	} else {
-		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country->get_mobilisation_potential_regiment_count());
+		ret[mobilisation_regiments_key] = static_cast<uint64_t>(country.get_mobilisation_potential_regiment_count());
 		ret[mobilisation_impact_tooltip_key] = _make_mobilisation_impact_tooltip();
 	}
 
@@ -1179,13 +1184,13 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		static const StringName leadership_key = "leadership";
 		static const StringName leadership_tooltip_key = "leadership_tooltip";
 
-		ret[leadership_key] = country->get_leadership_point_stockpile().truncate<int64_t>();
+		ret[leadership_key] = country.get_leadership_point_stockpile().truncate<int64_t>();
 
 		String leadership_tooltip;
 
 		fixed_point_t monthly_base_leadership_points;
 
-		for (auto const& [pop_type, leadership_points] : country->get_leadership_points_from_pop_types()) {
+		for (auto const& [pop_type, leadership_points] : country.get_leadership_points_from_pop_types()) {
 			static const StringName pop_type_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_TOOLTIP";
 			static const String pop_type_replace_key = "$POPTYPE$";
 			static const String fraction_replace_key = "$FRACTION$";
@@ -1201,8 +1206,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
 					fixed_point_t::from_fraction(
-						100 * country->get_population_by_type(*pop_type),
-						country->get_total_population()
+						100 * country.get_population_by_type(*pop_type),
+						country.get_total_population()
 					), 2
 				)
 			).replace(
@@ -1213,7 +1218,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
 		// guaranteed monthly base leadership points line. All contributions are added to monthly_base_leadership_points.
 		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_leadership(), &monthly_base_leadership_points, {}, "\n"
+			country, *modifier_effect_cache.get_leadership(), &monthly_base_leadership_points, {}, "\n"
 		);
 
 		// The monthly base leadership points line is guaranteed to be present, but those directly above and below it aren't,
@@ -1226,18 +1231,18 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		);
 
 		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
-			*country, *modifier_effect_cache.get_leadership_modifier()
+			country, *modifier_effect_cache.get_leadership_modifier()
 		);
 
 		static const StringName monthly_leadership_points_localisation_key = "TECH_DAILY_LEADERSHIP_TOTAL_TOOLTIP";
 		leadership_tooltip += "\n" + tr(monthly_leadership_points_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country->get_monthly_leadership_points(), 2)
+			Utilities::fixed_point_to_string_dp(country.get_monthly_leadership_points(), 2)
 		);
 
 		const fixed_point_t max_leadership_point_stockpile =
 			definition_manager.get_define_manager().get_military_defines().get_max_leadership_point_stockpile();
-		if (country->get_leadership_point_stockpile() >= max_leadership_point_stockpile) {
+		if (country.get_leadership_point_stockpile() >= max_leadership_point_stockpile) {
 			leadership_tooltip += "\n" + get_tooltip_separator() + "\n";
 
 			static const StringName max_leadership_points_localisation_key = "TOPBAR_LEADERSHIP_MAX";
