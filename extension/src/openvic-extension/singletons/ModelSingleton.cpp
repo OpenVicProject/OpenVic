@@ -199,7 +199,8 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
 template<unit_branch_t Branch>
 bool ModelSingleton::add_unit_dict(
-	std::span<UnitInstanceGroupBranched<Branch>* const> units, TypedArray<Dictionary>& unit_array
+	std::span<const std::reference_wrapper<UnitInstanceGroupBranched<Branch>>> units,
+	TypedArray<Dictionary>& unit_array
 ) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 
@@ -225,10 +226,10 @@ bool ModelSingleton::add_unit_dict(
 	bool ret = true;
 
 	/* Last unit to enter the province is shown on top. */
-	_UnitInstanceGroup const& unit = *units.back();
+	_UnitInstanceGroup const& unit = units.back();
 	ERR_FAIL_COND_V_MSG(unit.empty(), false, Utilities::format("Empty unit \"%s\"", convert_to<String>(unit.get_name())));
 
-	CountryDefinition const& country_definition = unit.get_country()->country_definition;
+	CountryDefinition const& country_definition = unit.get_country().country_definition;
 
 	GraphicalCultureType const& graphical_culture_type = country_definition.graphical_culture;
 	UnitType const* display_unit_type = unit.get_display_unit_type();
@@ -309,8 +310,9 @@ bool ModelSingleton::add_unit_dict(
 		dict[flag_floating_key] = true;
 	}
 
-	dict[position_key] =
-		game_singleton->normalise_map_position(unit.get_position()->province_definition.get_unit_position());
+	dict[position_key] = game_singleton->normalise_map_position(
+		unit.get_location().province_definition.get_unit_position()
+	);
 
 	if (display_unit_type->unit_category != UnitType::unit_category_t::INFANTRY) {
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;

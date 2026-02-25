@@ -202,8 +202,6 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ERR_FAIL_NULL_V(instance_manager, {});
 	GoodInstanceManager const& good_instance_manager = instance_manager->get_good_instance_manager();
 
-	CountryInstance const* country = PlayerSingleton::get_singleton()->get_player_country();
-
 	Dictionary ret;
 
 	// This needs an entry for every good, even untradeable and unavailable ones, so we can look entries up with good indices
@@ -217,18 +215,19 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			tr(top_producers_localisation_key);
 
 		for (size_t index = 0; index < 5; ++index) {
-			CountryInstance const* country = country_instance_manager.get_country_instance_by_index(
+			CountryInstance const* other_country_ptr = country_instance_manager.get_country_instance_by_index(
 				country_index_t(index + 1)
 			);
 
-			ERR_CONTINUE(country == nullptr);
+			ERR_CONTINUE(other_country_ptr == nullptr);
+			CountryInstance const& other_country = *other_country_ptr;
 
 			static const String top_producer_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: %s";
 
 			tooltip += Utilities::format(
 				top_producer_template_string,
-				convert_to<String>(country->get_identifier()),
-				Utilities::get_country_name(*this, *country),
+				convert_to<String>(other_country.get_identifier()),
+				Utilities::get_country_name(*this, other_country),
 				Utilities::fixed_point_to_string_dp(fixed_point_t(1000) / static_cast<int32_t>(index + 1), 2)
 			);
 		}
@@ -237,9 +236,11 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	}
 	ret[good_producers_tooltips_key] = std::move(good_producers_tooltips);
 
-	if (unlikely(country == nullptr)) {
+	CountryInstance const* country_ptr = PlayerSingleton::get_singleton()->get_player_country();
+	if (unlikely(country_ptr == nullptr)) {
 		return ret;
 	}
+	CountryInstance const& country = *country_ptr;
 
 	PackedStringArray good_trading_yesterday_tooltips;
 	PackedVector2Array government_needs;
@@ -249,7 +250,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	PackedVector3Array stockpile;
 	PackedVector4Array common_market;
 
-	for (auto const& [good, good_data] : country->get_goods_data()) {
+	for (auto const& [good, good_data] : country.get_goods_data()) {
 		if (!good.is_trading_good()) {
 			continue;
 		}

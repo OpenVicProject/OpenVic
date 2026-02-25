@@ -320,13 +320,13 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 	else if(province->is_water()){
 		// search the adjacent provinces for ones with ports
 		for(ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
-			const type_safe::object_ref<const ProvinceDefinition> adjacent_province = adjacency.get_to();
-			if(!adjacent_province->has_port()) { 
+			ProvinceDefinition const& adjacent_province = adjacency.get_to();
+			if(!adjacent_province.has_port()) { 
 				continue; // skip provinces without ports (ie. other water provinces)
 			}
-			Vector2 port_position = game_singleton->normalise_map_position(*adjacent_province->get_building_position(port_building_type));
+			Vector2 port_position = game_singleton->normalise_map_position(*adjacent_province.get_building_position(port_building_type));
 			if(click_position.distance_to(port_position) <= port_radius){
-				return adjacent_province->get_province_number();
+				return adjacent_province.get_province_number();
 			}
 		}
 	}
