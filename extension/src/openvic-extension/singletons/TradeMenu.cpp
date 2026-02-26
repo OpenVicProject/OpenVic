@@ -38,8 +38,8 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 	for (GoodCategory const& good_category : good_definition_manager.get_good_categories()) {
 		TypedArray<Dictionary> array;
 
-		for (GoodDefinition const* good_definition : good_category.get_good_definitions()) {
-			GoodInstance const& good_instance = good_instance_manager.get_good_instance_by_definition(*good_definition);
+		for (GoodDefinition const& good_definition : good_category.get_good_definitions()) {
+			GoodInstance const& good_instance = good_instance_manager.get_good_instance_by_definition(good_definition);
 
 			if (!good_instance.is_trading_good()) {
 				continue;
@@ -47,7 +47,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 
 			Dictionary good_dict;
 
-			good_dict[good_index_key] = static_cast<uint64_t>(type_safe::get(good_definition->index));
+			good_dict[good_index_key] = static_cast<uint64_t>(type_safe::get(good_definition.index));
 			good_dict[current_price_key] = static_cast<real_t>(good_instance.get_price());
 			good_dict[price_change_key] = static_cast<real_t>(good_instance.get_price_change_yesterday());
 
