@@ -959,13 +959,13 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 
-	std::span<const BuildingType* const> province_building_types = game_singleton->get_definition_manager()
+	const forwardable_span<const std::reference_wrapper<const BuildingType>> province_building_types = game_singleton->get_definition_manager()
 		.get_economy_manager().get_building_type_manager().get_province_building_types();
 	ERR_FAIL_COND_V_MSG(
 		building_index < 0 || building_index >= province_building_types.size(), {},
 		Utilities::format("Invalid province building index: %d", building_index)
 	);
-	return convert_to<String>(province_building_types[building_index]->get_identifier());
+	return convert_to<String>(province_building_types[building_index].get().get_identifier());
 }
 
 int32_t MenuSingleton::get_slave_pop_icon_index() const {

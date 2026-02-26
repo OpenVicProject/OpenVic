@@ -218,7 +218,7 @@ godot::String ScoreOverview::generate_industrial_tooltip(CountryInstance& countr
 	std::vector<std::pair<godot::String, fixed_point_t>> industrial_power_states;
 	for (auto const& [state, power] : country.get_industrial_power_from_states()) {
 		industrial_power_states.emplace_back(
-			Utilities::get_state_name(industrial_score_label, *state),
+			Utilities::get_state_name(industrial_score_label, state),
 			power
 		);
 	}
@@ -242,10 +242,11 @@ godot::String ScoreOverview::generate_industrial_tooltip(CountryInstance& countr
 
 	// Tuple: Country identifier / Country name / Power
 	std::vector<std::tuple<godot::String, godot::String, fixed_point_t>> industrial_power_from_investments;
-	for (auto const& [country, power] : country.get_industrial_power_from_investments()) {
+	for (auto const& [investor_ref, power] : country.get_industrial_power_from_investments()) {
+		CountryInstance const& investor = investor_ref.get();
 		industrial_power_from_investments.emplace_back(
-			convert_to<godot::String>(country->get_identifier()),
-			Utilities::get_country_name(industrial_score_label, *country),
+			convert_to<godot::String>(investor.get_identifier()),
+			Utilities::get_country_name(industrial_score_label, investor),
 			power
 		);
 	}

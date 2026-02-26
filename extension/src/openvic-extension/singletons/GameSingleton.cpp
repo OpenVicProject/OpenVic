@@ -179,11 +179,7 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 			return result;
 		}();
 
-		mod_info_dictionary[is_loaded_key] = ranges::contains(
-			loaded_mods,
-			mod,
-			[](Mod const& x) -> decltype(auto) { return x; }
-		);
+		mod_info_dictionary[is_loaded_key] = ranges::contains(loaded_mods, mod);
 		results.push_back(std::move(mod_info_dictionary));
 	}
 
