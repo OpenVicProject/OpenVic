@@ -1,8 +1,23 @@
 #!/usr/bin/env python
 
+import atexit as _atexit
 import os
+import time as _time
 
 import SCons
+
+# Log how long the whole scons invocation took. Fires at interpreter exit so it
+# also reports for failed builds.
+_BUILD_START = _time.monotonic()
+
+
+@_atexit.register
+def _print_build_duration():
+    elapsed = _time.monotonic() - _BUILD_START
+    mins = int(elapsed // 60)
+    secs = elapsed - (mins * 60)
+    print(f"[BUILD TIMING] elapsed: {mins}m {secs:.1f}s  ({elapsed:.1f}s total)")
+
 
 BINDIR = "game/bin"
 
@@ -15,11 +30,28 @@ opts = env.SetupOptions()
 
 env.FinalizeOptions()
 
+
+def _build_config_dir(env):
+    parts = [env["platform"], env["target"], env["arch"]]
+    if env.dev_build:
+        parts.append("dev")
+    if env["precision"] == "double":
+        parts.append("double")
+    if env["platform"] == "windows":
+        parts.append("mdd" if env.get("debug_crt", False) else "mt" if env.get("use_static_cpp", False) else "md")
+    if env.get("use_asan", False):
+        parts.append("san")
+    return "build/" + ".".join(parts)
+
+
+build_dir = _build_config_dir(env)
+
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
 OLD_ARGS = SCons.Script.ARGUMENTS.copy()
 SCons.Script.ARGUMENTS["use_static_cpp"] = env["use_static_cpp"]
 SCons.Script.ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
 SCons.Script.ARGUMENTS["compiledb_file"] = "godot-cpp/compile_commands.json"
+# godot-cpp builds in-source and forcing VariantDir on it breaks the GodotCPPBingings builder
 godot_env = SConscript("godot-cpp/SConstruct")
 SCons.Script.ARGUMENTS = OLD_ARGS
 
@@ -30,9 +62,20 @@ env.Prepend(LIBS=godot_env["LIBS"])
 
 SConscript("extension/deps/SCsub", "env")
 
+ovsim_gen_files = env.openvic_simulation["GEN_FILES"]
+
+# Mirror extension/src into the per-config build dir
+ext_src = "extension/src"
+ext_variant = build_dir + "/" + ext_src  # forward slashes so VariantDir matches
+env.VariantDir(ext_variant, ext_src, duplicate=True)
+
+# Use ONLY the variant include path. Adding both source and variant would let
+# the same header be found through two different paths and fail compilation
+env.Append(CPPPATH=[env.Dir(ext_variant)])
+
 Default(
     env.CommandNoCache(
-        "extension/src/gen/commit_info.gen.hpp",
+        ext_variant + "/gen/commit_info.gen.hpp",
         env.Value(env.get_git_info()),
         env.Run(env.git_builder),
         name_prefix="game",
@@ -40,7 +83,7 @@ Default(
 )
 Default(
     env.CommandNoCache(
-        "extension/src/gen/license_info.gen.hpp",
+        ext_variant + "/gen/license_info.gen.hpp",
         ["#COPYRIGHT", "#LICENSE.md"],
         env.Run(env.license_builder),
         name_prefix="game",
@@ -48,7 +91,7 @@ Default(
 )
 Default(
     env.CommandNoCache(
-        "extension/src/gen/author_info.gen.hpp",
+        ext_variant + "/gen/author_info.gen.hpp",
         "#AUTHORS.md",
         env.Run(env.author_builder),
         name_prefix="game",
@@ -70,57 +113,49 @@ Default(
 # - CPPDEFINES are for pre-processor defines
 # - LINKFLAGS are for linking flags
 
-# tweak this if you want to use different folders, or more folders, to store your source code in.
-paths = ["extension/src"]
-doc_gen_file = os.path.join(paths[0], "gen/doc_data.gen.cpp")
-env.Append(CPPPATH=[[env.Dir(p) for p in paths]])
-sources = env.GlobRecursive("*.cpp", paths, doc_gen_file)
+doc_gen_source = ext_src + "/gen/doc_data.gen.cpp"
+doc_gen_variant = ext_variant + "/gen/doc_data.gen.cpp"
+# Exclude doc_data.gen.cpp and pch.cpp
+pch_cpp_variant = ext_variant + "/openvic-extension/pch.cpp"
+sources = env.GlobRecursive("*.cpp", [ext_variant], [doc_gen_variant, pch_cpp_variant])
 env.extension_sources = sources
 
+env.SetupPCH("openvic-extension/pch.hpp", pch_cpp_variant)
+
+objects = []
+for s in sources:
+    obj = env.SharedObject(s)
+    env.Depends(obj, ovsim_gen_files)
+    objects.extend(obj if isinstance(obj, (list, tuple)) else [obj])
+
 if env["target"] in ["editor", "template_debug"]:
-    doc_data = godot_env.GodotCPPDocData(doc_gen_file, source=Glob("extension/doc_classes/*.xml"))
-    sources.append(doc_data)
+    doc_data = godot_env.GodotCPPDocData(doc_gen_source, source=Glob("extension/doc_classes/*.xml"))
+    objects.append(doc_data)
 
-# Remove unassociated intermediate binary files if allowed, usually the result of a renamed or deleted source file
-if env["intermediate_delete"]:
-    from glob import glob
-
-    def remove_extension(file: str):
-        if file.find(".") == -1:
-            return file
-        return file[: file.rindex(".")]
-
-    found_one = False
-    for path in paths:
-        for obj_file in [file[: -len(".os")] for file in glob(path + "*.os", recursive=True)]:
-            found = False
-            for source_file in sources:
-                if remove_extension(str(source_file)) == obj_file:
-                    found = True
-                    break
-            if not found:
-                if not found_one:
-                    found_one = True
-                    print("Unassociated intermediate files found...")
-                print("Removing " + obj_file + ".os")
-                os.remove(obj_file + ".os")
+# Link into the per-config build_dir so each CRT/config keeps its own cached
+# binary. game/bin/openvic/ then receives a copy via env.Install
+build_bin = build_dir + "/bin"
+final_bin = BINDIR + "/openvic"
 
 if env["platform"] == "macos":
+    framework_name = "libopenvic.{}.{}.framework".format(godot_env["platform"], godot_env["target"])
+    dylib_name = "libopenvic.{}.{}".format(godot_env["platform"], godot_env["target"])
     library = env.SharedLibrary(
-        BINDIR
-        + "/openvic/libopenvic.{}.{}.framework/libopenvic.{}.{}".format(
-            godot_env["platform"], godot_env["target"], godot_env["platform"], godot_env["target"]
-        ),
-        source=sources,
+        build_bin + "/" + framework_name + "/" + dylib_name,
+        source=objects,
     )
+    installed = env.Install(final_bin + "/" + framework_name, library[0])
 else:
     suffix = ".{}.{}.{}".format(godot_env["platform"], godot_env["target"], godot_env["arch"])
     library = env.SharedLibrary(
-        BINDIR + "/openvic/libopenvic{}{}".format(suffix, godot_env["SHLIBSUFFIX"]),
-        source=sources,
+        build_bin + "/libopenvic{}{}".format(suffix, godot_env["SHLIBSUFFIX"]),
+        source=objects,
     )
+    installed = env.Install(final_bin, library[0])
 
-default_args = [library]
+env.Clean(library, env.Dir(build_dir))
+
+default_args = [installed]
 
 if "env" in locals():
     # FIXME: This method mixes both cosmetic progress stuff and cache handling...
