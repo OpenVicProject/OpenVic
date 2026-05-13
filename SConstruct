@@ -64,14 +64,14 @@ SConscript("extension/deps/SCsub", "env")
 
 ovsim_gen_files = env.openvic_simulation["GEN_FILES"]
 
-# Mirror extension/src into the per-config build dir
+# Out-of-source build: variant tree holds object files and generated headers,
+# not copies of the source. Compile diagnostics therefore reference original
+# source paths.
 ext_src = "extension/src"
 ext_variant = build_dir + "/" + ext_src  # forward slashes so VariantDir matches
-env.VariantDir(ext_variant, ext_src, duplicate=True)
+env.VariantDir(ext_variant, ext_src, duplicate=False)
 
-# Use ONLY the variant include path. Adding both source and variant would let
-# the same header be found through two different paths and fail compilation
-env.Append(CPPPATH=[env.Dir(ext_variant)])
+env.Append(CPPPATH=[env.Dir(ext_variant), env.Dir(ext_src)])
 
 Default(
     env.CommandNoCache(
@@ -115,9 +115,10 @@ Default(
 
 doc_gen_source = ext_src + "/gen/doc_data.gen.cpp"
 doc_gen_variant = ext_variant + "/gen/doc_data.gen.cpp"
-# Exclude doc_data.gen.cpp and pch.cpp
+# Exclude doc_data.gen.cpp and pch.cpp from the regular source list.
+pch_cpp_source = ext_src + "/openvic-extension/pch.cpp"
 pch_cpp_variant = ext_variant + "/openvic-extension/pch.cpp"
-sources = env.GlobRecursive("*.cpp", [ext_variant], [doc_gen_variant, pch_cpp_variant])
+sources = env.GlobRecursiveVariant("*.cpp", ext_src, ext_variant, [doc_gen_source, pch_cpp_source])
 env.extension_sources = sources
 
 env.SetupPCH("openvic-extension/pch.hpp", pch_cpp_variant)
