@@ -1,14 +1,18 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/font_file.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
+#include <openvic-simulation/core/memory/Vector.hpp>
+#include <openvic-simulation/core/Typedefs.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Date.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/Vector.hpp>
 
 #define ERR(x) ((x) ? OK : FAILED)

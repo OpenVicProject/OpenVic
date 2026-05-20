@@ -1,17 +1,23 @@
 #include "MenuSingleton.hpp"
 
 #include <span>
-#include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <type_safe/strong_typedef.hpp>
+
 #include <openvic-simulation/economy/GoodDefinition.hpp>
+#include <openvic-simulation/map/ProvinceDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/population/PopType.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/politics/PartyPolicy.hpp>
+#include <openvic-simulation/politics/Rebel.hpp>
+#include <openvic-simulation/types/ConstructorTags.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/types/fixed_point/Math.hpp>
 #include <openvic-simulation/types/PopSprite.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -20,15 +26,31 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
+#include "openvic-extension/utility/EasyAccess.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
 
+void MenuSingleton::initialise() {
+	population_menu.initialise();
+}
+
 MenuSingleton::population_menu_t::population_menu_t()
-: pop_type_sort_cache { decltype(pop_type_sort_cache)::create_empty() },
-province_sort_cache { decltype(province_sort_cache)::create_empty() },
-rebel_type_sort_cache { decltype(rebel_type_sort_cache)::create_empty() } {}
+  : workforce_distribution { create_empty },
+  	ideology_distribution { create_empty },
+	pop_type_sort_cache { create_empty },
+	province_sort_cache { create_empty },
+	rebel_type_sort_cache { create_empty } {}
+
+void MenuSingleton::population_menu_t::population_menu_t::initialise() {
+	if (is_initialised()) { return; }
+	workforce_distribution = { get_pop_types().size(), fixed_point_t::_0 };
+  	ideology_distribution = { get_ideologies().size(), fixed_point_t::_0 };
+  	pop_type_sort_cache = { get_pop_types().size(), 0 };
+	province_sort_cache = { get_province_definitions().size(), 0 };
+	rebel_type_sort_cache = { get_rebel_types().size(), 0 };
+}
 
 StringName const& MenuSingleton::_signal_population_menu_province_list_changed() {
 	static const StringName signal_population_menu_province_list_changed = "population_menu_province_list_changed";
@@ -178,7 +200,7 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 	PartyPolicyGroup const* war_policy_issue_group = issue_manager.get_party_policy_group_by_identifier("war_policy");
 	PartyPolicy const* war_policy_issue = war_policy_issue_group == nullptr
 		? nullptr
-		: country.get_ruling_party_untracked()->get_policies(*war_policy_issue_group);
+		: country.get_ruling_party_untracked()->get_policies()[war_policy_issue_group->index];
 
 	const String impact_string = Utilities::fixed_point_to_string_dp(country.get_mobilisation_impact() * 100, 1) + "%";
 
@@ -445,7 +467,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 	return buildings_array;
 }
 
-Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number) const {
+Dictionary MenuSingleton::get_province_info_from_number(std::uint16_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -562,7 +584,8 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		std::optional<Job> const& owner_job = production_type.owner;
 		if (owner_job.has_value()) {
-			PopType const& owner_pop_type = *owner_job->pop_type;
+			const pop_type_index_t owner_pop_type_index = owner_job->pop_type_index;
+			PopType const& owner_pop_type = get_pop_type(owner_pop_type_index);
 			State const* state = province->get_state();
 
 			if (unlikely(state == nullptr)) {
@@ -573,8 +596,9 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			} else {
 				const fixed_point_t effect_value = state->get_total_population() == 0
 					? fixed_point_t::_0
-					: owner_job->effect_multiplier.mul_div(
-						state->get_population_by_type(owner_pop_type),
+					: fp::mul_div(
+						owner_job->effect_multiplier,
+						state->get_population_by_type()[owner_pop_type_index],
 						state->get_total_population()
 					);
 
@@ -611,7 +635,8 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		String amount_of_employees_by_pop_type;
 
-		for (auto const& [pop_type, employees_of_type] : rgo.get_employee_count_per_type_cache()) {
+		for (pop_type_index_t pop_type_index {}; pop_type_index < rgo.get_employee_count_per_type_cache().size(); ++pop_type_index) {
+			const pop_size_t employees_of_type = rgo.get_employee_count_per_type_cache()[pop_type_index];
 			if (employees_of_type <= 0) {
 				continue;
 			}
@@ -619,6 +644,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			static const String amount_of_employees_by_pop_type_template_string = "\n  -" + GUILabel::get_colour_marker() +
 				"Y%s" + GUILabel::get_colour_marker() + "!:%d";
 
+			PopType const& pop_type = get_pop_type(pop_type_index);
 			amount_of_employees_by_pop_type += Utilities::format(
 				amount_of_employees_by_pop_type_template_string,
 				tr(convert_to<String>(pop_type.get_identifier())),
@@ -626,12 +652,12 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			);
 
 			for (Job const& job : production_type.get_jobs()) {
-				if (job.pop_type != nullptr && *job.pop_type != pop_type) {
+				if (job.pop_type_index != pop_type_index) {
 					continue;
 				}
 
 				const fixed_point_t effect_multiplier = job.effect_multiplier;
-				fixed_point_t relative_to_workforce = fixed_point_t::from_fraction(employees_of_type, max_employee_count);
+				fixed_point_t relative_to_workforce = fp::from_fraction(employees_of_type, max_employee_count);
 				const fixed_point_t effect_value = effect_multiplier == fixed_point_t::_1
 					? relative_to_workforce
 					: effect_multiplier * std::min(relative_to_workforce, job.amount);
@@ -895,7 +921,10 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	ret[province_info_total_population_key] = type_safe::get(province->get_total_population());
 
 	const auto make_pie_chart_tooltip = [this](
-		has_get_identifier_and_colour auto const* key, String const& identifier, float weight, float total_weight
+		auto const& key,
+		String const& identifier,
+		float weight,
+		float total_weight
 	) -> String {
 		static const String format_key = "%d%% %s";
 		return Utilities::format(
@@ -905,20 +934,28 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		);
 	};
 
-	GFXPieChartTexture::godot_pie_chart_data_t pop_types =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_population_by_type(), make_pie_chart_tooltip);
+	GFXPieChartTexture::godot_pie_chart_data_t pop_types = GFXPieChartTexture::distribution_to_slices_array<const PopType, pop_sum_t>(
+		get_pop_types(),
+		province->get_population_by_type(),
+		make_pie_chart_tooltip
+	);
 	if (!pop_types.is_empty()) {
 		ret[province_info_pop_types_key] = std::move(pop_types);
 	}
 
-	GFXPieChartTexture::godot_pie_chart_data_t ideologies =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_supporter_equivalents_by_ideology(), make_pie_chart_tooltip);
+	GFXPieChartTexture::godot_pie_chart_data_t ideologies =	GFXPieChartTexture::distribution_to_slices_array<const Ideology, fixed_point_t>(
+		get_ideologies(),
+		province->get_supporter_equivalents_by_ideology(),
+		make_pie_chart_tooltip
+	);
 	if (!ideologies.is_empty()) {
 		ret[province_info_pop_ideologies_key] = std::move(ideologies);
 	}
 
-	GFXPieChartTexture::godot_pie_chart_data_t cultures =
-		GFXPieChartTexture::distribution_to_slices_array(province->get_population_by_culture(), make_pie_chart_tooltip);
+	GFXPieChartTexture::godot_pie_chart_data_t cultures = GFXPieChartTexture::distribution_to_slices_array(
+		province->get_population_by_culture(),
+		make_pie_chart_tooltip
+	);
 	if (!cultures.is_empty()) {
 		ret[province_info_pop_cultures_key] = std::move(cultures);
 	}
@@ -951,11 +988,12 @@ int32_t MenuSingleton::get_province_building_count() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	return game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager()
-		.get_province_building_types().size();
+	return type_safe::get(
+		game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_province_building_types().size()
+	);
 }
 
-String MenuSingleton::get_province_building_identifier(int32_t building_index) const {
+String MenuSingleton::get_province_building_identifier(std::uint16_t building_index) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 
@@ -1096,8 +1134,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(research_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fixed_point_t::from_fraction(
-						100 * country.get_population_by_type(*pop_type),
+					fp::from_fraction(
+						100 * country.get_population_by_type()[pop_type->index],
 						country.get_total_population()
 					), 2
 				)
@@ -1205,8 +1243,8 @@ Dictionary MenuSingleton::get_topbar_info() const {
 				Utilities::fixed_point_to_string_dp(leadership_points, 2)
 			).replace(
 				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fixed_point_t::from_fraction(
-						100 * country.get_population_by_type(*pop_type),
+					fp::from_fraction(
+						100 * country.get_population_by_type()[pop_type->index],
 						country.get_total_population()
 					), 2
 				)

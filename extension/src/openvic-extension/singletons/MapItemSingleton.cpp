@@ -1,27 +1,30 @@
 #include "MapItemSingleton.hpp"
 
+#include <cstdint>
+
 #include <type_safe/strong_typedef.hpp>
 
-#include <openvic-simulation/utility/Containers.hpp>
+#include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
+#include <godot_cpp/variant/packed_vector2_array.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
+#include <godot_cpp/variant/vector2.hpp>
 
-#include "godot_cpp/core/error_macros.hpp"
-#include "godot_cpp/variant/packed_int32_array.hpp"
-#include "godot_cpp/variant/packed_vector2_array.hpp"
-#include "godot_cpp/variant/typed_array.hpp"
-#include "godot_cpp/variant/vector2.hpp"
+#include <openvic-simulation/core/memory/SmartPtr.hpp>
+#include <openvic-simulation/country/CountryDefinition.hpp>
+#include <openvic-simulation/country/CountryInstance.hpp>
+#include <openvic-simulation/DefinitionManager.hpp>
+#include <openvic-simulation/economy/BuildingType.hpp>
+#include <openvic-simulation/interface/GFXObject.hpp>
+#include <openvic-simulation/map/ProvinceDefinition.hpp>
+#include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/map/State.hpp>
+#include <openvic-simulation/types/Vector.hpp>
+
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "openvic-simulation/country/CountryDefinition.hpp"
-#include "openvic-simulation/country/CountryInstance.hpp"
-#include "openvic-simulation/DefinitionManager.hpp"
-#include "openvic-simulation/economy/BuildingType.hpp"
-#include "openvic-simulation/interface/GFXObject.hpp"
-#include "openvic-simulation/map/ProvinceDefinition.hpp"
-#include "openvic-simulation/map/ProvinceInstance.hpp"
-#include "openvic-simulation/map/State.hpp"
-#include "openvic-simulation/types/Vector.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -164,7 +167,9 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 
 	PackedVector2Array billboard_pos {};
 
-	billboard_pos.resize(country_instance_manager.get_country_instance_by_definition().get_count());
+	billboard_pos.resize(type_safe::get(
+		country_instance_manager.get_country_instances().size()
+	));
 
 	int64_t index = 0;
 

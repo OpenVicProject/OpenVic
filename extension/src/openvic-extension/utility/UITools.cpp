@@ -26,7 +26,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
-#include <openvic-simulation/utility/Containers.hpp>
+#include <openvic-simulation/core/memory/SmartPtr.hpp>
 
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"

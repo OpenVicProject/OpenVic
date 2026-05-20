@@ -7,11 +7,16 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
+#include <type_safe/strong_typedef.hpp>
+
+#include <openvic-simulation/map/ProvinceDefinition.hpp>
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
 #include <openvic-simulation/population/PopSize.hpp>
 #include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
-#include <openvic-simulation/types/IndexedFlatMap.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPointMap.hpp>
+#include <openvic-simulation/types/FixedVector.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
+#include <openvic-simulation/types/TypedIndices.hpp>
 #include <openvic-simulation/types/UnitBranchType.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
@@ -35,6 +40,8 @@ namespace OpenVic {
 	struct RuleSet;
 	struct LeaderInstance;
 	struct GUIScrollbar;
+
+	using province_number_t = decltype(std::declval<ProvinceDefinition>().get_province_number());
 
 	class MenuSingleton : public godot::Object {
 		GDCLASS(MenuSingleton, godot::Object)
@@ -87,23 +94,33 @@ namespace OpenVic {
 			 *  - Nationality (Culture)
 			 *  - Issues
 			 *  - Vote */
-			fixed_point_map_t<PopType const*> workforce_distribution;
+			memory::FixedVector<fixed_point_t, pop_type_index_t> workforce_distribution;
 			fixed_point_map_t<Religion const*> religion_distribution;
-			fixed_point_map_t<Ideology const*> ideology_distribution;
+			memory::FixedVector<fixed_point_t, ideology_index_t> ideology_distribution;
 			fixed_point_map_t<Culture const*> culture_distribution;
 			fixed_point_map_t<BaseIssue const*> issue_distribution;
 			fixed_point_map_t<CountryParty const*> vote_distribution;
 
 			PopSortKey sort_key = SORT_NONE;
 			bool sort_descending = true;
-			IndexedFlatMap<PopType, size_t> pop_type_sort_cache;
+			memory::FixedVector<size_t, pop_type_index_t> pop_type_sort_cache;
 			ordered_map<Culture const*, size_t> culture_sort_cache;
 			ordered_map<Religion const*, size_t> religion_sort_cache;
-			IndexedFlatMap<ProvinceInstance, size_t> province_sort_cache;
-			IndexedFlatMap<RebelType, size_t> rebel_type_sort_cache;
+			memory::FixedVector<size_t, province_index_t> province_sort_cache;
+			memory::FixedVector<size_t, rebel_type_index_t> rebel_type_sort_cache;
 
 			std::vector<std::reference_wrapper<const Pop>> pops, filtered_pops;
 			population_menu_t();
+
+			[[nodiscard]] constexpr bool is_initialised() const {
+				return !workforce_distribution.empty()
+					&& !ideology_distribution.empty()
+					&& !pop_type_sort_cache.empty()
+					&& !province_sort_cache.empty()
+					&& !rebel_type_sort_cache.empty();
+			}
+
+			void initialise();
 		};
 
 		enum TradeSettingBit {
@@ -167,6 +184,7 @@ namespace OpenVic {
 
 	public:
 		static MenuSingleton* get_singleton();
+		void initialise();
 
 		/* This should only be called AFTER GameSingleton has been initialised! */
 		MenuSingleton();
@@ -189,9 +207,9 @@ namespace OpenVic {
 
 		/* PROVINCE OVERVIEW PANEL */
 		/* Get info to display in Province Overview Panel, packaged in a Dictionary using StringName constants as keys. */
-		godot::Dictionary get_province_info_from_number(int32_t province_number) const;
+		godot::Dictionary get_province_info_from_number(std::uint16_t province_number) const;
 		int32_t get_province_building_count() const;
-		godot::String get_province_building_identifier(int32_t building_index) const;
+		godot::String get_province_building_identifier(std::uint16_t building_index) const;
 		int32_t get_slave_pop_icon_index() const;
 		int32_t get_administrative_pop_icon_index() const;
 		int32_t get_rgo_owner_pop_icon_index() const;
@@ -223,10 +241,19 @@ namespace OpenVic {
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
-		template<IsPieChartDistribution Container>
+
+		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
+		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
+			std::span<std::add_const_t<KeyType>> keys,
+			std::span<std::add_const_t<ValueType>> values,
+			godot::String const& identifier_suffix = {}
+		) const;
+		
+		template<typename Container>
 		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
 			Container const& distribution, godot::String const& identifier_suffix = {}
 		) const;
+
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
 
@@ -248,35 +275,11 @@ namespace OpenVic {
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
 
-		static constexpr int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
+		static int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
 			const fixed_point_t stockpile_cutoff,
 			const int32_t max_slider_value
-		) {
-			// Math.log(2)/Math.log(Math.exp(Math.log(2001)/2000)) = 182.37...
-			constexpr fixed_point_t DOUBLES_AFTER_STEPS = fixed_point_t::parse_raw(11952029);
-			int32_t times_halved = 0;
-			fixed_point_t copy_plus_one = stockpile_cutoff+1;
-			while (copy_plus_one >= 2) {
-				copy_plus_one /= 2;
-				times_halved++;
-			}
-			int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS.truncate<int32_t>();
-			while (
-				calculate_trade_menu_stockpile_cutoff_amount_fp(
-					slider_value
-				) < stockpile_cutoff
-			) {
-				if (slider_value >= max_slider_value) {
-					return max_slider_value;
-				}
-				++slider_value;
-			}
-
-			return slider_value;
-		}
-		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
-			return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1;
-		}
+		);
+		static fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value);
 		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);
 
 		/* MILITARY MENU */

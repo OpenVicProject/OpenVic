@@ -4,6 +4,7 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/types/fixed_point/Math.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
@@ -208,19 +209,17 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	PackedStringArray good_producers_tooltips;
 	// TODO - replace test code with actual top producers
 	CountryInstanceManager const& country_instance_manager = instance_manager->get_country_instance_manager();
+	const size_t country_count = type_safe::get(country_instance_manager.get_country_instances().size());
 	for (GoodInstance const& good : good_instance_manager.get_good_instances()) {
 		static const StringName top_producers_localisation_key = "TRADE_TOP_PRODUCERS";
 
 		String tooltip = tr(convert_to<String>(good.get_identifier())) + get_tooltip_separator() +
 			tr(top_producers_localisation_key);
 
-		for (size_t index = 0; index < 5; ++index) {
-			CountryInstance const* other_country_ptr = country_instance_manager.get_country_instance_by_index(
+		for (size_t index = 0; index < std::min<size_t>(5, country_count); ++index) {
+			CountryInstance const& other_country = country_instance_manager.get_country_instance_by_index(
 				country_index_t(index + 1)
 			);
-
-			ERR_CONTINUE(other_country_ptr == nullptr);
-			CountryInstance const& other_country = *other_country_ptr;
 
 			static const String top_producer_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: %s";
 
@@ -228,7 +227,13 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 				top_producer_template_string,
 				convert_to<String>(other_country.get_identifier()),
 				Utilities::get_country_name(*this, other_country),
-				Utilities::fixed_point_to_string_dp(fixed_point_t(1000) / static_cast<int32_t>(index + 1), 2)
+				Utilities::fixed_point_to_string_dp(
+					fp::from_fraction(
+						1000,
+						static_cast<std::uint64_t>(index + 1) //for macos
+					),
+					2
+				)
 			);
 		}
 
@@ -330,6 +335,36 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 	ret[common_market_key] = std::move(common_market);
 
 	return ret;
+}
+
+int32_t MenuSingleton::calculate_slider_value_from_trade_menu_stockpile_cutoff(
+	const fixed_point_t stockpile_cutoff,
+	const int32_t max_slider_value
+) {
+	// Math.log(2)/Math.log(Math.exp(Math.log(2001)/2000)) = 182.37...
+	constexpr fixed_point_t DOUBLES_AFTER_STEPS = fixed_point_t::parse_raw(11952029);
+	int32_t times_halved = 0;
+	fixed_point_t copy_plus_one = stockpile_cutoff+1;
+	while (copy_plus_one >= 2) {
+		copy_plus_one /= 2;
+		times_halved++;
+	}
+	int32_t slider_value = times_halved * DOUBLES_AFTER_STEPS.truncate<int32_t>();
+	while (
+		calculate_trade_menu_stockpile_cutoff_amount_fp(
+			slider_value
+		) < stockpile_cutoff
+	) {
+		if (slider_value >= max_slider_value) {
+			return max_slider_value;
+		}
+		++slider_value;
+	}
+
+	return slider_value;
+}
+fixed_point_t MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
+	return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1;
 }
 
 float MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider) {
