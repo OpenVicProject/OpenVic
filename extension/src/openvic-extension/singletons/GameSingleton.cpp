@@ -24,6 +24,7 @@
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+#include "openvic-simulation/country/CountryInstance.hpp"
 
 #include <range/v3/algorithm/contains.hpp>
 
