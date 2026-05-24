@@ -42,7 +42,7 @@ SoundManager="*res://src/Autoload/SoundManager.gd"
 MusicManager="*res://src/Autoload/MusicManager/MusicManager.tscn"
 SaveManager="*res://src/Autoload/SaveManager.gd"
 CursorManager="*res://src/Autoload/CursorManager.gd"
-Keychain="*uid://ba4bw6vqtoail"
+Keychain="*uid://dgiia2xg7fsud"
 
 [display]
 
