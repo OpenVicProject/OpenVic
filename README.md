@@ -69,4 +69,6 @@ Every time you add something to the GDExtension you need to add to the class ref
 3. Write documentation in the style of Godot, see [Godot's Writing Documentation: Class Reference Guides](https://docs.godotengine.org/en/stable/contributing/documentation/index.html#class-reference-guides).
 4. Build with `scons`.
 
+Windows note: doctool may not work in powershell/vscode terminal use command prompt directly.
+
 If you change anything that causes new behavior in the GDExtension you should also change the corresponding class reference documentation.
