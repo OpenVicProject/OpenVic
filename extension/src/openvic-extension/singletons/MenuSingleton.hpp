@@ -223,6 +223,10 @@ namespace OpenVic {
 		godot::Error _population_menu_sort_pops();
 		godot::Error population_menu_update_locale_sort_cache();
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
+		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
+		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
+			std::span<std::add_const_t<KeyType>> keys, std::span<std::add_const_t<ValueType>> values, godot::String const& identifier_suffix = {}
+		) const;
 		template<IsPieChartDistribution Container>
 		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
 			Container const& distribution, godot::String const& identifier_suffix = {}
@@ -248,7 +252,7 @@ namespace OpenVic {
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
 
-		static constexpr int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
+		static int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
 			const fixed_point_t stockpile_cutoff,
 			const int32_t max_slider_value
 		) {
@@ -274,7 +278,7 @@ namespace OpenVic {
 
 			return slider_value;
 		}
-		static constexpr fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
+		static fixed_point_t calculate_trade_menu_stockpile_cutoff_amount_fp(fixed_point_t value) {
 			return fixed_point_t::exp_2001(value / 2000) - fixed_point_t::_1;
 		}
 		static float calculate_trade_menu_stockpile_cutoff_amount(GUIScrollbar const* slider);

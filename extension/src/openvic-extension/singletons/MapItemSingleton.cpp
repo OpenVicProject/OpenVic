@@ -2,7 +2,7 @@
 
 #include <type_safe/strong_typedef.hpp>
 
-#include <openvic-simulation/utility/Containers.hpp>
+#include <openvic-simulation/core/memory/SmartPtr.hpp>
 
 #include "godot_cpp/core/error_macros.hpp"
 #include "godot_cpp/variant/packed_int32_array.hpp"
@@ -39,7 +39,7 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_number,{"province_number"});
 	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_number,{"province_number"});
 	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_number, {"position"});
-	
+
 }
 
 MapItemSingleton* MapItemSingleton::get_singleton() {
@@ -164,7 +164,7 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 
 	PackedVector2Array billboard_pos {};
 
-	billboard_pos.resize(country_instance_manager.get_country_instance_by_definition().get_count());
+	billboard_pos.resize(type_safe::get(country_instance_manager.get_country_instances().size()));
 
 	int64_t index = 0;
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <functional>
+#include <type_traits>
+
 #include <godot_cpp/classes/image_texture.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
@@ -11,7 +14,17 @@
 #include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-simulation/core/template/Concepts.hpp"
 
+#include <type_safe/strong_typedef.hpp>
+
 namespace OpenVic {
+	template<typename T>
+	concept IsPieChartKey = has_get_identifier_and_colour<std::remove_pointer_t<T>>;
+
+	template<typename T>
+	concept IsPieChartValueTypeSafe = is_strongly_typed<T> && std::is_constructible_v<float, type_safe::underlying_type<T>>;
+	template<typename T>
+	concept IsPieChartValue = std::is_constructible_v<float, T> || IsPieChartValueTypeSafe<T>;
+
 	template<typename MapType>
 	concept IsPieChartDistribution = (
 			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
@@ -19,14 +32,8 @@ namespace OpenVic {
 			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
 			|| specialization_of<MapType, IndexedFlatMap>
 		)
-		&& has_get_identifier_and_colour<std::remove_pointer_t<map_key_t<MapType>>>
-		&& (
-			requires { static_cast<float>(std::declval<map_value_t<MapType>>()); }
-			|| (
-				is_strongly_typed<map_value_t<MapType>>
-				&& requires { static_cast<float>(type_safe::get(std::declval<map_value_t<MapType>>())); }
-			)
-		);
+		&& IsPieChartKey<map_key_t<MapType>>
+		&& IsPieChartValue<map_value_t<MapType>>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
@@ -56,52 +63,50 @@ namespace OpenVic {
 	public:
 		/* Generate slice data from a distribution of objects satisfying HasGetIdentifierAndGetColour, sorted by their weight.
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
-		template<IsPieChartDistribution MapType>
+		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
 		static godot_pie_chart_data_t distribution_to_slices_array(
-			MapType const& distribution,
+			std::span<std::add_const_t<KeyType>> keys,
+			std::span<std::add_const_t<ValueType>> values,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::remove_pointer_t<map_key_t<MapType>> const*, godot::String const&, float, float
+				godot::String, std::add_const_t<std::remove_pointer_t<KeyType>>&, godot::String const&, float, float
 			> auto make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
-			using namespace godot;
+			assert(keys.size() == values.size());
+			using key_t = std::add_const_t<std::remove_pointer_t<KeyType>>;
+			using key_ref_wrap_t = std::reference_wrapper<key_t>;
+			using entry_t = std::pair<
+				key_ref_wrap_t,
+				float
+			>;
 
-			using key_type = std::remove_pointer_t<map_key_t<MapType>>;
-			using entry_t = std::pair<key_type const*, float>;
-
-			std::vector<entry_t> sorted_distribution;
-			if constexpr (specialization_of<MapType, IndexedFlatMap>) {
-				sorted_distribution.reserve(distribution.get_count());
-			} else {
-				sorted_distribution.reserve(distribution.size());
-			}
+			memory::FixedVector<entry_t> sorted_distribution { create_empty, keys.size() };
 
 			float total_weight = 0.0f;
-
-			for (auto [key_ref_or_ptr, non_float_value] : distribution) {
-				key_type const* key_ptr;
-				if constexpr (std::same_as<decltype(key_ptr), decltype(key_ref_or_ptr)>) {
-					key_ptr = key_ref_or_ptr;
-				} else {
-					key_ptr = &key_ref_or_ptr;
-				}
-
+			for (size_t i = 0; i < keys.size(); ++i) {
+				key_t& key = [&]() -> key_t& {
+					if constexpr (requires { static_cast<key_t&>(keys[i]); }) {
+						return keys[i];
+					} else if constexpr (requires { static_cast<key_t&>(*keys[i]); }) {
+						return *keys[i];
+					}
+				}();
 				float value;
-				if constexpr (is_strongly_typed<decltype(non_float_value)>) {
-					value = static_cast<float>(type_safe::get(non_float_value));
+				if constexpr (IsPieChartValueTypeSafe<ValueType>) {
+					value = static_cast<float>(type_safe::get(values[i]));
 				} else {
-					value = static_cast<float>(non_float_value);
+					value = static_cast<float>(values[i]);
 				}
 
 				if (value > 0.0f) {
-					sorted_distribution.emplace_back(key_ptr, value);
+					sorted_distribution.emplace_back(key, value);
 
 					total_weight += value;
 				} else if (value < 0.0f) {
 					spdlog::error_s(
 						"Negative distribution value {} for key \"{}\"",
-						value, *key_ptr
+						value, key
 					);
 				}
 			}
@@ -114,29 +119,58 @@ namespace OpenVic {
 			std::sort(
 				sorted_distribution.begin(), sorted_distribution.end(),
 				[](entry_t const& lhs, entry_t const& rhs) -> bool {
-					return lhs.first < rhs.first;
+					if constexpr (requires { lhs.first.get() < rhs.first.get(); }) {
+						return lhs.first.get() < rhs.first.get();
+					} else if constexpr (requires { lhs.first.get().index < rhs.first.get().index; }) {
+						return lhs.first.get().index < rhs.first.get().index;
+					} else if constexpr (requires { lhs.first.get().get_identifier() < rhs.first.get().get_identifier(); }) {
+						return lhs.first.get().get_identifier() < rhs.first.get().get_identifier();;
+					} else {
+						static_assert(!std::is_same_v<KeyType, KeyType>, "distribution_to_slices_array's sorting does not support KeyType");
+					}
 				}
 			);
 
 			godot_pie_chart_data_t array;
-			ERR_FAIL_COND_V(array.resize(sorted_distribution.size()) != OK, {});
+			ERR_FAIL_COND_V(array.resize(sorted_distribution.size()) != godot::OK, {});
 
 			for (size_t index = 0; index < array.size(); ++index) {
-				auto const& [key, value] = sorted_distribution[index];
+				auto const& [key_ref, value] = sorted_distribution[index];
+				key_t& key = key_ref.get();
 
-				String identifier = convert_to<String>(key->get_identifier());
+				godot::String identifier = convert_to<godot::String>(key.get_identifier());
 				identifier += identifier_suffix;
 
-				Dictionary sub_dict;
+				godot::Dictionary sub_dict;
 
 				sub_dict[_slice_tooltip_key()] = make_tooltip(key, identifier, value, total_weight);
 				sub_dict[_slice_identifier_key()] = std::move(identifier);
-				sub_dict[_slice_colour_key()] = convert_to<Color>(key->get_colour());
+				sub_dict[_slice_colour_key()] = convert_to<godot::Color>(key.get_colour());
 				sub_dict[_slice_weight_key()] = value;
 
 				array[index] = std::move(sub_dict);
 			}
 			return array;
+		}
+
+		template<IsPieChartDistribution MapType>
+		static godot_pie_chart_data_t distribution_to_slices_array(
+			MapType const& distribution,
+			NodeTools::Functor<
+				// return tooltip; args: key const*, identifier, weight, total weight
+				godot::String, std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&, godot::String const&, float, float
+			> auto make_tooltip,
+			godot::String const& identifier_suffix = {}
+		) {
+			memory::FixedVector<map_key_t<MapType>> keys { create_empty, distribution.size() };
+			memory::FixedVector<map_value_t<MapType>> values { create_empty, distribution.size() };
+			for (auto const& [k, v] : distribution) {
+				keys.emplace_back(k);
+				values.emplace_back(v);
+			}
+			return distribution_to_slices_array<map_key_t<MapType>, map_value_t<MapType>>(
+				keys, values, make_tooltip, identifier_suffix
+			);
 		}
 
 	protected:

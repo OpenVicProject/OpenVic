@@ -5,9 +5,9 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/memory/String.hpp>
 #include <openvic-simulation/core/string/Utility.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
-#include <openvic-simulation/utility/Containers.hpp>
 
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"

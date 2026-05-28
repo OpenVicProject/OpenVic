@@ -11,10 +11,10 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector2i.hpp>
 
+#include <openvic-simulation/core/memory/String.hpp>
 #include <openvic-simulation/core/template/Concepts.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Vector.hpp>
-#include <openvic-simulation/utility/Containers.hpp>
 
 namespace OpenVic {
 	template<typename To, typename From>
