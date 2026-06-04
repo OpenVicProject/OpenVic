@@ -12,9 +12,11 @@
 
 #include <openvic-simulation/dataloader/ModManager.hpp>
 #include <openvic-simulation/DefinitionManager.hpp>
+#include <openvic-simulation/core/memory/String.hpp>
+#include <openvic-simulation/core/memory/Vector.hpp>
 #include <openvic-simulation/map/Crime.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
-#include <openvic-simulation/utility/Containers.hpp>
+#include <openvic-simulation/types/fixed_point/Math.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/core/Convert.hpp"
@@ -679,7 +681,7 @@ Error GameSingleton::_load_flag_sheet() {
 	ERR_FAIL_COND_V(flag_images.size() != flag_sheet_count, FAILED);
 
 	/* Calculate the width that will make the sheet as close to a square as possible (taking flag dimensions into account.) */
-	flag_sheet_dims.x = (fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).sqrt().ceil<int32_t>();
+	flag_sheet_dims.x = fp::sqrt(fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).ceil<int32_t>();
 
 	/* Calculated corresponding height (rounded up). */
 	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1) / flag_sheet_dims.x;

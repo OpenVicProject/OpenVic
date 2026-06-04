@@ -215,12 +215,9 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 			tr(top_producers_localisation_key);
 
 		for (size_t index = 0; index < 5; ++index) {
-			CountryInstance const* other_country_ptr = country_instance_manager.get_country_instance_by_index(
+			CountryInstance const& other_country = country_instance_manager.get_country_instance_by_index(
 				country_index_t(index + 1)
 			);
-
-			ERR_CONTINUE(other_country_ptr == nullptr);
-			CountryInstance const& other_country = *other_country_ptr;
 
 			static const String top_producer_template_string = "\n" + GUILabel::get_flag_marker() + "%s %s: %s";
 

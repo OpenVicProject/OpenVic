@@ -9,6 +9,12 @@
 #include <openvic-simulation/types/TypedIndices.hpp>
 
 namespace OpenVic {
+	struct Ideology;
+	struct PartyPolicy;
+	struct PopType;
+	struct ProvinceDefinition;
+	struct RebelType;
+	struct Reform;
 
 	class GameSingleton : public godot::Object {
 		GDCLASS(GameSingleton, godot::Object)
@@ -137,5 +143,60 @@ namespace OpenVic {
 		/* Generate the province_colour_texture from the current mapmode. */
 		godot::Error _update_colour_image();
 		void _on_gamestate_updated();
+
+		// TODO: Get rid of these functions later
+		TypedSpan<ideology_index_t, const Ideology> get_ideologies() {
+			return get_definition_manager().get_politics_manager().get_ideology_manager().get_ideologies();
+		}
+		Ideology const& get_ideology(const ideology_index_t i) {
+			TypedSpan<ideology_index_t, const Ideology> span = get_ideologies();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
+
+		TypedSpan<party_policy_index_t, const PartyPolicy> get_party_policies() {
+			return get_definition_manager().get_politics_manager().get_issue_manager().get_party_policies();
+		}
+		PartyPolicy const& get_party_policy(const party_policy_index_t i) {
+			TypedSpan<party_policy_index_t, const PartyPolicy> span = get_party_policies();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
+
+		TypedSpan<pop_type_index_t, const PopType> get_pop_types() {
+			return get_definition_manager().get_pop_manager().get_pop_types();
+		}
+		PopType const& get_pop_type(const pop_type_index_t i) {
+			TypedSpan<pop_type_index_t, const PopType> span = get_pop_types();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
+
+		TypedSpan<province_index_t, const ProvinceDefinition> get_province_definitions() {
+			return get_definition_manager().get_map_definition().get_province_definitions();
+		}
+		ProvinceDefinition const& get_province_definition(const province_index_t i) {
+			TypedSpan<province_index_t, const ProvinceDefinition> span = get_province_definitions();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
+
+		TypedSpan<rebel_type_index_t, const RebelType> get_rebel_types() {
+			return get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types();
+		}
+		RebelType const& get_rebel_type(const rebel_type_index_t i) {
+			TypedSpan<rebel_type_index_t, const RebelType> span = get_rebel_types();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
+
+		TypedSpan<reform_index_t, const Reform> get_reforms() {
+			return get_definition_manager().get_politics_manager().get_issue_manager().get_reforms();
+		}
+		Reform const& get_reform(const reform_index_t i) {
+			TypedSpan<reform_index_t, const Reform> span = get_reforms();
+			CRASH_BAD_INDEX(type_safe::get(i), type_safe::get(span.size()));
+			return span[i];
+		}
 	};
 }
