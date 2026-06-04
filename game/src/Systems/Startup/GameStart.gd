@@ -64,6 +64,18 @@ func _ready() -> void:
 	await _setup_compatibility_mode_paths()
 	await loading_screen.start_loading_screen(_initialize_game)
 
+func _on_vic2_dir_dialog_failed() -> void:
+	get_window().mode = Window.MODE_WINDOWED
+	OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
+	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	get_tree().quit()
+
+var _selected_base_path : String
+func _on_vic2_dir_dialog_dir_selected(dir : String) -> void:
+	_selected_base_path = GameSingleton.search_for_game_path(dir)
+	if not _selected_base_path:
+		OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
+
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
 
@@ -91,28 +103,22 @@ func _setup_compatibility_mode_paths() -> void:
 			actual_base_path = GameSingleton.search_for_game_path(".")
 		if not actual_base_path:
 			get_tree().paused = true
-			vic2_dir_dialog.popup_centered_ratio()
-			# Remove with https://github.com/godotengine/godot/pull/81178
-			vic2_dir_dialog.ok_button_text = "VIC2_DIR_DIALOG_SELECT"
+			var ok_button := vic2_dir_dialog.get_ok_button()
+			ok_button.auto_translate = true
 			# WHY WON'T CANCEL AUTO-TRANSLATE WORK NOW?!?!?!?
 			var cancel_button := vic2_dir_dialog.get_cancel_button()
-			cancel_button.auto_translate = false
 			cancel_button.auto_translate = true
-			var failure_func := func() -> void:
-				get_window().mode = Window.MODE_WINDOWED
-				OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
-				get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
-				get_tree().quit()
-			vic2_dir_dialog.canceled.connect(failure_func)
-			await vic2_dir_dialog.dir_selected
+			vic2_dir_dialog.canceled.connect(_on_vic2_dir_dialog_failed, CONNECT_ONE_SHOT)
+			vic2_dir_dialog.dir_selected.connect(_on_vic2_dir_dialog_dir_selected)
+			while not _selected_base_path:
+				vic2_dir_dialog.popup_centered_ratio()
+				await vic2_dir_dialog.dir_selected
+			actual_base_path = _selected_base_path
 			get_tree().paused = false
-			actual_base_path = GameSingleton.search_for_game_path(vic2_dir_dialog.current_path)
-			if not actual_base_path:
-				failure_func.call()
-				return
 
 	if not _settings_base_path:
-		_vic2_settings.set_value(section_name, setting_name, actual_base_path)
+		_settings_base_path = actual_base_path
+		_vic2_settings.set_value(section_name, setting_name, _settings_base_path)
 		_vic2_settings.emit_changed()
 
 	# Add mod paths
@@ -154,6 +160,9 @@ func setup_title_theme() -> void:
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
 func _initialize_game() -> void:
+	if not _settings_base_path:
+		return
+
 	var start := Time.get_ticks_usec()
 	loading_screen.try_update_loading_screen(0)
 	GameSingleton.setup_logger()
