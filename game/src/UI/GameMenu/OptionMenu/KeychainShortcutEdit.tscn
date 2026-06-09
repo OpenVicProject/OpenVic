@@ -3,5 +3,34 @@
 [ext_resource type="PackedScene" uid="uid://bq7ibhm0txl5p" path="res://addons/keychain/ShortcutEdit.tscn" id="1_47eix"]
 [ext_resource type="Script" uid="uid://dcwdajx34p4sp" path="res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.gd" id="2_gr2m0"]
 
+[sub_resource type="ButtonGroup" id="ButtonGroup_gtt2j"]
+
 [node name="ShortcutEdit" unique_id=1297136943 instance=ExtResource("1_47eix")]
 script = ExtResource("2_gr2m0")
+
+[node name="MMTopLeft" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="0" unique_id=323573483]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMTop" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="1" unique_id=424861655]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMTopRight" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="2" unique_id=1508628769]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMLeft" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="3" unique_id=820114121]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMCenter" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="4" unique_id=347200711]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMRight" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="5" unique_id=248537819]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMBottomLeft" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="6" unique_id=395697237]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMBottom" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="7" unique_id=405831379]
+button_group = SubResource("ButtonGroup_gtt2j")
+
+[node name="MMBottomRight" parent="VBoxContainer/MouseMovementOptions/AngleOptions" parent_id_path=PackedInt32Array(1155866521) index="8" unique_id=728753051]
+button_group = SubResource("ButtonGroup_gtt2j")

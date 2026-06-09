@@ -26,6 +26,7 @@ env = SConscript("scripts/SConstruct")
 env.PrependENVPath("PATH", os.getenv("PATH"))
 
 env["disable_rtti"] = False
+env["use_hot_reload"] = env.get("use_hot_reload", False)
 opts = env.SetupOptions()
 
 env.FinalizeOptions()
@@ -48,6 +49,7 @@ build_dir = _build_config_dir(env)
 
 # Needs Clone, else godot-cpp builds using our modified environment variables. eg: godot-cpp builds on C++20
 OLD_ARGS = SCons.Script.ARGUMENTS.copy()
+SCons.Script.ARGUMENTS["use_hot_reload"] = env["use_hot_reload"]
 SCons.Script.ARGUMENTS["use_static_cpp"] = env["use_static_cpp"]
 SCons.Script.ARGUMENTS["disable_exceptions"] = env["disable_exceptions"]
 SCons.Script.ARGUMENTS["compiledb_file"] = "godot-cpp/compile_commands.json"
