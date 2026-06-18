@@ -1,0 +1,70 @@
+name: Export OpenVic
+description: Setup and Export OpenVic with the provided options
+
+inputs:
+  godot-executable-url:
+    description: The Linux Headless version of Godot that you want to use to export your project.
+    required: true
+  godot-templates-url:
+    description: The link to the `.tpz` archive of export templates.
+    required: true
+  export-as-pack:
+    description: Export project files as a .pck file.
+    default: "false"
+  export-debug:
+    description: Export builds in debug mode.
+    default: "false"
+  relative-export-path:
+    description: Move exports to the provided directory relative to the root of the Git repository.
+    default: ""
+  archive-output:
+    description: Archive each export into a .zip file.
+    default: "false"
+
+outputs:
+  build-directory:
+    description: ""
+    value: ${{ steps.export_game.outputs.build_directory }}
+  archive-directory:
+    description: ""
+    value: ${{ steps.export_game.outputs.archive_directory }}
+  executable-path:
+    description: ""
+    value: ${{ steps.export_game.outputs.executable_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        path: game/bin/openvic
+        pattern: ${{ github.event.repository.name }}-*-extension
+        merge-multiple: true
+
+    - name: Export game project
+      id: export_game
+      uses: Spartan322/godot-export@385faf3b35630a777cb44b8436a09fa0c5632dea
+      with:
+        godot_executable_download_url: ${{ inputs.godot-executable-url }}
+        godot_export_templates_download_url: ${{ inputs.godot-templates-url }}
+        relative_project_path: ./game
+        export_as_pack: ${{ inputs.export-as-pack == 'true' }}
+        export_debug: ${{ inputs.export-debug == 'true' }}
+        archive_output: ${{ inputs.archive-output == 'true' }}
+        cache: true
+        relative_export_path: ${{ inputs.relative-export-path }}
+
+    - name: Move pck file
+      if: inputs.export-debug == 'true' && inputs.export-as-pack == 'true'
+      shell: sh
+      run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" "./game/export/$(basename "$GITHUB_REPOSITORY").pck"
+
+    - name: Upload pck artifact
+      if: inputs.export-debug == 'true' && inputs.export-as-pack == 'true'
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: ${{ github.event.repository.name }}-debug-pck
+        compression-level: 9
+        path: |
+          ${{inputs.relative-export-path}}/${{ github.event.repository.name }}.pck

@@ -1,0 +1,175 @@
+name: 🚀 Releases
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+env:
+  SEMVER_REGEX: ^v(0|[1-9][0-9]*)((\.(0|[1-9][0-9]*)){1,2})(-(alpha|beta|rc)\.([1-9][0-9]*))?$
+  SEMVER_STABLE_REGEX: ^v(0|[1-9][0-9]*)((\.(0|[1-9][0-9]*)){1,2})$
+  SEMVER_SNAPSHOT_REGEX: ^v(0|[1-9][0-9]*)((\.(0|[1-9][0-9]*)){1,2})-(snapshot|snapshot\.dev)\.([1-9][0-9]*)\+([0-9a-fA-F]{40})$
+
+jobs:
+  static-checks-release:
+    name: 📊 Code style, file formatting, and docs
+    if: vars.DISABLE_TAG_RELEASES != true
+    runs-on: ubuntu-latest
+    outputs:
+      release-name: ${{ steps.get_release_name.outputs.release-name }}
+      godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
+      godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
+    env:
+      GITHUB_REF_NAME: ${{ github.ref_name }}
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0 # Treeless clone. Slightly less performant than a shallow clone, but makes finding diffs instantaneous.
+          filter: tree:0 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
+
+      - name: Setup Godot variables
+        id: godot-env
+        uses: ./.github/actions/godot-env
+
+      - name: Validate tag
+        run: |
+          EXIT_STATUS=0
+
+          validate_version () {
+            [[ $1 =~ $SEMVER_REGEX ]] && return
+            [[ $1 =~ $SEMVER_SNAPSHOT_REGEX ]] && return
+
+            echo "::error::${2:-parameter} is not a valid semver string for versioning starting with v. Valid prerelease values are 'alpha', 'beta', 'rc', 'snapshot', and 'snapshot.dev'. A count value must follow all prerelease tags, starting from 1. 'snapshot' and 'snapshot.dev' must include the full commit SHA as a build string"
+            false
+          }
+
+          validate_version "$GITHUB_REF_NAME" "github.ref (tag)"
+
+          if [[ $(git cat-file -t "$GITHUB_REF_NAME") != 'tag' ]]; then
+            echo "::error::$GITHUB_REF_NAME is not an annotated tag, use 'git tag $GITHUB_REF_NAME -m \"\"' to tag release."
+            EXIT_STATUS=1
+          fi
+
+          exit $EXIT_STATUS
+
+      - name: Get release name from tag annotation
+        id: get_release_name
+        run: |
+          RELEASE_NAME="$(git tag -l  --format='%(contents:subject)' "$GITHUB_REF_NAME")"
+          if [[ -z $RELEASE_NAME ]]; then
+            if [[ $GITHUB_REF_NAME =~ $SEMVER_STABLE_REGEX ]]; then
+              echo "::error::$GITHUB_REF_NAME is an annotated tag with an empty message, stable releases must be named, use 'git tag $GITHUB_REF_NAME -m \"<release-name>\"' to name release."
+              exit 1
+            fi
+
+            RELEASE_NAME=""
+          fi
+
+          echo "release-name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Install APT dependencies
+        uses: awalsh128/cache-apt-pkgs-action@681749ae568c81c2037cb9185e38b709b261bd2f # v1.6.1
+        with:
+          packages: libxml2-utils
+
+      - name: Style checks via prek
+        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
+
+  build-release:
+    name: ${{ matrix.name }} Release
+    needs: static-checks-release
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - identifier: windows-release
+            os: windows-latest
+            name: 🏁 Build Windows
+            target: template_release
+            platform: windows
+            arch: x86_64
+            scons-flags: ''
+
+          - identifier: macos-release
+            os: macos-latest
+            name: 🍎 Build macOS
+            target: template_release
+            platform: macos
+            arch: universal
+            scons-flags: lto=full
+
+          - identifier: linux-release
+            os: ubuntu-latest
+            name: 🐧 Build Linux
+            runner: ubuntu-22.04
+            target: template_release
+            platform: linux
+            arch: x86_64
+            scons-flags: lto=full use_static_cpp=yes
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Build
+        uses: ./.github/actions/openvic-build
+        with:
+          identifier: ${{ matrix.identifier }}
+          target: ${{ matrix.target }}
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          tag-name: ${{ github.ref_name }}
+          release-name: ${{ needs.static-checks-release.outputs.release-name }}
+          disable-cache: true
+          scons-flags: ${{ matrix.scons-flags }}
+
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: [static-checks-release, build-release]
+    permissions:
+      contents: write  # May be needed to publish release
+    env:
+      IS_PRERELEASE: ${{
+          contains(github.ref, '-alpha') ||
+          contains(github.ref, '-beta') ||
+          contains(github.ref, '-rc') ||
+          contains(github.ref, '-snapshot')
+        }}
+      IS_SNAPSHOT: ${{ contains(github.ref, '-snapshot') }}
+    steps:
+      - name: Shallow Clone
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
+
+      - name: Get FROM_REF
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXCLUDE_PRE_RELEASES: ${{ !env.IS_PRERELEASE && '--exclude-pre-releases' || '' }}
+          EXCLUDE_SNAPSHOTS: ${{ !env.IS_SNAPSHOT && '| select(.tagName | contains("-snapshot") | not)' || '' }}
+        run:
+          echo "FROM_REF=$(gh release list $EXCLUDE_PRE_RELEASES --json tagName --jq "[.[] $EXCLUDE_SNAPSHOTS.tagName][0]")" >> $GITHUB_ENV
+
+      - name: Publish Release
+        uses: ./.github/actions/openvic-release
+        with:
+          godot-executable-url: ${{ needs.static-checks-release.outputs.godot-executable-url }}
+          godot-templates-url: ${{ needs.static-checks-release.outputs.godot-templates-url }}
+          latest: ${{ !env.IS_PRERELEASE && !env.IS_SNAPSHOT }}
+          prerelease: ${{ env.IS_PRERELEASE }}
+          snapshot-release: ${{ env.IS_SNAPSHOT }}
+          from-ref: ${{ env.FROM_REF || vars.DEFAULT_COMMIT_HASH }}
+          src-token: ${{ secrets.GITHUB_TOKEN }}
+          release-name: ${{ needs.static-checks-release.outputs.release-name }}
+

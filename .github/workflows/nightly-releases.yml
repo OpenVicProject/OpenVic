@@ -1,0 +1,298 @@
+name: 🌘 Nightly Releases
+
+on:
+  schedule:
+    - cron: "23 0 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  SHA_REGEX: ^[0-9a-fA-F]{40}$
+
+jobs:
+  nightly-check:
+    name: Check for new commits
+    if: github.event_name == 'workflow_dispatch' || !vars.DISABLE_NIGHTLY_RELEASES
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.check_for_new_commits.outputs.commit }}
+      godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
+      godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
+      latest-tag: ${{ steps.default-values.outputs.latest-tag || steps.master-values.outputs.latest-tag || steps.nightly-values.outputs.latest-tag }}
+      commit-hash: ${{ steps.default-values.outputs.commit-hash || steps.master-values.outputs.commit-hash || steps.nightly-values.outputs.commit-hash }}
+      from-ref: ${{ steps.default-values.outputs.from-ref || steps.master-values.outputs.from-ref || steps.nightly-values.outputs.from-ref }}
+      tag-name: ${{ steps.tag-name.outputs.tag-name }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Godot variables
+        id: godot-env
+        uses: ./.github/actions/godot-env
+
+      - name: Validate repository variables
+        env:
+          VARS_VERSION_CORE: ${{ vars.NIGHTLY_VERSION_CORE }}
+          VARS_NIGHTLY_REPOSITORY: ${{ vars.NIGHTLY_REPOSITORY }}
+          SECRETS_NIGHTLY_REPOSITORY_TOKEN: ${{ secrets.NIGHTLY_REPOSITORY_TOKEN }}
+          VAR_DEFAULT_COMMIT_HASH: ${{ vars.DEFAULT_COMMIT_HASH }}
+        run: |
+          # Can report error for every validation check
+          EXIT_STATUS=0
+
+          validate_non_empty () {
+            [[ -n ${1-} ]] && return
+            echo "::error::${2-parameter} is empty."
+            EXIT_STATUS=1
+            false
+          }
+
+          if validate_non_empty "$VARS_VERSION_CORE" "vars.NIGHTLY_VERSION_CORE"; then
+            if [[ ! $VARS_VERSION_CORE =~ ^(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*)){1,2}$ ]]; then
+              echo "::error::vars.NIGHTLY_VERSION_CORE should be set to 'MAJOR.MINOR', with an optional '.PATCH'."
+              EXIT_STATUS=1
+            fi
+          fi
+
+          if validate_non_empty "$VARS_NIGHTLY_REPOSITORY" "vars.NIGHTLY_REPOSITORY"; then
+            if [[ $VARS_NIGHTLY_REPOSITORY == */* ]]; then
+              echo "::error::vars.NIGHTLY_REPOSITORY cannot be set with a forward slash, that is an invalid repository name."
+              EXIT_STATUS=1
+            fi
+          fi
+
+          validate_non_empty "$SECRETS_NIGHTLY_REPOSITORY_TOKEN" "secrets.NIGHTLY_REPOSITORY_TOKEN"
+
+          if validate_non_empty "$VAR_DEFAULT_COMMIT_HASH" "vars.DEFAULT_COMMIT_HASH"; then
+            if [[ ! $VAR_DEFAULT_COMMIT_HASH =~ $SHA_REGEX ]]; then
+              echo "::error::vars.DEFAULT_COMMIT_HASH is not set to a full Git commit SHA."
+              EXIT_STATUS=1
+            fi
+          fi
+
+          exit $EXIT_STATUS
+
+      - name: Retrieve HEAD commit hash
+        id: head
+        shell: bash
+        run: echo "head=$(git rev-parse HEAD)" | tee -a "${GITHUB_OUTPUT}"
+
+      - name: Cache nightly commit hash
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
+        with:
+          path: .nightly_commit_hash
+          key: release-nightly-${{ steps.head.outputs.head }}
+          restore-keys: |
+            release-nightly-
+
+      - name: Check for new commits
+        id: check_for_new_commits
+        shell: bash
+        run: |
+          relevant_files=(
+            "extension/deps/*"
+            "scripts"
+            "godot-cpp"
+            "extension/src/*.hpp"
+            "extension/src/*.cpp"
+            "game/*"
+            ':!extension/src/openvic-extension/pch.hpp'
+            ':!extension/src/openvic-extension/pch.cpp'
+            "pyproject.toml"
+            "SConstruct"
+            ".github/workflows/builds.yml"
+            ".github/actions/openvic-build/action.yml"
+            ".github/actions/openvic-release/action.yml"
+            ".github/actions/openvic-export/action.yml"
+            ".github/workflows/nightly-releases.yml"
+            ".github/actions/openvic-release/action.yml"
+            ".github/actions/openvic-release/nightly-release-notes-configuration.json"
+          )
+          if [[ -f .nightly_commit_hash ]]; then
+            limit_args=(
+              "$(cat .nightly_commit_hash)..HEAD"
+            )
+          else
+            limit_args=(
+              --since="24 hours ago"
+            )
+          fi
+          echo "commit=$(git log --format=%H -1 "${limit_args[@]}" -- "${relevant_files[@]}")" | tee -a "${GITHUB_OUTPUT}"
+
+      - name: Record new nightly commit hash
+        env:
+          HEAD: ${{ steps.head.outputs.head }}
+        shell: bash
+        run: echo "${HEAD}" | tee .nightly_commit_hash
+
+      - name: Retrieve master/nightly release tag info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "LAST_MASTER_TAG_INFO=$(gh release list -L 1 --json tagName,publishedAt --jq '.[0]')" >> $GITHUB_ENV
+          echo "LAST_NIGHTLY_TAG_INFO=$(gh release list -L 1 -R $GITHUB_REPOSITORY_OWNER/$VARS_NIGHTLY_REPOSITORY --json tagName,publishedAt --jq '.[0]')" >> $GITHUB_ENV
+
+      - name: Query master/nightly release tag info for dates
+        run: |
+          echo "LAST_MASTER_TAG_PUB_DATE=$(jq -r ".publishedAt" <<< "$LAST_MASTER_TAG_INFO")" >> $GITHUB_ENV
+          echo "LAST_NIGHTLY_TAG_PUB_DATE=$(jq -r ".publishedAt" <<< "$LAST_NIGHTLY_TAG_INFO")" >> $GITHUB_ENV
+
+      - name: Process master/nightly release tag dates
+        run: |
+          if [[ ! -z $LAST_NIGHTLY_TAG_PUB_DATE ]]; then
+            echo "LAST_MASTER_TAG_PUB_SEC=$(date -d $LAST_MASTER_TAG_PUB_DATE +%s)" >> $GITHUB_ENV
+          else
+            echo "LAST_MASTER_TAG_PUB_SEC=0" >> $GITHUB_ENV
+          fi
+
+          if [[ ! -z $LAST_NIGHTLY_TAG_PUB_DATE ]]; then
+            echo "LAST_NIGHTLY_TAG_PUB_SEC=$(date -d $LAST_NIGHTLY_TAG_PUB_DATE +%s)" >> $GITHUB_ENV
+          else
+            echo "LAST_NIGHTLY_TAG_PUB_SEC=0" >> $GITHUB_ENV
+          fi
+
+      - name: Use default values for LATEST_TAG, FROM_REF, and COMMIT_HASH
+        id: default-values
+        if: env.LAST_MASTER_TAG_PUB_SEC == 0 && env.LAST_MASTER_TAG_PUB_SEC == env.LAST_NIGHTLY_TAG_PUB_SEC
+        env:
+          VAR_DEFAULT_COMMIT_HASH: ${{ vars.DEFAULT_COMMIT_HASH }}
+        run: |
+          echo "latest-tag=" >> $GITHUB_OUTPUT
+          echo "commit-hash=$VAR_DEFAULT_COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "from-ref=$VAR_DEFAULT_COMMIT_HASH" >> $GITHUB_OUTPUT
+
+      - name: Get FROM_REF, LATEST_TAG, and COMMIT_HASH from latest master release
+        id: master-values
+        if: env.LAST_MASTER_TAG_PUB_SEC > env.LAST_NIGHTLY_TAG_PUB_SEC
+        run: |
+          LATEST_TAG=$(jq -r '.tagName' <<< "$LAST_MASTER_TAG_INFO")
+          echo "::debug::LATEST_TAG=$LATEST_TAG"
+
+          COMMIT_HASH=$(git rev-parse --verify -q $LATEST_TAG)
+          echo "::debug::COMMIT_HASH=$COMMIT_HASH"
+
+          echo "latest-tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "commit-hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "from-ref=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Get FROM_REF, LATEST_TAG, and COMMIT_HASH from latest nightly release
+        id: nightly-values
+        if: env.LAST_MASTER_TAG_PUB_SEC < env.LAST_NIGHTLY_TAG_PUB_SEC
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST_TAG=$(jq -r '.tagName' <<< "$LAST_NIGHTLY_TAG_INFO")
+          echo "::debug::LATEST_TAG=$LATEST_TAG"
+
+          LATEST_RELEASE_BODY=$(gh release view $LATEST_TAG -R $GITHUB_REPOSITORY_OWNER/$VARS_NIGHTLY_REPOSITORY --json body --jq '.body')
+          echo "::debug::LATEST_RELEASE_BODY=$LATEST_RELEASE_BODY"
+
+          # Keep up to date with .github/actions/openvic-release/nightly-release-notes-configuration.json
+          HASH_OF_TAG=$(grep -oP "Generated from: $GITHUB_REPOSITORY@\K[a-zA-Z0-9]+" <<< "$LATEST_RELEASE_BODY")
+          echo "::debug::HASH_OF_TAG=$HASH_OF_TAG"
+
+          COMMIT_HASH=$(git rev-parse --verify -q $HASH_OF_TAG)
+          echo "::debug::COMMIT_HASH=$COMMIT_HASH"
+
+          if [[ -z $COMMIT_HASH ]]; then
+            echo "::error::Could not find commit for hash $HASH_OF_TAG."
+            exit 1
+          fi
+
+          echo "latest-tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "commit-hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "from-ref=$COMMIT_HASH" >> $GITHUB_OUTPUT
+
+      - name: Generate TAG_NAME from vars.NIGHTLY_VERSION_CORE
+        id: tag-name
+        env:
+          VARS_VERSION_CORE: ${{ vars.NIGHTLY_VERSION_CORE }}
+        run: echo "tag-name=v${VARS_VERSION_CORE}-nightly.$(date +%Y.%m.%d)+${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
+  nightly-build:
+    name: Build ${{ matrix.name }}
+    needs: nightly-check
+    if: needs.nightly-check.outputs.commit
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - identifier: windows-release
+            os: windows-latest
+            name: 🏁 Windows Release
+            target: template_release
+            platform: windows
+            arch: x86_64
+            scons-flags: ""
+
+          - identifier: macos-release
+            os: macos-latest
+            name: 🍎 macOS (universal) Release
+            target: template_release
+            platform: macos
+            arch: universal
+            scons-flags: "lto=full"
+
+          - identifier: linux-release
+            os: ubuntu-latest
+            name: 🐧 Linux Release
+            runner: ubuntu-22.04
+            target: template_release
+            platform: linux
+            arch: x86_64
+            scons-flags: "lto=full use_static_cpp=yes"
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Build
+        uses: ./.github/actions/openvic-build
+        with:
+          identifier: ${{ matrix.identifier }}
+          target: ${{ matrix.target }}
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          tag-name: ${{ needs.nightly-check.outputs.tag-name }}
+          disable-cache: true
+          scons-flags: use_hot_reload=no debug_symbols=yes optimize=speed_trace ${{ matrix.scons-flags }}
+
+  publish-nightly-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: [nightly-check, nightly-build]
+    permissions:
+      contents: write # May be needed to publish release
+    steps:
+      - name: Shallow Clone
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Publish Nightly Release
+        uses: ./.github/actions/openvic-release
+        with:
+          godot-executable-url: ${{ needs.nightly-check.outputs.godot-executable-url }}
+          godot-templates-url: ${{ needs.nightly-check.outputs.godot-templates-url }}
+          latest: ${{ github.ref_name == 'master' }}
+          nightly-release: true
+          tag-name: ${{ needs.nightly-check.outputs.tag-name }}
+          from-ref: ${{ needs.nightly-check.outputs.from-ref }}
+          from-tag: ${{ needs.nightly-check.outputs.latest-tag}}
+          to-ref: ${{ github.sha }}
+          target-repo: ${{ vars.NIGHTLY_REPOSITORY }}
+          src-token: ${{ secrets.GITHUB_TOKEN }}
+          target-token: ${{ secrets.NIGHTLY_REPOSITORY_TOKEN }}

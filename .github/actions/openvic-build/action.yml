@@ -1,0 +1,99 @@
+name: Build OpenVic
+description: Setup and Build OpenVic with the provided options
+
+inputs:
+  identifier:
+    description: Identifier of this build
+  target:
+    description: Target type to build for
+    required: true
+  platform:
+    description: Platform to build for
+    required: true
+  arch:
+    description: Architecture to build for
+    required: true
+  scons-flags:
+    description: Additional flags to send to SCons
+    default: ''
+  cache-base-branch:
+    description: Branch to base the cache upon
+    default: 'master'
+  disable-cache:
+    description: Whether to disable the build cache
+    default: 'false'
+  tag-name:
+    description: Name of tag
+    default: ''
+  release-name:
+    description: Name of release
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Setup build cache
+      uses: OpenVicProject/openvic-cache@master
+      if: ${{ inputs.disable-cache != 'true' }}
+      with:
+        cache-name: ${{ inputs.identifier }}
+        base-branch: ${{ inputs.cache-base-branch }}
+      continue-on-error: true
+
+    - name: Set up Python
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      with:
+        python-version: "3.x"
+
+    - name: Set up SCons
+      shell: bash
+      run: |
+        python -c "import sys; print(sys.version)"
+        python -m pip install scons
+        scons --version
+
+    - name: Install APT dependencies
+      if: ${{ inputs.platform == 'linux' }}
+      uses: awalsh128/cache-apt-pkgs-action@681749ae568c81c2037cb9185e38b709b261bd2f # v1.6.1
+      with:
+        packages: build-essential pkg-config libtbb-dev
+
+    - name: Install and Set g++ to version 13
+      if: ${{ inputs.platform == 'linux' }}
+      shell: sh
+      run: |
+        g++ --version
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt update -y
+        sudo apt install g++-13
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 13
+        sudo update-alternatives --set g++ /usr/bin/g++-13
+        g++ --version
+
+    - name: Setup MinGW for Windows/MinGW build
+      if: ${{ inputs.platform == 'windows' }}
+      uses: egor-tensin/setup-mingw@ef0952fadae6794e225c0c1654887408bcadbf64
+
+    - name: Compile with SCons
+      uses: OpenVicProject/openvic-build@master
+      env:
+        OPENVIC_TAG: ${{ inputs.tag-name }}
+        OPENVIC_RELEASE: ${{ inputs.release-name }}
+      with:
+        platform: ${{ inputs.platform }}
+        target: ${{ inputs.target }}
+        bin-dir: "game/bin/"
+        sconsflags: arch=${{ inputs.arch }} ${{ inputs.scons-flags }}
+
+    - name: Delete compilation files
+      if: ${{ inputs.platform == 'windows' }}
+      shell: pwsh
+      run: |
+        Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
+
+    - name: Upload extension artifact
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: ${{ github.event.repository.name }}-${{ inputs.identifier }}-extension
+        path: |
+          ${{ github.workspace }}/game/bin/openvic/*

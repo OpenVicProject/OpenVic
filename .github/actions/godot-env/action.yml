@@ -1,0 +1,120 @@
+name: Setup Godot variables
+description: Setup Godot variables for OpenVic
+
+inputs:
+  godot-src-url:
+    description: Source URL to create Linux and Template URLs from
+    default: https://github.com/godotengine/godot
+  godot-version:
+    description: Version of Godot
+    default: "4.6"
+  godot-version-type:
+    description: Type of Version of Godot
+    default: stable
+
+outputs:
+  godot-linux-url:
+    description: The Linux Headless URL of Godot that was generated.
+    value: ${{ steps.variables.outputs.godot-linux-url }}
+  godot-template-url:
+    description: The link to the `.tpz` archive of export templates that was generated.
+    value: ${{ steps.variables.outputs.godot-template-url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup variables
+      id: variables
+      shell: bash
+      env:
+        INPUTS_GODOT_URL_SRC: ${{ inputs.godot-src-url }}
+        INPUTS_GODOT_VERSION: ${{ inputs.godot-version }}
+        INPUTS_GODOT_VERSION_TYPE: ${{ inputs.godot-version-type }}
+      run: |
+        EXIT_STATUS=0
+
+        # returns $1 and $2 joined together with a single '/''
+        JOIN_PATH_RESULT=""
+        join_path() {
+            JOIN_PATH_RESULT=$1
+            if [[ $JOIN_PATH_RESULT == *"/" && $2 == "/"* ]]; then
+                JOIN_PATH_RESULT=${JOIN_PATH_RESULT%/}
+            fi
+            if [[ $JOIN_PATH_RESULT != *"/" && $2 != "/"* ]]; then
+                JOIN_PATH_RESULT="$JOIN_PATH_RESULT/"
+            fi
+            JOIN_PATH_RESULT="$JOIN_PATH_RESULT$2"
+        }
+
+        validate_url() {
+          if [[ $1 == "" ]]; then
+            echo "::error::${2:-parameter} environment variable has not been set."
+            EXIT_STATUS=1
+            false
+            return
+          elif ! curl -o /dev/null --head --silent --fail "$1"; then
+            echo "::error::curl could not find ${2:-parameter}."
+            EXIT_STATUS=1
+            false
+            return
+          fi
+        }
+
+        validate_url "$INPUTS_GODOT_URL_SRC" "inputs.godot-src-url"
+
+        echo "GODOT_URL_SRC=$INPUTS_GODOT_URL_SRC" >> "$GITHUB_ENV"
+        echo "GODOT_VERSION=$INPUTS_GODOT_VERSION" >> "$GITHUB_ENV"
+        echo "GODOT_VERSION_TYPE=$INPUTS_GODOT_VERSION_TYPE" >> "$GITHUB_ENV"
+
+        GODOT_FILE_PREFIX="Godot_v${INPUTS_GODOT_VERSION}-${INPUTS_GODOT_VERSION_TYPE}"
+        GODOT_LINUX_FILENAME="${GODOT_FILE_PREFIX}_linux.x86_64.zip"
+        GODOT_TEMPLATE_FILENAME="${GODOT_FILE_PREFIX}_export_templates.tpz"
+
+        # Checks if tuxfamily godot download url
+        if [[ $INPUTS_GODOT_URL_SRC == *"downloads.tuxfamily.org/godotengine"* ]]; then
+            if [[ $INPUTS_GODOT_URL_SRC != *"$INPUTS_GODOT_VERSION"* ]]; then
+                join_path "$INPUTS_GODOT_URL_SRC" "$INPUTS_GODOT_VERSION"
+                INPUTS_GODOT_URL_SRC="$JOIN_PATH_RESULT"
+            fi
+
+            if [[ $INPUTS_GODOT_VERSION_TYPE != "stable" ]]; then
+              join_path "$INPUTS_GODOT_URL_SRC" "$INPUTS_GODOT_VERSION_TYPE"
+              INPUTS_GODOT_URL_SRC="$JOIN_PATH_RESULT"
+            fi
+
+            join_path "$INPUTS_GODOT_URL_SRC" "$GODOT_LINUX_FILENAME"
+            GODOT_LINUX_URL="$JOIN_PATH_RESULT"
+
+            join_path "$INPUTS_GODOT_URL_SRC" "$GODOT_TEMPLATE_FILENAME"
+            GODOT_TEMPLATE_URL="$JOIN_PATH_RESULT"
+
+        # Checks if github godot download url
+        elif [[ $INPUTS_GODOT_URL_SRC == *"github.com/godotengine"* ]]; then
+          if [[ $INPUTS_GODOT_URL_SRC != *"/releases"* ]]; then
+            join_path "$INPUTS_GODOT_URL_SRC" "releases"
+            INPUTS_GODOT_URL_SRC="$JOIN_PATH_RESULT"
+          fi
+
+          if [[ $INPUTS_GODOT_URL_SRC != *"/download"* ]]; then
+            join_path "$INPUTS_GODOT_URL_SRC" "download"
+            INPUTS_GODOT_URL_SRC="$JOIN_PATH_RESULT"
+          fi
+
+          GODOT_VERSION_DIR="${INPUTS_GODOT_VERSION}-${INPUTS_GODOT_VERSION_TYPE}"
+
+          join_path "$GODOT_VERSION_DIR" "$GODOT_LINUX_FILENAME"
+          join_path "$INPUTS_GODOT_URL_SRC" "$JOIN_PATH_RESULT"
+          GODOT_LINUX_URL="$JOIN_PATH_RESULT"
+
+          join_path "$GODOT_VERSION_DIR" "$GODOT_TEMPLATE_FILENAME"
+          join_path "$INPUTS_GODOT_URL_SRC" "$JOIN_PATH_RESULT"
+          GODOT_TEMPLATE_URL="$JOIN_PATH_RESULT"
+        fi
+
+        validate_url "$GODOT_LINUX_URL" "GODOT_LINUX_URL"
+        echo "godot-linux-url=$GODOT_LINUX_URL" >> $GITHUB_OUTPUT
+
+        validate_url "$GODOT_TEMPLATE_URL" "GODOT_TEMPLATE_URL"
+        echo "godot-template-url=$GODOT_TEMPLATE_URL" >> $GITHUB_OUTPUT
+
+        exit $EXIT_STATUS

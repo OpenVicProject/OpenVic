@@ -1,0 +1,40 @@
+{
+    "base_branches": [
+        "master"
+    ],
+    "custom_placeholders": [
+        {
+            "comment": "Keep up to date with .github/workflows/nightly-releases.yml",
+            "name": "COMMIT_GENERATED_LINE",
+            "source": "TO_TAG",
+            "transformer": {
+                "method": "regexr",
+                "pattern": "([a-zA-Z0-9]{40})",
+                "target": "Generated from: <<REPO>>@$1\n"
+            }
+        }
+    ],
+    "categories": [
+        {
+            "title": "### Enhancements & Features",
+            "labels": [
+                "enhancement"
+            ],
+            "exhaustive": true,
+            "consume": true
+        },
+        {
+            "title": "### Bug Fixes",
+            "labels": [
+                "bug"
+            ],
+            "exhaustive": true,
+            "consume": true
+        }
+    ],
+    "template": "# Release Notes for <<RELEASE_NAME_REPLACEMENT>>\n#{{COMMIT_GENERATED_LINE}}## Changelog since [<<FROM_TAG_NAME_REPLACEMENT>>](https://github.com/<<REPO>>/<<RELEASE_OR_COMMIT_PATH>>/#{{FROM_TAG}})\n#{{CHANGELOG}}\n**Full Changelog**: #{{RELEASE_DIFF}}",
+    "empty_template": "# Release Notes for <<RELEASE_NAME_REPLACEMENT>>\n#{{COMMIT_GENERATED_LINE}}### No Pull Requests since [<<FROM_TAG_NAME_REPLACEMENT>>](https://github.com/<<REPO>>/<<RELEASE_OR_COMMIT_PATH>>/#{{FROM_TAG}})\n\n**Full Changelog**: #{{RELEASE_DIFF}}",
+    "pr_template": "* #{{TITLE}} by @#{{AUTHOR}} in #{{URL}}",
+    "max_pull_requests": 1000,
+    "max_back_track_time_days": 365
+}

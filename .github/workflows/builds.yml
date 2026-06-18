@@ -2,327 +2,156 @@ name: 🖥️ Builds
 
 on:
   push:
-    paths-ignore:
-      - '.vscode/**'
-      - 'docs/**'
-      - 'LICENSE-EXCEPTIONS.md'
-      - 'LICENSE.md'
-      - 'README.md'
+    branches: ["master"]
   pull_request:
-    paths-ignore:
-      - '.vscode/**'
-      - 'docs/**'
-      - 'LICENSE-EXCEPTIONS.md'
-      - 'LICENSE.md'
-      - 'README.md'
   merge_group:
-    paths-ignore:
-      - '.vscode/**'
-      - 'docs/**'
-      - 'LICENSE-EXCEPTIONS.md'
-      - 'LICENSE.md'
-      - 'README.md'
-
-env:
-  GODOT_BASE_DOWNLOAD_URL: https://github.com/godotengine/godot
-  GODOT_VERSION: 4.6
-  GODOT_VERSION_TYPE: stable
-  OPENVIC_BASE_BRANCH: master
+  workflow_dispatch:
 
 concurrency:
-  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
-  cancel-in-progress: true
+  group: ${{ github.workflow }}|${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions: {}
 
 jobs:
-  static-checks:
-    name: Code style, file formatting, and docs
-    runs-on: ubuntu-24.04
+  static-checks-builds:
+    name: 📊 Code style, file formatting, and docs
+    runs-on: ubuntu-latest
+    if: github.run_attempt > 1 || github.event_name == 'workflow_dispatch' || !vars.DISABLE_BUILDS
+    outputs:
+      changed-files: '"${{ steps.changed-files.outputs.clangd_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators.
+      sources-changed: ${{ steps.changed-files.outputs.sources_any_changed }}
+      godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
+      godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 2
+          submodules: recursive
+          fetch-depth: 0 # Treeless clone. Slightly less performant than a shallow clone, but makes finding diffs instantaneous.
+          filter: tree:0 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
+
+      - name: Setup Godot variables
+        id: godot-env
+        uses: ./.github/actions/godot-env
 
       - name: Install APT dependencies
-        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+        uses: awalsh128/cache-apt-pkgs-action@681749ae568c81c2037cb9185e38b709b261bd2f # v1.6.1
         with:
           packages: libxml2-utils
 
       - name: Get changed files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config diff.wsErrorHighlight all
-          if [ "${{ github.event_name }}" == "pull_request" -o "${{ github.event.forced }}" == "true" -o "${{ github.event.created }}" == "true" ]; then
-            files=$(git diff-tree --no-commit-id --name-only -r HEAD^1..HEAD 2> /dev/null || true)
-          elif [ "${{ github.event_name }}" == "push" -a "${{ github.event.created }}" == "false" ]; then
-            files=$(git diff-tree --no-commit-id --name-only -r ${{ github.event.before }}..${{ github.event.after }} 2> /dev/null || true)
-          fi
-          echo "$files" >> changed.txt
-          cat changed.txt
-          files=$(echo "$files" | xargs -I {} sh -c 'echo "\"./{}\""' | tr '\n' ' ')
-          echo "CHANGED_FILES=$files" >> $GITHUB_ENV
-
-      - name: Style checks via pre-commit
-        uses: pre-commit/action@v3.0.1
+        id: changed-files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
-          extra_args: --files ${{ env.CHANGED_FILES }}
+          safe_output: false # Output passed to environment variable to avoid command injection.
+          separator: '" "' # To account for paths with spaces, ensure our items are split by quotes internally.
+          skip_initial_fetch: true
+          files_yaml_from_source_file: .github/changed-files.yml
+
+      - name: Style checks via prek
+        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
+        env:
+          CHANGED_FILES: '"${{ steps.changed-files.outputs.everything_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators
+        with:
+          extra-args: --files ${{ env.CHANGED_FILES }}
 
       - name: Class reference schema checks
-        run: |
-          xmllint --noout --schema extension/doc_tools/class.xsd extension/doc_classes/*.xml
+        run: xmllint --noout --schema extension/doc_tools/class.xsd extension/doc_classes/*.xml
 
-  build:
-    runs-on: ${{matrix.os}}
-    name: ${{matrix.name}}
-    needs: static-checks
-    permissions: write-all
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - identifier: windows-debug
-            os: windows-latest
-            name: 🏁 Windows Debug
-            target: template_debug
-            platform: windows
-            arch: x86_64
-          - identifier: windows-release
-            os: windows-latest
-            name: 🏁 Windows Release
-            target: template_release
-            platform: windows
-            arch: x86_64
-          - identifier: macos-debug
-            os: macos-latest
-            name: 🍎 macOS (universal) Debug
-            target: template_debug
-            platform: macos
-            arch: universal
-          - identifier: macos-release
-            os: macos-latest
-            name: 🍎 macOS (universal) Release
-            target: template_release
-            platform: macos
-            arch: universal
-          - identifier: linux-debug
-            os: ubuntu-latest
-            name: 🐧 Linux Debug
-            runner: ubuntu-20.04
-            target: template_debug
-            platform: linux
-            arch: x86_64
-          - identifier: linux-release
-            os: ubuntu-latest
-            name: 🐧 Linux Release
-            runner: ubuntu-20.04
-            target: template_release
-            platform: linux
-            arch: x86_64
-
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4.1.1
-        with:
-          submodules: recursive
-
-      - name: Setup OpenVic build cache
-        uses: OpenVicProject/openvic-cache@master
-        with:
-          cache-name: ${{ matrix.identifier }}
-          base-branch: ${{ env.OPENVIC_BASE_BRANCH }}
-        continue-on-error: true
-
-      - name: Setup Environment
-        uses: OpenVicProject/openvic-env@master
-
-      - name: Set up Python
-        uses: actions/setup-python@v5.0.0
-        with:
-          python-version: "3.x"
-
-      - name: Set up SCons
-        shell: bash
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install scons==4.7.0
-          scons --version
-
-      - name: Linux dependencies
-        if: ${{ matrix.platform == 'linux' }}
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qqq build-essential pkg-config libtbb-dev
-          g++ --version
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 12
-          sudo update-alternatives --set g++ /usr/bin/g++-12
-          g++ --version
-
-      - name: Setup MinGW for Windows/MinGW build
-        if: ${{ matrix.platform == 'windows' }}
-        uses: OpenVicProject/mingw-cache@master
-
-      - name: Compile Extension
-        uses: OpenVicProject/openvic-build@master
-        with:
-          platform: ${{ matrix.platform }}
-          target: ${{ matrix.target }}
-          bin-dir: "game/bin/"
-          sconsflags: arch=${{ matrix.arch }}
-
-      - name: Delete compilation files
-        if: ${{ matrix.platform == 'windows' }}
-        run: |
-          Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
-
-      - name: Upload extension artifact
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: ${{ github.event.repository.name }}-${{ matrix.identifier }}-extension
-          path: |
-            ${{ github.workspace }}/game/bin/openvic/*
+  build-master:
+    name: 🛠️ Build
+    needs: static-checks-builds
+    if: needs.static-checks-builds.outputs.sources-changed == 'true' || github.event_name != 'pull_request'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-matrix.yml
 
   godot-debug-checks:
     runs-on: ubuntu-latest
-    needs: [build]
-
-    name: Perform Godot Debug Checks
+    needs: [static-checks-builds, build-master]
+    name: 🔍 Perform Godot Debug Checks
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4.1.1
-
-      - name: Setup Environment
-        uses: OpenVicProject/openvic-env@master
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: game/bin/openvic
-          pattern: ${{ github.event.repository.name }}-*-extension
-          merge-multiple: true
+          submodules: recursive
+          fetch-depth: 0 # Treeless clone. Slightly less performant than a shallow clone, but makes finding diffs instantaneous.
+          filter: tree:0 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
 
-      - name: Export pack file
+      - name: Export game
         id: export_game
-        uses: Spartan322/godot-export@master
+        uses: ./.github/actions/openvic-export
         with:
-          godot_executable_download_url: ${{env.GODOT_LINUX_URL}}
-          godot_export_templates_download_url: ${{env.GODOT_TEMPLATE_URL}}
-          relative_project_path: ./game
-          export_as_pack: true
-          export_debug: true
-          cache: true
-          relative_export_path: ./game/export
-
-      - run: mv "./game/export/LinuxX11 x86_64/OpenVic.x86_64.pck" ./game/export/${{ github.event.repository.name }}.pck
+          godot-executable-url: ${{ needs.static-checks-builds.outputs.godot-executable-url }}
+          godot-templates-url: ${{ needs.static-checks-builds.outputs.godot-templates-url }}
+          export-as-pack: true
+          export-debug: true
+          relative-export-path: ./game/export
 
       - name: Check for class reference updates
+        env:
+          EXPORT_GAME_OUTPUTS_EXECUTABLE_PATH: ${{ steps.export_game.outputs.executable_path }}
         run: |
           echo "Running --doctool to see if this changes the public API without updating the documentation."
           echo -e "If a diff is shown, it means that your code/doc changes are incomplete and you should update the class reference with --doctool.\n\n"
           cd game
-          ${{ steps.export_game.outputs.executable_path }} --doctool --headless ../extension --gdextension-docs 2>&1 > /dev/null || true
+          $EXPORT_GAME_OUTPUTS_EXECUTABLE_PATH --doctool --headless ../extension --gdextension-docs 2>&1 > /dev/null || true
           cd ..
           git diff --color --exit-code -- '*.xml' && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
 
-      - name: Upload pack artifact
-        uses: actions/upload-artifact@v4.3.0
-        with:
-          name: ${{ github.event.repository.name }}-debug-pck
-          compression-level: 9
-          path: |
-            ./game/export/${{ github.event.repository.name }}.pck
-
-  export:
+  export-master:
     runs-on: ubuntu-latest
-    needs: [build]
-    permissions: write-all
-
-    name: Export
+    needs:  [static-checks-builds, build-master]
+    name: 📦 Export
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v4.1.1
-
-      - name: Setup Environment
-        uses: OpenVicProject/openvic-env@master
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4.1.7
+      - name: Shallow clone
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: game/bin/openvic
-          pattern: ${{ github.event.repository.name }}-*-extension
-          merge-multiple: true
-
-      - name: Install WINE
-        id: wine_install
-        run: |
-          sudo apt update
-          sudo apt install --fix-missing wine64
-          echo "WINE_PATH=$(which wine64)" >> $GITHUB_OUTPUT
+          submodules: recursive
+          fetch-depth: 1 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
 
       - name: Export game
         id: export_game
-        uses: Spartan322/godot-export@master
+        uses: ./.github/actions/openvic-export
         with:
-          godot_executable_download_url: ${{env.GODOT_LINUX_URL}}
-          godot_export_templates_download_url: ${{env.GODOT_TEMPLATE_URL}}
-          relative_project_path: ./game
-          archive_output: true
-          cache: true
-          wine_path: ${{ steps.wine_install.outputs.WINE_PATH }}
-
-      - name: Create release
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: ncipollo/release-action@v1.13.0
-        with:
-          allowUpdates: true
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: ${{ steps.export_game.outputs.archive_directory }}/*
+          godot-executable-url: ${{ needs.static-checks-builds.outputs.godot-executable-url }}
+          godot-templates-url: ${{ needs.static-checks-builds.outputs.godot-templates-url }}
+          archive-output: true
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.3.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ github.event.repository.name }}
           retention-days: 30
           compression-level: 9
+          if-no-files-found: error
           path: |
-            ${{ steps.export_game.outputs.archive_directory }}
+            ${{ steps.export_game.outputs.archive-directory }}
 
-  merge-files:
+  merge-library-files:
+    name: 📚 Merge Library Files
     runs-on: ubuntu-latest
-    needs: [export]
-    name: 📚 Merge Files
+    needs: [godot-debug-checks, export-master]
     steps:
-      - name: Download extension artifacts
-        uses: actions/download-artifact@v4.1.7
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        with:
-          path: artifacts
-          pattern: ${{ github.event.repository.name }}-*-extension
-          merge-multiple: true
-
-      - name: Merge extension artifacts
-        uses: actions/upload-artifact/merge@v4.3.0
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           delete-merged: true
           name: ${{ github.event.repository.name }}-extension
           pattern: ${{ github.event.repository.name }}-*-extension
 
-      - name: Archive release
-        uses: thedoctor0/zip-release@0.7.6
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+  validate-master:
+    name: ✅ Validate Success
+    if: always()
+    needs: [static-checks-builds, build-master, godot-debug-checks, export-master, merge-library-files]
+    runs-on: Ubuntu-latest
+    steps:
+      - name: Check
+        uses: re-actors/alls-green@a638d6464689bbb24c325bb3fe9404d63a913030
         with:
-          type: "zip"
-          filename: "release/libopenvic.zip"
-          directory: "${{ github.workspace }}/artifacts"
-
-      - name: Upload extension release asset
-        uses: ncipollo/release-action@v1.13.0
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        with:
-          allowUpdates: true
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: release/*
+          allowed-skips: static-checks-builds, build-master, godot-debug-checks, export-master, merge-library-files
+          jobs: ${{ toJson(needs) }}
