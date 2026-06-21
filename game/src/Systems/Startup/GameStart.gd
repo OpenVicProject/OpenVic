@@ -4,11 +4,13 @@ const LoadingScreen := preload("res://src/Systems/Startup/LoadingScreen.gd")
 const GameMenuScene := preload("res://src/UI/GameMenu/GameMenu/GameMenu.tscn")
 
 @export_subgroup("Nodes")
-@export var loading_screen : LoadingScreen
+@export var loading_screen: LoadingScreen
+
 
 func _enter_tree() -> void:
-	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
+	Keychain.keep_binding_check = func(action_name: StringName) -> bool:
 		return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
+
 
 func _ready() -> void:
 	Keychain.actions = {
@@ -34,7 +36,7 @@ func _ready() -> void:
 		"Map": Keychain.InputGroup.new("", false),
 		"Time": Keychain.InputGroup.new("", false),
 		"UI": Keychain.InputGroup.new("", false),
-		"Hotkeys": Keychain.InputGroup.new("UI")
+		"Hotkeys": Keychain.InputGroup.new("UI"),
 	}
 
 	if ArgumentParser.get_option_value(&"help"):
@@ -48,17 +50,24 @@ func _ready() -> void:
 	await _setup_compatibility_mode_paths()
 	await loading_screen.start_loading_screen(_initialize_game)
 
-func _setup_compatibility_mode_paths() -> void:
-	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
 
-	var arg_base_path : String = ArgumentParser.get_option_value(&"base-path")
-	var arg_search_path : String = ArgumentParser.get_option_value(&"search-path")
+func _setup_compatibility_mode_paths() -> void:
+	# To test mods, set your base path to Victoria II and then pass mods in reverse order with
+	# --mod="mod" for each mod.
+
+	var arg_base_path: String = ArgumentParser.get_option_value(&"base-path")
+	var arg_search_path: String = ArgumentParser.get_option_value(&"search-path")
 
 	var setting := Vic2Settings.get_setting(Vic2Settings.GENERAL_BASE_DEFINES_PATH)
 
 	if arg_base_path:
 		if arg_search_path:
-			push_warning("Exact base path and search base path arguments both used:\nBase: ", arg_base_path, "\nSearch: ", arg_search_path)
+			push_warning(
+				"Exact base path and search base path arguments both used:\nBase: ",
+				arg_base_path,
+				"\nSearch: ",
+				arg_search_path,
+			)
 		setting.set_value(arg_base_path)
 	elif Vic2Settings.get_base_defines_path().is_empty() and arg_search_path:
 		# This will also search for a Steam install if the hint doesn't help
@@ -81,10 +90,11 @@ func _setup_compatibility_mode_paths() -> void:
 			load_list.append(mod)
 	load_list_setting.set_value(load_list)
 
+
 func _load_compatibility_mode() -> void:
 	if GameSingleton.set_compatibility_mode_roots(Vic2Settings.get_base_defines_path()) != OK:
 		push_error("Errors setting game roots!")
-	
+
 	CursorManager.initial_cursor_setup()
 	setup_title_theme()
 
@@ -94,6 +104,7 @@ func _load_compatibility_mode() -> void:
 	SoundSingleton.load_sounds()
 	SoundSingleton.load_music()
 	MusicManager.add_compat_songs()
+
 
 func setup_title_theme() -> void:
 	SoundSingleton.load_title_theme()
@@ -111,6 +122,8 @@ func setup_title_theme() -> void:
 
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
+
+
 func _initialize_game() -> void:
 	if Vic2Settings.get_base_defines_path().is_empty():
 		return
@@ -127,10 +140,11 @@ func _initialize_game() -> void:
 	loading_screen.try_update_loading_screen(100)
 
 	var end := Time.get_ticks_usec()
-	print("Loading took ", float(end - start) / 1000000, " seconds")
+	print("Loading took ", float(end - start) / 1_000_000, " seconds")
 
 	# change scene in a thread-safe way
 	get_tree().change_scene_to_packed.call_deferred(GameMenuScene)
+
 
 func _on_splash_container_splash_end() -> void:
 	loading_screen.show()

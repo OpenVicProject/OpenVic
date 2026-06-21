@@ -48,6 +48,17 @@ repos:
         files: \.py$
         types_or: [text]
 
+  - repo: https://github.com/atelico/gdstyle
+    rev: v0.2.1
+    hooks:
+      - id: gdstyle-fmt
+        files: \.gd$
+        exclude: |
+          (?x)^(
+            game/addons/.*
+          )
+        types_or: [text]
+
   - repo: https://github.com/crate-ci/typos
     rev: v1.29.4
     hooks:

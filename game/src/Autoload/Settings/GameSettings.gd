@@ -2,11 +2,13 @@ extends "res://addons/kenyoni/app_settings/app_settings.gd"
 
 enum SaveGameFormat {
 	BINARY,
-	TEXT
+	TEXT,
 }
+
+# gdstyle:ignore=order/class-member-order
 const SAVE_GAME_FORMAT_DISPLAY_NAMES: PackedStringArray = [
 	"OPTIONS_GENERAL_BINARY",
-	"OPTIONS_GENERAL_TEXT"
+	"OPTIONS_GENERAL_TEXT",
 ]
 
 enum AutoSaveInterval {
@@ -14,14 +16,16 @@ enum AutoSaveInterval {
 	BIMONTHLY,
 	YEARLY,
 	BIYEARLY,
-	NEVER
+	NEVER,
 }
+
+# gdstyle:ignore=order/class-member-order
 const AUTO_SAVE_INTERVAL_DISPLAY_NAMES: PackedStringArray = [
 	"OPTIONS_GENERAL_AUTOSAVE_MONTHLY",
 	"OPTIONS_GENERAL_AUTOSAVE_BIMONTHLY",
 	"OPTIONS_GENERAL_AUTOSAVE_YEARLY",
 	"OPTIONS_GENERAL_AUTOSAVE_BIYEARLY",
-	"OPTIONS_GENERAL_AUTOSAVE_NEVER"
+	"OPTIONS_GENERAL_AUTOSAVE_NEVER",
 ]
 
 enum RefreshRate {
@@ -34,8 +38,10 @@ enum RefreshRate {
 	_120HZ,
 	_144HZ,
 	_365HZ,
-	UNLIMITED
+	UNLIMITED,
 }
+
+# gdstyle:ignore=order/class-member-order
 const REFRESH_RATE_DISPLAY_NAMES: PackedStringArray = [
 	"VSync",
 	"Adaptive VSync",
@@ -45,8 +51,8 @@ const REFRESH_RATE_DISPLAY_NAMES: PackedStringArray = [
 	"90hz",
 	"120hz",
 	"144hz",
-	"365hz", 
-	"Unlimited"
+	"365hz",
+	"Unlimited",
 ]
 
 enum GraphicsDetail {
@@ -54,16 +60,19 @@ enum GraphicsDetail {
 	MEDIUM,
 	HIGH,
 	ULTRA,
-	CUSTOM
+	CUSTOM,
 }
+
+# gdstyle:ignore=order/class-member-order
 const GRAPHICS_DETAIL_DISPLAY_NAMES: PackedStringArray = [
 	"OPTIONS_VIDEO_QUALITY_LOW",
 	"OPTIONS_VIDEO_QUALITY_MEDIUM",
 	"OPTIONS_VIDEO_QUALITY_HIGH",
 	"OPTIONS_VIDEO_QUALITY_ULTRA",
-	"OPTIONS_VIDEO_QUALITY_CUSTOM"
+	"OPTIONS_VIDEO_QUALITY_CUSTOM",
 ]
-
+#
+# Resolution
 const RESOLUTIONS: Array[Vector2i] = [
 	Vector2i(3840, 2160),
 	Vector2i(2560, 1080),
@@ -74,7 +83,7 @@ const RESOLUTIONS: Array[Vector2i] = [
 	Vector2i(1440, 900),
 	Vector2i(1600, 900),
 	Vector2i(1024, 600),
-	Vector2i(800, 600)
+	Vector2i(800, 600),
 ]
 const RESOLUTION_DISPLAY_NAMES: PackedStringArray = [
 	"3840x2160",
@@ -86,42 +95,52 @@ const RESOLUTION_DISPLAY_NAMES: PackedStringArray = [
 	"1440x900",
 	"1600x900",
 	"1024x600",
-	"800x600"
+	"800x600",
 ]
-
+#
+# ScreenModes
 const SCREEN_MODES: PackedInt32Array = [
 	DisplayServer.WINDOW_MODE_FULLSCREEN,
 	DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN,
-	DisplayServer.WINDOW_MODE_WINDOWED
+	DisplayServer.WINDOW_MODE_WINDOWED,
 ]
 const SCREEN_MODES_DISPLAY_NAMES: PackedStringArray = [
 	"OPTIONS_VIDEO_FULLSCREEN",
 	"OPTIONS_VIDEO_BORDERLESS",
-	"OPTIONS_VIDEO_WINDOWED"
+	"OPTIONS_VIDEO_WINDOWED",
 ]
-
+#
+# File
 const SETTINGS_FILE := "user://settings.cfg"
-
+#
+# General Settings
 const GENERAL_SAVE_GAME_FORMAT := &"general/save_game_format"
 const GENERAL_AUTO_SAVE_INTERVAL := &"general/auto_save_interval"
 const GENERAL_LANGUAGE := &"general/language"
-
+#
+# Video Settings
 const VIDEO_RESOLUTION := &"video/resolution"
 const VIDEO_GUI_SCALING_FACTOR := &"video/gui_scaling_factor"
 const VIDEO_SCREEN_MODE := &"video/screen_mode"
 const VIDEO_MONITOR_SELECTION := &"video/monitor_selection"
 const VIDEO_REFRESH_RATE := &"video/refresh_rate"
 const VIDEO_QUALITY_PRESET := &"video/quality_preset"
-
+#
+# Audio Settings
 const AUDIO_MASTER_VOLUME := &"audio/master_volume"
 const AUDIO_MUSIC_VOLUME := &"audio/music_volume"
 const AUDIO_SFX_VOLUME := &"audio/sfx_volume"
 const AUDIO_MUSIC_START_PLAY := &"audio/music_start_play"
-
+#
+# Internal Settings
 const INTERNAL_WINDOW_WIDTH = &"display/window/size/viewport_width"
 const INTERNAL_WINDOW_HEIGHT = &"display/window/size/viewport_height"
 
-var video_revert_group := RevertGroup.new("OPTIONS_VIDEO_REVERT_DIALOG_TITLE", "OPTIONS_VIDEO_REVERT_DIALOG_TEXT")
+var video_revert_group := RevertGroup.new(
+	"OPTIONS_VIDEO_REVERT_DIALOG_TITLE",
+	"OPTIONS_VIDEO_REVERT_DIALOG_TEXT",
+)
+
 
 func _init() -> void:
 	Localisation.initialize()
@@ -259,8 +278,10 @@ func _init() -> void:
 	_gui_scaling_factor_apply(self.get_setting(VIDEO_GUI_SCALING_FACTOR))
 	get_tree().scene_changed.connect(_gui_scaling_factor_apply.bind(self.get_setting(VIDEO_GUI_SCALING_FACTOR)))
 
+
 func save() -> Error:
 	return self.to_config().save(SETTINGS_FILE)
+
 
 func load() -> Error:
 	var cfg: ConfigFile = ConfigFile.new()
@@ -273,6 +294,7 @@ func load() -> Error:
 
 	return Error.OK
 
+
 func get_game_resolution() -> Vector2i:
 	var window := get_window()
 	assert(window != null)
@@ -282,8 +304,10 @@ func get_game_resolution() -> Vector2i:
 		_:
 			return window.size
 
+
 func _enum_validate(stg: Setting, val: Variant) -> bool:
 	return val in stg.get_meta(&"values")
+
 
 func _get_loaded_locales() -> PackedStringArray:
 	var result := TranslationServer.get_loaded_locales()
@@ -292,9 +316,13 @@ func _get_loaded_locales() -> PackedStringArray:
 		result.push_back(default_locale)
 	return result
 
+
 func _get_loaded_locale_names() -> PackedStringArray:
-	var locales_country_rename : Dictionary = ProjectSettings.get_setting("internationalization/locale/country_short_name", {})
-	
+	var locales_country_rename: Dictionary = ProjectSettings.get_setting(
+		"internationalization/locale/country_short_name",
+		{},
+	)
+
 	var result: PackedStringArray = []
 	for locale: String in _get_loaded_locales():
 		var locale_name := TranslationServer.get_locale_name(locale)
@@ -307,6 +335,7 @@ func _get_loaded_locale_names() -> PackedStringArray:
 		result.append(locale_name)
 	return result
 
+
 func _resolution_apply(stg: Setting) -> void:
 	if Engine.is_embedded_in_editor():
 		_push_embedded_warning(str(stg.value()))
@@ -318,13 +347,14 @@ func _resolution_apply(stg: Setting) -> void:
 		_:
 			DisplayServer.window_set_size(stg.value() as Vector2i)
 			_set_window_override(DisplayServer.window_get_size())
-			if window != null: window.content_scale_size = Vector2i(0,0)
+			if window != null: window.content_scale_size = Vector2i(0, 0)
+
 
 func _resolution_translate_value(stg: Setting, value: Variant, _display_value: String) -> String:
 	var resolution := value as Vector2i
 	var format_dict := {
 		"width": resolution.x,
-		"height": resolution.y
+		"height": resolution.y,
 	}
 	format_dict["name"] = tr("OPTIONS_VIDEO_RESOLUTION_{width}x{height}".format(format_dict))
 	if format_dict["name"].begins_with("OPTIONS"): format_dict["name"] = ""
@@ -335,20 +365,27 @@ func _resolution_translate_value(stg: Setting, value: Variant, _display_value: S
 	format_dict["height"] = Localisation.tr_number(resolution.y)
 	return tr(result).format(format_dict)
 
+
 func _gui_scaling_factor_apply(stg: Setting) -> void:
 	if not is_inside_tree(): return
 	get_window().content_scale_factor = stg.value()
 
+
 func _screen_mode_validate(_stg: Setting, val: Variant) -> bool:
 	return _get_enum_values(&"DisplayServer", &"WindowMode").find_key(val) != null
 
+
 func _screen_mode_apply(stg: Setting) -> void:
 	if Engine.is_embedded_in_editor():
-		var window_mode_name: String = _get_enum_values(&"DisplayServer", &"WindowMode").find_key(stg.value())
+		var window_mode_name: String = _get_enum_values(
+			&"DisplayServer",
+			&"WindowMode",
+		).find_key(stg.value())
 		_push_embedded_warning("DisplayServer." + window_mode_name)
 		return
 	DisplayServer.window_set_mode(stg.value())
 	_set_window_override(DisplayServer.window_get_size())
+
 
 func _refresh_rate_apply(stg: Setting) -> void:
 	var refresh_rate := stg.value() as RefreshRate
@@ -367,22 +404,27 @@ func _refresh_rate_apply(stg: Setting) -> void:
 				RefreshRate._365HZ: Engine.max_fps = 365
 				RefreshRate.UNLIMITED: Engine.max_fps = 0
 
+
 func _get_monitor_display_names() -> PackedStringArray:
 	var result: PackedStringArray = []
 	for index: int in range(DisplayServer.get_screen_count()):
 		result.append("Display " + str(index + 1))
 	return result
 
+
 func _volume_apply(stg: Setting, bus_index: int) -> void:
-	const RATIO_FOR_LINEAR : float = 100
+	const RATIO_FOR_LINEAR: float = 100
 	AudioServer.set_bus_volume_db(bus_index, linear_to_db(stg.value() / RATIO_FOR_LINEAR))
 
-func _volume_validate(stg: Setting, val: Variant) -> bool:
-	return val >= stg.get_meta(&"min", 0) && val <= stg.get_meta(&"max", 120)
 
-func _set_window_override(size : Vector2i) -> void:
+func _volume_validate(stg: Setting, val: Variant) -> bool:
+	return val >= stg.get_meta(&"min", 0) and val <= stg.get_meta(&"max", 120)
+
+
+func _set_window_override(size: Vector2i) -> void:
 	get_setting(INTERNAL_WINDOW_WIDTH).set_value(size.x)
 	get_setting(INTERNAL_WINDOW_HEIGHT).set_value(size.y)
+
 
 func _get_enum_values(clazz: StringName, enum_name: StringName) -> Dictionary[StringName, int]:
 	var result: Dictionary[StringName, int] = {}
@@ -390,13 +432,22 @@ func _get_enum_values(clazz: StringName, enum_name: StringName) -> Dictionary[St
 		result[value_name] = ClassDB.class_get_integer_constant(clazz, value_name)
 	return result
 
+
 func _push_embedded_warning(value: String) -> void:
-	push_warning("Setting screen mode to ", value, " for an editor embedded window, this will not be reflected in the embedded window.")
+	push_warning(
+		"Setting screen mode to ",
+		value,
+		" for an editor embedded window, this will not be reflected in the embedded window.",
+	)
+
 
 class RevertGroup:
-	var title : String
-	var text : String
+	var title: String
+	var text: String
 
-	func _init(ti: String = "Please Confirm...", tex: String = "< reverting in {time} seconds >") -> void:
+	func _init(
+		ti: String = "Please Confirm...",
+		tex: String = "< reverting in {time} seconds >",
+	) -> void:
 		title = ti
 		text = tex
