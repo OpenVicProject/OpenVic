@@ -18,7 +18,7 @@ func _ready() -> void:
 	_tab_container.set_tab_title(4, "OPTIONS_OTHER")
 
 	# Prepare options menu before loading user settings
-	var tab_bar : TabBar = _tab_container.get_child(0, true)
+	var tab_bar : TabBar = _tab_container.get_tab_bar()
 
 	# This ends up easier to manage then trying to manually recreate the TabContainer's behavior
 	# These buttons can be accessed regardless of the tab

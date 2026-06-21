@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c2s0ruvq6381u"]
+[gd_scene format=3 uid="uid://c2s0ruvq6381u"]
 
 [ext_resource type="Script" uid="uid://cwm8g3055fu8g" path="res://addons/MusicMetadata/UI/MusicMetadataUIBehave.gd" id="1_3cvch"]
 [ext_resource type="LabelSettings" uid="uid://wavkiduf4bmu" path="res://addons/MusicMetadata/UI/title_label.tres" id="3_fmmta"]
@@ -100,7 +100,7 @@ _data = {
 &"Slide from top": SubResource("Animation_vxls3")
 }
 
-[node name="MusicMetadataUI" type="Control" node_paths=PackedStringArray("art_display", "title_display", "artist_band_display", "album_display", "description_display", "url_display")]
+[node name="MusicMetadataUI" type="Control" unique_id=502315543 node_paths=PackedStringArray("art_display", "title_display", "artist_band_display", "album_display", "description_display", "url_display")]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_3cvch")
@@ -111,18 +111,18 @@ album_display = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/Album")
 description_display = NodePath("HBoxContainer/Desc")
 url_display = NodePath("HBoxContainer/URL")
 
-[node name="HBoxContainer" type="VBoxContainer" parent="."]
+[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=412755949]
 clip_contents = true
-layout_mode = 2
+layout_mode = 0
 offset_right = 386.0
 offset_bottom = 200.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer" unique_id=827397669]
 layout_mode = 2
 
-[node name="Art" type="TextureRect" parent="HBoxContainer/HBoxContainer"]
+[node name="Art" type="TextureRect" parent="HBoxContainer/HBoxContainer" unique_id=352517861]
 visible = false
 custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
@@ -132,12 +132,12 @@ texture = SubResource("ImageTexture_n1u5k")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/HBoxContainer" unique_id=356199746]
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="Title" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1016314711]
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
@@ -147,7 +147,7 @@ label_settings = ExtResource("3_fmmta")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Album" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Album" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer" unique_id=986659315]
 visible = false
 layout_mode = 2
 size_flags_vertical = 1
@@ -156,7 +156,7 @@ text = "From Gimmick!
 label_settings = ExtResource("4_k3lid")
 horizontal_alignment = 1
 
-[node name="Artist Band" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Artist Band" type="Label" parent="HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1594250236]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
@@ -168,7 +168,7 @@ label_settings = ExtResource("5_h6hbs")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Desc" type="Label" parent="HBoxContainer"]
+[node name="Desc" type="Label" parent="HBoxContainer" unique_id=1674693970]
 visible = false
 layout_mode = 2
 text = "Desc
@@ -176,16 +176,14 @@ Desc
 Desc"
 label_settings = ExtResource("4_k3lid")
 
-[node name="URL" type="Label" parent="HBoxContainer"]
+[node name="URL" type="Label" parent="HBoxContainer" unique_id=997320898]
 visible = false
 layout_mode = 2
 text = "URLs
 "
 label_settings = ExtResource("4_k3lid")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1646484328]
 root_node = NodePath("../HBoxContainer")
-libraries = {
-"": SubResource("AnimationLibrary_4hnqu")
-}
-autoplay = "Slide from right"
+libraries/ = SubResource("AnimationLibrary_4hnqu")
+autoplay = &"Slide from right"
