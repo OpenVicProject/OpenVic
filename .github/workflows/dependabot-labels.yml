@@ -1,7 +1,7 @@
 name: Dependabot Auto-Label
 on:
   pull_request:
-    types: [opened, labeled]
+    types: opened
     branches: [master]
     paths:
       - extension/deps/openvic-simulation
@@ -9,7 +9,6 @@ on:
 
 permissions:
   pull-requests: write
-  issues: write
 
 jobs:
   dependabot:
