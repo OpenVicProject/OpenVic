@@ -1,6 +1,6 @@
 # We lack a convenient means of gathering *all* the changes when specializations are passed, so
 #  a catch-all variable is the easiest workaround.
-everything:
+everything: &everything
   - "**"
 
 # Determines if build actions should occur after static checks are ran. Broadly speaking, these
@@ -15,6 +15,12 @@ sources:
   - scripts
   - godot-cpp
   - extension/deps/**
+
+pre-commit:
+  - *everything
+  - '!scripts/**'
+  - '!godot-cpp/**'
+  - '!extension/deps/*/**'
 
 # Determines which files are appropriate for running clangd-tidy checks on.
 clangd:
