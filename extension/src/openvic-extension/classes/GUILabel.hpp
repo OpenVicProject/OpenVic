@@ -74,9 +74,7 @@ namespace OpenVic {
 		static godot::String const& get_substitution_marker();
 		static godot::String const& get_flag_marker();
 		static void set_text_and_tooltip(
-			GUINode const& parent,
-			godot::NodePath const& path,
-			godot::StringName const& text_localisation_key,
+			GUINode const& parent, godot::NodePath const& path, godot::StringName const& text_localisation_key,
 			godot::StringName const& tooltip_localisation_key
 		);
 
@@ -88,7 +86,7 @@ namespace OpenVic {
 		godot::String get_gui_text_name() const;
 		/* Set the GUI::Text. */
 		godot::Error set_gui_text(
-			GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes = nullptr
+			GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes = nullptr //
 		);
 
 		void force_update_lines();
@@ -127,21 +125,15 @@ namespace OpenVic {
 
 		godot::String generate_substituted_text(godot::String const& base_text) const;
 		std::pair<godot::String, colour_instructions_t> generate_display_text_and_colour_instructions(
-			godot::String const& substituted_text
+			godot::String const& substituted_text //
 		) const;
 		std::vector<line_t> generate_lines_and_segments(
-			godot::String const& display_text, colour_instructions_t const& colour_instructions
+			godot::String const& display_text, colour_instructions_t const& colour_instructions //
 		) const;
-		void separate_lines(
-			godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines
-		) const;
-		void separate_currency_segments(
-			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		void separate_lines(godot::String const& string, godot::Color const& colour, std::vector<line_t>& lines) const;
+		void separate_currency_segments(godot::String const& string, godot::Color const& colour, line_t& line) const;
 		static flag_segment_t make_flag_segment(godot::String const& identifier);
-		void separate_flag_segments(
-			godot::String const& string, godot::Color const& colour, line_t& line
-		) const;
+		void separate_flag_segments(godot::String const& string, godot::Color const& colour, line_t& line) const;
 		std::vector<line_t> wrap_lines(std::vector<line_t>& unwrapped_lines) const;
 		void adjust_to_content_size();
 	};

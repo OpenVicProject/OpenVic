@@ -1,27 +1,29 @@
 #include "MapItemSingleton.hpp"
 
+#include <godot_cpp/core/error_macros.hpp>
+#include <godot_cpp/variant/packed_int32_array.hpp>
+#include <godot_cpp/variant/packed_vector2_array.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
+#include <godot_cpp/variant/vector2.hpp>
+
+#include <openvic-simulation/DefinitionManager.hpp>
+#include <openvic-simulation/core/memory/SmartPtr.hpp>
+#include <openvic-simulation/country/CountryDefinition.hpp>
+#include <openvic-simulation/country/CountryInstance.hpp>
+#include <openvic-simulation/economy/BuildingType.hpp>
+#include <openvic-simulation/interface/GFXObject.hpp>
+#include <openvic-simulation/interface/UI.hpp>
+#include <openvic-simulation/map/ProvinceDefinition.hpp>
+#include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/map/State.hpp>
+#include <openvic-simulation/types/Vector.hpp>
+
 #include <type_safe/strong_typedef.hpp>
 
-#include <openvic-simulation/core/memory/SmartPtr.hpp>
-
-#include "godot_cpp/core/error_macros.hpp"
-#include "godot_cpp/variant/packed_int32_array.hpp"
-#include "godot_cpp/variant/packed_vector2_array.hpp"
-#include "godot_cpp/variant/typed_array.hpp"
-#include "godot_cpp/variant/vector2.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-#include "openvic-simulation/country/CountryDefinition.hpp"
-#include "openvic-simulation/country/CountryInstance.hpp"
-#include "openvic-simulation/DefinitionManager.hpp"
-#include "openvic-simulation/economy/BuildingType.hpp"
-#include "openvic-simulation/interface/GFXObject.hpp"
-#include "openvic-simulation/map/ProvinceDefinition.hpp"
-#include "openvic-simulation/map/ProvinceInstance.hpp"
-#include "openvic-simulation/map/State.hpp"
-#include "openvic-simulation/types/Vector.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -36,10 +38,9 @@ void MapItemSingleton::_bind_methods() {
 	OV_BIND_METHOD(MapItemSingleton::get_rgo_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_national_focus_icons);
 	OV_BIND_METHOD(MapItemSingleton::get_projections);
-	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_number,{"province_number"});
-	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_number,{"province_number"});
-	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_number, {"position"});
-
+	OV_BIND_METHOD(MapItemSingleton::get_unit_position_by_province_number, { "province_number" });
+	OV_BIND_METHOD(MapItemSingleton::get_port_position_by_province_number, { "province_number" });
+	OV_BIND_METHOD(MapItemSingleton::get_clicked_port_province_number, { "position" });
 }
 
 MapItemSingleton* MapItemSingleton::get_singleton() {
@@ -74,14 +75,15 @@ void MapItemSingleton::add_billboard_dict(GFX::Billboard const& billboard, Typed
 	billboard_dict_array.push_back(dict);
 }
 
-//get an array of all the billboard dictionaries
+// get an array of all the billboard dictionaries
 TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 
 	TypedArray<Dictionary> ret;
 
-	for (memory::unique_base_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+	UIManager const& manager = game_singleton->get_definition_manager().get_ui_manager();
+	for (memory::unique_base_ptr<GFX::Object> const& obj : manager.get_objects()) {
 		GFX::Billboard const* billboard = obj->cast_to<GFX::Billboard>();
 		if (billboard != nullptr) {
 			add_billboard_dict(*billboard, ret);
@@ -91,7 +93,9 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 	return ret;
 }
 
-void MapItemSingleton::add_projection_dict(GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array) const {
+void MapItemSingleton::add_projection_dict(
+	GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array
+) const {
 	static const StringName name_key = "name";
 	static const StringName texture_key = "texture";
 	static const StringName size_key = "size";
@@ -118,7 +122,8 @@ TypedArray<Dictionary> MapItemSingleton::get_projections() const {
 
 	TypedArray<Dictionary> ret;
 
-	for (memory::unique_base_ptr<GFX::Object> const& obj : game_singleton->get_definition_manager().get_ui_manager().get_objects()) {
+	UIManager const& manager = game_singleton->get_definition_manager().get_ui_manager();
+	for (memory::unique_base_ptr<GFX::Object> const& obj : manager.get_objects()) {
 		GFX::Projection const* projection = obj->cast_to<GFX::Projection>();
 		if (projection != nullptr) {
 			add_projection_dict(*projection, ret);
@@ -150,9 +155,11 @@ PackedVector2Array MapItemSingleton::get_province_positions() const {
 	return billboard_pos;
 }
 
-//includes non-existent countries, used for setting the billboard buffer size
+// includes non-existent countries, used for setting the billboard buffer size
 int32_t MapItemSingleton::get_max_capital_count() const {
-	return GameSingleton::get_singleton()->get_definition_manager().get_country_definition_manager().get_country_definition_count();
+	CountryDefinitionManager const& manager =
+		GameSingleton::get_singleton()->get_definition_manager().get_country_definition_manager();
+	return manager.get_country_definition_count();
 }
 
 PackedVector2Array MapItemSingleton::get_capital_positions() const {
@@ -170,7 +177,7 @@ PackedVector2Array MapItemSingleton::get_capital_positions() const {
 
 	for (CountryInstance const& country : country_instance_manager.get_country_instances()) {
 		if (!country.exists() || country.get_capital() == nullptr) {
-			//skip non-existent or capital-less countries
+			// skip non-existent or capital-less countries
 			continue;
 		}
 
@@ -228,13 +235,11 @@ PackedByteArray MapItemSingleton::get_rgo_icons() const {
 		}
 
 		GoodDefinition const* rgo_good = prov_inst.get_rgo_good();
-		icons[index++] = rgo_good != nullptr
-			? static_cast<uint64_t>(type_safe::get(rgo_good->index)) + 1
-			: 0; // 0 if no rgo good in the province
+		icons[index++] = rgo_good != nullptr ? static_cast<uint64_t>(type_safe::get(rgo_good->index)) + 1
+											 : 0; // 0 if no rgo good in the province
 	}
 
 	return icons;
-
 }
 
 /*
@@ -272,60 +277,73 @@ PackedByteArray MapItemSingleton::get_national_focus_icons() const {
 }
 
 
-Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_number) const { 
+Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
-	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_from_number(province_number);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get unit position - invalid province number: %d", province_number));
+	ProvinceDefinition const* province =
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
+	ERR_FAIL_NULL_V_MSG(
+		province, {}, Utilities::format("Cannot get unit position - invalid province number: %d", province_number)
+	);
 
 	return game_singleton->normalise_map_position(province->get_unit_position());
 }
 
-Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_number) const { 
+Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_number) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
-	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_from_number(province_number);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number));
-	ERR_FAIL_COND_V_MSG(!province->has_port(), {},Utilities::format("Cannot get port position, province has no port, number: %d", province_number) ); 
+	ProvinceDefinition const* province =
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
+	ERR_FAIL_NULL_V_MSG(
+		province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number)
+	);
+	ERR_FAIL_COND_V_MSG(
+		!province->has_port(), {},
+		Utilities::format("Cannot get port position, province has no port, number: %d", province_number)
+	);
 
-	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+	BuildingType const* port_building_type =
+		game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	fvec2_t const* port_position = province->get_building_position(port_building_type);
 
-	//no null check because province->has_port() condition passed, already verifying that this isn't null
+	// no null check because province->has_port() condition passed, already verifying that this isn't null
 	return game_singleton->normalise_map_position(*port_position);
 }
 
-static constexpr real_t port_radius = 0.0006_real; //how close we have to click for a detection
+static constexpr real_t port_radius = 0.0006_real; // how close we have to click for a detection
 
-//Searches provinces near the one clicked and attempts to find a port within the port_radius of the click position
+// Searches provinces near the one clicked and attempts to find a port within the port_radius of the click position
 int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_position) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	int32_t initial_province_number = game_singleton->get_province_number_from_uv_coords(click_position);
 
-	ProvinceDefinition const* province = game_singleton->get_definition_manager().get_map_definition()
-		.get_province_definition_from_number(initial_province_number);
-	ERR_FAIL_NULL_V_MSG(province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number));
+	ProvinceDefinition const* province =
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(
+			initial_province_number
+		);
+	ERR_FAIL_NULL_V_MSG(
+		province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number)
+	);
 
-	BuildingType const* port_building_type = game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
-	
-	if(province->has_port()){
+	BuildingType const* port_building_type =
+		game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+
+	if (province->has_port()) {
 		Vector2 port_position = game_singleton->normalise_map_position(*province->get_building_position(port_building_type));
-		if(click_position.distance_to(port_position) <= port_radius){
+		if (click_position.distance_to(port_position) <= port_radius) {
 			return province->get_province_number();
 		}
-	}
-	else if(province->is_water()){
+	} else if (province->is_water()) {
 		// search the adjacent provinces for ones with ports
-		for(ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
+		for (ProvinceDefinition::adjacency_t const& adjacency : province->get_adjacencies()) {
 			ProvinceDefinition const& adjacent_province = adjacency.get_to();
-			if(!adjacent_province.has_port()) { 
+			if (!adjacent_province.has_port()) {
 				continue; // skip provinces without ports (ie. other water provinces)
 			}
-			Vector2 port_position = game_singleton->normalise_map_position(*adjacent_province.get_building_position(port_building_type));
-			if(click_position.distance_to(port_position) <= port_radius){
+			Vector2 port_position =
+				game_singleton->normalise_map_position(*adjacent_province.get_building_position(port_building_type));
+			if (click_position.distance_to(port_position) <= port_radius) {
 				return adjacent_province.get_province_number();
 			}
 		}

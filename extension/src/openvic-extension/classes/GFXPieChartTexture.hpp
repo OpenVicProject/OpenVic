@@ -5,16 +5,16 @@
 
 #include <godot_cpp/classes/image_texture.hpp>
 
+#include <openvic-simulation/core/template/Concepts.hpp>
 #include <openvic-simulation/interface/GFXSprite.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include <type_safe/strong_typedef.hpp>
+
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
-#include "openvic-simulation/core/template/Concepts.hpp"
-
-#include <type_safe/strong_typedef.hpp>
 
 namespace OpenVic {
 	template<typename T>
@@ -26,14 +26,14 @@ namespace OpenVic {
 	concept IsPieChartValue = std::is_constructible_v<float, T> || IsPieChartValueTypeSafe<T>;
 
 	template<typename MapType>
-	concept IsPieChartDistribution = (
+	concept IsPieChartDistribution =
+		(
 			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
 			specialization_of<MapType, tsl::ordered_map>
 			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
 			|| specialization_of<MapType, IndexedFlatMap>
-		)
-		&& IsPieChartKey<map_key_t<MapType>>
-		&& IsPieChartValue<map_value_t<MapType>>;
+		) &&
+		IsPieChartKey<map_key_t<MapType>> && IsPieChartValue<map_value_t<MapType>>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
@@ -65,21 +65,20 @@ namespace OpenVic {
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
 		static godot_pie_chart_data_t distribution_to_slices_array(
-			std::span<std::add_const_t<KeyType>> keys,
-			std::span<std::add_const_t<ValueType>> values,
+			std::span<std::add_const_t<KeyType>> keys, std::span<std::add_const_t<ValueType>> values,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::add_const_t<std::remove_pointer_t<KeyType>>&, godot::String const&, float, float
-			> auto make_tooltip,
+				godot::String, //
+				std::add_const_t<std::remove_pointer_t<KeyType>>&, //
+				godot::String const&, //
+				float, //
+				float> auto make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
 			assert(keys.size() == values.size());
 			using key_t = std::add_const_t<std::remove_pointer_t<KeyType>>;
 			using key_ref_wrap_t = std::reference_wrapper<key_t>;
-			using entry_t = std::pair<
-				key_ref_wrap_t,
-				float
-			>;
+			using entry_t = std::pair<key_ref_wrap_t, float>;
 
 			memory::FixedVector<entry_t> sorted_distribution { create_empty, keys.size() };
 
@@ -104,10 +103,7 @@ namespace OpenVic {
 
 					total_weight += value;
 				} else if (value < 0.0f) {
-					spdlog::error_s(
-						"Negative distribution value {} for key \"{}\"",
-						value, key
-					);
+					spdlog::error_s("Negative distribution value {} for key \"{}\"", value, key);
 				}
 			}
 
@@ -117,16 +113,17 @@ namespace OpenVic {
 			}
 
 			std::sort(
-				sorted_distribution.begin(), sorted_distribution.end(),
-				[](entry_t const& lhs, entry_t const& rhs) -> bool {
+				sorted_distribution.begin(), sorted_distribution.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
 					if constexpr (requires { lhs.first.get() < rhs.first.get(); }) {
 						return lhs.first.get() < rhs.first.get();
 					} else if constexpr (requires { lhs.first.get().index < rhs.first.get().index; }) {
 						return lhs.first.get().index < rhs.first.get().index;
 					} else if constexpr (requires { lhs.first.get().get_identifier() < rhs.first.get().get_identifier(); }) {
-						return lhs.first.get().get_identifier() < rhs.first.get().get_identifier();;
+						return lhs.first.get().get_identifier() < rhs.first.get().get_identifier();
 					} else {
-						static_assert(!std::is_same_v<KeyType, KeyType>, "distribution_to_slices_array's sorting does not support KeyType");
+						static_assert(
+							!std::is_same_v<KeyType, KeyType>, "distribution_to_slices_array's sorting does not support KeyType"
+						);
 					}
 				}
 			);
@@ -158,8 +155,12 @@ namespace OpenVic {
 			MapType const& distribution,
 			NodeTools::Functor<
 				// return tooltip; args: key const*, identifier, weight, total weight
-				godot::String, std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&, godot::String const&, float, float
-			> auto make_tooltip,
+				godot::String, //
+				std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&, //
+				godot::String const&, //
+				float, //
+				float //
+				> auto make_tooltip,
 			godot::String const& identifier_suffix = {}
 		) {
 			memory::FixedVector<map_key_t<MapType>> keys { create_empty, distribution.size() };

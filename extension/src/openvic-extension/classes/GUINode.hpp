@@ -43,11 +43,11 @@ namespace OpenVic {
 		GUINode();
 
 		static godot::Control* generate_gui_element(
-			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
+			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = "" //
 		);
 
 		godot::Error add_gui_element(
-			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = ""
+			godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name = "" //
 		);
 
 		static godot::Vector2 get_gui_position(godot::String const& gui_scene, godot::String const& gui_position);
@@ -69,7 +69,7 @@ namespace OpenVic {
 		// These expect a non-null node!
 		static GUIIconButton* get_gui_icon_button_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIMaskedFlagButton* get_gui_masked_flag_button_from_node_and_path(
-			godot::Node* node, godot::NodePath const& path
+			godot::Node* node, godot::NodePath const& path //
 		);
 		static GUILabel* get_gui_label_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static godot::Panel* get_panel_from_node_and_path(godot::Node* node, godot::NodePath const& path);
@@ -78,7 +78,7 @@ namespace OpenVic {
 		static GUIMaskedFlag* get_gui_masked_flag_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIPieChart* get_gui_pie_chart_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIOverlappingElementsBox* get_gui_overlapping_elements_box_from_node_and_path(
-			godot::Node* node, godot::NodePath const& path
+			godot::Node* node, godot::NodePath const& path //
 		);
 		static GUIScrollbar* get_gui_scrollbar_from_node_and_path(godot::Node* node, godot::NodePath const& path);
 		static GUIListBox* get_gui_listbox_from_node_and_path(godot::Node* node, godot::NodePath const& path);

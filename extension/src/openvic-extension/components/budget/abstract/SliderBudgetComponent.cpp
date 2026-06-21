@@ -13,26 +13,13 @@
 using namespace OpenVic;
 
 SliderBudgetComponent::SliderBudgetComponent(
-	GUINode const& parent,
-	godot::String&& new_slider_tooltip_localisation_key,
-	const BudgetType new_budget_type,
-	godot::NodePath const& slider_path,
-	godot::NodePath const& budget_label_path,
-	godot::NodePath const& percent_label_path
-) : budget_type{new_budget_type},
-	slider_tooltip_localisation_key{std::move(new_slider_tooltip_localisation_key)},
-	budget_label{
-		budget_label_path.is_empty()
-		? nullptr
-		: parent.get_gui_label_from_nodepath(budget_label_path)
-	},
-	percent_label{
-		percent_label_path.is_empty()
-		? nullptr
-		: parent.get_gui_label_from_nodepath(percent_label_path)
-	},
-	slider{*parent.get_gui_scrollbar_from_nodepath(slider_path)}
-{
+	GUINode const& parent, godot::String&& new_slider_tooltip_localisation_key, const BudgetType new_budget_type,
+	godot::NodePath const& slider_path, godot::NodePath const& budget_label_path, godot::NodePath const& percent_label_path
+)
+	: budget_type { new_budget_type }, slider_tooltip_localisation_key { std::move(new_slider_tooltip_localisation_key) },
+	  budget_label { budget_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(budget_label_path) },
+	  percent_label { percent_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(percent_label_path) },
+	  slider { *parent.get_gui_scrollbar_from_nodepath(slider_path) } {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -62,50 +49,28 @@ void SliderBudgetComponent::update_labels(CountryInstance& country, const fixed_
 	if (budget_label != nullptr) {
 		const godot::String budget_text = Utilities::cash_to_string_dp_dynamic(budget);
 		budget_label->set_text(
-			was_budget_cut(country)
-				? Utilities::format(godot::String::utf8("§R%s§W"), budget_text)
-				: budget_text
+			was_budget_cut(country) ? Utilities::format(godot::String::utf8("§R%s§W"), budget_text) : budget_text
 		);
 	};
 
 	if (percent_label != nullptr) {
-		percent_label->set_text(
-			Utilities::percentage_to_string_dp(scaled_value, 1)
-		);
+		percent_label->set_text(Utilities::percentage_to_string_dp(scaled_value, 1));
 	}
 
 	update_slider_tooltip(country, scaled_value);
 
-	const fixed_point_t balance = budget_type == EXPENSES
-		? -budget 
-		: budget;
+	const fixed_point_t balance = budget_type == EXPENSES ? -budget : budget;
 	set_balance(balance);
 }
 
-void SliderBudgetComponent::update_slider_tooltip(
-	CountryInstance& country,
-	const fixed_point_t scaled_value
-) {
+void SliderBudgetComponent::update_slider_tooltip(CountryInstance& country, const fixed_point_t scaled_value) {
 	godot::String tooltip;
-	const godot::String percentage_text = Utilities::float_to_string_dp(
-		static_cast<float>(100 * scaled_value),
-		1
-	);
+	const godot::String percentage_text = Utilities::float_to_string_dp(static_cast<float>(100 * scaled_value), 1);
 	const godot::String localised = slider.tr(slider_tooltip_localisation_key);
 	if (localised.contains(Utilities::get_short_value_placeholder())) {
-		tooltip = Utilities::format(
-			"%s%%",
-			localised.replace(
-				Utilities::get_short_value_placeholder(),
-				percentage_text
-			)
-		);
+		tooltip = Utilities::format("%s%%", localised.replace(Utilities::get_short_value_placeholder(), percentage_text));
 	} else {
-		tooltip = Utilities::format(
-			"%s%s%%",
-			localised,
-			percentage_text
-		);
+		tooltip = Utilities::format("%s%s%%", localised, percentage_text);
 	}
 	slider.set_tooltip_string(tooltip);
 }

@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/line2d.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {

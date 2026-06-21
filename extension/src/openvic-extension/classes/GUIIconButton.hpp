@@ -13,14 +13,12 @@ namespace OpenVic {
 		static void _bind_methods();
 
 	public:
-		godot::Error set_gfx_texture_sprite(
-			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
-		);
+		godot::Error set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES);
 
 		godot::Ref<GFXSpriteTexture> get_gfx_sprite_texture() const;
 
 		godot::Error set_gfx_texture_sprite_name(
-			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
+			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES //
 		);
 
 		godot::String get_gfx_texture_sprite_name() const;

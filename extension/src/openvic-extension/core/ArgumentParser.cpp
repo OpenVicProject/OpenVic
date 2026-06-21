@@ -243,9 +243,11 @@ ArgumentParser::ArgumentParser() {
 	options.push_back(
 		ArgumentOption::create("base-path", Variant::STRING, "Load Victoria 2 assets from a specific path.", { "b" }, "[path]")
 	);
-	options.push_back(ArgumentOption::create(
-		"search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]"
-	));
+	options.push_back(
+		ArgumentOption::create(
+			"search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]"
+		)
+	);
 	options.push_back(ArgumentOption::create("mod", Variant::PACKED_STRING_ARRAY, "Load Victoria 2 mods.", { "m" }, "<mods>"));
 
 	parse_arguments(OS::get_singleton()->get_cmdline_args(), false);
@@ -339,7 +341,7 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 
 	PackedStringArray option_help;
 	option_help.resize(options.size());
-	for (size_t i = 0; String & help : option_help) {
+	for (size_t i = 0; String& help : option_help) {
 		help = "  " + options[i]->get_help_string(p_is_rich);
 		i++;
 	}
@@ -359,8 +361,7 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 		app_description = vformat("[color=gray]%s[/color]", app_description);
 	}
 
-	String app_copyright =
-		"(c) " + convert_to<String>(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
+	String app_copyright = "(c) " + convert_to<String>(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
 	if (p_is_rich) {
 		app_copyright = vformat("[color=gray]%s[/color]", app_copyright);
 	}
@@ -608,7 +609,8 @@ Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_er
 			} else if (option->get_type() == Variant::BOOL) {
 				arguments[option->get_name()] = true;
 			} else {
-				WARN_PRINT(vformat("Argument '%s' treated like a boolean but does not support a boolean value, skipping.", key)
+				WARN_PRINT(
+					vformat("Argument '%s' treated like a boolean but does not support a boolean value, skipping.", key)
 				);
 			}
 		} else if (p_error_unknown) {
