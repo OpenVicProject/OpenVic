@@ -1,0 +1,35 @@
+{
+    "base_branches": [
+        "master"
+    ],
+    "tag_resolver": {
+        "method": "sort",
+        "filter": {
+            "method": "regexr",
+            "pattern": "(\\d+\\.\\d+(?:\\.\\d+)?)(?:-((alpha|beta|rc)\\.(\\d+)))?"
+        }
+    },
+    "categories": [
+        {
+            "title": "### Enhancements & Features",
+            "labels": [
+                "enhancement"
+            ],
+            "exhaustive": true,
+            "consume": true
+        },
+        {
+            "title": "### Bug Fixes",
+            "labels": [
+                "bug"
+            ],
+            "exhaustive": true,
+            "consume": true
+        }
+    ],
+    "template": "# Release Notes for <<RELEASE_NAME_REPLACEMENT>>\n## Changelog since [#{{FROM_TAG}}](https://github.com/<<REPO>>/<<RELEASE_OR_COMMIT_PATH>>/#{{FROM_TAG}})\n#{{CHANGELOG}}\n\n**Full Changelog**: #{{RELEASE_DIFF}}",
+    "empty_template": "# Release Notes for <<RELEASE_NAME_REPLACEMENT>>\n### No Pull Requests since [#{{FROM_TAG}}](https://github.com/<<REPO>>/<<RELEASE_OR_COMMIT_PATH>>/#{{FROM_TAG}})\n\n**Full Changelog**: #{{RELEASE_DIFF}}",
+    "pr_template": "* #{{TITLE}} by @#{{AUTHOR}} in #{{URL}}",
+    "max_pull_requests": 1000,
+    "max_back_track_time_days": 365
+}
