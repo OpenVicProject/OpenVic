@@ -59,7 +59,7 @@ void GUINode::_bind_methods() {
 	OV_BIND_METHOD(GUINode::get_click_mask);
 	OV_BIND_METHOD(GUINode::set_click_mask, { "mask" });
 	ADD_PROPERTY(
-		PropertyInfo(Variant::OBJECT, "click_mask", PROPERTY_HINT_RESOURCE_TYPE, "BitMap"), "set_click_mask", "get_click_mask"
+	    PropertyInfo(Variant::OBJECT, "click_mask", PROPERTY_HINT_RESOURCE_TYPE, "BitMap"), "set_click_mask", "get_click_mask"
 	);
 
 	OV_BIND_METHOD(GUINode::set_click_mask_from_nodepaths, { "paths" });
@@ -130,8 +130,10 @@ static T* _cast_node(Node* node) {
 	ERR_FAIL_NULL_V(node, nullptr);
 	T* result = Object::cast_to<T>(node);
 	ERR_FAIL_NULL_V_MSG(
-		result, nullptr,
-		Utilities::format("Failed to cast node %s from type %s to %s", node->get_name(), node->get_class(), T::get_class_static())
+	    result, nullptr,
+	    Utilities::format(
+	        "Failed to cast node %s from type %s to %s", node->get_name(), node->get_class(), T::get_class_static()
+	    )
 	);
 	return result;
 }
@@ -157,31 +159,38 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 	ERR_FAIL_NULL_V(node, nullptr);
 	if (TextureRect const* texture_rect = Object::cast_to<TextureRect>(node); texture_rect != nullptr) {
 		const Ref<Texture2D> texture = texture_rect->get_texture();
-		ERR_FAIL_NULL_V_MSG(texture, nullptr, Utilities::format("Failed to get Texture2D from TextureRect %s", node->get_name()));
+		ERR_FAIL_NULL_V_MSG(
+		    texture, nullptr, Utilities::format("Failed to get Texture2D from TextureRect %s", node->get_name())
+		);
 		return texture;
 	} else if (GUIButton const* button = Object::cast_to<GUIButton>(node); button != nullptr) {
 		static const StringName theme_name_normal = "normal";
 		const Ref<StyleBox> stylebox = button->get_theme_stylebox(theme_name_normal);
 		ERR_FAIL_NULL_V_MSG(
-			stylebox, nullptr, Utilities::format("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
+		    stylebox, nullptr,
+		    Utilities::format("Failed to get StyleBox %s from GUIButton %s", theme_name_normal, node->get_name())
 		);
 		const Ref<StyleBoxTexture> stylebox_texture = stylebox;
 		ERR_FAIL_NULL_V_MSG(
-			stylebox_texture, nullptr, Utilities::format(
-				"Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
-			)
+		    stylebox_texture, nullptr,
+		    Utilities::format(
+		        "Failed to cast StyleBox %s from GUIButton %s to type StyleBoxTexture", theme_name_normal, node->get_name()
+		    )
 		);
 		const Ref<Texture2D> result = stylebox_texture->get_texture();
 		ERR_FAIL_NULL_V_MSG(
-			result, nullptr,
-			Utilities::format("Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name())
+		    result, nullptr,
+		    Utilities::format(
+		        "Failed to get Texture2D from StyleBoxTexture %s from GUIButton %s", theme_name_normal, node->get_name()
+		    )
 		);
 		return result;
 	}
 	ERR_FAIL_V_MSG(
-		nullptr, Utilities::format(
-			"Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
-		)
+	    nullptr, //
+	    Utilities::format(
+	        "Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
+	    )
 	);
 }
 

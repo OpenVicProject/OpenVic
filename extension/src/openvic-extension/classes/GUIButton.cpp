@@ -55,16 +55,16 @@ Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTex
 				add_theme_stylebox_override(button_state_texture->get_button_state_name(), stylebox);
 			} else {
 				UtilityFunctions::push_error(
-					"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
-					" StyleBoxTexture for GUIButton ", get_name()
+				    "Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
+				    " StyleBoxTexture for GUIButton ", get_name()
 				);
 
 				err = FAILED;
 			}
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
-				" GFXButtonStateTexture for GUIButton ", get_name()
+			    "Failed to make ", GFXButtonStateTexture::button_state_to_name(button_state),
+			    " GFXButtonStateTexture for GUIButton ", get_name()
 			);
 
 			err = FAILED;
@@ -96,7 +96,7 @@ Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 	}
 
 	static const std::array<StringName, 5> button_font_themes {
-		"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color"
+		"font_color", "font_hover_color", "font_hover_pressed_color", "font_pressed_color", "font_disabled_color" //
 	};
 
 	const Color colour = convert_to<Color>(gfx_font->get_colour());

@@ -26,7 +26,7 @@ void GUILineChart::_bind_methods() {
 	OV_BIND_METHOD(GUILineChart::get_gfx_line_chart_name);
 
 	OV_BIND_METHOD(
-		GUILineChart::set_gradient_line, { "line_values", "central_value", "min_value_range" }, DEFVAL(0.0f), DEFVAL(0.0f)
+	    GUILineChart::set_gradient_line, { "line_values", "central_value", "min_value_range" }, DEFVAL(0.0f), DEFVAL(0.0f)
 	);
 	OV_BIND_METHOD(GUILineChart::add_coloured_line, { "line_values", "line_colour" });
 	OV_BIND_METHOD(GUILineChart::scale_coloured_lines);
@@ -87,11 +87,11 @@ Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_nam
 
 	GFX::LineChart const* new_gfx_line_chart = sprite->cast_to<GFX::LineChart>();
 	ERR_FAIL_NULL_V_MSG(
-		new_gfx_line_chart, FAILED, Utilities::format(
-			"Invalid type for GFX sprite %s: %s (expected %s)", new_gfx_line_chart_name,
-			convert_to<String>(sprite->get_type()),
-			convert_to<String>(GFX::LineChart::get_type_static())
-		)
+	    new_gfx_line_chart, FAILED,
+	    Utilities::format(
+	        "Invalid type for GFX sprite %s: %s (expected %s)", new_gfx_line_chart_name, convert_to<String>(sprite->get_type()),
+	        convert_to<String>(GFX::LineChart::get_type_static())
+	    )
 	);
 
 	return set_gfx_line_chart(new_gfx_line_chart);
@@ -190,10 +190,13 @@ Error GUILineChart::add_coloured_line(PackedFloat32Array const& line_values, Col
 	if (point_count <= 0) {
 		point_count = line_values.size();
 	} else {
-		ERR_FAIL_COND_V_MSG(point_count != line_values.size(), FAILED, Utilities::format(
-			"Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d",
-			line_values.size(), point_count
-		));
+		ERR_FAIL_COND_V_MSG(
+		    point_count != line_values.size(), FAILED,
+		    Utilities::format(
+		        "Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d", line_values.size(),
+		        point_count
+		    )
+		);
 	}
 
 	Line2D* line = memnew(Line2D);

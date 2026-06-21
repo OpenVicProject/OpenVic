@@ -28,12 +28,12 @@ void StyleBoxWithSound::_bind_methods() {
 	OV_BIND_METHOD(StyleBoxWithSound::set_audio_disabled, { "disabled" });
 
 	ADD_PROPERTY(
-		PropertyInfo(Variant::OBJECT, "style_box", PROPERTY_HINT_RESOURCE_TYPE, "StyleBox"), "set_style_box", "get_style_box"
+	    PropertyInfo(Variant::OBJECT, "style_box", PROPERTY_HINT_RESOURCE_TYPE, "StyleBox"), "set_style_box", "get_style_box"
 	);
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "audio_bus", PROPERTY_HINT_ENUM, ""), "set_audio_bus", "get_audio_bus");
 	ADD_PROPERTY(
-		PropertyInfo(Variant::OBJECT, "audio_stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"), //
-		"set_audio_stream", "get_audio_stream"
+	    PropertyInfo(Variant::OBJECT, "audio_stream", PROPERTY_HINT_RESOURCE_TYPE, "AudioStream"), //
+	    "set_audio_stream", "get_audio_stream"
 	);
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "audio_volume"), "set_audio_volume", "get_audio_volume");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "audio_disabled"), "set_audio_disabled", "is_audio_disabled");

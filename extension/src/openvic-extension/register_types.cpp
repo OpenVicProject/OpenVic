@@ -180,8 +180,8 @@ void uninitialize_openvic_types(ModuleInitializationLevel p_level) {
 extern "C" {
 	// Initialization.
 	GDExtensionBool GDE_EXPORT openvic_library_init(
-		GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library,
-		GDExtensionInitialization* r_initialization
+	    GDExtensionInterfaceGetProcAddress p_get_proc_address, GDExtensionClassLibraryPtr p_library,
+	    GDExtensionInitialization* r_initialization
 	) {
 		GDExtensionBinding::InitObject init_obj(p_get_proc_address, p_library, r_initialization);
 

@@ -19,12 +19,12 @@ namespace godot {
 
 #define OV_BIND_SMETHOD(Function, ...) \
 	::OpenVic::detail::bind_static_method<::OpenVic::detail::get_function_name<#Function>()>( \
-		get_class_static(), &Function __VA_OPT__(, ) __VA_ARGS__ \
+	    get_class_static(), &Function __VA_OPT__(, ) __VA_ARGS__ \
 	)
 
 #define OV_BIND_SMETHOD_T(ClassType, Function, ...) \
 	::OpenVic::detail::bind_static_method<ClassType, ::OpenVic::detail::get_function_name<#Function>()>( \
-		&Function __VA_OPT__(, ) __VA_ARGS__ \
+	    &Function __VA_OPT__(, ) __VA_ARGS__ \
 	)
 
 namespace OpenVic::detail {
@@ -66,7 +66,7 @@ namespace OpenVic::detail {
 
 	template<StringLiteral Name, IsFunctionPointer Func, typename... DefaultsT>
 	void bind_static_method(
-		godot::StringName class_name, Func func, std::initializer_list<godot::StringName> arg_names, DefaultsT&&... defaults
+	    godot::StringName class_name, Func func, std::initializer_list<godot::StringName> arg_names, DefaultsT&&... defaults
 	) {
 		godot::MethodDefinition definition { Name.data() };
 		definition.args = { arg_names };

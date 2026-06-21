@@ -57,11 +57,11 @@ using namespace OpenVic;
 using namespace godot;
 
 ArgumentOption::ArgumentOption(
-	StringName const& name, Variant const& default_value, String const& description, PackedStringArray const& aliases,
-	String const& option_args, BitField<ArgumentConflictType> conflict_type
-)
-	: name { name }, default_value { default_value }, description { description }, aliases(aliases),
-	  option_arguments { option_args }, conflict_type { conflict_type } {
+    StringName const& name, Variant const& default_value, String const& description, PackedStringArray const& aliases,
+    String const& option_args, BitField<ArgumentConflictType> conflict_type
+) :
+    name { name }, default_value { default_value }, description { description }, aliases(aliases),
+    option_arguments { option_args }, conflict_type { conflict_type } {
 	aliases_set.reserve(aliases.size());
 	for (String const& alias : aliases) {
 		aliases_set.insert(alias);
@@ -154,33 +154,33 @@ String ArgumentOption::get_help_string(bool p_is_rich) const {
 Variant ArgumentOption::_get_empty_value_for(Variant::Type p_type) {
 	switch (p_type) {
 		using enum Variant::Type;
-	case NIL:				   return nullptr;
-	case BOOL:				   return false;
-	case INT:				   return 0;
-	case FLOAT:				   return 0.0f;
-	case STRING:			   return String();
-	case VECTOR2:			   return Vector2();
-	case VECTOR2I:			   return Vector2i();
-	case RECT2:				   return Rect2();
-	case RECT2I:			   return Rect2i();
-	case VECTOR3:			   return Vector3();
-	case VECTOR3I:			   return Vector3i();
-	case TRANSFORM2D:		   return Transform2D();
-	case VECTOR4:			   return Vector4();
-	case VECTOR4I:			   return Vector4i();
-	case PLANE:				   return Plane();
-	case QUATERNION:		   return Quaternion();
-	case AABB:				   return godot::AABB();
-	case BASIS:				   return Basis();
-	case TRANSFORM3D:		   return Transform3D();
-	case PROJECTION:		   return Projection();
-	case COLOR:				   return Color();
-	case STRING_NAME:		   return StringName();
-	case NODE_PATH:			   return NodePath();
-	case RID:				   return godot::RID();
-	case DICTIONARY:		   return Dictionary();
-	case ARRAY:				   return Array();
-	case PACKED_BYTE_ARRAY:	   return PackedByteArray();
+	case NIL:                  return nullptr;
+	case BOOL:                 return false;
+	case INT:                  return 0;
+	case FLOAT:                return 0.0f;
+	case STRING:               return String();
+	case VECTOR2:              return Vector2();
+	case VECTOR2I:             return Vector2i();
+	case RECT2:                return Rect2();
+	case RECT2I:               return Rect2i();
+	case VECTOR3:              return Vector3();
+	case VECTOR3I:             return Vector3i();
+	case TRANSFORM2D:          return Transform2D();
+	case VECTOR4:              return Vector4();
+	case VECTOR4I:             return Vector4i();
+	case PLANE:                return Plane();
+	case QUATERNION:           return Quaternion();
+	case AABB:                 return godot::AABB();
+	case BASIS:                return Basis();
+	case TRANSFORM3D:          return Transform3D();
+	case PROJECTION:           return Projection();
+	case COLOR:                return Color();
+	case STRING_NAME:          return StringName();
+	case NODE_PATH:            return NodePath();
+	case RID:                  return godot::RID();
+	case DICTIONARY:           return Dictionary();
+	case ARRAY:                return Array();
+	case PACKED_BYTE_ARRAY:    return PackedByteArray();
 	case PACKED_INT32_ARRAY:   return PackedInt32Array();
 	case PACKED_INT64_ARRAY:   return PackedInt64Array();
 	case PACKED_FLOAT32_ARRAY: return PackedFloat32Array();
@@ -190,20 +190,20 @@ Variant ArgumentOption::_get_empty_value_for(Variant::Type p_type) {
 	case PACKED_VECTOR3_ARRAY: return PackedVector3Array();
 	case PACKED_COLOR_ARRAY:   return PackedColorArray();
 	case PACKED_VECTOR4_ARRAY: return PackedVector4Array();
-	default:				   ERR_FAIL_V_MSG(nullptr, vformat("Empty value not supported for %s.", Variant::get_type_name(p_type)));
+	default:                   ERR_FAIL_V_MSG(nullptr, vformat("Empty value not supported for %s.", Variant::get_type_name(p_type)));
 	}
 }
 
 Ref<ArgumentOption> ArgumentOption::create(
-	StringName const& p_name, Variant::Type p_type, String const& p_description, PackedStringArray const& p_aliases,
-	String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
+    StringName const& p_name, Variant::Type p_type, String const& p_description, PackedStringArray const& p_aliases,
+    String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
 ) {
 	return create_with_default(p_name, _get_empty_value_for(p_type), p_description, p_aliases, p_option_args, p_conflict_type);
 }
 
 Ref<ArgumentOption> ArgumentOption::create_with_default(
-	StringName const& p_name, Variant const& p_default, String const& p_description, PackedStringArray const& p_aliases,
-	String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
+    StringName const& p_name, Variant const& p_default, String const& p_description, PackedStringArray const& p_aliases,
+    String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
 ) {
 	return memnew(ArgumentOption(p_name, p_default, p_description, p_aliases, p_option_args, p_conflict_type));
 }
@@ -222,18 +222,18 @@ void ArgumentOption::_bind_methods() {
 
 	OV_BIND_METHOD(ArgumentOption::get_type);
 	ADD_PROPERTY(
-		PropertyInfo(
-			Variant::INT, "type", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_ENUM, "Variant.Type"
-		),
-		"", "get_type"
+	    PropertyInfo(
+	        Variant::INT, "type", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_ENUM, "Variant.Type"
+	    ),
+	    "", "get_type"
 	);
 
 	OV_BIND_METHOD(ArgumentOption::get_default_value);
 	ADD_PROPERTY(
-		PropertyInfo(
-			Variant::NIL, "default_value", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT
-		),
-		"", "get_default_value"
+	    PropertyInfo(
+	        Variant::NIL, "default_value", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NIL_IS_VARIANT
+	    ),
+	    "", "get_default_value"
 	);
 
 	OV_BIND_METHOD(ArgumentOption::get_description);
@@ -256,24 +256,24 @@ ArgumentParser::ArgumentParser() {
 	options.push_back(ArgumentOption::create("help", Variant::BOOL, "Displays help and quits.", { "h" }));
 
 	options.push_back(
-		ArgumentOption::create(
-			"game-debug", Variant::BOOL, "Start the game in debug mode.", { "d", "debug", "debug-mode" }, "",
-			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND | ArgumentOption::ARGUMENT_CONFLICT_ALIASES
-		)
+	    ArgumentOption::create(
+	        "game-debug", Variant::BOOL, "Start the game in debug mode.", { "d", "debug", "debug-mode" }, "",
+	        ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND | ArgumentOption::ARGUMENT_CONFLICT_ALIASES
+	    )
 	);
 	options.push_back(ArgumentOption::create("game-debug", Variant::BOOL, "Start the game in debug mode.", { "debug-mode" }));
 
 	options.push_back(
-		ArgumentOption::create(
-			"base-path", Variant::STRING, "Load Victoria 2 assets from a specific path.", { "b" }, "[path]",
-			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
-		)
+	    ArgumentOption::create(
+	        "base-path", Variant::STRING, "Load Victoria 2 assets from a specific path.", { "b" }, "[path]",
+	        ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
+	    )
 	);
 	options.push_back(
-		ArgumentOption::create(
-			"search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]",
-			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
-		)
+	    ArgumentOption::create(
+	        "search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]",
+	        ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
+	    )
 	);
 	options.push_back(ArgumentOption::create("mod", Variant::PACKED_STRING_ARRAY, "Load Victoria 2 mods.", { "m" }, "<mods>"));
 
@@ -333,8 +333,8 @@ Variant ArgumentParser::get_option_value(StringName const& p_arg_name) const {
 		// See https://github.com/godotengine/godot-proposals/issues/13036
 		decltype(options)::Iterator it = const_cast<ArgumentParser*>(this)->_find_option(p_arg_name);
 		ERR_FAIL_COND_V_MSG(
-			it == const_cast<ArgumentParser*>(this)->options.end(), Variant(),
-			vformat("Could not find valid option '%s'.", p_arg_name)
+		    it == const_cast<ArgumentParser*>(this)->options.end(), Variant(),
+		    vformat("Could not find valid option '%s'.", p_arg_name)
 		);
 
 		return it->ptr()->get_default_value();
@@ -347,8 +347,8 @@ void ArgumentParser::set_option_value(StringName const& p_arg_name, Variant cons
 
 	ERR_FAIL_COND_MSG(it == options.end(), vformat("No option name/alias found for '%s'.", p_arg_name));
 	ERR_FAIL_COND_MSG(
-		it->ptr()->get_type() != p_value.get_type(),
-		vformat("Cannot set value of '%s' to type of '%s'", p_arg_name, Variant::get_type_name(p_value.get_type()))
+	    it->ptr()->get_type() != p_value.get_type(),
+	    vformat("Cannot set value of '%s' to type of '%s'", p_arg_name, Variant::get_type_name(p_value.get_type()))
 	);
 
 	arguments[it->ptr()->get_name()] = p_value;
@@ -419,18 +419,18 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 	}
 
 	godot::String help = vformat(
-		"%s - %s - %s - %s\n%s\n%s\n\n%s\n  %s -- %s\n\n%s\n%s", //
-		app_name, //
-		convert_to<String>(GAME_TAG), //
-		convert_to<String>(GAME_COMMIT_HASH).substr(0, 7), //
-		app_website, //
-		app_description, //
-		app_copyright, //
-		usage,
-		OS::get_singleton()->get_executable_path().get_file(), //
-		options_arg_str, //
-		options_category_str, //
-		String("\n").join(option_help)
+	    "%s - %s - %s - %s\n%s\n%s\n\n%s\n  %s -- %s\n\n%s\n%s", //
+	    app_name, //
+	    convert_to<String>(GAME_TAG), //
+	    convert_to<String>(GAME_COMMIT_HASH).substr(0, 7), //
+	    app_website, //
+	    app_description, //
+	    app_copyright, //
+	    usage,
+	    OS::get_singleton()->get_executable_path().get_file(), //
+	    options_arg_str, //
+	    options_category_str, //
+	    String("\n").join(option_help)
 	);
 
 	if (p_is_rich) {
@@ -452,13 +452,13 @@ decltype(ArgumentParser::options)::Iterator ArgumentParser::_find_option(godot::
 	return options.end();
 }
 
-Variant ArgumentParser::_parse_value( //
-	StringName const& p_arg_name, String const& p_value_string, Ref<ArgumentOption>& p_option
+Variant ArgumentParser::_parse_value(
+    StringName const& p_arg_name, String const& p_value_string, Ref<ArgumentOption>& p_option
 ) {
 	if (p_option.is_null()) {
 		decltype(options)::Iterator it = _find_option(p_arg_name);
 		ERR_FAIL_COND_V_EDMSG(
-			it == options.end(), Variant(), vformat("Could not find option name/alias for '%s'.", p_arg_name)
+		    it == options.end(), Variant(), vformat("Could not find option name/alias for '%s'.", p_arg_name)
 		);
 		p_option = it->ptr();
 	}
@@ -477,7 +477,7 @@ Variant ArgumentParser::_parse_value( //
 		}
 
 		ERR_FAIL_V_EDMSG(
-			Variant(), vformat("'%s' must be a valid boolean, '%s' is an invalid value.", p_arg_name, p_value_string)
+		    Variant(), vformat("'%s' must be a valid boolean, '%s' is an invalid value.", p_arg_name, p_value_string)
 		);
 	}
 	case INT:
@@ -485,14 +485,14 @@ Variant ArgumentParser::_parse_value( //
 			return p_value_string.to_int();
 		}
 		ERR_FAIL_V_EDMSG(
-			Variant(), vformat("'%s' must be a valid integer, '%s' is an invalid value.", p_arg_name, p_value_string)
+		    Variant(), vformat("'%s' must be a valid integer, '%s' is an invalid value.", p_arg_name, p_value_string)
 		);
 	case FLOAT:
 		if (p_value_string.is_valid_float()) {
 			return p_value_string.to_float();
 		}
 		ERR_FAIL_V_EDMSG(
-			Variant(), vformat("'%s' must be a valid float, '%s' is an invalid value.", p_arg_name, p_value_string)
+		    Variant(), vformat("'%s' must be a valid float, '%s' is an invalid value.", p_arg_name, p_value_string)
 		);
 	case STRING:
 	case STRING_NAME: //
@@ -511,11 +511,11 @@ Variant ArgumentParser::_parse_value( //
 		case VECTOR2:
 		case VECTOR2I:
 			ERR_FAIL_COND_V_EDMSG(
-				array.size() == 2, Variant(),
-				vformat(
-					"'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
-					p_value_string
-				)
+			    array.size() == 2, Variant(),
+			    vformat(
+			        "'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
+			        p_value_string
+			    )
 			);
 
 		case RECT2:
@@ -523,21 +523,21 @@ Variant ArgumentParser::_parse_value( //
 		case VECTOR4:
 		case VECTOR4I:
 			ERR_FAIL_COND_V_EDMSG(
-				array.size() == 4, Variant(),
-				vformat(
-					"'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
-					p_value_string
-				)
+			    array.size() == 4, Variant(),
+			    vformat(
+			        "'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
+			        p_value_string
+			    )
 			);
 
 		case VECTOR3:
 		case VECTOR3I:
 			ERR_FAIL_COND_V_EDMSG(
-				array.size() == 3, Variant(),
-				vformat(
-					"'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
-					p_value_string
-				)
+			    array.size() == 3, Variant(),
+			    vformat(
+			        "'%s' must be a valid %s, '%s' is an invalid value.", p_arg_name, Variant::get_type_name(type),
+			        p_value_string
+			    )
 			);
 
 		default: unreachable();
@@ -551,7 +551,7 @@ Variant ArgumentParser::_parse_value( //
 			return named_colors[index].color;
 		} else {
 			ERR_FAIL_V_EDMSG(
-				Variant(), vformat("'%s' must be a valid Color, '%s' is an invalid value.", p_arg_name, p_value_string)
+			    Variant(), vformat("'%s' must be a valid Color, '%s' is an invalid value.", p_arg_name, p_value_string)
 			);
 		}
 	}
@@ -566,8 +566,8 @@ Variant ArgumentParser::_parse_value( //
 	}
 	default:
 		ERR_FAIL_V_EDMSG(
-			Variant(),
-			vformat("'%s' value of type '%s' requested but could not be parsed.", p_arg_name, Variant::get_type_name(type))
+		    Variant(),
+		    vformat("'%s' value of type '%s' requested but could not be parsed.", p_arg_name, Variant::get_type_name(type))
 		);
 	}
 }
@@ -599,7 +599,7 @@ LocalVector<Ref<ArgumentOption>> ArgumentParser::_parse_argument_bool_list(Strin
 }
 
 Pair<const Ref<ArgumentOption>, Variant> ArgumentParser::_parse_argument(
-	String const& p_argument, bool p_error_unknown, bool p_skip_conflict_args //
+    String const& p_argument, bool p_error_unknown, bool p_skip_conflict_args
 ) {
 	size_t equal_index = p_argument.find("=");
 	String key;
@@ -730,6 +730,6 @@ void ArgumentParser::_bind_methods() {
 	OV_BIND_METHOD(ArgumentParser::set_option_value, { "arg_name", "value" });
 	OV_BIND_METHOD(ArgumentParser::get_help, { "is_rich" });
 	OV_BIND_METHOD(
-		ArgumentParser::parse_arguments, { "args", "error_unknown", "skip_conflict_args" }, DEFVAL(true), DEFVAL(false)
+	    ArgumentParser::parse_arguments, { "args", "error_unknown", "skip_conflict_args" }, DEFVAL(true), DEFVAL(false)
 	);
 }

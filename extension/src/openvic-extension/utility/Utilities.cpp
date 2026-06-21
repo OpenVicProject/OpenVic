@@ -7,14 +7,14 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include "openvic-simulation/politics/Government.hpp"
-#include <gli/convert.hpp>
-#include <gli/load_dds.hpp>
-
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/map/Region.hpp>
 #include <openvic-simulation/map/State.hpp>
+#include <openvic-simulation/politics/Government.hpp>
+
+#include <gli/convert.hpp>
+#include <gli/load_dds.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/core/Convert.hpp"
@@ -39,21 +39,17 @@ godot::StringName const& Utilities::get_colour_and_sign(const fixed_point_t valu
 	static const godot::StringName red = "R";
 	static const godot::StringName yellow = "Y";
 
-	return value > 0
-		? green_plus
-		: value < 0
-			? red
-			: yellow;
+	return value > 0 ? green_plus : value < 0 ? red : yellow;
 }
 
 /* Int to 2 decimal place string in terms of the largest suffix less than or equal to it,
  * or normal integer string if less than the smallest suffix. */
 String Utilities::int_to_string_suffixed(int64_t val) {
 	static const std::vector<std::pair<int64_t, String>> suffixes {
-		{ 1'000'000'000'000, "T" },
-		{ 1'000'000'000, "B" },
-		{ 1'000'000, "M" },
-		{ 1'000, "k" }
+		{ 1'000'000'000'000, "T" }, //
+		{ 1'000'000'000, "B" }, //
+		{ 1'000'000, "M" }, //
+		{ 1'000, "k" } //
 	};
 	static constexpr int64_t decimal_places_multiplier = 100;
 	const bool negative = val < 0;
@@ -64,8 +60,8 @@ String Utilities::int_to_string_suffixed(int64_t val) {
 		if (val >= suffix_val) {
 			const int64_t whole = val / suffix_val;
 			const int64_t frac = (val * decimal_places_multiplier / suffix_val) % decimal_places_multiplier;
-			return (negative ? "-" : "") + String::num_int64(whole) + "." +
-				(frac < 10 ? "0" : "") + String::num_int64(frac) + suffix_str;
+			return (negative ? "-" : "") + String::num_int64(whole) + "." + (frac < 10 ? "0" : "") + String::num_int64(frac) +
+			       suffix_str;
 		}
 	}
 	return (negative ? "-" : "") + String::num_int64(val);
@@ -137,13 +133,7 @@ String Utilities::fixed_point_to_string_dp(fixed_point_t val, int32_t decimal_pl
 }
 
 String Utilities::percentage_to_string_dp(fixed_point_t val, int32_t decimal_places) {
-	return Utilities::format(
-		"%s%%",
-		Utilities::float_to_string_dp(
-			static_cast<float>(100 * val),
-			decimal_places
-		)
-	);
+	return Utilities::format("%s%%", Utilities::float_to_string_dp(static_cast<float>(100 * val), decimal_places));
 }
 
 String Utilities::float_to_string_dp_dynamic(float val) {
@@ -152,11 +142,7 @@ String Utilities::float_to_string_dp_dynamic(float val) {
 }
 
 String Utilities::cash_to_string_dp_dynamic(fixed_point_t val) {
-	return format_with_currency(
-		Utilities::float_to_string_suffixed(
-			static_cast<float>(val)
-		)
-	);
+	return format_with_currency(Utilities::float_to_string_suffixed(static_cast<float>(val)));
 }
 
 String Utilities::format_with_currency(godot::String const& text) {
@@ -165,8 +151,8 @@ String Utilities::format_with_currency(godot::String const& text) {
 }
 
 String Utilities::date_to_string(Date date) {
-	static const String date_template_string = String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" +
-		Date::SEPARATOR_CHARACTER + "%d";
+	static const String date_template_string =
+	    String { "%d" } + Date::SEPARATOR_CHARACTER + "%d" + Date::SEPARATOR_CHARACTER + "%d";
 
 	return Utilities::format(date_template_string, date.get_year(), date.get_month(), date.get_day());
 }
@@ -214,8 +200,10 @@ static Ref<Image> load_dds_image(String const& path) {
 
 	/* Only fail if there aren't enough bytes, everything seems to work fine if there are extra bytes and we ignore them */
 	ERR_FAIL_COND_V_MSG(
-		size > texture.size(), nullptr,
-		Utilities::format("Texture size %d mismatched with dims-based size %d for %s", static_cast<int64_t>(texture.size()), size, path)
+	    size > texture.size(), nullptr,
+	    Utilities::format(
+	        "Texture size %d mismatched with dims-based size %d for %s", static_cast<int64_t>(texture.size()), size, path
+	    )
 	);
 
 	PackedByteArray pixels;
@@ -245,7 +233,9 @@ Ref<FontFile> Utilities::load_godot_font(String const& fnt_path, Ref<Image> cons
 	ERR_FAIL_NULL_V(image, nullptr);
 	Ref<FontFile> font;
 	font.instantiate();
-	ERR_FAIL_COND_V_MSG(font->load_bitmap_font(fnt_path) != OK, nullptr, Utilities::format("Failed to load font: %s", fnt_path));
+	ERR_FAIL_COND_V_MSG(
+	    font->load_bitmap_font(fnt_path) != OK, nullptr, Utilities::format("Failed to load font: %s", fnt_path)
+	);
 	font->set_texture_image(0, { font->get_fixed_size(), 0 }, 0, image);
 	return font;
 }
@@ -257,7 +247,9 @@ Ref<Image> Utilities::make_solid_colour_image(Color const& colour, int32_t width
 	return result;
 }
 
-Ref<ImageTexture> Utilities::make_solid_colour_texture(Color const& colour, int32_t width, int32_t height, Image::Format format) {
+Ref<ImageTexture> Utilities::make_solid_colour_texture(
+    Color const& colour, int32_t width, int32_t height, Image::Format format
+) {
 	const Ref<Image> image = make_solid_colour_image(colour, width, height, format);
 	ERR_FAIL_NULL_V(image, nullptr);
 	const Ref<ImageTexture> result = ImageTexture::create_from_image(image);
@@ -315,9 +307,8 @@ godot::String Utilities::get_state_name(godot::Object const& translation_object,
 godot::String Utilities::get_country_name(godot::Object const& translation_object, CountryInstance const& country) {
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_name_key = convert_to<String>(append_string_views(
-			country.get_identifier(), "_", government_type->get_identifier()
-		));
+		const String government_name_key =
+		    convert_to<String>(append_string_views(country.get_identifier(), "_", government_type->get_identifier()));
 
 		String government_name = translation_object.tr(government_name_key);
 
@@ -333,9 +324,9 @@ godot::String Utilities::get_country_adjective(godot::Object const& translation_
 
 	GovernmentType const* government_type = country.get_government_type_untracked();
 	if (government_type != nullptr) {
-		const String government_adjective_key = convert_to<String>(append_string_views(
-			country.get_identifier(), "_", government_type->get_identifier(), adjective
-		));
+		const String government_adjective_key = convert_to<String>(
+		    append_string_views(country.get_identifier(), "_", government_type->get_identifier(), adjective)
+		);
 
 		String government_adjective = translation_object.tr(government_adjective_key);
 
@@ -348,10 +339,8 @@ godot::String Utilities::get_country_adjective(godot::Object const& translation_
 }
 
 godot::String Utilities::make_modifier_effect_value(
-	godot::Object const& translation_object,
-	ModifierEffect const& format_effect,
-	fixed_point_t value,
-	bool plus_for_non_negative
+    godot::Object const& translation_object, ModifierEffect const& format_effect, fixed_point_t value,
+    bool plus_for_non_negative
 ) {
 	godot::String result;
 
@@ -363,8 +352,8 @@ godot::String Utilities::make_modifier_effect_value(
 
 	// Apply multiplier format part
 	{
-		uint8_t multiplier_power = (format >> ModifierEffect::FORMAT_MULTIPLIER_BIT_OFFSET) &
-			((1 << ModifierEffect::FORMAT_MULTIPLIER_BIT_COUNT) - 1);
+		uint8_t multiplier_power =
+		    (format >> ModifierEffect::FORMAT_MULTIPLIER_BIT_OFFSET) & ((1 << ModifierEffect::FORMAT_MULTIPLIER_BIT_COUNT) - 1);
 		while (multiplier_power-- > 0) {
 			value *= 10;
 		}
@@ -372,13 +361,13 @@ godot::String Utilities::make_modifier_effect_value(
 
 	// Apply decimal places format part
 	const uint8_t decimal_places = (format >> ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_OFFSET) &
-		((1 << ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_COUNT) - 1);
+	                               ((1 << ModifierEffect::FORMAT_DECIMAL_PLACES_BIT_COUNT) - 1);
 
 	result += Utilities::fixed_point_to_string_dp(value, decimal_places);
 
 	// Apply suffix format part
 	const ModifierEffect::suffix_t suffix = static_cast<ModifierEffect::suffix_t>(
-		(format >> ModifierEffect::FORMAT_SUFFIX_BIT_OFFSET) & ((1 << ModifierEffect::FORMAT_SUFFIX_BIT_COUNT) - 1)
+	    (format >> ModifierEffect::FORMAT_SUFFIX_BIT_OFFSET) & ((1 << ModifierEffect::FORMAT_SUFFIX_BIT_COUNT) - 1)
 	);
 
 	static const String normal_suffix_text = GUILabel::get_colour_marker() + String { "!" };
@@ -414,16 +403,14 @@ godot::String Utilities::make_modifier_effect_value(
 	return result;
 }
 godot::String Utilities::make_modifier_effect_value_coloured(
-	godot::Object const& translation_object,
-	ModifierEffect const& format_effect,
-	fixed_point_t value,
-	bool plus_for_non_negative
+    godot::Object const& translation_object, ModifierEffect const& format_effect, fixed_point_t value,
+    bool plus_for_non_negative
 ) {
 	godot::String result = GUILabel::get_colour_marker();
 
-	const bool is_positive_green = (
-		static_cast<uint8_t>(format_effect.format) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)
-	) == static_cast<uint8_t>(ModifierEffect::format_t::FORMAT_PART_POS);
+	const bool is_positive_green =
+	    (static_cast<uint8_t>(format_effect.format) & (1 << ModifierEffect::FORMAT_POS_NEG_BIT_OFFSET)) ==
+	    static_cast<uint8_t>(ModifierEffect::format_t::FORMAT_PART_POS);
 
 	if (value == 0) {
 		result += "Y";

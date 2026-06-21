@@ -10,6 +10,7 @@ namespace OpenVic {
 	private:
 		BudgetOverview budget_overview;
 		ScoreOverview score_overview;
+
 	public:
 		TopBar(GUINode const& parent);
 		void update();
