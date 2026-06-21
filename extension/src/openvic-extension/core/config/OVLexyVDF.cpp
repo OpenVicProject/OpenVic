@@ -9,11 +9,11 @@
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/typed_dictionary.hpp>
 
-#include "openvic-extension/core/Convert.hpp"
-
 #include <lexy-vdf/gen/author_info.gen.hpp>
 #include <lexy-vdf/gen/commit_info.gen.hpp>
 #include <lexy-vdf/gen/license_info.gen.hpp>
+
+#include "openvic-extension/core/Convert.hpp"
 
 using namespace OpenVic;
 using namespace godot;

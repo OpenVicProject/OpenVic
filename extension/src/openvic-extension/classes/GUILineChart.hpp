@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/line2d.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>
+
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
 
 namespace OpenVic {
@@ -40,7 +41,7 @@ namespace OpenVic {
 		// Set central_value to adjust the value represented by the vertical midpoint of the graph.
 		// Set min_value_range to ensure the min/max values of the graph are at least central_value +/- min_value_range.
 		godot::Error set_gradient_line(
-			godot::PackedFloat32Array const& line_values, float central_value = 0.0f, float min_value_range = 0.0f
+		    godot::PackedFloat32Array const& line_values, float central_value = 0.0f, float min_value_range = 0.0f
 		);
 		godot::Error add_coloured_line(godot::PackedFloat32Array const& line_values, godot::Color const& line_colour);
 		void scale_coloured_lines();

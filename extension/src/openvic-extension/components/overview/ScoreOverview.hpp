@@ -37,6 +37,7 @@ namespace OpenVic {
 		godot::String generate_military_tooltip(CountryInstance& country);
 		void on_military_score_changed();
 		void update_military_score(const fixed_point_t new_military_score);
+
 	public:
 		ScoreOverview(GUINode const& parent);
 		void update();

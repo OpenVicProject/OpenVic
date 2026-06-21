@@ -289,11 +289,11 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 				static const StringName set_scroll_index_func_name = "set_scroll_index";
 
 				scrollbar->connect(
-					GUIScrollbar::signal_value_changed(), Callable { this, set_scroll_index_func_name }, CONNECT_PERSIST
+				    GUIScrollbar::signal_value_changed(), Callable { this, set_scroll_index_func_name }, CONNECT_PERSIST
 				);
 			} else {
 				UtilityFunctions::push_error(
-					"Element ", scrollbar_name, " for GUIListBox ", get_name(), " is not a GUIScrollbar"
+				    "Element ", scrollbar_name, " for GUIListBox ", get_name(), " is not a GUIScrollbar"
 				);
 				err = FAILED;
 			}
