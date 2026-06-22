@@ -20,6 +20,7 @@ jobs:
       release-name: ${{ steps.get_release_name.outputs.release-name }}
       godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
       godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
+      godot-api-version: ${{ steps.godot-env.outputs.godot-api-version }}
     env:
       GITHUB_REF_NAME: ${{ github.ref_name }}
     steps:
@@ -127,6 +128,7 @@ jobs:
           target: ${{ matrix.target }}
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
+          version-api: ${{ needs.static-checks-release.outputs.godot-api-version }}
           tag-name: ${{ github.ref_name }}
           release-name: ${{ needs.static-checks-release.outputs.release-name }}
           disable-cache: true

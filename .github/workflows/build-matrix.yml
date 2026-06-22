@@ -2,7 +2,15 @@ name: 🔢 Build Matrix
 
 on:
   workflow_call:
+    inputs:
+      godot-api-version:
+        type: string
+        required: true
   workflow_dispatch:
+    inputs:
+      godot-api-version:
+        type: string
+        required: true
 
 jobs:
   build-matrix:
@@ -70,4 +78,4 @@ jobs:
           target: ${{ matrix.target }}
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
-
+          api-version: ${{ inputs.godot-api-version }}
