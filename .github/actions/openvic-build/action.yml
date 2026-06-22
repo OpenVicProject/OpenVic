@@ -13,6 +13,9 @@ inputs:
   arch:
     description: Architecture to build for
     required: true
+  api-version:
+    description: API version to build for
+    required: true
   scons-flags:
     description: Additional flags to send to SCons
     default: ''
@@ -83,7 +86,7 @@ runs:
         platform: ${{ inputs.platform }}
         target: ${{ inputs.target }}
         bin-dir: "game/bin/"
-        sconsflags: arch=${{ inputs.arch }} ${{ inputs.scons-flags }}
+        sconsflags: arch=${{ inputs.arch }} api_version=${{ inputs.api-version }} ${{ inputs.scons-flags }}
 
     - name: Delete compilation files
       if: ${{ inputs.platform == 'windows' }}

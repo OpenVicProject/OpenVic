@@ -7,7 +7,7 @@ inputs:
     default: https://github.com/godotengine/godot
   godot-version:
     description: Version of Godot
-    default: "4.7"
+    default: "4.6.3"
   godot-version-type:
     description: Type of Version of Godot
     default: stable
@@ -19,6 +19,9 @@ outputs:
   godot-template-url:
     description: The link to the `.tpz` archive of export templates that was generated.
     value: ${{ steps.variables.outputs.godot-template-url }}
+  godot-api-version:
+    description: The api_version to send to godot-cpp
+    value: ${{ steps.variables.outputs.godot-api-version }}
 
 runs:
   using: composite
@@ -116,5 +119,27 @@ runs:
 
         validate_url "$GODOT_TEMPLATE_URL" "GODOT_TEMPLATE_URL"
         echo "godot-template-url=$GODOT_TEMPLATE_URL" >> $GITHUB_OUTPUT
+
+        case $INPUTS_GODOT_VERSION in
+          4.3*)
+            echo "godot-api-version=4.3" >> $GITHUB_OUTPUT
+            ;;
+          4.4*)
+            echo "godot-api-version=4.4" >> $GITHUB_OUTPUT
+            ;;
+          4.5*)
+            echo "godot-api-version=4.5" >> $GITHUB_OUTPUT
+            ;;
+          4.6*)
+            echo "godot-api-version=4.6" >> $GITHUB_OUTPUT
+            ;;
+          4.7*)
+            echo "godot-api-version=4.7" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "::error::Could not generate godot-api-version from $INPUTS_GODOT_VERSION."
+            EXIT_STATUS=1
+            ;;
+        esac
 
         exit $EXIT_STATUS
