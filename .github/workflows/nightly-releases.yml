@@ -17,6 +17,9 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
+    env:
+      VARS_NIGHTLY_REPOSITORY: ${{ vars.NIGHTLY_REPOSITORY }}
+      VAR_DEFAULT_COMMIT_HASH: ${{ vars.DEFAULT_COMMIT_HASH }}
     outputs:
       commit: ${{ steps.check_for_new_commits.outputs.commit }}
       godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
@@ -39,9 +42,7 @@ jobs:
       - name: Validate repository variables
         env:
           VARS_VERSION_CORE: ${{ vars.NIGHTLY_VERSION_CORE }}
-          VARS_NIGHTLY_REPOSITORY: ${{ vars.NIGHTLY_REPOSITORY }}
           SECRETS_NIGHTLY_REPOSITORY_TOKEN: ${{ secrets.NIGHTLY_REPOSITORY_TOKEN }}
-          VAR_DEFAULT_COMMIT_HASH: ${{ vars.DEFAULT_COMMIT_HASH }}
         run: |
           # Can report error for every validation check
           EXIT_STATUS=0
