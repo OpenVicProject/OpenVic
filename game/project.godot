@@ -29,9 +29,10 @@ buses/default_bus_layout="res://assets/audio/default_bus_layout.tres"
 
 [autoload]
 
-Resolution="*res://src/Autoload/Resolution.gd"
+GameSettings="*uid://ca2dw5ms1hgr3"
+Vic2Settings="*uid://bx1bmxelv4qvw"
+ModSettings="*uid://bb5mucsux10sj"
 WindowOverride="*res://src/Autoload/WindowOverride.gd"
-GuiScale="*res://src/Autoload/GuiScale.gd"
 Events="*res://src/Autoload/Events/Events.gd"
 GameLoader="*res://src/Autoload/GameLoader.gd"
 SoundManager="*res://src/Autoload/SoundManager.gd"
@@ -59,7 +60,7 @@ window/size/window_height_override.editor=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/keychain/plugin.cfg")
+enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/kenyoni/app_settings/plugin.cfg", "res://addons/keychain/plugin.cfg")
 
 [filesystem]
 

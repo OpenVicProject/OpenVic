@@ -79,7 +79,14 @@ SFX_BUS;SFX Volume
 OPTIONS_SOUND_EXPLODE_EARS;Explode Eardrums on Startup?
 
 OPTIONS_CONTROLS;Controls
-OPTIONS_OTHER;Other
+
+;; Mods Tab
+OPTIONS_MODS;Mods
+OPTIONS_MODS_LOAD_LIST;Load List
+
+;; Victoria 2 Tab
+OPTIONS_VICTORIA_2;Victoria 2
+OPTIONS_VICTORIA_2_BASE_DEFINES_PATH;Base Defines Path
 
 ;; Multiplayer Menu
 MP_BACK;X
