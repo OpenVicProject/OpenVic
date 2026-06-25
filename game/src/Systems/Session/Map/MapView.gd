@@ -131,9 +131,13 @@ func _ready() -> void:
 	_map_text.generate_map_names()
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_MOUSE_EXIT:
-		_mouse_over_viewport = false
-		province_unhovered.emit()
+	match what:
+		NOTIFICATION_WM_MOUSE_ENTER:
+			_mouse_over_viewport = true
+			queue_province_hover_update()
+		NOTIFICATION_WM_MOUSE_EXIT:
+			_mouse_over_viewport = false
+			province_unhovered.emit()
 
 func _world_to_map_coords(pos : Vector3) -> Vector2:
 	return (Vector2(pos.x, pos.z) - _map_mesh_corner) / _map_mesh_dims
@@ -213,7 +217,6 @@ func _input(event : InputEvent) -> void:
 var _cardinal_movement_vector := Vector2.ZERO
 func _unhandled_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		_mouse_over_viewport = true
 		queue_province_hover_update()
 
 	elif event.is_action(_action_north) or event.is_action(_action_south)\
@@ -277,10 +280,6 @@ func _unhandled_input(event : InputEvent) -> void:
 func _process(delta : float) -> void:
 	if _cardinal_movement_vector != Vector2.ZERO and get_window().gui_get_focus_owner() != null:
 		_cardinal_movement_vector = Vector2.ZERO
-
-	if _is_viewport_inactive():
-		_mouse_over_viewport = false
-		province_unhovered.emit()
 
 	_viewport_dims = Vector2(Resolution.get_current_resolution())
 	# Process movement
@@ -386,9 +385,6 @@ func _on_minimap_clicked(pos_clicked : Vector2) -> void:
 	_camera.position.z = pos_clicked.y
 	_clamp_over_map()
 	queue_province_hover_update()
-
-func _is_viewport_inactive() -> bool:
-	return not get_window().has_focus() or get_window().is_input_handled()
 
 func enable_processing() -> void:
 	set_process_unhandled_input(true)
