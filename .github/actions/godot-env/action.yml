@@ -7,7 +7,7 @@ inputs:
     default: https://github.com/godotengine/godot
   godot-version:
     description: Version of Godot
-    default: "4.6.3"
+    default: "4.7"
   godot-version-type:
     description: Type of Version of Godot
     default: stable
