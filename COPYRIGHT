@@ -40,6 +40,11 @@ Comment: Kenney's UI Audio Pack
 Copyright: 2020 Kenney
 License: CC0-1.0
 
+Files: game/addons/kenyoni/app_settings/*
+Comment: AppSettings Godot Plugin
+Copyright: 2022-present Iceflower S (iceflower@gmx.de)
+License: Expat
+
 Files: game/addons/MusicMetadata/*
 Comment: MusicMetadata Godot Plugin
 Copyright: 2024 Aiden Olsen, James Wilcock, NovaDC

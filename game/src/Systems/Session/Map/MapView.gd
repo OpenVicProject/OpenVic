@@ -159,14 +159,14 @@ func _viewport_to_map_coords(pos_viewport : Vector2) -> Vector2:
 	return _world_to_map_coords(_viewport_to_world_coords(pos_viewport))
 
 func look_at_map_position(pos : Vector2) -> void:
-	var viewport_centre : Vector2 = Vector2(0.5, 0.5) * _viewport_dims / GuiScale.get_current_guiscale()
+	var viewport_centre : Vector2 = Vector2(0.5, 0.5) * _viewport_dims / get_tree().root.content_scale_factor
 	var pos_delta : Vector3 = _map_to_world_coords(pos) - _viewport_to_world_coords(viewport_centre)
 	_camera.position.x += pos_delta.x
 	_camera.position.z += pos_delta.z
 
 func zoom_in() -> void:
 	_zoom_target -= _zoom_target_step
-	_zoom_position = (Vector2(0.5, 0.5) - _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims) * _zoom_position_multiplier
+	_zoom_position = (Vector2(0.5, 0.5) - _mouse_pos_viewport * get_tree().root.content_scale_factor / _viewport_dims) * _zoom_position_multiplier
 
 func zoom_out() -> void:
 	_zoom_target += _zoom_target_step
@@ -282,7 +282,7 @@ func _process(delta : float) -> void:
 		_mouse_over_viewport = false
 		province_unhovered.emit()
 
-	_viewport_dims = Vector2(Resolution.get_current_resolution())
+	_viewport_dims = Vector2(GameSettings.get_game_resolution())
 	# Process movement
 	_movement_process(delta)
 	# Keep within map bounds
@@ -317,7 +317,7 @@ func _movement_process(delta : float) -> void:
 func _edge_scrolling_vector() -> Vector2:
 	if not _mouse_over_viewport:
 		return Vector2()
-	var mouse_vector := _mouse_pos_viewport * GuiScale.get_current_guiscale() / _viewport_dims - Vector2(0.5, 0.5)
+	var mouse_vector := _mouse_pos_viewport * get_tree().root.content_scale_factor / _viewport_dims - Vector2(0.5, 0.5)
 	# Only scroll if outside the move threshold.
 	if abs(mouse_vector.x) < 0.5 - _edge_move_threshold and abs(mouse_vector.y) < 0.5 - _edge_move_threshold:
 		return Vector2()

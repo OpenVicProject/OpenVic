@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://bmfn87k0801ih"]
+
+[ext_resource type="Script" uid="uid://cyfju5iaq3vki" path="res://src/UI/GameMenu/OptionMenu/SettingsContainer.gd" id="1_iycy5"]
+
+[node name="SettingsContainer" type="ScrollContainer" unique_id=1873202677 node_paths=PackedStringArray("_container")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_iycy5")
+_container = NodePath("MarginContainer/HBoxContainer/GridContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=572273292]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1222362511]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=307683519]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/HBoxContainer" unique_id=1975309189]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 32
+columns = 3
+
+[node name="Control2" type="Control" parent="MarginContainer/HBoxContainer" unique_id=429296085]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3

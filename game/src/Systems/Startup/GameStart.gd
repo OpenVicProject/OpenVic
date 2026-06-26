@@ -1,20 +1,10 @@
 extends Control
 
 const LoadingScreen := preload("res://src/Systems/Startup/LoadingScreen.gd")
-const SoundTabScene := preload("res://src/UI/GameMenu/OptionMenu/SoundTab.tscn")
 const GameMenuScene := preload("res://src/UI/GameMenu/GameMenu/GameMenu.tscn")
 
 @export_subgroup("Nodes")
 @export var loading_screen : LoadingScreen
-@export var vic2_dir_dialog : FileDialog
-
-@export_subgroup("")
-@export var section_name : String = "general"
-@export var setting_name : String = "base_defines_path"
-
-var _settings_base_path : String = ""
-var _mod_list : PackedStringArray = []
-var _vic2_settings : GameSettings
 
 func _enter_tree() -> void:
 	Keychain.keep_binding_check = func(action_name : StringName) -> bool:
@@ -47,7 +37,6 @@ func _ready() -> void:
 		"Hotkeys": Keychain.InputGroup.new("UI")
 	}
 
-	Localisation.initialize()
 	if ArgumentParser.get_option_value(&"help"):
 		# For some reason this doesn't get freed properly
 		# Godot will always quit before it frees the active StreamPlayback resource
@@ -56,25 +45,8 @@ func _ready() -> void:
 		get_tree().quit()
 		return
 
-	_vic2_settings = GameSettings.load_from_file("user://vic2.cfg")
-	_vic2_settings.changed.connect(_vic2_settings.save)
-	_vic2_settings.load_deprecated_file("user://settings.cfg", { "general": "base_defines_path" })
-	_settings_base_path = _vic2_settings.get_value(section_name, setting_name, "")
-
 	await _setup_compatibility_mode_paths()
 	await loading_screen.start_loading_screen(_initialize_game)
-
-func _on_vic2_dir_dialog_failed() -> void:
-	get_window().mode = Window.MODE_WINDOWED
-	OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
-	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
-	get_tree().quit()
-
-var _selected_base_path : String
-func _on_vic2_dir_dialog_dir_selected(dir : String) -> void:
-	_selected_base_path = GameSingleton.search_for_game_path(dir)
-	if not _selected_base_path:
-		OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
 
 func _setup_compatibility_mode_paths() -> void:
 	# To test mods, set your base path to Victoria II and then pass mods in reverse order with --mod="mod" for each mod.
@@ -82,61 +54,41 @@ func _setup_compatibility_mode_paths() -> void:
 	var arg_base_path : String = ArgumentParser.get_option_value(&"base-path")
 	var arg_search_path : String = ArgumentParser.get_option_value(&"search-path")
 
-	var actual_base_path : String = ""
+	var setting := Vic2Settings.get_setting(Vic2Settings.GENERAL_BASE_DEFINES_PATH)
 
 	if arg_base_path:
 		if arg_search_path:
 			push_warning("Exact base path and search base path arguments both used:\nBase: ", arg_base_path, "\nSearch: ", arg_search_path)
-		actual_base_path = arg_base_path
-	elif arg_search_path:
+		setting.set_value(arg_base_path)
+	elif Vic2Settings.get_base_defines_path().is_empty() and arg_search_path:
 		# This will also search for a Steam install if the hint doesn't help
-		actual_base_path = GameSingleton.search_for_game_path(arg_search_path)
-		if not actual_base_path:
-			push_warning("Failed to find assets using search hint: ", arg_search_path)
+		setting.set_value(Vic2Settings.find_base_path(arg_search_path))
 
-	if not actual_base_path:
-		if _settings_base_path:
-			actual_base_path = _settings_base_path
+	if Vic2Settings.get_base_defines_path().is_empty():
+		# Check if the program is being run from inside the install directory,
+		# and if not also search for a Steam install
+		var root_base_path := Vic2Settings.find_base_path(".")
+		if root_base_path.is_empty():
+			await Vic2Settings.show_base_path_find_dialog()
 		else:
-			# Check if the program is being run from inside the install directory,
-			# and if not also search for a Steam install
-			actual_base_path = GameSingleton.search_for_game_path(".")
-		if not actual_base_path:
-			get_tree().paused = true
-			var ok_button := vic2_dir_dialog.get_ok_button()
-			ok_button.auto_translate = true
-			# WHY WON'T CANCEL AUTO-TRANSLATE WORK NOW?!?!?!?
-			var cancel_button := vic2_dir_dialog.get_cancel_button()
-			cancel_button.auto_translate = true
-			vic2_dir_dialog.canceled.connect(_on_vic2_dir_dialog_failed, CONNECT_ONE_SHOT)
-			vic2_dir_dialog.dir_selected.connect(_on_vic2_dir_dialog_dir_selected)
-			while not _selected_base_path:
-				vic2_dir_dialog.popup_centered_ratio()
-				await vic2_dir_dialog.dir_selected
-			actual_base_path = _selected_base_path
-			get_tree().paused = false
-
-	if not _settings_base_path:
-		_settings_base_path = actual_base_path
-		_vic2_settings.set_value(section_name, setting_name, _settings_base_path)
-		_vic2_settings.emit_changed()
+			setting.set_value(root_base_path)
 
 	# Add mod paths
-	var mod_status_file := ConfigFile.new()
-	mod_status_file.load("user://mods.cfg")
-	_mod_list = mod_status_file.get_value("mods", "load_list", [])
+	var load_list_setting := ModSettings.get_setting(ModSettings.MODS_LOAD_LIST)
+	var load_list := ModSettings.get_load_list()
 	for mod in ArgumentParser.get_option_value(&"mod"):
-		if mod not in _mod_list and mod != "":
-			_mod_list.push_back(mod)
+		if mod not in load_list and mod != "":
+			load_list.append(mod)
+	load_list_setting.set_value(load_list)
 
 func _load_compatibility_mode() -> void:
-	if GameSingleton.set_compatibility_mode_roots(_settings_base_path) != OK:
+	if GameSingleton.set_compatibility_mode_roots(Vic2Settings.get_base_defines_path()) != OK:
 		push_error("Errors setting game roots!")
 	
 	CursorManager.initial_cursor_setup()
 	setup_title_theme()
 
-	if GameSingleton.load_defines_compatibility_mode(_mod_list) != OK:
+	if GameSingleton.load_defines_compatibility_mode(ModSettings.get_load_list()) != OK:
 		push_error("Errors loading game defines!")
 
 	SoundSingleton.load_sounds()
@@ -160,7 +112,7 @@ func setup_title_theme() -> void:
 # REQUIREMENTS
 # * FS-333, FS-334, FS-335, FS-341
 func _initialize_game() -> void:
-	if not _settings_base_path:
+	if Vic2Settings.get_base_defines_path().is_empty():
 		return
 
 	var start := Time.get_ticks_usec()

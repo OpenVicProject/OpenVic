@@ -3,10 +3,9 @@
 [ext_resource type="Theme" uid="uid://qoi3oec48jp0" path="res://assets/graphics/theme/main_menu.tres" id="1_1yri4"]
 [ext_resource type="Script" uid="uid://d0t3iw73mpivr" path="res://src/UI/GameMenu/MainMenu/MainMenu.gd" id="2_nm1fq"]
 [ext_resource type="Texture2D" uid="uid://dxys0wg0f0ic5" path="res://assets/graphics/OpenVicFINALREALTRANS.png" id="3_58ess"]
-[ext_resource type="PackedScene" uid="uid://b7oncobnacxmt" path="res://src/UI/GameMenu/GameMenu/LocaleButton.tscn" id="3_amonp"]
 [ext_resource type="PackedScene" uid="uid://cen7wkmn6og66" path="res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn" id="3_km0er"]
 
-[node name="MainMenu" type="Control" unique_id=318440097 node_paths=PackedStringArray("_new_game_button")]
+[node name="MainMenu" type="Control" unique_id=318440097 node_paths=PackedStringArray("_new_game_button", "_bottom_margin")]
 editor_description = "UI-13"
 layout_mode = 3
 anchors_preset = 15
@@ -17,6 +16,7 @@ grow_vertical = 2
 theme = ExtResource("1_1yri4")
 script = ExtResource("2_nm1fq")
 _new_game_button = NodePath("MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton")
+_bottom_margin = NodePath("MenuPanel/MenuList/BottomMargin")
 
 [node name="MenuPanel" type="PanelContainer" parent="." unique_id=1123691100]
 layout_mode = 1
@@ -134,13 +134,6 @@ theme_type_variation = &"BottomMargin"
 
 [node name="ReleaseInfoBox" parent="MenuPanel/MenuList/BottomMargin" unique_id=1710064563 instance=ExtResource("3_km0er")]
 layout_mode = 2
-
-[node name="LocaleButton" parent="MenuPanel/MenuList/BottomMargin" unique_id=1657101050 instance=ExtResource("3_amonp")]
-editor_description = "SS-87"
-layout_mode = 2
-size_flags_horizontal = 8
-alignment = 0
-text_overrun_behavior = 4
 
 [connection signal="pressed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="visibility_changed" from="MenuPanel/MenuList/ButtonListMargin/ButtonList/NewGameButton" to="." method="_on_new_game_button_visibility_changed"]
