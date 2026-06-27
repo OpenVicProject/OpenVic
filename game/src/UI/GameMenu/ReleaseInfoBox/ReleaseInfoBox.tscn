@@ -22,7 +22,7 @@ _checksum_label = NodePath("ChecksumButton")
 [node name="GameInfoButton" type="Button" parent="." unique_id=180827051]
 layout_mode = 2
 theme_type_variation = &"GameInfoButton"
-text = "MAINMENU_GAME_INFO"
+text = "Game Info"
 flat = true
 
 [node name="VSeparator" type="VSeparator" parent="." unique_id=570681538]
@@ -31,10 +31,10 @@ layout_mode = 2
 [node name="VersionButton" type="Button" parent="." unique_id=133473529]
 editor_description = "UI-869, UI-870"
 layout_mode = 2
-tooltip_text = "VERSION_MISSING"
+tooltip_text = "Release Missing"
 focus_mode = 0
 theme_type_variation = &"VersionLabel"
-text = "VERSION_MISSING"
+text = "Tag Missing"
 flat = true
 alignment = 0
 
@@ -44,9 +44,10 @@ layout_mode = 2
 [node name="CommitButton" type="Button" parent="." unique_id=1491923438]
 editor_description = "UI-871, UI-872"
 layout_mode = 2
+tooltip_text = "Commit Missing"
 focus_mode = 0
 theme_type_variation = &"CommitLabel"
-text = "????????"
+text = "Short Commit Missing"
 flat = true
 alignment = 0
 
@@ -56,10 +57,10 @@ layout_mode = 2
 [node name="ChecksumButton" type="Button" parent="." unique_id=89477046]
 editor_description = "UI-111"
 layout_mode = 2
-tooltip_text = "CHECKSUM_MISSING"
+tooltip_text = "Checksum Missing"
 focus_mode = 0
 theme_type_variation = &"ChecksumLabel"
-text = "(????)"
+text = "Short Checksum Missing"
 flat = true
 alignment = 0
 

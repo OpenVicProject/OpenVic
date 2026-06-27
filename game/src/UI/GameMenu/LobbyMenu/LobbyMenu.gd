@@ -51,7 +51,7 @@ var _id_to_tag : Array[StringName] = []
 # Requirements
 # * FS-8
 func _build_save_list() -> void:
-	game_select_save_tab.add_tab("GAMELOBBY_SELECT_ALL")
+	game_select_save_tab.add_tab("All")
 	for save_name : StringName in SaveManager._save_dictionary:
 		var save : SaveResource = SaveManager._save_dictionary[save_name]
 		var save_node := _create_save_node(save)
@@ -100,8 +100,8 @@ func _on_start_button_pressed() -> void:
 			datetime["second"]
 		]
 	if SaveManager.current_save == null and SaveManager.current_session_tag in _id_to_tag:
-		session_tag_dialog.dialog_text = tr("GAMELOBBY_SESSIONTAG_DIALOG_TEXT").format({ "session_tag": SaveManager.current_session_tag })
-		session_tag_dialog.title = tr("GAMELOBBY_SESSIONTAG_DIALOG_TITLE").format({ "session_tag": SaveManager.current_session_tag })
+		session_tag_dialog.dialog_text = tr("Are you want to override {session_tag} as a previous session?").format({ "session_tag": SaveManager.current_session_tag })
+		session_tag_dialog.title = tr("Override {session_tag}").format({ "session_tag": SaveManager.current_session_tag })
 		session_tag_dialog.popup_centered()
 	else:
 		_on_session_tag_dialog_confirmed()
@@ -134,8 +134,8 @@ func _on_session_tag_dialog_confirmed() -> void:
 var _requested_node_to_delete : Control
 func _on_save_node_delete_requested(node : Control) -> void:
 	_requested_node_to_delete = node
-	delete_dialog.dialog_text = tr("GAMELOBBY_DELETE_DIALOG_TEXT").format({ "file_name": _requested_node_to_delete.resource.save_name })
-	delete_dialog.title = tr("GAMELOBBY_DELETE_DIALOG_TITLE").format({ "file_name": _requested_node_to_delete.resource.save_name })
+	delete_dialog.dialog_text = tr("Are you sure you want to delete {file_name}?").format({ "file_name": _requested_node_to_delete.resource.save_name })
+	delete_dialog.title = tr("Delete {file_name}").format({ "file_name": _requested_node_to_delete.resource.save_name })
 	delete_dialog.popup_centered()
 
 var _start_date_index : int = -1

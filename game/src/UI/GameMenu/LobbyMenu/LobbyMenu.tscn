@@ -57,7 +57,7 @@ layout_mode = 2
 layout_mode = 2
 current_tab = 0
 tab_count = 1
-tab_0/title = "GAMELOBBY_SELECT_ALL"
+tab_0/title = "All"
 
 [node name="GameSelectSaveList" type="VBoxContainer" parent="GameSelectPanel/VBoxContainer/GameSelectScroll/GameSelectList" unique_id=1241879143]
 layout_mode = 2
@@ -67,9 +67,6 @@ size_flags_vertical = 3
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
-item_count = 2
-item_0/text = "1836"
-item_1/text = "1863"
 
 [node name="Spacer" type="Control" parent="GameSelectPanel/VBoxContainer" unique_id=1625932854]
 custom_minimum_size = Vector2(0, 150)
@@ -82,7 +79,7 @@ editor_description = "UI-37"
 layout_mode = 2
 shortcut = SubResource("Shortcut_is4jx")
 shortcut_feedback = false
-text = "GAMELOBBY_BACK"
+text = "Back"
 
 [node name="Spacer2" type="Control" parent="GameSelectPanel/VBoxContainer" unique_id=1175264078]
 custom_minimum_size = Vector2(0, 33)
@@ -109,7 +106,7 @@ mouse_filter = 2
 
 [node name="SelectedCountryNameLabel" type="Label" parent="GameStartPanel/VBoxContainer" unique_id=757439158]
 layout_mode = 2
-text = "France"
+text = "Unknown Country"
 horizontal_alignment = 1
 
 [node name="Spacer2" type="Control" parent="GameStartPanel/VBoxContainer" unique_id=1584711331]
@@ -120,13 +117,13 @@ mouse_filter = 2
 
 [node name="SessionTagEdit" type="LineEdit" parent="GameStartPanel/VBoxContainer" unique_id=1347795370]
 layout_mode = 2
-placeholder_text = "GAMELOBBY_SESSION_TAG"
+placeholder_text = "Session Tag"
 
 [node name="StartButton" type="Button" parent="GameStartPanel/VBoxContainer" unique_id=1211575243]
 editor_description = "UI-43"
 layout_mode = 2
 disabled = true
-text = "GAMELOBBY_START"
+text = "Start Game"
 
 [node name="Spacer3" type="Control" parent="GameStartPanel/VBoxContainer" unique_id=1983118213]
 custom_minimum_size = Vector2(0, 33)
@@ -135,17 +132,13 @@ mouse_filter = 2
 
 [node name="SessionTagDialog" type="ConfirmationDialog" parent="." unique_id=18612915]
 disable_3d = true
-title = "GAMELOBBY_SESSIONTAG_DIALOG_TITLE"
-ok_button_text = "DIALOG_OK"
-dialog_text = "GAMELOBBY_SESSIONTAG_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+title = "Override {session_tag}"
+dialog_text = "Are you want to override {session_tag} as a previous session?"
 
 [node name="DeleteDialog" type="ConfirmationDialog" parent="." unique_id=1444958079]
 disable_3d = true
-title = "GAMELOBBY_DELETE_DIALOG_TITLE"
-ok_button_text = "DIALOG_OK"
-dialog_text = "GAMELOBBY_DELETE_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+title = "Delete {file_name}"
+dialog_text = "Are you sure you want to delete {file_name}?"
 
 [node name="MapView" parent="." unique_id=1287637233 instance=ExtResource("4_y8n6u")]
 

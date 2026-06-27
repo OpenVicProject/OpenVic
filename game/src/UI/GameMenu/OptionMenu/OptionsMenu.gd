@@ -27,7 +27,7 @@ func _ready() -> void:
 	# * UI-11
 	# * UIFUN-17
 	var back_button := Button.new()
-	back_button.text = "OPTIONS_BACK"
+	back_button.text = "X"
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
 
@@ -39,8 +39,7 @@ func _setup_settings() -> void:
 	_iterate_settings_sections(Vic2Settings)
 
 	_tab_container.move_child(_tab_container.get_child(0), 3)
-	_tab_container.set_tab_title(2, "OPTIONS_SOUND")
-	_tab_container.set_tab_title(3, "OPTIONS_CONTROLS")
+	_tab_container.set_tab_title(3, "Controls")
 	_tab_container.current_tab = 0
 
 func _iterate_settings_sections(app_setting: AppSettings) -> void:
@@ -63,7 +62,7 @@ func _setup_settings_section(app_setting: AppSettings, section_index: int, secti
 	container.name = section.capitalize().validate_node_name()
 	container.section_key = section
 	_tab_container.add_child(container)
-	_tab_container.set_tab_title(section_index + 1, "OPTIONS_" + section.to_upper())
+	_tab_container.set_tab_title(section_index + 1, section.capitalize())
 
 	# all settings in section without a sub section
 	for setting: AppSettings.Setting in app_setting.get_section(section, 1):

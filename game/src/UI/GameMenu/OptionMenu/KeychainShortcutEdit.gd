@@ -16,7 +16,7 @@ func _add_hotkey(action : StringName, events : Array[InputEvent]) -> void:
 				.replace("Modo de mapa de ", "")\
 				.replace("Modo mapa de ", "")\
 				.replace("Modo mapa ", "")
-		display_name = tr("Mapmode %s") % display_name.capitalize()
+		display_name = tr("Mapmode {name}").format({ "name": display_name.capitalize() })
 		Keychain.actions[action].display_name = display_name
 	Keychain.selected_profile.bindings[action] = events
 
