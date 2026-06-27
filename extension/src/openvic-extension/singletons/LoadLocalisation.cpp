@@ -35,7 +35,8 @@ Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> con
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
-		err != OK || file.is_null(), err == OK ? FAILED : err, Utilities::format("Failed to open localisation file: %s", file_path)
+		err != OK || file.is_null(), err == OK ? FAILED : err,
+		Utilities::format("Failed to open localisation file: %s", file_path)
 	);
 	int line_number = 0;
 	while (!file->eof_reached()) {
@@ -93,7 +94,9 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 	 */
 	const Ref<Translation> translation = _get_translation(locale);
 	const PackedStringArray files = DirAccess::get_files_at(dir_path);
-	ERR_FAIL_COND_V_MSG(files.size() < 1, FAILED, Utilities::format("Locale directory does not contain any files: %s", dir_path));
+	ERR_FAIL_COND_V_MSG(
+		files.size() < 1, FAILED, Utilities::format("Locale directory does not contain any files: %s", dir_path)
+	);
 	Error err = OK;
 	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
@@ -110,7 +113,8 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
  */
 Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	ERR_FAIL_COND_V_MSG(
-		!DirAccess::dir_exists_absolute(dir_path), FAILED, Utilities::format("Localisation directory does not exist: %s", dir_path)
+		!DirAccess::dir_exists_absolute(dir_path), FAILED,
+		Utilities::format("Localisation directory does not exist: %s", dir_path)
 	);
 	const PackedStringArray dirs = DirAccess::get_directories_at(dir_path);
 	ERR_FAIL_COND_V_MSG(
@@ -143,8 +147,8 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
 			UtilityFunctions::push_warning(
-				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"",
-				old_localisation, "\" to \"", godot_localisation, "\""
+				"Changing translation ", godot_key, " (", Dataloader::locale_names[locale], ") from \"", old_localisation,
+				"\" to \"", godot_localisation, "\""
 			);
 		}
 	}

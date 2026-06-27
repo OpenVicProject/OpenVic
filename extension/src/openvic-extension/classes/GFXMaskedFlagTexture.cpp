@@ -1,9 +1,9 @@
 #include "GFXMaskedFlagTexture.hpp"
 
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -14,11 +14,11 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	 * and so can update it without creating and setting a new image, or not. */
-	bool can_update = button_image.is_valid() && button_image->get_size() == overlay_image->get_size()
-		&& button_image->get_format() == overlay_image->get_format();
+	bool can_update = button_image.is_valid() && button_image->get_size() == overlay_image->get_size() &&
+		button_image->get_format() == overlay_image->get_format();
 	if (!can_update) {
 		button_image = Image::create(
-			overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format()
+			overlay_image->get_width(), overlay_image->get_height(), false, overlay_image->get_format() //
 		);
 		ERR_FAIL_NULL_V(button_image, FAILED);
 	}
@@ -35,21 +35,18 @@ Error GFXMaskedFlagTexture::_generate_combined_image() {
 		const Vector2i centre_translation = (mask_image->get_size() - button_image->get_size()) / 2;
 
 		for (
-			Vector2i combined_image_point { 0, 0 };
-			combined_image_point.y < button_image->get_height();
-			++combined_image_point.y
+			Vector2i combined_image_point { 0, 0 }; combined_image_point.y < button_image->get_height();
+			++combined_image_point.y //
 		) {
-
 			for (combined_image_point.x = 0; combined_image_point.x < button_image->get_width(); ++combined_image_point.x) {
-
 				const Color overlay_image_colour = overlay_image->get_pixelv(combined_image_point);
 
 				// Translate to mask_image coordinates, keeping the centres of each image aligned.
 				const Vector2i mask_image_point = combined_image_point + centre_translation;
 
 				if (
-					0 <= mask_image_point.x && mask_image_point.x < mask_image->get_width() &&
-					0 <= mask_image_point.y && mask_image_point.y < mask_image->get_height()
+					0 <= mask_image_point.x && mask_image_point.x < mask_image->get_width() && 0 <= mask_image_point.y &&
+					mask_image_point.y < mask_image->get_height() //
 				) {
 					const Color mask_image_colour = mask_image->get_pixelv(mask_image_point);
 
@@ -153,9 +150,9 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_fl
 
 	GFX::MaskedFlag const* new_masked_flag = sprite->cast_to<GFX::MaskedFlag>();
 	ERR_FAIL_NULL_V_MSG(
-		new_masked_flag, FAILED, Utilities::format(
-			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_masked_flag_name,
-			convert_to<String>(sprite->get_type()),
+		new_masked_flag, FAILED,
+		Utilities::format(
+			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_masked_flag_name, convert_to<String>(sprite->get_type()),
 			convert_to<String>(GFX::MaskedFlag::get_type_static())
 		)
 	);
@@ -204,11 +201,10 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 
-	CountryDefinition const* new_flag_country = game_singleton->get_definition_manager()
-		.get_country_definition_manager()
-		.get_country_definition_by_identifier(
-			convert_to<std::string>(new_flag_country_name)
-		);
+	CountryDefinitionManager const& manager = game_singleton->get_definition_manager().get_country_definition_manager();
+	CountryDefinition const* new_flag_country = manager.get_country_definition_by_identifier( //
+		convert_to<std::string>(new_flag_country_name)
+	);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, Utilities::format("Country not found: %s", new_flag_country_name));
 
 	return set_flag_country_and_type(new_flag_country, new_flag_type);
@@ -221,7 +217,7 @@ Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) 
 
 	GovernmentType const* government_type = new_flag_country->flag_government_type.get_untracked();
 
-	const StringName new_flag_type = government_type != nullptr
+	const StringName new_flag_type = government_type != nullptr //
 		? StringName { convert_to<String>(government_type->get_flag_type()) }
 		: StringName {};
 
@@ -239,10 +235,9 @@ Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country
 	InstanceManager* instance_manager = game_singleton->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
-	CountryInstance* new_flag_country = instance_manager->get_country_instance_manager()
-		.get_country_instance_by_identifier(
-			convert_to<std::string>(new_flag_country_name)
-		);
+	CountryInstance* new_flag_country = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
+		convert_to<std::string>(new_flag_country_name)
+	);
 	ERR_FAIL_NULL_V_MSG(new_flag_country, FAILED, Utilities::format("Country not found: %s", new_flag_country_name));
 
 	return set_flag_country(new_flag_country);

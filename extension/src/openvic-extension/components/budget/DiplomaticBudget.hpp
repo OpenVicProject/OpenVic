@@ -3,17 +3,14 @@
 #include <cstdint>
 
 #include "openvic-extension/components/budget/abstract/BudgetComponent.hpp"
-#include "openvic-extension/components/budget/abstract/BudgetIncomeComponent.hpp"
 #include "openvic-extension/components/budget/abstract/BudgetExpenseComponent.hpp"
+#include "openvic-extension/components/budget/abstract/BudgetIncomeComponent.hpp"
 
 namespace OpenVic {
 	struct GUILabel;
 	struct GUINode;
 
-	struct DiplomaticBudget :
-		public BudgetComponent,
-		public BudgetExpenseComponent,
-		public BudgetIncomeComponent {
+	struct DiplomaticBudget : public BudgetComponent, public BudgetExpenseComponent, public BudgetIncomeComponent {
 	private:
 		static const int32_t decimal_places = 1;
 
@@ -22,6 +19,7 @@ namespace OpenVic {
 		fixed_point_t reparations_expenses;
 		fixed_point_t war_subsidies_income;
 		fixed_point_t war_subsidies_expenses;
+
 	public:
 		fixed_point_t get_income() const override;
 		fixed_point_t get_expenses() const override;

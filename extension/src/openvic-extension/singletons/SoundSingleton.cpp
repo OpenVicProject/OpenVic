@@ -15,9 +15,9 @@
 #include <openvic-simulation/dataloader/Dataloader.hpp>
 #include <openvic-simulation/dataloader/NodeTools.hpp>
 
-#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
+#include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -108,7 +108,10 @@ bool SoundSingleton::load_title_theme() {
 		String file_stem = to_define_file_name(file, music_folder);
 
 		if (file_stem == title_theme_name.data()) {
-			ERR_BREAK_MSG(!get_song(file).is_valid(), Utilities::format("Failed to load title theme song at path %s.", convert_to<String>(file_name.string())));
+			ERR_BREAK_MSG(
+				!get_song(file).is_valid(),
+				Utilities::format("Failed to load title theme song at path %s.", convert_to<String>(file_name.string()))
+			);
 
 			String name = to_define_file_name(file, music_folder);
 			title_theme = name;
@@ -180,7 +183,8 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 Ref<AudioStreamWAV> SoundSingleton::get_sound_stream(String const& path) {
 	sfx_define_map_t::Iterator it = sfx_define.find(path);
 	ERR_FAIL_COND_V_MSG(
-		it == sfx_define.end(), Ref<AudioStreamMP3>(), Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
+		it == sfx_define.end(), Ref<AudioStreamMP3>(),
+		Utilities::format("Attempted to retrieve sound stream at invalid index %s.", path)
 	);
 
 	return it->value.audio_stream;
@@ -216,13 +220,22 @@ bool SoundSingleton::load_sounds() {
 		// UI_Cavalry_Selected.wav doesn't exist (paradox mistake, UI_Cavalry_Select.wav does), just keep going
 		// the define its associated with also isn't used in game
 		if (full_path.empty()) {
-			WARN_PRINT(Utilities::format("The sound define %s points to non-existent file.", convert_to<String>(sound_inst.get_identifier())));
+			WARN_PRINT(
+				Utilities::format(
+					"The sound define %s points to non-existent file.", convert_to<String>(sound_inst.get_identifier())
+				)
+			);
 			continue;
 		}
 
 		Ref<AudioStreamWAV> stream = get_sound(convert_to<String>(full_path.string()));
 		if (stream.is_null()) {
-			ERR_PRINT(Utilities::format("Failed to load sound %s at path %s.", convert_to<String>(sound_inst.get_identifier()), convert_to<String>(full_path.string())));
+			ERR_PRINT(
+				Utilities::format(
+					"Failed to load sound %s at path %s.", convert_to<String>(sound_inst.get_identifier()),
+					convert_to<String>(full_path.string())
+				)
+			);
 			ret = false;
 			continue; // don't try to append a null pointer to the list
 		}

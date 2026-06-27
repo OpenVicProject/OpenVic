@@ -2,35 +2,35 @@
 
 #include <cstdint>
 #include <functional>
-#include <range/v3/algorithm/contains.hpp>
-#include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/classes/time.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
-#include <openvic-simulation/dataloader/ModManager.hpp>
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/core/memory/String.hpp>
 #include <openvic-simulation/core/memory/Vector.hpp>
+#include <openvic-simulation/dataloader/ModManager.hpp>
 #include <openvic-simulation/map/Crime.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
 #include <openvic-simulation/types/fixed_point/Math.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
+#include <range/v3/algorithm/contains.hpp>
+
+#include <spdlog/sinks/callback_sink.h>
+#include <spdlog/spdlog.h>
+
+#include <type_safe/strong_typedef.hpp>
+
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/LoadLocalisation.hpp"
 #include "openvic-extension/singletons/MenuSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
-
-#include <range/v3/algorithm/contains.hpp>
-
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/callback_sink.h>
 
 using namespace godot;
 using namespace OpenVic;
@@ -113,10 +113,10 @@ void GameSingleton::_on_gamestate_updated() {
  */
 GameSingleton::GameSingleton()
 	: game_manager {
-		std::bind(&GameSingleton::_on_gamestate_updated, this),
-		std::bind(&Time::get_ticks_usec, Time::get_singleton()),
-		std::bind(&Time::get_ticks_msec, Time::get_singleton())
-	}, mapmode { &Mapmode::ERROR_MAPMODE } {
+		  std::bind(&GameSingleton::_on_gamestate_updated, this), std::bind(&Time::get_ticks_usec, Time::get_singleton()),
+		  std::bind(&Time::get_ticks_msec, Time::get_singleton()) //
+	  },
+	  mapmode { &Mapmode::ERROR_MAPMODE } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -132,7 +132,7 @@ void GameSingleton::setup_logger() {
 
 		switch (msg.level) {
 			using namespace spdlog::level;
-		case info:	   UtilityFunctions::print_rich("[[color=green]info[/color]] ", convert_to<String>(payload)); break;
+		case info: UtilityFunctions::print_rich("[[color=green]info[/color]] ", convert_to<String>(payload)); break;
 		case warn:
 			godot::_err_print_error(
 				msg.source.funcname, msg.source.filename, msg.source.line, convert_to<String>(payload), false, true
@@ -211,19 +211,19 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 
 Error GameSingleton::setup_game(int32_t bookmark_index) {
 	DefinitionManager const& definition_manager = game_manager.get_definition_manager();
-	Bookmark const* bookmark = definition_manager.get_history_manager()
-		.get_bookmark_manager()
-		.get_bookmark_by_index(bookmark_index_t(bookmark_index));
+	Bookmark const* bookmark =
+		definition_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(bookmark_index_t(bookmark_index));
 	ERR_FAIL_NULL_V_MSG(bookmark, FAILED, Utilities::format("Failed to get bookmark with index: %d", bookmark_index));
 	bool ret = game_manager.setup_instance(*bookmark);
 
 	// TODO - remove this temporary crime assignment
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
-	
+
 	CrimeManager const& crime_manager = definition_manager.get_crime_manager();
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
-		const crime_index_t crime_index = crime_index_t(type_safe::get(province.index) % crime_manager.get_crime_modifier_count());
+		const crime_index_t crime_index =
+			crime_index_t(type_safe::get(province.index) % crime_manager.get_crime_modifier_count());
 		province.set_crime(crime_manager.get_crime_modifier_by_index(crime_index));
 	}
 
@@ -326,9 +326,8 @@ Ref<ImageTexture> GameSingleton::get_flag_sheet_texture() const {
 int32_t GameSingleton::get_flag_sheet_index(const country_index_t country_index, StringName const& flag_type) const {
 	const uint64_t index = static_cast<uint64_t>(type_safe::get(country_index));
 	ERR_FAIL_COND_V_MSG(
-		index < 0 ||
-			index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(),
-		-1, Utilities::format("Invalid country index: %d", index)
+		index < 0 || index >= get_definition_manager().get_country_definition_manager().get_country_definition_count(), -1,
+		Utilities::format("Invalid country index: %d", index)
 	);
 
 	const typename decltype(flag_type_index_map)::ConstIterator it = flag_type_index_map.find(flag_type);
@@ -445,9 +444,8 @@ int32_t GameSingleton::get_mapmode_count() const {
 }
 
 String GameSingleton::get_mapmode_identifier(int32_t index) const {
-	Mapmode const* identifier_mapmode = get_definition_manager()
-		.get_mapmode_manager()
-		.get_mapmode_by_index(map_mode_index_t(index));
+	Mapmode const* identifier_mapmode =
+		get_definition_manager().get_mapmode_manager().get_mapmode_by_index(map_mode_index_t(index));
 	if (identifier_mapmode != nullptr) {
 		return convert_to<String>(identifier_mapmode->get_identifier());
 	}
@@ -455,9 +453,8 @@ String GameSingleton::get_mapmode_identifier(int32_t index) const {
 }
 
 String GameSingleton::get_mapmode_localisation_key(int32_t index) const {
-	Mapmode const* localisation_key_mapmode = get_definition_manager()
-		.get_mapmode_manager()
-		.get_mapmode_by_index(map_mode_index_t(index));
+	Mapmode const* localisation_key_mapmode =
+		get_definition_manager().get_mapmode_manager().get_mapmode_by_index(map_mode_index_t(index));
 	if (localisation_key_mapmode != nullptr) {
 		return convert_to<String>(localisation_key_mapmode->get_localisation_key());
 	}
@@ -469,9 +466,7 @@ int32_t GameSingleton::get_current_mapmode_index() const {
 }
 
 Error GameSingleton::set_mapmode(int32_t index) {
-	Mapmode const* new_mapmode = get_definition_manager()
-		.get_mapmode_manager()
-		.get_mapmode_by_index(map_mode_index_t(index));
+	Mapmode const* new_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(map_mode_index_t(index));
 	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, Utilities::format("Failed to find mapmode with index: %d", index));
 	mapmode = new_mapmode;
 	const Error err = _update_colour_image();
@@ -559,7 +554,9 @@ Error GameSingleton::_load_terrain_variants() {
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 	// Load the terrain texture sheet and prepare to slice it up
 	Ref<Image> terrain_sheet = asset_manager->get_image(terrain_texturesheet_path, AssetManager::LOAD_FLAG_NONE);
-	ERR_FAIL_NULL_V_MSG(terrain_sheet, FAILED, Utilities::format("Failed to load terrain texture sheet: %s", terrain_texturesheet_path));
+	ERR_FAIL_NULL_V_MSG(
+		terrain_sheet, FAILED, Utilities::format("Failed to load terrain texture sheet: %s", terrain_texturesheet_path)
+	);
 
 	static constexpr int32_t SHEET_DIMS = 8, SHEET_SIZE = SHEET_DIMS * SHEET_DIMS;
 
@@ -681,7 +678,8 @@ Error GameSingleton::_load_flag_sheet() {
 	ERR_FAIL_COND_V(flag_images.size() != flag_sheet_count, FAILED);
 
 	/* Calculate the width that will make the sheet as close to a square as possible (taking flag dimensions into account.) */
-	flag_sheet_dims.x = fp::sqrt(fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).ceil<int32_t>();
+	flag_sheet_dims.x =
+		fp::sqrt(fixed_point_t { static_cast<int32_t>(flag_images.size()) } * flag_dims.y / flag_dims.x).ceil<int32_t>();
 
 	/* Calculated corresponding height (rounded up). */
 	flag_sheet_dims.y = (static_cast<int32_t>(flag_images.size()) + flag_sheet_dims.x - 1) / flag_sheet_dims.x;

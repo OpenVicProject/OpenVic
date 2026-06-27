@@ -13,10 +13,10 @@
 #include <openvic-simulation/types/TypedIndices.hpp>
 
 #include "openvic-extension/classes/GUINode.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;
@@ -56,20 +56,14 @@ String const& GUILabel::get_flag_marker() {
 }
 
 void GUILabel::set_text_and_tooltip(
-	GUINode const& parent,
-	godot::NodePath const& path,
-	godot::StringName const& text_localisation_key,
+	GUINode const& parent, godot::NodePath const& path, godot::StringName const& text_localisation_key,
 	godot::StringName const& tooltip_localisation_key
 ) {
 	GUILabel* label_nullable = parent.get_gui_label_from_nodepath(path);
 	if (label_nullable != nullptr) {
 		GUILabel& label = *label_nullable;
-		label.set_text(
-			label.tr(text_localisation_key)
-		);
-		label.set_tooltip_string(
-			label.tr(tooltip_localisation_key)
-		);
+		label.set_text(label.tr(text_localisation_key));
+		label.set_tooltip_string(label.tr(tooltip_localisation_key));
 	}
 }
 
@@ -128,9 +122,7 @@ void GUILabel::_bind_methods() {
 	ADD_PROPERTY(
 		PropertyInfo(Variant::VECTOR2, "border_size", PROPERTY_HINT_NONE, "suffix:px"), "set_border_size", "get_border_size"
 	);
-	ADD_PROPERTY(
-		PropertyInfo(Variant::RECT2, "adjusted_rect", PROPERTY_HINT_NONE, "suffix:px"), "", "get_adjusted_rect"
-	);
+	ADD_PROPERTY(PropertyInfo(Variant::RECT2, "adjusted_rect", PROPERTY_HINT_NONE, "suffix:px"), "", "get_adjusted_rect");
 	ADD_PROPERTY(
 		PropertyInfo(Variant::BOOL, "auto_adjust_to_content_size"), "set_auto_adjust_to_content_size",
 		"will_auto_adjust_to_content_size"
@@ -184,8 +176,7 @@ void GUILabel::_notification(int what) {
 				position.x += adjusted_rect.size.width - 2 * border_size.width - line.width;
 			} break;
 			case HORIZONTAL_ALIGNMENT_LEFT:
-			default:
-				break;
+			default:						break;
 			}
 
 			position.y += ascent;
@@ -193,22 +184,18 @@ void GUILabel::_notification(int what) {
 			for (segment_t const& segment : line.segments) {
 				if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
 					font->draw_string(
-						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size,
-						string_segment->colour
+						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, string_segment->colour
 					);
 
 					position.x += string_segment->width;
 				} else if (flag_segment_t const* flag_segment = std::get_if<flag_segment_t>(&segment)) {
-					(*flag_segment)->draw_rect(ci, Rect2 {
-						position - Vector2 { 1.0_real, ascent - 4.0_real }, FLAG_DRAW_DIMS
-					}, false);
+					(*flag_segment)
+						->draw_rect(ci, Rect2 { position - Vector2 { 1.0_real, ascent - 4.0_real }, FLAG_DRAW_DIMS }, false);
 
 					position.x += FLAG_SEGMENT_WIDTH;
 				} else if (currency_texture.is_valid()) {
 					currency_texture->draw(
-						ci, position - Vector2 {
-							1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real
-						}
+						ci, position - Vector2 { 1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real }
 					);
 
 					position.x += currency_texture->get_width();
@@ -269,9 +256,9 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 
 	using enum text_format_t;
 	static const ordered_map<text_format_t, HorizontalAlignment> format_map {
-		{ left, HORIZONTAL_ALIGNMENT_LEFT },
-		{ centre, HORIZONTAL_ALIGNMENT_CENTER },
-		{ right, HORIZONTAL_ALIGNMENT_RIGHT }
+		{ left, HORIZONTAL_ALIGNMENT_LEFT }, //
+		{ centre, HORIZONTAL_ALIGNMENT_CENTER }, //
+		{ right, HORIZONTAL_ALIGNMENT_RIGHT } //
 	};
 
 	const decltype(format_map)::const_iterator it = format_map.find(gui_text->get_format());
@@ -532,9 +519,8 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 	while ((marker_start_pos = base_text.find(get_substitution_marker(), start_pos)) != -1) {
 		result += base_text.substr(start_pos, marker_start_pos - start_pos);
 
-		int64_t marker_end_pos = base_text.find(
-			get_substitution_marker(), marker_start_pos + get_substitution_marker().length()
-		);
+		int64_t marker_end_pos =
+			base_text.find(get_substitution_marker(), marker_start_pos + get_substitution_marker().length());
 		if (marker_end_pos == -1) {
 			marker_end_pos = base_text.length();
 		}
@@ -568,7 +554,7 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 }
 
 std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_text_and_colour_instructions(
-	String const& substituted_text
+	String const& substituted_text //
 ) const {
 	String result;
 	colour_instructions_t colour_instructions;
@@ -598,7 +584,7 @@ std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_te
 }
 
 std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
-	String const& display_text, colour_instructions_t const& colour_instructions
+	String const& display_text, colour_instructions_t const& colour_instructions //
 ) const {
 	static constexpr char RESET_COLOUR_CODE = '!';
 
@@ -628,9 +614,7 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 
 		if (current_colour != new_colour) {
 			if (section_start < idx) {
-				separate_lines(
-					display_text.substr(section_start, idx - section_start), current_colour, unwrapped_lines
-				);
+				separate_lines(display_text.substr(section_start, idx - section_start), current_colour, unwrapped_lines);
 				section_start = idx;
 			}
 			current_colour = new_colour;
@@ -644,9 +628,7 @@ std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
 	return unwrapped_lines;
 }
 
-void GUILabel::separate_lines(
-	String const& string, Color const& colour, std::vector<line_t>& unwrapped_lines
-) const {
+void GUILabel::separate_lines(String const& string, Color const& colour, std::vector<line_t>& unwrapped_lines) const {
 	static const String NEWLINE_MARKER = "\n";
 
 	int64_t start_pos = 0;
@@ -667,9 +649,7 @@ void GUILabel::separate_lines(
 	}
 }
 
-void GUILabel::separate_currency_segments(
-	String const& string, Color const& colour, line_t& line
-) const {
+void GUILabel::separate_currency_segments(String const& string, Color const& colour, line_t& line) const {
 	int64_t start_pos = 0;
 	int64_t marker_pos;
 
@@ -700,10 +680,9 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	InstanceManager* instance_manager = game_singleton.get_instance_manager();
 
 	if (instance_manager != nullptr) {
-		CountryInstance* country_instance =
-			instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-				convert_to<std::string>(identifier) //convert_to<std::string>(identifier)
-			);
+		CountryInstance* country_instance = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
+			convert_to<std::string>(identifier)
+		);
 
 		if (country_instance != nullptr) {
 			country_index = country_instance->country_definition.index;
@@ -745,9 +724,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	return flag_segment;
 }
 
-void GUILabel::separate_flag_segments(
-	String const& string, Color const& colour, line_t& line
-) const {
+void GUILabel::separate_flag_segments(String const& string, Color const& colour, line_t& line) const {
 	const auto push_string_segment = [this, &string, &colour, &line](int64_t start, int64_t end) -> void {
 		String substring = string.substr(start, end - start);
 		const real_t width = get_string_width(substring);
@@ -841,9 +818,12 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 
 							if (last_marker_pos != 0 || !current_line->segments.empty()) {
 								if (!new_segment_string.is_empty()) {
-									current_line->segments.emplace_back(string_segment_t {
-										std::move(new_segment_string), string_segment->colour, new_segment_width
-									});
+									current_line->segments.emplace_back(
+										string_segment_t {
+											std::move(new_segment_string), string_segment->colour,
+											new_segment_width //
+										}
+									);
 									current_line->width += new_segment_width;
 								}
 
@@ -854,9 +834,11 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 								continue;
 							}
 						}
-						current_line->segments.emplace_back(string_segment_t {
-							std::move(whole_segment_string), string_segment->colour, whole_segment_width
-						});
+						current_line->segments.emplace_back(
+							string_segment_t {
+								std::move(whole_segment_string), string_segment->colour, whole_segment_width //
+							}
+						);
 						current_line->width += whole_segment_width;
 						break;
 					}
@@ -872,8 +854,7 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 	}
 
 	const auto is_over_max_height = [this, &wrapped_lines, &max_content_size]() -> bool {
-		return wrapped_lines.size() > 1
-			&& wrapped_lines.size() * font->get_height(font_size) > max_content_size.height;
+		return wrapped_lines.size() > 1 && wrapped_lines.size() * font->get_height(font_size) > max_content_size.height;
 	};
 
 	if (is_over_max_height()) {
@@ -937,8 +918,7 @@ void GUILabel::adjust_to_content_size() {
 			adjusted_rect.position.x = max_size.width - adjusted_rect.size.width;
 		} break;
 		case HORIZONTAL_ALIGNMENT_LEFT:
-		default:
-			break;
+		default:						break;
 		}
 	} else {
 		adjusted_rect = { {}, max_size };

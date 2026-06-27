@@ -27,6 +27,7 @@
 #include <godot_cpp/variant/variant.hpp>
 
 #include <openvic-simulation/core/memory/SmartPtr.hpp>
+#include <openvic-simulation/misc/SoundEffect.hpp>
 
 #include "openvic-extension/classes/GUIButton.hpp"
 #include "openvic-extension/classes/GUIIcon.hpp"
@@ -46,17 +47,14 @@
 #include "openvic-extension/singletons/SoundSingleton.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
-#include "openvic-simulation/misc/SoundEffect.hpp"
-
 using namespace godot;
 using namespace OpenVic;
 
 GFX::Sprite const* UITools::get_gfx_sprite(String const& gfx_sprite) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
-	GFX::Sprite const* sprite = game_singleton->get_definition_manager().get_ui_manager().get_sprite_by_identifier(
-		convert_to<std::string>(gfx_sprite)
-	);
+	GFX::Sprite const* sprite =
+		game_singleton->get_definition_manager().get_ui_manager().get_sprite_by_identifier(convert_to<std::string>(gfx_sprite));
 	ERR_FAIL_NULL_V_MSG(sprite, nullptr, Utilities::format("GFX sprite not found: %s", gfx_sprite));
 	return sprite;
 }
@@ -64,24 +62,26 @@ GFX::Sprite const* UITools::get_gfx_sprite(String const& gfx_sprite) {
 GUI::Element const* UITools::get_gui_element(String const& gui_scene, String const& gui_element) {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
-	GUI::Scene const* scene = game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(
-		convert_to<std::string>(gui_scene)
-	);
+	GUI::Scene const* scene =
+		game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(convert_to<std::string>(gui_scene));
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, Utilities::format("Failed to find GUI scene %s", gui_scene));
 	GUI::Element const* element = scene->get_scene_element_by_identifier(convert_to<std::string>(gui_element));
-	ERR_FAIL_NULL_V_MSG(element, nullptr, Utilities::format("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene));
+	ERR_FAIL_NULL_V_MSG(
+		element, nullptr, Utilities::format("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene)
+	);
 	return element;
 }
 
 GUI::Position const* UITools::get_gui_position(String const& gui_scene, String const& gui_position) {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
-	GUI::Scene const* scene = game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(
-		convert_to<std::string>(gui_scene)
-	);
+	GUI::Scene const* scene =
+		game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(convert_to<std::string>(gui_scene));
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, Utilities::format("Failed to find GUI scene %s", gui_scene));
 	GUI::Position const* position = scene->get_scene_position_by_identifier(convert_to<std::string>(gui_position));
-	ERR_FAIL_NULL_V_MSG(position, nullptr, Utilities::format("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene));
+	ERR_FAIL_NULL_V_MSG(
+		position, nullptr, Utilities::format("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene)
+	);
 	return position;
 }
 
@@ -216,7 +216,8 @@ namespace OpenVic {
 
 		constexpr generate_gui_args_t(
 			GUI::Element const& new_element, String const& new_name, AssetManager& new_asset_manager, Control*& new_result
-		) : element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
+		)
+			: element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
 	};
 }
 
@@ -228,8 +229,10 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	using enum GUI::Element::orientation_t;
 	using enum Control::LayoutPreset;
 	static const ordered_map<GUI::Element::orientation_t, Control::LayoutPreset> orientation_map {
-		{ UPPER_LEFT, PRESET_TOP_LEFT }, { LOWER_LEFT, PRESET_BOTTOM_LEFT },
-		{ LOWER_RIGHT, PRESET_BOTTOM_RIGHT }, { UPPER_RIGHT, PRESET_TOP_RIGHT },
+		{ UPPER_LEFT, PRESET_TOP_LEFT },
+		{ LOWER_LEFT, PRESET_BOTTOM_LEFT },
+		{ LOWER_RIGHT, PRESET_BOTTOM_RIGHT },
+		{ UPPER_RIGHT, PRESET_TOP_RIGHT },
 		{ CENTER, PRESET_CENTER }
 	};
 
@@ -244,9 +247,7 @@ static bool new_control(T*& node, GUI::Element const& element, String const& nam
 	if (it != orientation_map.end()) {
 		node->set_anchors_and_offsets_preset(it->second);
 	} else {
-		UtilityFunctions::push_error(
-			"Invalid orientation for GUI element ", convert_to<String>(element.get_name())
-		);
+		UtilityFunctions::push_error("Invalid orientation for GUI element ", convert_to<String>(element.get_name()));
 		ret = false;
 	}
 
@@ -271,9 +272,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 		if (GFX::IconTextureSprite const* texture_sprite = icon.get_sprite()->cast_to<GFX::IconTextureSprite>()) {
 			GUIIcon* gui_icon = nullptr;
 			ret &= new_control(gui_icon, icon, args.name);
-			ERR_FAIL_NULL_V_MSG(
-				gui_icon, false, Utilities::format("Failed to create GUIIcon for GUI icon %s", icon_name)
-			);
+			ERR_FAIL_NULL_V_MSG(gui_icon, false, Utilities::format("Failed to create GUIIcon for GUI icon %s", icon_name));
 
 			gui_icon->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
@@ -346,8 +345,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			args.result = gui_line_chart;
 		} else {
 			UtilityFunctions::push_error(
-				"Invalid sprite type ", convert_to<String>(icon.get_sprite()->get_type()),
-				" for GUI icon ", icon_name
+				"Invalid sprite type ", convert_to<String>(icon.get_sprite()->get_type()), " for GUI icon ", icon_name
 			);
 			ret = false;
 		}
@@ -356,9 +354,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			const real_t rotation = static_cast<real_t>(icon.get_rotation());
 			if (rotation != 0.0_real) {
 				args.result->set_position(
-					args.result->get_position() - args.result->get_custom_minimum_size().height * Vector2 {
-						Math::sin(rotation), Math::cos(rotation) - 1.0_real
-					}
+					args.result->get_position() -
+					args.result->get_custom_minimum_size().height *
+						Vector2 { Math::sin(rotation), Math::cos(rotation) - 1.0_real }
 				);
 				args.result->set_rotation(-rotation);
 			}
@@ -386,7 +384,9 @@ static bool generate_button(generate_gui_args_t&& args) {
 	if (GFX::IconTextureSprite const* texture_sprite = button.get_sprite()->cast_to<GFX::IconTextureSprite>()) {
 		GUIIconButton* gui_icon_button = nullptr;
 		ret &= new_control(gui_icon_button, button, args.name);
-		ERR_FAIL_NULL_V_MSG(gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI button %s", button_name));
+		ERR_FAIL_NULL_V_MSG(
+			gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI button %s", button_name)
+		);
 
 		if (gui_icon_button->set_gfx_texture_sprite(texture_sprite) != OK) {
 			UtilityFunctions::push_error("Error setting up GUIIconButton for GUI button ", button_name);
@@ -398,7 +398,8 @@ static bool generate_button(generate_gui_args_t&& args) {
 		GUIMaskedFlagButton* gui_masked_flag_button = nullptr;
 		ret &= new_control(gui_masked_flag_button, button, args.name);
 		ERR_FAIL_NULL_V_MSG(
-			gui_masked_flag_button, false, Utilities::format("Failed to create GUIMaskedFlagButton for GUI button %s", button_name)
+			gui_masked_flag_button, false,
+			Utilities::format("Failed to create GUIMaskedFlagButton for GUI button %s", button_name)
 		);
 
 		if (gui_masked_flag_button->set_gfx_masked_flag(masked_flag) != OK) {
@@ -409,9 +410,9 @@ static bool generate_button(generate_gui_args_t&& args) {
 		gui_button = gui_masked_flag_button;
 	} else {
 		ERR_FAIL_V_MSG(
-			false, Utilities::format(
-				"Invalid sprite type %s for GUI button %s", convert_to<String>(button.get_sprite()->get_type()),
-				button_name
+			false,
+			Utilities::format(
+				"Invalid sprite type %s for GUI button %s", convert_to<String>(button.get_sprite()->get_type()), button_name
 			)
 		);
 	}
@@ -477,9 +478,9 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
 
 	ERR_FAIL_NULL_V_MSG(
-		texture_sprite, false, Utilities::format(
-			"Invalid sprite type %s for GUI checkbox %s", convert_to<String>(checkbox.get_sprite()->get_type()),
-			checkbox_name
+		texture_sprite, false,
+		Utilities::format(
+			"Invalid sprite type %s for GUI checkbox %s", convert_to<String>(checkbox.get_sprite()->get_type()), checkbox_name
 		)
 	);
 
@@ -526,7 +527,8 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	GFX::Font::colour_codes_t const* override_colour_codes = game_singleton != nullptr
-		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes() : nullptr;
+		? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes()
+		: nullptr;
 
 	if (gui_label->set_gui_text(&text, override_colour_codes) != OK) {
 		UtilityFunctions::push_error("Error initializing GUILabel for GUI text ", text_name);
@@ -546,7 +548,9 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 	bool ret = new_control(box, overlapping_elements, args.name);
 	ERR_FAIL_NULL_V_MSG(
 		box, false,
-		Utilities::format("Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name)
+		Utilities::format(
+			"Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name
+		)
 	);
 	box->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
@@ -666,7 +670,9 @@ static bool generate_scrollbar(generate_gui_args_t&& args) {
 
 	GUIScrollbar* gui_scrollbar = nullptr;
 	bool ret = new_control(gui_scrollbar, scrollbar, args.name);
-	ERR_FAIL_NULL_V_MSG(gui_scrollbar, false, Utilities::format("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name));
+	ERR_FAIL_NULL_V_MSG(
+		gui_scrollbar, false, Utilities::format("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name)
+	);
 
 	if (gui_scrollbar->set_gui_scrollbar(&scrollbar) != OK) {
 		UtilityFunctions::push_error("Error initializing GUIScrollbar for GUI scrollbar ", scrollbar_name);
@@ -716,9 +722,7 @@ static bool generate_window(generate_gui_args_t&& args) {
 			godot_panel->add_child(node);
 		}
 		if (!element_ret) {
-			UtilityFunctions::push_error(
-				"Errors generating GUI element ", convert_to<String>(element->get_name())
-			);
+			UtilityFunctions::push_error("Errors generating GUI element ", convert_to<String>(element->get_name()));
 			ret = false;
 		}
 	}
@@ -742,23 +746,18 @@ static bool generate_element(GUI::Element const* element, String const& name, As
 	};
 	const decltype(type_map)::const_iterator it = type_map.find(element->get_type());
 	ERR_FAIL_COND_V_MSG(
-		it == type_map.end(), false,
-		Utilities::format("Invalid GUI element type: %s", convert_to<String>(element->get_type()))
+		it == type_map.end(), false, Utilities::format("Invalid GUI element type: %s", convert_to<String>(element->get_type()))
 	);
 	return it->second({ *element, name, asset_manager, result });
 }
 
-bool UITools::generate_gui_element(
-	GUI::Element const* element, String const& name, Control*& result
-) {
+bool UITools::generate_gui_element(GUI::Element const* element, String const& name, Control*& result) {
 	result = nullptr;
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, false);
 	return generate_element(element, name, *asset_manager, result);
 }
 
-bool UITools::generate_gui_element(
-	String const& gui_scene, String const& gui_element, String const& name, Control*& result
-) {
+bool UITools::generate_gui_element(String const& gui_scene, String const& gui_element, String const& name, Control*& result) {
 	return generate_gui_element(get_gui_element(gui_scene, gui_element), name, result);
 }

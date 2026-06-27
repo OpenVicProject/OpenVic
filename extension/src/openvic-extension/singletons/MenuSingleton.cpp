@@ -1,35 +1,34 @@
 #include "MenuSingleton.hpp"
 
 #include <span>
-#include <type_safe/strong_typedef.hpp>
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
+#include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/population/PopType.hpp>
 #include <openvic-simulation/types/Colour.hpp>
-#include <openvic-simulation/politics/PartyPolicy.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/PopSprite.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/fixed_point/Math.hpp>
+
+#include <type_safe/strong_typedef.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/singletons/PlayerSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
 using namespace OpenVic;
 
 MenuSingleton::population_menu_t::population_menu_t()
-: pop_type_sort_cache { create_empty },
-province_sort_cache { create_empty },
-rebel_type_sort_cache { create_empty } {}
+	: pop_type_sort_cache { create_empty }, province_sort_cache { create_empty }, rebel_type_sort_cache { create_empty } {}
 
 StringName const& MenuSingleton::_signal_population_menu_province_list_changed() {
 	static const StringName signal_population_menu_province_list_changed = "population_menu_province_list_changed";
@@ -56,23 +55,13 @@ StringName const& MenuSingleton::_signal_update_tooltip() {
 String MenuSingleton::_make_modifier_effect_value(
 	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 ) const {
-	return Utilities::make_modifier_effect_value(
-		*this,
-		format_effect,
-		value,
-		plus_for_non_negative
-	);
+	return Utilities::make_modifier_effect_value(*this, format_effect, value, plus_for_non_negative);
 }
 
 String MenuSingleton::_make_modifier_effect_value_coloured(
 	ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 ) const {
-	return Utilities::make_modifier_effect_value_coloured(
-		*this,
-		format_effect,
-		value,
-		plus_for_non_negative
-	);
+	return Utilities::make_modifier_effect_value_coloured(*this, format_effect, value, plus_for_non_negative);
 }
 
 String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifier) const {
@@ -91,16 +80,16 @@ String MenuSingleton::_make_modifier_effects_tooltip(ModifierValue const& modifi
 template<typename T>
 requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 String MenuSingleton::_make_modifier_effect_contributions_tooltip(
-	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* effect_value,
-	String const& prefix, String const& suffix
+	T const& modifier_sum, ModifierEffect const& effect, fixed_point_t* effect_value, String const& prefix, String const& suffix
 ) const {
 	String result;
 
 	modifier_sum.for_each_contributing_modifier(
 		effect,
-		[this, &effect, effect_value, &prefix, &suffix, &result](
-			modifier_entry_t const& modifier_entry, fixed_point_t value
-		) -> void {
+		[ //
+			this, &effect, effect_value, &prefix, &suffix,
+			&result //
+	](modifier_entry_t const& modifier_entry, fixed_point_t value) -> void {
 			using enum Modifier::modifier_type_t;
 
 			if (effect_value != nullptr) {
@@ -137,15 +126,13 @@ template String OpenVic::MenuSingleton::_make_modifier_effect_contributions_tool
 String MenuSingleton::_make_rules_tooltip(RuleSet const& rules) const {
 	static const StringName yes_key = "YES";
 	static const StringName no_key = "NO";
-	static const String line_format = "\n%s: "+GUILabel::get_colour_marker()+"%s%s"+GUILabel::get_colour_marker()+"!";
+	static const String line_format = "\n%s: " + GUILabel::get_colour_marker() + "%s%s" + GUILabel::get_colour_marker() + "!";
 
 	String result;
 	for (auto const& [rule_localisation_key, is_enabled] : rules.get_localisation_keys_and_values()) {
 		const bool is_bad_to_enable = rule_localisation_key == "RULE_SLAVERY_ALLOWED";
 		result += Utilities::format(
-			line_format,
-			tr(convert_to<String>(rule_localisation_key)),
-			is_bad_to_enable ? "R" : "G",
+			line_format, tr(convert_to<String>(rule_localisation_key)), is_bad_to_enable ? "R" : "G",
 			tr(is_enabled ? yes_key : no_key)
 		);
 	}
@@ -183,26 +170,21 @@ String MenuSingleton::_make_mobilisation_impact_tooltip() const {
 
 	const String impact_string = Utilities::fixed_point_to_string_dp(country.get_mobilisation_impact() * 100, 1) + "%";
 
-	return tr(
-		mobilisation_impact_tooltip_localisation_key
-	).replace(
-		mobilisation_impact_tooltip_replace_impact_key, impact_string
-	).replace(
-		mobilisation_impact_tooltip_replace_policy_key, tr(
-			war_policy_issue != nullptr
-				? StringName { convert_to<String>(war_policy_issue->get_identifier()) }
-				: no_issue
-		)
-	).replace(
-		mobilisation_impact_tooltip_replace_units_key,
-		String::num_uint64(country.get_mobilisation_max_regiment_count())
-	) + "\n" + tr(
-		mobilisation_impact_tooltip2_localisation_key
-	).replace(
-		mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country.get_regiment_count())
-	).replace(
-		mobilisation_impact_tooltip2_replace_impact_key, impact_string
-	);
+	return tr(mobilisation_impact_tooltip_localisation_key)
+			   .replace(mobilisation_impact_tooltip_replace_impact_key, impact_string)
+			   .replace(
+				   mobilisation_impact_tooltip_replace_policy_key,
+				   tr(war_policy_issue != nullptr ? StringName { convert_to<String>(war_policy_issue->get_identifier()) }
+												  : no_issue)
+			   )
+			   .replace(
+				   mobilisation_impact_tooltip_replace_units_key,
+				   String::num_uint64(country.get_mobilisation_max_regiment_count())
+			   ) +
+		"\n" +
+		tr(mobilisation_impact_tooltip2_localisation_key)
+			.replace(mobilisation_impact_tooltip2_replace_curr_key, String::num_uint64(country.get_regiment_count()))
+			.replace(mobilisation_impact_tooltip2_replace_impact_key, impact_string);
 }
 
 void MenuSingleton::_bind_methods() {
@@ -216,8 +198,8 @@ void MenuSingleton::_bind_methods() {
 	OV_BIND_METHOD(MenuSingleton::hide_tooltip);
 
 	ADD_SIGNAL(MethodInfo(
-		_signal_update_tooltip(), PropertyInfo(Variant::STRING, "text"),
-		PropertyInfo(Variant::DICTIONARY, "substitution_dict"), PropertyInfo(Variant::VECTOR2, "position")
+		_signal_update_tooltip(), PropertyInfo(Variant::STRING, "text"), PropertyInfo(Variant::DICTIONARY, "substitution_dict"),
+		PropertyInfo(Variant::VECTOR2, "position")
 	));
 
 	/* PROVINCE OVERVIEW PANEL */
@@ -361,7 +343,7 @@ String MenuSingleton::get_country_name_from_identifier(String const& country_ide
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return Utilities::get_country_name(*this,*country);
+	return Utilities::get_country_name(*this, *country);
 }
 
 String MenuSingleton::get_country_adjective_from_identifier(String const& country_identifier) const {
@@ -380,7 +362,7 @@ String MenuSingleton::get_country_adjective_from_identifier(String const& countr
 	);
 	ERR_FAIL_NULL_V(country, {});
 
-	return Utilities::get_country_adjective(*this,*country);
+	return Utilities::get_country_adjective(*this, *country);
 }
 
 /* TOOLTIP */
@@ -404,9 +386,7 @@ void MenuSingleton::hide_tooltip() {
 
 /* PROVINCE OVERVIEW PANEL */
 
-static TypedArray<Dictionary> _make_buildings_dict_array(
-	ProvinceInstance const* province
-) {
+static TypedArray<Dictionary> _make_buildings_dict_array(ProvinceInstance const* province) {
 	std::span<const BuildingInstance> buildings = province->get_buildings();
 
 	if (buildings.empty()) {
@@ -438,8 +418,8 @@ static TypedArray<Dictionary> _make_buildings_dict_array(
 		}
 	} else {
 		UtilityFunctions::push_error(
-			"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()),
-			") for province ", convert_to<String>(province->get_identifier())
+			"Failed to resize buildings array to the correct size (", static_cast<int64_t>(buildings.size()), ") for province ",
+			convert_to<String>(province->get_identifier())
 		);
 	}
 
@@ -487,7 +467,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	State const* state = province->get_state();
 	if (state != nullptr) {
-		ret[province_info_state_key] = Utilities::get_state_name(*this,*state);
+		ret[province_info_state_key] = Utilities::get_state_name(*this, *state);
 	}
 
 	ret[province_info_slave_status_key] = province->get_slave();
@@ -507,8 +487,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ret[province_info_terrain_type_tooltip_key] = Utilities::format(
 			terrain_type_template_string,
 			tr(terrain_type_localisation_key).replace(terrain_type_replace_key, tr(terrain_type_string)),
-			tr(movement_cost_localisation_key),
-			Utilities::fixed_point_to_string_dp(terrain_type->get_movement_cost(), 2),
+			tr(movement_cost_localisation_key), Utilities::fixed_point_to_string_dp(terrain_type->get_movement_cost(), 2),
 			_make_modifier_effects_tooltip(*terrain_type)
 		);
 
@@ -524,9 +503,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		static const StringName controller_localisation_key = "PV_CONTROLLER";
 		static const String controller_template_string = "%s %s";
 		ret[province_info_controller_tooltip_key] = Utilities::format(
-			controller_template_string,
-			tr(controller_localisation_key),
-			Utilities::get_country_name(*this,*controller)
+			controller_template_string, tr(controller_localisation_key), Utilities::get_country_name(*this, *controller)
 		);
 	}
 
@@ -552,12 +529,11 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		ModifierEffectCache const& modifier_effect_cache =
 			game_singleton->get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
 
-		fixed_point_t output_from_workers = 1, throughput_from_workers = 0,
-			output_multiplier = 1, throughput_multiplier = 1;
+		fixed_point_t output_from_workers = 1, throughput_from_workers = 0, output_multiplier = 1, throughput_multiplier = 1;
 		String size_string, output_string, throughput_string;
 
-		static const String employee_effect_template_string = "\n  -%s: " + GUILabel::get_colour_marker() + "Y%s" +
-			GUILabel::get_colour_marker() + "!: %s";
+		static const String employee_effect_template_string =
+			"\n  -%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!: %s";
 
 		using enum Job::effect_t;
 
@@ -569,17 +545,17 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 			if (unlikely(state == nullptr)) {
 				spdlog::error_s(
-					"Province \"{}\" has no state, preventing calculation of state-wide population proportion of RGO owner pop type \"{}\"",
+					"Province \"{}\" has no state, preventing calculation of state-wide population proportion of RGO owner pop "
+					"type \"{}\"",
 					*province, owner_pop_type
 				);
 			} else {
 				const fixed_point_t effect_value = state->get_total_population() == 0
 					? fixed_point_t::_0
 					: fp::mul_div(
-						owner_job->effect_multiplier,
-						state->get_population_by_type()[owner_pop_type_index],
-						state->get_total_population()
-					);
+						  owner_job->effect_multiplier, state->get_population_by_type()[owner_pop_type_index],
+						  state->get_total_population()
+					  );
 
 				static const StringName owners_localisation_key = "PRODUCTION_FACTOR_OWNER";
 
@@ -587,8 +563,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				case OUTPUT:
 					output_multiplier += effect_value;
 					output_string += Utilities::format(
-						employee_effect_template_string,
-						tr(owners_localisation_key),
+						employee_effect_template_string, tr(owners_localisation_key),
 						tr(convert_to<String>(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
 							*modifier_effect_cache.get_rgo_output_country(), effect_value, true
@@ -598,35 +573,33 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				case THROUGHPUT:
 					throughput_multiplier += effect_value;
 					throughput_string += Utilities::format(
-						employee_effect_template_string,
-						tr(owners_localisation_key),
+						employee_effect_template_string, tr(owners_localisation_key),
 						tr(convert_to<String>(owner_pop_type.get_identifier())),
 						_make_modifier_effect_value_coloured(
 							*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
 						)
 					);
 					break;
-				default:
-					break;
+				default: break;
 				}
 			}
 		}
 
 		String amount_of_employees_by_pop_type;
 
-		for (pop_type_index_t pop_type_index {}; pop_type_index < rgo.get_employee_count_per_type_cache().size(); ++pop_type_index) {
+		for (pop_type_index_t pop_type_index {}; pop_type_index < rgo.get_employee_count_per_type_cache().size();
+			 ++pop_type_index) {
 			const pop_size_t employees_of_type = rgo.get_employee_count_per_type_cache()[pop_type_index];
 			if (employees_of_type <= 0) {
 				continue;
 			}
 
-			static const String amount_of_employees_by_pop_type_template_string = "\n  -" + GUILabel::get_colour_marker() +
-				"Y%s" + GUILabel::get_colour_marker() + "!:%d";
+			static const String amount_of_employees_by_pop_type_template_string =
+				"\n  -" + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!:%d";
 
 			PopType const& pop_type = GameSingleton::get_singleton()->get_pop_type(pop_type_index);
 			amount_of_employees_by_pop_type += Utilities::format(
-				amount_of_employees_by_pop_type_template_string,
-				tr(convert_to<String>(pop_type.get_identifier())),
+				amount_of_employees_by_pop_type_template_string, tr(convert_to<String>(pop_type.get_identifier())),
 				type_safe::get(employees_of_type)
 			);
 
@@ -644,30 +617,27 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				static const StringName workers_localisation_key = "PRODUCTION_FACTOR_WORKER";
 
 				switch (job.effect_type) {
-					case OUTPUT:
-						output_from_workers += effect_value;
-						output_string += Utilities::format(
-							employee_effect_template_string,
-							tr(workers_localisation_key),
-							tr(convert_to<String>(pop_type.get_identifier())),
-							_make_modifier_effect_value_coloured(
-								*modifier_effect_cache.get_rgo_output_country(), effect_value, true
-							)
-						);
-						break;
-					case THROUGHPUT:
-						throughput_from_workers += effect_value;
-						throughput_string += Utilities::format(
-							employee_effect_template_string,
-							tr(workers_localisation_key),
-							tr(convert_to<String>(pop_type.get_identifier())),
-							_make_modifier_effect_value_coloured(
-								*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
-							)
-						);
-						break;
-					default:
-						break;
+				case OUTPUT:
+					output_from_workers += effect_value;
+					output_string += Utilities::format(
+						employee_effect_template_string, tr(workers_localisation_key),
+						tr(convert_to<String>(pop_type.get_identifier())),
+						_make_modifier_effect_value_coloured(
+							*modifier_effect_cache.get_rgo_output_country(), effect_value, true
+						)
+					);
+					break;
+				case THROUGHPUT:
+					throughput_from_workers += effect_value;
+					throughput_string += Utilities::format(
+						employee_effect_template_string, tr(workers_localisation_key),
+						tr(convert_to<String>(pop_type.get_identifier())),
+						_make_modifier_effect_value_coloured(
+							*modifier_effect_cache.get_rgo_throughput_country(), effect_value, true
+						)
+					);
+					break;
+				default: break;
 				}
 			}
 		}
@@ -732,8 +702,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 			if (size_from_terrain != fixed_point_t::_0) {
 				size_string = Utilities::format(
-					size_modifier_template_string,
-					tr(convert_to<String>(province->get_terrain_type()->get_identifier())),
+					size_modifier_template_string, tr(convert_to<String>(province->get_terrain_type()->get_identifier())),
 					_make_modifier_effect_value_coloured(
 						*modifier_effect_cache.get_farm_rgo_size_local(), size_from_terrain, false
 					)
@@ -744,8 +713,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				static const StringName rgo_size_localisation_key = "RGO_SIZE";
 
 				size_string += Utilities::format(
-					size_modifier_template_string,
-					tr(rgo_size_localisation_key),
+					size_modifier_template_string, tr(rgo_size_localisation_key),
 					_make_modifier_effect_value_coloured(
 						*modifier_effect_cache.get_farm_rgo_size_local(), size_from_province, false
 					)
@@ -755,8 +723,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			ModifierEffectCache::good_effects_t const& good_effects =
 				modifier_effect_cache.get_good_effects(production_type.output_good);
 
-			fixed_point_t output_from_tech =
-				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_output_tech()) +
+			fixed_point_t output_from_tech = province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_output_tech()) +
 				province->get_modifier_effect_value(*good_effects.get_rgo_goods_output());
 			fixed_point_t throughput_from_tech =
 				province->get_modifier_effect_value(*modifier_effect_cache.get_rgo_throughput_tech()) +
@@ -786,9 +753,11 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			if (size_from_tech != fixed_point_t::_0) {
 				static const StringName from_technology_localisation_key = "employ_from_tech";
 
-				size_string += tr(from_technology_localisation_key) + _make_modifier_effect_value_coloured(
-					*modifier_effect_cache.get_farm_rgo_size_global(), size_from_tech, false
-				);
+				size_string += //
+					tr(from_technology_localisation_key) +
+					_make_modifier_effect_value_coloured(
+						*modifier_effect_cache.get_farm_rgo_size_global(), size_from_tech, false
+					);
 			}
 
 			static const String tech_modifier_template_string = modifier_effect_contributions_prefix + String { "%s: %s" };
@@ -799,11 +768,8 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				static const StringName rgo_output_tech_localisation_key = "RGO_OUTPUT_TECH";
 
 				output_string += Utilities::format(
-					tech_modifier_template_string,
-					tr(rgo_output_tech_localisation_key),
-					_make_modifier_effect_value_coloured(
-						*modifier_effect_cache.get_rgo_output_tech(), output_from_tech, true
-					)
+					tech_modifier_template_string, tr(rgo_output_tech_localisation_key),
+					_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_output_tech(), output_from_tech, true)
 				);
 			}
 
@@ -813,8 +779,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 				static const StringName rgo_throughput_tech_localisation_key = "RGO_THROUGHPUT_TECH";
 
 				throughput_string += Utilities::format(
-					tech_modifier_template_string,
-					tr(rgo_throughput_tech_localisation_key),
+					tech_modifier_template_string, tr(rgo_throughput_tech_localisation_key),
 					_make_modifier_effect_value_coloured(
 						*modifier_effect_cache.get_rgo_throughput_tech(), throughput_from_tech, true
 					)
@@ -845,20 +810,17 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 		ret[province_info_rgo_production_tooltip_key] = Utilities::format(
 			rgo_production_template_string,
-			tr(rgo_production_localisation_key).replace(
-				rgo_good_replace_key, tr(convert_to<String>(rgo_good.get_identifier()))
-			).replace(
-				Utilities::get_long_value_placeholder(),
-				Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)
-			),
+			tr(rgo_production_localisation_key)
+				.replace(rgo_good_replace_key, tr(convert_to<String>(rgo_good.get_identifier())))
+				.replace(
+					Utilities::get_long_value_placeholder(), Utilities::fixed_point_to_string_dp(rgo.get_revenue_yesterday(), 3)
+				),
 			tr(max_output_localisation_key).replace(curr_replace_key, Utilities::fixed_point_to_string_dp(max_output, 2)),
 			tr(output_explanation_localisation_key),
 			tr(base_output_localisation_key).replace(base_replace_key, Utilities::fixed_point_to_string_dp(base_output, 2)),
 			tr(output_efficiency_localisation_key),
 			_make_modifier_effect_value_coloured(*modifier_effect_cache.get_rgo_output_country(), output_efficiency, false),
-			tr(base_localisation_key),
-			output_string,
-			tr(throughput_efficiency_localisation_key),
+			tr(base_localisation_key), output_string, tr(throughput_efficiency_localisation_key),
 			_make_modifier_effect_value_coloured(
 				*modifier_effect_cache.get_rgo_throughput_country(), throughput_efficiency, false
 			),
@@ -871,22 +833,17 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		static const String employee_max_replace_key = "$EMPLOYEE_MAX$";
 		static const StringName rgo_workforce_localisation_key = "BASE_RGO_SIZE";
 		static const StringName province_size_localisation_key = "FROM_PROV_SIZE";
-		static const String rgo_employment_template_string = "%s" + get_tooltip_separator() + "%s%s\n%s%d\n%s\n%s" +
-			GUILabel::get_colour_marker() + "G%d";
+		static const String rgo_employment_template_string =
+			"%s" + get_tooltip_separator() + "%s%s\n%s%d\n%s\n%s" + GUILabel::get_colour_marker() + "G%d";
 
 		ret[province_info_rgo_employment_tooltip_key] = Utilities::format(
 			rgo_employment_template_string,
 			tr(employment_localisation_key).replace(Utilities::get_long_value_placeholder(), {}),
-			tr(employee_count_localisation_key).replace(
-				employee_replace_key, String::num_int64(type_safe::get(rgo.get_total_employees_count_cache()))
-			).replace(
-				employee_max_replace_key, String::num_int64(type_safe::get(rgo.get_max_employee_count_cache()))
-			),
-			amount_of_employees_by_pop_type,
-			tr(rgo_workforce_localisation_key),
-			type_safe::get(production_type.base_workforce_size),
-			size_string,
-			tr(province_size_localisation_key),
+			tr(employee_count_localisation_key)
+				.replace(employee_replace_key, String::num_int64(type_safe::get(rgo.get_total_employees_count_cache())))
+				.replace(employee_max_replace_key, String::num_int64(type_safe::get(rgo.get_max_employee_count_cache()))),
+			amount_of_employees_by_pop_type, tr(rgo_workforce_localisation_key),
+			type_safe::get(production_type.base_workforce_size), size_string, tr(province_size_localisation_key),
 			static_cast<int32_t>(rgo.get_size_multiplier()) // TODO - remove cast once variable is an int32_t
 		);
 	}
@@ -900,15 +857,11 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	ret[province_info_total_population_key] = type_safe::get(province->get_total_population());
 
 	const auto make_pie_chart_tooltip = //
-		[this](
-			auto const& key, String const& identifier, float weight, float total_weight //
-		) -> String {
+		[ //
+			this //
+	](auto const& key, String const& identifier, float weight, float total_weight) -> String {
 		static const String format_key = "%d%% %s";
-		return Utilities::format(
-			format_key,
-			static_cast<int32_t>(100.0f * weight / total_weight),
-			tr(identifier)
-		);
+		return Utilities::format(format_key, static_cast<int32_t>(100.0f * weight / total_weight), tr(identifier));
 	};
 
 	GFXPieChartTexture::godot_pie_chart_data_t pop_types =
@@ -972,8 +925,11 @@ String MenuSingleton::get_province_building_identifier(int32_t building_index) c
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, {});
 
-	const forwardable_span<const std::reference_wrapper<const BuildingType>> province_building_types = game_singleton->get_definition_manager()
-		.get_economy_manager().get_building_type_manager().get_province_building_types();
+	const forwardable_span<const std::reference_wrapper<const BuildingType>> province_building_types =
+		game_singleton->get_definition_manager()
+			.get_economy_manager()
+			.get_building_type_manager()
+			.get_province_building_types();
 	ERR_FAIL_COND_V_MSG(
 		building_index < 0 || building_index >= province_building_types.size(), {},
 		Utilities::format("Invalid province building index: %d", building_index)
@@ -1003,7 +959,8 @@ int32_t MenuSingleton::get_rgo_owner_pop_icon_index() const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, 0);
 
-	const pop_sprite_t sprite = game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
+	const pop_sprite_t sprite =
+		game_singleton->get_definition_manager().get_economy_manager().get_production_type_manager().get_rgo_owner_sprite();
 	ERR_FAIL_COND_V_MSG(sprite <= 0, 0, "RGO owner sprite unset!");
 	return sprite;
 }
@@ -1057,13 +1014,22 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 			String current_tech_localised = tr(convert_to<String>(current_research->get_identifier()));
 
-			ret[research_tooltip_key] = tr(research_localisation_key).replace(
-				tech_replace_key, current_tech_localised
-			).replace(
-				date_replace_key, Utilities::date_to_formatted_string(country.get_expected_research_completion_date_untracked(), false)
-			) + "\n" + tr(research_invested_localisation_key).replace(
-				invested_replace_key, String::num_uint64(country.get_invested_research_points_untracked().truncate<int64_t>())
-			).replace(cost_replace_key, String::num_uint64(country.get_current_research_cost_untracked().truncate<int64_t>()));
+			ret[research_tooltip_key] =
+				tr(research_localisation_key)
+					.replace(tech_replace_key, current_tech_localised)
+					.replace(
+						date_replace_key,
+						Utilities::date_to_formatted_string(country.get_expected_research_completion_date_untracked(), false)
+					) +
+				"\n" +
+				tr(research_invested_localisation_key)
+					.replace(
+						invested_replace_key,
+						String::num_uint64(country.get_invested_research_points_untracked().truncate<int64_t>())
+					)
+					.replace(
+						cost_replace_key, String::num_uint64(country.get_current_research_cost_untracked().truncate<int64_t>())
+					);
 
 			ret[research_key] = std::move(current_tech_localised);
 
@@ -1102,21 +1068,23 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 			daily_base_research_points += research_points;
 
-			research_points_tooltip += tr(pop_type_research_localisation_key).replace(
-				pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier()))
-			).replace(
-				Utilities::get_long_value_placeholder(),
-				Utilities::fixed_point_to_string_dp(research_points, 2)
-			).replace(
-				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fp::from_fraction(
-						100 * country.get_population_by_type()[pop_type->index],
-						country.get_total_population()
-					), 2
-				)
-			).replace(
-				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
-			) + "\n";
+			research_points_tooltip +=
+				tr(pop_type_research_localisation_key)
+					.replace(pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier())))
+					.replace(Utilities::get_long_value_placeholder(), Utilities::fixed_point_to_string_dp(research_points, 2))
+					.replace(
+						fraction_replace_key,
+						Utilities::fixed_point_to_string_dp(
+							fp::from_fraction(
+								100 * country.get_population_by_type()[pop_type->index], country.get_total_population()
+							),
+							2
+						)
+					)
+					.replace(
+						optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
+					) +
+				"\n";
 		}
 
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
@@ -1129,40 +1097,44 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// so this line has no newline characters of its own. Instead, potential lines above finish with newlines and
 		// potential (and some guaranteed) lines below start with them.
 		static const StringName daily_base_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_BASE_TOOLTIP";
-		research_points_tooltip += tr(daily_base_research_points_localisation_key).replace(
-			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(daily_base_research_points, 2)
-		);
+		research_points_tooltip +=
+			tr(daily_base_research_points_localisation_key)
+				.replace(
+					Utilities::get_long_value_placeholder(), Utilities::fixed_point_to_string_dp(daily_base_research_points, 2)
+				);
 
-		research_points_tooltip += _make_modifier_effect_contributions_tooltip(
-			country, *modifier_effect_cache.get_research_points_modifier()
-		);
+		research_points_tooltip +=
+			_make_modifier_effect_contributions_tooltip(country, *modifier_effect_cache.get_research_points_modifier());
 
-		const fixed_point_t research_points_modifier_from_tech = country.get_modifier_effect_value(
-			*modifier_effect_cache.get_increase_research()
-		);
+		const fixed_point_t research_points_modifier_from_tech =
+			country.get_modifier_effect_value(*modifier_effect_cache.get_increase_research());
 		if (research_points_modifier_from_tech != fixed_point_t::_0) {
 			static const StringName from_technology_localisation_key = "FROM_TECHNOLOGY";
-			research_points_tooltip += "\n" + tr(from_technology_localisation_key) + ": " +
+			research_points_tooltip +=
+				"\n" + tr(from_technology_localisation_key) + ": " +
 				_make_modifier_effect_value_coloured(
 					*modifier_effect_cache.get_increase_research(), research_points_modifier_from_tech, true
 				);
 		}
 
 		static const StringName daily_research_points_localisation_key = "TECH_DAILY_RESEARCHPOINTS_TOTAL_TOOLTIP";
-		research_points_tooltip += "\n" + tr(daily_research_points_localisation_key).replace(
-			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country.get_daily_research_points_untracked(), 2)
-		);
+		research_points_tooltip += "\n" +
+			tr(daily_research_points_localisation_key)
+				.replace(
+					Utilities::get_long_value_placeholder(),
+					Utilities::fixed_point_to_string_dp(country.get_daily_research_points_untracked(), 2)
+				);
 
 		// In the base game this section is only shown when no research is set, but it's useful to show it always
 		research_points_tooltip += "\n" + get_tooltip_separator();
 
 		static const StringName accumulated_research_points_localisation_key = "RP_ACCUMULATED";
-		research_points_tooltip += tr(accumulated_research_points_localisation_key).replace(
-			Utilities::get_short_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country.get_research_point_stockpile_untracked(), 1)
-		);
+		research_points_tooltip +=
+			tr(accumulated_research_points_localisation_key)
+				.replace(
+					Utilities::get_short_value_placeholder(),
+					Utilities::fixed_point_to_string_dp(country.get_research_point_stockpile_untracked(), 1)
+				);
 
 		ret[research_points_tooltip_key] = std::move(research_points_tooltip);
 	}
@@ -1211,21 +1183,23 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 			monthly_base_leadership_points += leadership_points;
 
-			leadership_tooltip += tr(pop_type_leadership_localisation_key).replace(
-				pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier()))
-			).replace(
-				Utilities::get_long_value_placeholder(),
-				Utilities::fixed_point_to_string_dp(leadership_points, 2)
-			).replace(
-				fraction_replace_key, Utilities::fixed_point_to_string_dp(
-					fp::from_fraction(
-						100 * country.get_population_by_type()[pop_type->index],
-						country.get_total_population()
-					), 2
-				)
-			).replace(
-				optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
-			) + "\n";
+			leadership_tooltip +=
+				tr(pop_type_leadership_localisation_key)
+					.replace(pop_type_replace_key, tr(convert_to<String>(pop_type->get_identifier())))
+					.replace(Utilities::get_long_value_placeholder(), Utilities::fixed_point_to_string_dp(leadership_points, 2))
+					.replace(
+						fraction_replace_key,
+						Utilities::fixed_point_to_string_dp(
+							fp::from_fraction(
+								100 * country.get_population_by_type()[pop_type->index], country.get_total_population()
+							),
+							2
+						)
+					)
+					.replace(
+						optimal_replace_key, Utilities::fixed_point_to_string_dp(100 * pop_type->research_leadership_optimum, 2)
+					) +
+				"\n";
 		}
 
 		// Empty prefix, "\n" suffix, fitting with the potential trailing "\n" from the pop type contributions and the upcoming
@@ -1238,20 +1212,22 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		// so this line has no newline characters of its own. Instead, potential lines above finish with newlines and
 		// potential (and some guaranteed) lines below start with them.
 		static const StringName monthly_base_leadership_localisation_key = "TECH_DAILY_LEADERSHIP_BASE_TOOLTIP";
-		leadership_tooltip += tr(monthly_base_leadership_localisation_key).replace(
-			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(monthly_base_leadership_points, 2)
-		);
+		leadership_tooltip += tr(monthly_base_leadership_localisation_key)
+								  .replace(
+									  Utilities::get_long_value_placeholder(),
+									  Utilities::fixed_point_to_string_dp(monthly_base_leadership_points, 2)
+								  );
 
-		leadership_tooltip += _make_modifier_effect_contributions_tooltip(
-			country, *modifier_effect_cache.get_leadership_modifier()
-		);
+		leadership_tooltip +=
+			_make_modifier_effect_contributions_tooltip(country, *modifier_effect_cache.get_leadership_modifier());
 
 		static const StringName monthly_leadership_points_localisation_key = "TECH_DAILY_LEADERSHIP_TOTAL_TOOLTIP";
-		leadership_tooltip += "\n" + tr(monthly_leadership_points_localisation_key).replace(
-			Utilities::get_long_value_placeholder(),
-			Utilities::fixed_point_to_string_dp(country.get_monthly_leadership_points(), 2)
-		);
+		leadership_tooltip += "\n" +
+			tr(monthly_leadership_points_localisation_key)
+				.replace(
+					Utilities::get_long_value_placeholder(),
+					Utilities::fixed_point_to_string_dp(country.get_monthly_leadership_points(), 2)
+				);
 
 		const fixed_point_t max_leadership_point_stockpile =
 			definition_manager.get_define_manager().get_military_defines().get_max_leadership_point_stockpile();
@@ -1260,9 +1236,10 @@ Dictionary MenuSingleton::get_topbar_info() const {
 
 			static const StringName max_leadership_points_localisation_key = "TOPBAR_LEADERSHIP_MAX";
 			static const String max_replace_key = "$MAX$";
-			leadership_tooltip += tr(max_leadership_points_localisation_key).trim_suffix("\n").replace(
-				max_replace_key, Utilities::fixed_point_to_string_dp(max_leadership_point_stockpile, 1)
-			);
+			leadership_tooltip +=
+				tr(max_leadership_points_localisation_key)
+					.trim_suffix("\n")
+					.replace(max_replace_key, Utilities::fixed_point_to_string_dp(max_leadership_point_stockpile, 1));
 		}
 
 		ret[leadership_tooltip_key] = std::move(leadership_tooltip);
@@ -1281,9 +1258,7 @@ void MenuSingleton::link_top_bar_to_cpp(GUINode const* const godot_top_bar) {
 
 		unlink_top_bar_from_cpp();
 	}
-	top_bar = memory::make_unique<TopBar>(
-		*godot_top_bar
-	);
+	top_bar = memory::make_unique<TopBar>(*godot_top_bar);
 	GameSingleton::get_singleton()->gamestate_updated.connect(&TopBar::update, top_bar.get());
 }
 void MenuSingleton::unlink_top_bar_from_cpp() {
@@ -1358,14 +1333,10 @@ void MenuSingleton::link_budget_menu_to_cpp(GUINode const* const godot_budget_me
 	}
 
 	auto const& strata_keys = game_singleton.get_definition_manager().get_pop_manager().get_stratas();
-	ModifierEffectCache const& modifier_effect_cache = game_singleton.get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
+	ModifierEffectCache const& modifier_effect_cache =
+		game_singleton.get_definition_manager().get_modifier_manager().get_modifier_effect_cache();
 	CountryDefines const& country_defines = game_singleton.get_definition_manager().get_define_manager().get_country_defines();
-	budget_menu = memory::make_unique<BudgetMenu>(
-		*godot_budget_menu,
-		strata_keys,
-		modifier_effect_cache,
-		country_defines
-	);
+	budget_menu = memory::make_unique<BudgetMenu>(*godot_budget_menu, strata_keys, modifier_effect_cache, country_defines);
 	game_singleton.gamestate_updated.connect(&BudgetMenu::update, budget_menu.get());
 }
 
@@ -1400,33 +1371,36 @@ Error MenuSingleton::generate_search_cache() {
 		String display_name = tr(GUINode::format_province_name(identifier));
 		String search_name = display_name.to_lower();
 
-		search_panel.entry_cache.push_back({
-			&province, std::move(display_name), std::move(search_name), identifier.to_lower()
-		});
+		search_panel.entry_cache.push_back(
+			{ &province, std::move(display_name), std::move(search_name), identifier.to_lower() }
+		);
 	}
 
 	for (StateSet const& state_set : state_sets) {
 		for (State const& state : state_set.get_states()) {
-			String display_name = Utilities::get_state_name(*this,state);
+			String display_name = Utilities::get_state_name(*this, state);
 			String search_name = display_name.to_lower();
 
-			search_panel.entry_cache.push_back({
-				// TODO - include state identifier? (region and/or split?)
-				&state, std::move(display_name), std::move(search_name), {}
-			});
+			search_panel.entry_cache.push_back(
+				{ // TODO - include state identifier? (region and/or split?)
+				  &state,
+				  std::move(display_name),
+				  std::move(search_name),
+				  {} }
+			);
 		}
 	}
 
 	for (CountryInstance const& country : countries) {
 		// TODO - replace with a proper "exists" check
 		if (country.get_capital() != nullptr) {
-			String display_name = Utilities::get_country_name(*this,country);
+			String display_name = Utilities::get_country_name(*this, country);
 			String search_name = display_name.to_lower();
 
-			search_panel.entry_cache.push_back({
-				&country, std::move(display_name), std::move(search_name),
-				convert_to<String>(country.get_identifier()).to_lower()
-			});
+			search_panel.entry_cache.push_back(
+				{ &country, std::move(display_name), std::move(search_name),
+				  convert_to<String>(country.get_identifier()).to_lower() }
+			);
 		}
 	}
 

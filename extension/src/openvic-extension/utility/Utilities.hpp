@@ -87,15 +87,11 @@ namespace OpenVic::Utilities {
 	godot::String get_country_adjective(godot::Object const& translation_object, CountryInstance const& country);
 
 	godot::String make_modifier_effect_value(
-		godot::Object const& translation_object,
-		ModifierEffect const& format_effect,
-		fixed_point_t value,
+		godot::Object const& translation_object, ModifierEffect const& format_effect, fixed_point_t value,
 		bool plus_for_non_negative
 	);
 	godot::String make_modifier_effect_value_coloured(
-		godot::Object const& translation_object,
-		ModifierEffect const& format_effect,
-		fixed_point_t value,
+		godot::Object const& translation_object, ModifierEffect const& format_effect, fixed_point_t value,
 		bool plus_for_non_negative
 	);
 
@@ -111,23 +107,18 @@ namespace OpenVic::Utilities {
 #define OPTIMISED_FORMAT_COPY(n) args_array.set(n, p_arg##n);
 #define OPTIMISED_FORMAT_ARRAY_INIT(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_COPY)
 
-#define OPTIMISED_FORMAT_SET_NULL(n) args_array.set(n, godot::Variant{});
+#define OPTIMISED_FORMAT_SET_NULL(n) args_array.set(n, godot::Variant {});
 #define OPTIMISED_FORMAT_ARRAY_CLEAR(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_SET_NULL)
 
 #define OPTIMISED_FORMAT_ARG(n) , const auto p_arg##n
 #define OPTIMISED_FORMAT_GET_ARGS(count) OPTIMISED_FORMAT_EXPAND(FOR_LOOP_, count)(OPTIMISED_FORMAT_ARG)
 
 #define OPTIMISED_FORMAT(count) \
-	[[nodiscard]] godot::String format( \
-		godot::String const& text_template \
-		OPTIMISED_FORMAT_GET_ARGS(count) \
-	) { \
+	[[nodiscard]] godot::String format(godot::String const& text_template OPTIMISED_FORMAT_GET_ARGS(count)) { \
 		extern thread_local memory::vector<godot::Array> _formatting_array_pool_##count; \
 		memory::vector<godot::Array>& array_pool = _formatting_array_pool_##count; \
 		const bool was_empty = array_pool.empty(); \
-		godot::Array args_array = was_empty \
-			? godot::Array{} \
-			: std::move(array_pool.back()); \
+		godot::Array args_array = was_empty ? godot::Array {} : std::move(array_pool.back()); \
 		if (was_empty) { \
 			args_array.resize(count); \
 		} else { \
@@ -163,13 +154,15 @@ namespace OpenVic::Utilities {
 #undef OPTIMISED_FORMAT_ARG
 #undef OPTIMISED_FORMAT_GET_ARGS
 
-	template <typename... VarArgs>
+	template<typename... VarArgs>
 	[[nodiscard]] godot::String format(godot::String const& text_template, const VarArgs... p_args) {
 		return godot::vformat(text_template, p_args...);
 	}
 
 	namespace literals {
-		constexpr real_t operator""_real(long double val) { return to_real_t(val); }
+		constexpr real_t operator""_real(long double val) {
+			return to_real_t(val);
+		}
 	}
 }
 

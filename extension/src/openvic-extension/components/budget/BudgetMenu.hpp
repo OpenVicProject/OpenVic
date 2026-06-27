@@ -47,11 +47,10 @@ namespace OpenVic {
 		void update_projected_income();
 		void update_projected_income_and_balance();
 		void update_all_projections();
+
 	public:
 		BudgetMenu(
-			GUINode const& parent,
-			forwardable_span<const Strata> strata_keys,
-			ModifierEffectCache const& modifier_effect_cache,
+			GUINode const& parent, forwardable_span<const Strata> strata_keys, ModifierEffectCache const& modifier_effect_cache,
 			CountryDefines const& country_defines
 		);
 		void update();
