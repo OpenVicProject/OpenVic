@@ -1,0 +1,632 @@
+# LANGUAGE translation for OpenVic for the following files:
+# res://src/Autoload/Settings/GameSettings.gd
+# res://src/Autoload/Settings/ModSettings.gd
+# res://src/Autoload/Settings/Vic2Settings.gd
+# res://src/UI/GameMenu/MainMenu/MainMenu.gd
+# res://src/UI/GameMenu/MainMenu/MainMenu.tscn
+# res://src/UI/GameMenu/OptionMenu/ControlsTab.tscn
+# res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.gd
+# res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.tscn
+# res://src/UI/GameMenu/OptionMenu/OptionsMenu.gd
+# res://src/UI/GameMenu/OptionMenu/OptionsMenu.tscn
+# res://src/UI/GameMenu/OptionMenu/SettingsContainer.gd
+# res://src/UI/GameMenu/OptionMenu/SettingsContainer.tscn
+# res://src/UI/GameMenu/LobbyMenu/LobbyMenu.gd
+# res://src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+# res://src/UI/GameMenu/LobbyMenu/LobbyPanelButton.gd
+# res://src/UI/GameMenu/LobbyMenu/LobbyPanelButton.tscn
+# res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd
+# res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+# res://src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd
+# res://src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+# res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.gd
+# res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn
+# res://src/UI/GameMenu/SaveLoadMenu/SaveResource.gd
+# res://src/UI/Session/PauseMenu/PauseMenu.gd
+# res://src/UI/Session/PauseMenu/PauseMenu.tscn
+#
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenVic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: src/Autoload/Settings/Vic2Settings.gd:106
+msgid "Failed to find Victoria II"
+msgstr ""
+
+#: src/Autoload/Settings/Vic2Settings.gd:107
+msgid "OpenVic couldn't find a copy of Victoria II installed on your computer! If you do have Victoria II installed, please specify the path to your game directory with the \"search-path\" command line option."
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+msgid "New Game"
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+msgid "Continue"
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+msgid "Multiplayer"
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Options"
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+msgid "Credits"
+msgstr ""
+
+#: src/UI/GameMenu/MainMenu/MainMenu.tscn
+msgid "Exit"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.gd:19
+msgid "Mapmode {name}"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/OptionsMenu.gd:30
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "X"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/OptionsMenu.gd:42
+#: src/UI/GameMenu/OptionMenu/OptionsMenu.tscn
+msgid "Controls"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:134
+msgid "On"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:135
+msgid "Off"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:256
+msgid "🗂️"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:257
+msgid "Open file dialog"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:302
+msgid "Reset to default"
+msgstr ""
+
+#: src/UI/GameMenu/OptionMenu/SettingsContainer.gd:303
+msgid "↩"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.gd:54
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:46
+msgid "All"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.gd:103
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Are you want to override {session_tag} as a previous session?"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.gd:104
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Override {session_tag}"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.gd:137
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:101
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Are you sure you want to delete {file_name}?"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.gd:138
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:102
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Delete {file_name}"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Back"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Unknown Country"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Session Tag"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn
+msgid "Start Game"
+msgstr ""
+
+#: src/UI/GameMenu/LobbyMenu/LobbyPanelButton.tscn
+#: src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn
+msgid "PLACEHOLDER"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd:18
+msgid "Latest Release Name: {release_name}"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd:20
+msgid "Commit: {short_hash}"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd:32
+msgid "Checksum {checksum}"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd:33
+msgid "Checksum: {short_checksum}"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Game Info"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Release Missing"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Tag Missing"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Commit Missing"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Short Commit Missing"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Checksum Missing"
+msgstr ""
+
+#: src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn
+msgid "Short Checksum Missing"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:30
+msgid "Load Menu"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:31
+msgid "Load"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:39
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Save Menu"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:40
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Save"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:88
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Are you want to overwrite {file_name}?"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd:89
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Overwrite {file_name}"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn
+msgid "Session:"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn
+msgid "00.00.0000"
+msgstr ""
+
+#: src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn
+msgid "x"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Save Game"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Load Game"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Resign To Menu"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Quit Game"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Close"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Resign Game"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Are you sure you want to resign and return to the main menu?"
+msgstr ""
+
+#: src/UI/Session/PauseMenu/PauseMenu.tscn
+msgid "Are you sure you want to quit to desktop?"
+msgstr ""
+
+msgid "OpenVic"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "General"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Video"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Audio"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Save Game Format"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The type of format to save."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Binary"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Text"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Auto-Save Interval"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The ingame interval to auto-save by."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Monthly"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Bi-Monthly"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Yearly"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Bi-Yearly"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Never"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Language"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The language of the game."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "English, UK"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Resolution"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The video resolution for the game."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "3840x2160 (4K)"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "2560x1080 (UW1080p)"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1920x1080 (1080p)"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1366x768"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1536x864"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1280x720 (720p, Default)"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1440x900"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1600x900"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "1024x600"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "800x600"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Keep Video Changes?"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Reverting changes in {time} seconds..."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Gui Scaling Factor"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The scaling factor for the game's GUI."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Screen Mode"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The windowing mode of the game."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Fullscreen"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Borderless"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Windowed"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Monitor Selection"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The monitor to display the game to."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Display {value}"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Refresh Rate"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "The refresh for the game."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "VSync"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Adaptive VSync"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Mailbox VSynx"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "30hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "60hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "90hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "120hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "144hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "365hz"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Unlimited"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Quality Preset"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Graphical detail level of the game."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Low"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Medium"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "High"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Ultra"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Custom"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Master Volume"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Game's Master volume."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Music Volume"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Game's Music volume."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "SFX Volume"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Game's Sound Effects volume."
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Auto-Start Music"
+msgstr ""
+
+#: src/Autoload/Settings/GameSettings.gd
+msgid "Whether to start the game with music already playing."
+msgstr ""
+
+#: src/Autoload/Settings/ModSettings.gd
+msgid "Mods"
+msgstr ""
+
+#: src/Autoload/Settings/ModSettings.gd
+msgid "Load List"
+msgstr ""
+
+#: src/Autoload/Settings/Vic2Settings.gd
+msgid "Victoria 2"
+msgstr ""
+
+#: src/Autoload/Settings/Vic2Settings.gd
+msgid "Base Defines Path"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Move North"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Move East"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Move South"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Move West"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Zoom In"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Zoom Out"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Mouse Drag"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Mouse Click"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Mouse Right Click"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Pause"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Speed Increase"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Speed Decrease"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Open Pause Menu"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Map"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Time"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "UI"
+msgstr ""
+
+#: src/Autoload/Settings/ControlsGlobal.gd
+msgid "Hotkeys"
+msgstr ""

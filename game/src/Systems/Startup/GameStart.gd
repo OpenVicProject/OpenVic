@@ -11,32 +11,6 @@ func _enter_tree() -> void:
 		return action_name.begins_with("button_") and action_name.ends_with("_hotkey")
 
 func _ready() -> void:
-	Keychain.actions = {
-		# Map Group
-		&"map_north": Keychain.InputAction.new("Move North", "Map", true),
-		&"map_east": Keychain.InputAction.new("Move East", "Map", true),
-		&"map_south": Keychain.InputAction.new("Move South", "Map", true),
-		&"map_west": Keychain.InputAction.new("Move West", "Map", true),
-		&"map_zoom_in": Keychain.InputAction.new("Zoom In", "Map", true),
-		&"map_zoom_out": Keychain.InputAction.new("Zoom Out", "Map", true),
-		&"map_drag": Keychain.InputAction.new("Mouse Drag", "Map", true),
-		&"map_click": Keychain.InputAction.new("Mouse Click", "Map", true),
-		&"map_right_click": Keychain.InputAction.new("Mouse Right Click", "Map", true),
-		# Time Group
-		&"time_pause": Keychain.InputAction.new("Pause", "Time", true),
-		&"time_speed_increase": Keychain.InputAction.new("Speed Increase", "Time", true),
-		&"time_speed_decrease": Keychain.InputAction.new("Speed Decrease", "Time", true),
-		# UI Group
-		&"menu_pause": Keychain.InputAction.new("Open Pause Menu", "UI", true),
-	}
-
-	Keychain.groups = {
-		"Map": Keychain.InputGroup.new("", false),
-		"Time": Keychain.InputGroup.new("", false),
-		"UI": Keychain.InputGroup.new("", false),
-		"Hotkeys": Keychain.InputGroup.new("UI")
-	}
-
 	if ArgumentParser.get_option_value(&"help"):
 		# For some reason this doesn't get freed properly
 		# Godot will always quit before it frees the active StreamPlayback resource
