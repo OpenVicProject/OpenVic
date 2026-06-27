@@ -9,5 +9,5 @@ enum Screen {
 	POPULATION,
 	TRADE,
 	DIPLOMACY,
-	MILITARY
+	MILITARY,
 }

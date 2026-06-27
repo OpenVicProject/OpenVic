@@ -1,13 +1,15 @@
 extends Control
 
-@export var _main_menu : Control
-@export var _options_menu : Control
-@export var _multiplayer_menu : Control
-@export var _lobby_menu : Control
-@export var _credits_menu : Control
+@export var _main_menu: Control
+@export var _options_menu: Control
+@export var _multiplayer_menu: Control
+@export var _lobby_menu: Control
+@export var _credits_menu: Control
 
 # REQUIREMENTS
 # * SS-10
+
+
 func _on_main_menu_new_game_button_pressed() -> void:
 	_lobby_menu.show()
 	_main_menu.hide()
@@ -15,6 +17,8 @@ func _on_main_menu_new_game_button_pressed() -> void:
 # REQUIREMENTS
 # * SS-6
 # * UIFUN-5
+
+
 func _on_main_menu_options_button_pressed() -> void:
 	_options_menu.show()
 	_main_menu.hide()

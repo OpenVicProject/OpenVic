@@ -1,0 +1,70 @@
+# gdstyle.toml: starter configuration
+#
+# Place this file as `gdstyle.toml` or `.gdstyle.toml` in your project root.
+# gdstyle will search for it starting from the current directory and walking
+# up the directory tree.
+
+# Maximum line length (default: 100)
+max_line_length = 100
+
+# Use tabs for indentation (default: true).
+# Set to false if your project uses spaces.
+use_tabs = true
+
+# Maximum function body length in lines (default: 50)
+max_function_length = 50
+
+# Maximum file length in lines (default: 1000)
+max_file_length = 1000
+
+# Maximum number of function parameters (default: 5)
+max_parameters = 5
+
+# File and directory patterns to exclude from linting.
+# These are matched as glob patterns against file paths.
+exclude = [".godot", "addons"]
+
+# Per-rule severity overrides.
+# Values: "off" (disable), "warn" (warning), "error" (error)
+#
+# All rules are enabled with "warn" severity by default.
+# Uncomment any line below to change its severity.
+[rules]
+# --- Naming ---
+# "naming/class-name-pascal-case" = "warn"
+# "naming/function-name-snake-case" = "warn"
+# "naming/variable-name-snake-case" = "warn"
+# "naming/constant-name-screaming-case" = "warn"
+# "naming/signal-name-snake-case" = "warn"
+# "naming/enum-name-pascal-case" = "warn"
+# "naming/enum-member-screaming-case" = "warn"
+# "naming/file-name-snake-case" = "warn"
+# "naming/signal-past-tense" = "warn"
+# "naming/private-underscore-prefix" = "warn"
+# "naming/node-name-pascal-case" = "warn"
+
+# --- Formatting ---
+# "format/max-line-length" = "warn"
+# "format/trailing-whitespace" = "warn"
+# "format/trailing-newline" = "warn"
+# "format/no-tabs-as-spaces" = "warn"
+# "format/boolean-operators" = "warn"
+# "format/double-quotes" = "warn"
+# "format/comment-spacing" = "warn"
+# "format/no-unnecessary-parens" = "warn"
+# "format/number-literals" = "warn"
+# "format/one-statement-per-line" = "warn"
+# "format/blank-lines" = "warn"
+# "format/trailing-comma" = "warn"
+# "format/operator-spacing" = "warn"
+# "format/float-literal-zeros" = "warn"
+# "format/large-number-underscores" = "warn"
+# "format/enum-one-per-line" = "warn"
+
+# --- Ordering ---
+# "order/class-member-order" = "warn"
+
+# --- Quality ---
+# "quality/max-function-length" = "warn"
+# "quality/max-file-length" = "warn"
+# "quality/max-parameters" = "warn"
