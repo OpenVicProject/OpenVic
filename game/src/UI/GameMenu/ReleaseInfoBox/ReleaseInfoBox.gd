@@ -7,7 +7,7 @@ var _commit_label: Button
 @export
 var _checksum_label: Button
 
-var _checksum: String = "????"
+var _checksum: String = "Unknown Checksum"
 
 # REQUIREMENTS:
 # * SS-104, SS-105, SS-106, SS-107
@@ -15,9 +15,9 @@ var _checksum: String = "????"
 
 
 func _ready() -> void:
-	_version_label.text = tr("MAIMENU_LATEST_RELEASE_NAME").format({ "release_name": GitInfo.release_name })
+	_version_label.text = tr("Latest Release Name: {release_name}").format({ "release_name": GitInfo.release_name })
 	_version_label.tooltip_text = GitInfo.tag
-	_commit_label.text = tr("MAIMENU_COMMIT").format({ "short_hash": GitInfo.short_hash })
+	_commit_label.text = tr("Commit: {short_hash}").format({ "short_hash": GitInfo.short_hash })
 	_commit_label.tooltip_text = GitInfo.commit_hash
 	# UI-111
 	_checksum = Checksum.get_checksum_text()
@@ -31,8 +31,8 @@ func _notification(what: int) -> void:
 
 
 func _update_checksum_label_text() -> void:
-	_checksum_label.tooltip_text = tr("MAINMENU_CHECKSUM_TOOLTIP").format({ "checksum": _checksum })
-	_checksum_label.text = tr("MAINMENU_CHECKSUM").format({ "short_checksum": _checksum.substr(0, 4) })
+	_checksum_label.tooltip_text = tr("Checksum {checksum}").format({ "checksum": _checksum })
+	_checksum_label.text = tr("Checksum: {short_checksum}").format({ "short_checksum": _checksum.substr(0, 4) })
 
 
 func _on_version_label_pressed() -> void:

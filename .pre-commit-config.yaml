@@ -49,13 +49,15 @@ repos:
         types_or: [text]
 
   - repo: https://github.com/atelico/gdstyle
-    rev: v0.2.1
+    rev: v0.2.4
     hooks:
       - id: gdstyle-fmt
         files: \.gd$
         exclude: |
           (?x)^(
-            game/addons/.*
+            game/addons/(?!
+              openvic
+            ).*
           )
         types_or: [text]
 
@@ -66,7 +68,9 @@ repos:
         exclude: |
           (?x)^(
             game/assets/localisation/locales/.*|
-            game/addons/.*
+            game/addons/(?!
+              openvic
+            ).*
           )
 
 

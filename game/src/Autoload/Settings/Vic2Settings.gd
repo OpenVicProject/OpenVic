@@ -1,3 +1,4 @@
+@tool
 extends "res://addons/kenyoni/app_settings/app_settings.gd"
 
 const LEGACY_SETTINGS_FILES: PackedStringArray = []
@@ -21,6 +22,8 @@ func _init() -> void:
 		.add_meta(&"hint", PROPERTY_HINT_DIR)
 		.add_meta(&"legacy_paths", BASE_DEFINES_LEGACY_PATHS))
 
+	if Engine.is_editor_hint(): return
+
 	self.load()
 	self.apply_all()
 
@@ -32,9 +35,9 @@ func _init() -> void:
 	_base_path_find_dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	_base_path_find_dialog.access = FileDialog.ACCESS_FILESYSTEM
 	_base_path_find_dialog.show_hidden_files = true
-	_base_path_find_dialog.title = "VIC2_DIR_DIALOG_TITLE"
-	_base_path_find_dialog.cancel_button_text = "VIC2_DIR_DIALOG_CANCEL"
-	_base_path_find_dialog.ok_button_text = "VIC2_DIR_DIALOG_SELECT"
+	_base_path_find_dialog.title = "Select your Victoria 2 Game Directory"
+	_base_path_find_dialog.cancel_button_text = "Cancel"
+	_base_path_find_dialog.ok_button_text = "Select"
 	_base_path_find_dialog.size = Vector2i(935, 175)
 	_base_path_find_dialog.disable_3d = true
 	_base_path_find_dialog.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
@@ -109,7 +112,14 @@ func _base_defines_path_validate(_stg: Setting, val: Variant) -> bool:
 
 
 func _show_alert() -> void:
-	OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
+	OS.alert(
+		tr("Failed to find Victoria II"),
+		tr(
+			"OpenVic couldn't find a copy of Victoria II installed on your computer! " +
+			"If you do have Victoria II installed, please specify the path to your " +
+			"game directory with the \"search-path\" command line option."
+		)
+	)
 
 
 func _on_base_path_find_dialog_failed() -> void:

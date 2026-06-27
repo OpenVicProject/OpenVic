@@ -1,3 +1,4 @@
+@tool
 extends "res://addons/kenyoni/app_settings/app_settings.gd"
 
 # File
@@ -12,11 +13,15 @@ func _init() -> void:
 		.set_validate_fn(_load_list_validate)
 		.add_meta(&"type", TYPE_PACKED_STRING_ARRAY))
 
+
+	if Engine.is_editor_hint(): return
+
 	self.load()
 	self.apply_all()
 
 
 func _notification(what: int) -> void:
+	if Engine.is_editor_hint(): return
 	if what != NOTIFICATION_WM_CLOSE_REQUEST: return
 	save()
 

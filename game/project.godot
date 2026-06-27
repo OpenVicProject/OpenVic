@@ -40,6 +40,7 @@ MusicManager="*res://src/Autoload/MusicManager/MusicManager.tscn"
 SaveManager="*res://src/Autoload/SaveManager.gd"
 CursorManager="*res://src/Autoload/CursorManager.gd"
 Keychain="*uid://dgiia2xg7fsud"
+ControlsGlobal="*uid://u4g1f1gemv7i"
 
 [display]
 
@@ -60,7 +61,7 @@ window/size/window_height_override.editor=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/kenyoni/app_settings/plugin.cfg", "res://addons/keychain/plugin.cfg")
+enabled=PackedStringArray("res://addons/MusicMetadata/plugin.cfg", "res://addons/kenyoni/app_settings/plugin.cfg", "res://addons/keychain/plugin.cfg", "res://addons/OpenVic/plugin.cfg")
 
 [filesystem]
 
@@ -154,7 +155,7 @@ select_add={
 [internationalization]
 
 locale/translation_remaps={}
-locale/translations=PackedStringArray("res://assets/localisation/locales/helpers.de.translation", "res://assets/localisation/locales/helpers.en.translation", "res://assets/localisation/locales/helpers.es.translation", "res://assets/localisation/locales/helpers.fr.translation")
+locale/translations_pot_files=PackedStringArray("res://src/Autoload/Settings/GameSettings.gd", "res://src/Autoload/Settings/ModSettings.gd", "res://src/Autoload/Settings/Vic2Settings.gd", "res://src/UI/GameMenu/MainMenu/MainMenu.gd", "res://src/UI/GameMenu/MainMenu/MainMenu.tscn", "res://src/UI/GameMenu/OptionMenu/ControlsTab.tscn", "res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.gd", "res://src/UI/GameMenu/OptionMenu/KeychainShortcutEdit.tscn", "res://src/UI/GameMenu/OptionMenu/OptionsMenu.gd", "res://src/UI/GameMenu/OptionMenu/OptionsMenu.tscn", "res://src/UI/GameMenu/OptionMenu/SettingsContainer.gd", "res://src/UI/GameMenu/OptionMenu/SettingsContainer.tscn", "res://src/UI/GameMenu/LobbyMenu/LobbyMenu.gd", "res://src/UI/GameMenu/LobbyMenu/LobbyMenu.tscn", "res://src/UI/GameMenu/LobbyMenu/LobbyPanelButton.gd", "res://src/UI/GameMenu/LobbyMenu/LobbyPanelButton.tscn", "res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.gd", "res://src/UI/GameMenu/ReleaseInfoBox/ReleaseInfoBox.tscn", "res://src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.gd", "res://src/UI/GameMenu/SaveLoadMenu/SaveLoadMenu.tscn", "res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.gd", "res://src/UI/GameMenu/SaveLoadMenu/SavePanelButton.tscn", "res://src/UI/GameMenu/SaveLoadMenu/SaveResource.gd", "res://src/UI/Session/PauseMenu/PauseMenu.gd", "res://src/UI/Session/PauseMenu/PauseMenu.tscn")
 locale/fallback="en_GB"
 locale/locale_filter_mode=0
 locale/country_short_name={

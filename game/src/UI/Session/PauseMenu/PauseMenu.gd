@@ -16,11 +16,11 @@ var _quit_save_separator: Control
 
 func _ready() -> void:
 	_main_menu_save_button = _main_menu_dialog.add_button(
-		"DIALOG_SAVE_AND_RESIGN",
+		"Save and Resign",
 		true,
 		&"save_and_main_menu",
 	)
-	_quit_save_button = _quit_dialog.add_button("DIALOG_SAVE_AND_QUIT", true, &"save_and_quit")
+	_quit_save_button = _quit_dialog.add_button("Save and Quit", true, &"save_and_quit")
 
 	# Necessary to center the save buttons and preserve the reference to the separator elements
 	var dialog_hbox: HBoxContainer = _main_menu_dialog.get_child(2, true)

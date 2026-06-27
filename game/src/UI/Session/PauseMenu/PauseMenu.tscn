@@ -29,31 +29,31 @@ layout_mode = 2
 editor_description = "UI-69"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_SAVE"
+text = "Save Game"
 
 [node name="LoadButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=805586651]
 editor_description = "UI-70"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_LOAD"
+text = "Load Game"
 
 [node name="OptionsButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=342275540]
 editor_description = "UI-10"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_OPTIONS"
+text = "Options"
 
 [node name="MainMenuButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=619425452]
 editor_description = "UI-71"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_MAINMENU"
+text = "Resign To Menu"
 
 [node name="QuitButton" type="Button" parent="ButtonListMargin/ButtonList" unique_id=1503267683]
 editor_description = "UI-72"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_QUIT"
+text = "Quit Game"
 
 [node name="CloseSeparator" type="HSeparator" parent="ButtonListMargin/ButtonList" unique_id=1227771272]
 layout_mode = 2
@@ -63,22 +63,18 @@ theme_type_variation = &"SessionSeparator"
 editor_description = "SS-64, UI-80, UIFUN-79"
 layout_mode = 2
 theme_type_variation = &"SessionButton"
-text = "GAMESESSIONMENU_CLOSE"
+text = "Close"
 
 [node name="MainMenuDialog" type="ConfirmationDialog" parent="." unique_id=739307228]
 disable_3d = true
-title = "GAMESESSIONMENU_MAINMENU_DIALOG_TITLE"
+title = "Resign Game"
 size = Vector2i(384, 100)
-ok_button_text = "DIALOG_OK"
-dialog_text = "GAMESESSIONMENU_MAINMENU_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+dialog_text = "Are you sure you want to resign and return to the main menu?"
 
 [node name="QuitDialog" type="ConfirmationDialog" parent="." unique_id=2097588504]
 disable_3d = true
-title = "GAMESESSIONMENU_QUIT_DIALOG_TITLE"
-ok_button_text = "DIALOG_OK"
-dialog_text = "GAMESESSIONMENU_QUIT_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+title = "Quit Game"
+dialog_text = "Are you sure you want to quit to desktop?"
 
 [connection signal="pressed" from="ButtonListMargin/ButtonList/SaveButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="ButtonListMargin/ButtonList/LoadButton" to="." method="_on_load_button_pressed"]
