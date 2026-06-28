@@ -254,7 +254,9 @@ func _init() -> void:
 	_set_window_override(get_setting(VIDEO_RESOLUTION).value() as Vector2i)
 
 	await tree_entered
+	_resolution_apply(self.get_setting(VIDEO_RESOLUTION))
 	# Preserves GUI scaling factor on scene change
+	_gui_scaling_factor_apply(self.get_setting(VIDEO_GUI_SCALING_FACTOR))
 	get_tree().scene_changed.connect(_gui_scaling_factor_apply.bind(self.get_setting(VIDEO_GUI_SCALING_FACTOR)))
 
 func save() -> Error:
@@ -310,14 +312,13 @@ func _resolution_apply(stg: Setting) -> void:
 		_push_embedded_warning(str(stg.value()))
 		return
 	var window := get_window()
-	if window == null: return
 	match window.mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
-			window.content_scale_size = stg.value() as Vector2i
+			if window != null: window.content_scale_size = stg.value() as Vector2i
 		_:
-			window.size = stg.value() as Vector2i
-			_set_window_override(window.size)
-			window.content_scale_size = Vector2i(0,0)
+			DisplayServer.window_set_size(stg.value() as Vector2i)
+			_set_window_override(DisplayServer.window_get_size())
+			if window != null: window.content_scale_size = Vector2i(0,0)
 
 func _resolution_translate_value(stg: Setting, value: Variant, _display_value: String) -> String:
 	var resolution := value as Vector2i
@@ -336,7 +337,7 @@ func _resolution_translate_value(stg: Setting, value: Variant, _display_value: S
 
 func _gui_scaling_factor_apply(stg: Setting) -> void:
 	if not is_inside_tree(): return
-	get_tree().root.content_scale_factor = stg.value()
+	get_window().content_scale_factor = stg.value()
 
 func _screen_mode_validate(_stg: Setting, val: Variant) -> bool:
 	return _get_enum_values(&"DisplayServer", &"WindowMode").find_key(val) != null
@@ -346,10 +347,8 @@ func _screen_mode_apply(stg: Setting) -> void:
 		var window_mode_name: String = _get_enum_values(&"DisplayServer", &"WindowMode").find_key(stg.value())
 		_push_embedded_warning("DisplayServer." + window_mode_name)
 		return
-	var window := get_window()
-	if window == null: return
-	window.mode = stg.value()
-	_set_window_override(window.size)
+	DisplayServer.window_set_mode(stg.value())
+	_set_window_override(DisplayServer.window_get_size())
 
 func _refresh_rate_apply(stg: Setting) -> void:
 	var refresh_rate := stg.value() as RefreshRate
