@@ -77,6 +77,7 @@ func _setup_settings_section(app_setting: AppSettings, section_index: int, secti
 func _notification(what : int) -> void:
 	match what:
 		NOTIFICATION_VISIBILITY_CHANGED:
+			if not is_node_ready(): await ready
 			set_process_input(is_visible_in_tree())
 		NOTIFICATION_CRASH, NOTIFICATION_WM_CLOSE_REQUEST:
 			_on_window_close_requested()
