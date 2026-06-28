@@ -50,6 +50,11 @@ Comment: MusicMetadata Godot Plugin
 Copyright: 2024 Aiden Olsen, James Wilcock, NovaDC
 License: Expat
 
+Files: game/addons/quick_licenses/*
+Comment: Quick Licenses Godot Plugin
+Copyright: 2025 ProgrammerOnCoffee
+License: Expat
+
 Files: game/assets/audio/music/*.mp3
 Comment: OpenVic Game music
 Copyright: 2023-present Catylist
