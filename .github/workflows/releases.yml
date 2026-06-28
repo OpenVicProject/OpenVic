@@ -114,6 +114,15 @@ jobs:
             arch: x86_64
             scons-flags: lto=full use_static_cpp=yes
 
+          - identifier: linux-debug
+            os: ubuntu-latest
+            name: 🐧 Build Linux (debug)
+            runner: ubuntu-latest
+            target: template_debug
+            platform: linux
+            arch: x86_64
+            scons-flags: optimize=none
+
     steps:
       - name: Checkout project
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -132,7 +141,7 @@ jobs:
           tag-name: ${{ github.ref_name }}
           release-name: ${{ needs.static-checks-release.outputs.release-name }}
           disable-cache: true
-          scons-flags: ${{ matrix.scons-flags }}
+          scons-flags: use_hot_reload=no ${{ matrix.scons-flags }}
 
   publish-release:
     name: Publish Release
