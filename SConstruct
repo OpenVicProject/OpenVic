@@ -78,7 +78,7 @@ env.Append(CPPPATH=[env.Dir(ext_variant), env.Dir(ext_src)])
 Default(
     env.CommandNoCache(
         ext_variant + "/gen/commit_info.gen.hpp",
-        env.Value(env.get_git_info()),
+        env.Value(env.get_git_info("game")),
         env.Run(env.git_builder),
         name_prefix="game",
     )

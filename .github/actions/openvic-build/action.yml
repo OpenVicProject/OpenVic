@@ -80,8 +80,8 @@ runs:
     - name: Compile with SCons
       uses: OpenVicProject/openvic-build@master
       env:
-        OPENVIC_TAG: ${{ inputs.tag-name }}
-        OPENVIC_RELEASE: ${{ inputs.release-name }}
+        GAME_TAG: ${{ inputs.tag-name }}
+        GAME_RELEASE: ${{ inputs.release-name }}
       with:
         platform: ${{ inputs.platform }}
         target: ${{ inputs.target }}
