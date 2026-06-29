@@ -28,8 +28,15 @@ func _ready() -> void:
 	# * UIFUN-17
 	var back_button := Button.new()
 	back_button.text = "OPTIONS_BACK"
+	back_button.shortcut_feedback = false
 	back_button.pressed.connect(_on_back_button_pressed)
 	button_list.add_child(back_button)
+
+	var cancel_action := InputEventAction.new()
+	cancel_action.action = &"ui_cancel"
+	cancel_action.pressed = true
+	back_button.shortcut = Shortcut.new()
+	back_button.shortcut.events = [cancel_action]
 
 	_setup_settings()
 
@@ -76,16 +83,8 @@ func _setup_settings_section(app_setting: AppSettings, section_index: int, secti
 
 func _notification(what : int) -> void:
 	match what:
-		NOTIFICATION_VISIBILITY_CHANGED:
-			if not is_node_ready(): await ready
-			set_process_input(is_visible_in_tree())
 		NOTIFICATION_CRASH, NOTIFICATION_WM_CLOSE_REQUEST:
 			_on_window_close_requested()
-
-func _input(event : InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
-		_on_back_button_pressed()
-		accept_event()
 
 func _on_back_button_pressed() -> void:
 	back_button_pressed.emit()
