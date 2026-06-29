@@ -86,7 +86,7 @@ Default(
 Default(
     env.CommandNoCache(
         ext_variant + "/gen/license_info.gen.hpp",
-        ["#COPYRIGHT", "#LICENSE.md"],
+        ["COPYRIGHT", "LICENSE.md"],
         env.Run(env.license_builder),
         name_prefix="game",
     )
@@ -94,7 +94,7 @@ Default(
 Default(
     env.CommandNoCache(
         ext_variant + "/gen/author_info.gen.hpp",
-        "#AUTHORS.md",
+        "AUTHORS.md",
         env.Run(env.author_builder),
         name_prefix="game",
         sections={
