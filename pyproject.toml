@@ -13,7 +13,7 @@ explicit_package_bases = true
 [tool.ruff]
 extend-include = ["SConstruct", "SCsub"]
 line-length = 120
-target-version = "py37"
+target-version = "py310"
 
 [tool.ruff.lint]
 extend-select = [
