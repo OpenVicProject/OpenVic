@@ -1,4 +1,4 @@
-# Contributor Quickstart Guide
+# Development Quickstart Guide
 
 ## Required Software
 - A way to use `git` such as Git Bash or the Windows-Linux Subsystem
