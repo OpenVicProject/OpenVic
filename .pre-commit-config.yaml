@@ -65,7 +65,14 @@ repos:
         name: make-rst
         language: python
         entry: python extension/doc_tools/make_rst.py
-        args: [extension, --dry-run, --color]
+        args: [
+          extension/doc_tools/cache/engine/godot/doc/classes,
+          extension/doc_tools/cache/engine/godot/modules,
+          extension/doc_tools/cache/engine/godot/platform,
+          extension/doc_classes,
+          --dry-run,
+          --color
+        ]
         pass_filenames: false
         files: ^(extension/doc_classes)/.*\.xml$
 
