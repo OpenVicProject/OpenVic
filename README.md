@@ -9,7 +9,7 @@ Main Repo for the OpenVic Project
 - Youtube: [@OpenVicProject](https://www.youtube.com/@OpenVicProject)
 
 ## Quickstart Guide
-For detailed instructions, view the Contributor Quickstart Guide [here](docs/contribution-quickstart-guide.md)
+For detailed instructions, view the Contributor Quickstart Guide [here](docs/CONTRIBUTING.md)
 
 ## System Requirements
 * [Godot 4.7](https://github.com/godotengine/godot/releases/tag/4.7-stable)
