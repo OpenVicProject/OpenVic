@@ -1,0 +1,510 @@
+[
+	{
+		"name": "Godot Engine",
+		"source": "https://godotengine.org"
+	},
+	{
+		"name": "Quick Licenses Godot Plugin",
+		"source": "https://github.com/ProgrammerOnCoffee/Quick-Licenses"
+	},
+	{
+		"name": "OpenVic Game",
+		"source": "https://openvic.com"
+	},
+	{
+		"name": "OpenVic Game logo",
+		"source": ""
+	},
+	{
+		"name": "gli",
+		"source": "https://gli.g-truc.net"
+	},
+	{
+		"name": "OpenVic Simulation",
+		"source": "https://github.com/OpenVicProject/OpenVic-Simulation"
+	},
+	{
+		"name": "Godot Engine C++ Bindings",
+		"source": "https://github.com/godotengine/godot-cpp"
+	},
+	{
+		"name": "Keychain Godot Plugin",
+		"source": "https://github.com/Orama-Interactive/Keychain"
+	},
+	{
+		"name": "Kenney's UI Audio Pack",
+		"source": "https://kenney.nl/assets/ui-audio"
+	},
+	{
+		"name": "AppSettings Godot Plugin",
+		"source": "https://kenyoni-software.github.io/godot-addons/addons/app_settings/"
+	},
+	{
+		"name": "MusicMetadata Godot Plugin",
+		"source": "https://github.com/NovaDC/Godot-MusicMetadata"
+	},
+	{
+		"name": "OpenVic Game music",
+		"source": ""
+	},
+	{
+		"name": "OpenVic Game sound effects",
+		"source": ""
+	},
+	{
+		"name": "OpenVic Game graphical assets",
+		"source": ""
+	},
+	{
+		"name": "function2",
+		"source": "naios.github.io/function2"
+	},
+	{
+		"name": "Lexy-based VDF Parser",
+		"source": "https://github.com/OpenVicProject/lexy-vdf"
+	},
+	{
+		"name": "foonathan/memory",
+		"source": "https://memory.foonathan.net"
+	},
+	{
+		"name": "OpenVic Dataloader",
+		"source": "https://github.com/OpenVicProject/OpenVic-Dataloader"
+	},
+	{
+		"name": "ordered-map",
+		"source": "https://github.com/Tessil/ordered-map"
+	},
+	{
+		"name": "plf::colony",
+		"source": "https://plflib.org/colony.htm"
+	},
+	{
+		"name": "spdlog",
+		"source": "https://github.com/gabime/spdlog"
+	},
+	{
+		"name": "type_safe",
+		"source": "https://type_safe.foonathan.net"
+	},
+	{
+		"name": "Xoshiro-cpp",
+		"source": "https://github.com/reputeless/xoshiro-cpp"
+	},
+	{
+		"name": "sigslot",
+		"source": "https://github.com/palacaze/sigslot/"
+	},
+	{
+		"name": "snitch",
+		"source": "https://github.com/snitch-org/snitch"
+	},
+	{
+		"name": "nanobench",
+		"source": "https://nanobench.ankerl.com"
+	},
+	{
+		"name": "Bullet Continuous Collision Detection and Physics Library",
+		"source": ""
+	},
+	{
+		"name": "Linux AppStream Metadata File",
+		"source": ""
+	},
+	{
+		"name": "Godot Engine logo",
+		"source": ""
+	},
+	{
+		"name": "Betsy",
+		"source": ""
+	},
+	{
+		"name": "Chipmunk2D Joint Constraints",
+		"source": ""
+	},
+	{
+		"name": "Open Dynamics Engine",
+		"source": ""
+	},
+	{
+		"name": "Jolt Physics",
+		"source": "https://github.com/jrouwe/JoltPhysics"
+	},
+	{
+		"name": "Joint Non-Local Means (JNLM) denoiser",
+		"source": ""
+	},
+	{
+		"name": "The Android Open Source Project",
+		"source": ""
+	},
+	{
+		"name": "ProcessPhoenix",
+		"source": ""
+	},
+	{
+		"name": "Robert Penner's Easing Functions",
+		"source": ""
+	},
+	{
+		"name": "NVidia's FXAA 3.11, simplified by Simon Rodriguez",
+		"source": ""
+	},
+	{
+		"name": "Intel ASSAO and related files",
+		"source": ""
+	},
+	{
+		"name": "Temporal Anti-Aliasing resolve implementation",
+		"source": ""
+	},
+	{
+		"name": "Subpixel Morphological Antialiasing",
+		"source": ""
+	},
+	{
+		"name": "AccessKit",
+		"source": ""
+	},
+	{
+		"name": "AMD FidelityFX Super Resolution",
+		"source": ""
+	},
+	{
+		"name": "AMD FidelityFX Super Resolution 2",
+		"source": ""
+	},
+	{
+		"name": "ANGLE",
+		"source": ""
+	},
+	{
+		"name": "Arm ASTC Encoder",
+		"source": ""
+	},
+	{
+		"name": "Basis Universal",
+		"source": ""
+	},
+	{
+		"name": "Brotli",
+		"source": ""
+	},
+	{
+		"name": "CA certificates",
+		"source": ""
+	},
+	{
+		"name": "Clipper2",
+		"source": ""
+	},
+	{
+		"name": "Convection Texture Tools Stand-Alone Kernels",
+		"source": ""
+	},
+	{
+		"name": "D3D12 Memory Allocator",
+		"source": ""
+	},
+	{
+		"name": "DirectX Headers",
+		"source": ""
+	},
+	{
+		"name": "doctest",
+		"source": ""
+	},
+	{
+		"name": "dr_libs",
+		"source": ""
+	},
+	{
+		"name": "Embree",
+		"source": ""
+	},
+	{
+		"name": "ENet",
+		"source": ""
+	},
+	{
+		"name": "etcpak",
+		"source": ""
+	},
+	{
+		"name": "DroidSans font",
+		"source": ""
+	},
+	{
+		"name": "Inter font",
+		"source": ""
+	},
+	{
+		"name": "JetBrains Mono font",
+		"source": ""
+	},
+	{
+		"name": "Noto Sans font",
+		"source": ""
+	},
+	{
+		"name": "Open Sans font",
+		"source": ""
+	},
+	{
+		"name": "Vazirmatn font",
+		"source": ""
+	},
+	{
+		"name": "The FreeType Project",
+		"source": ""
+	},
+	{
+		"name": "GamepadMotionHelpers",
+		"source": ""
+	},
+	{
+		"name": "glad",
+		"source": ""
+	},
+	{
+		"name": "glslang",
+		"source": ""
+	},
+	{
+		"name": "Graphite engine",
+		"source": ""
+	},
+	{
+		"name": "Grisu2 float serialization algorithm",
+		"source": ""
+	},
+	{
+		"name": "HarfBuzz text shaping library",
+		"source": ""
+	},
+	{
+		"name": "International Components for Unicode",
+		"source": ""
+	},
+	{
+		"name": "libbacktrace",
+		"source": ""
+	},
+	{
+		"name": "libjpeg-turbo",
+		"source": ""
+	},
+	{
+		"name": "KTX",
+		"source": ""
+	},
+	{
+		"name": "OggVorbis",
+		"source": ""
+	},
+	{
+		"name": "libpng",
+		"source": ""
+	},
+	{
+		"name": "OggTheora",
+		"source": ""
+	},
+	{
+		"name": "WebP codec",
+		"source": ""
+	},
+	{
+		"name": "Manifold",
+		"source": ""
+	},
+	{
+		"name": "Mbed TLS",
+		"source": ""
+	},
+	{
+		"name": "meshoptimizer",
+		"source": ""
+	},
+	{
+		"name": "metal-cpp",
+		"source": ""
+	},
+	{
+		"name": "mingw-std-threads",
+		"source": ""
+	},
+	{
+		"name": "MiniUPnP Project",
+		"source": ""
+	},
+	{
+		"name": "MiniZip",
+		"source": ""
+	},
+	{
+		"name": "bcdec",
+		"source": ""
+	},
+	{
+		"name": "Fast Filtering of Reflection Probes",
+		"source": ""
+	},
+	{
+		"name": "FastLZ",
+		"source": ""
+	},
+	{
+		"name": "FastNoise Lite",
+		"source": ""
+	},
+	{
+		"name": "libjingle",
+		"source": ""
+	},
+	{
+		"name": "Tangent Space Normal Maps implementation",
+		"source": ""
+	},
+	{
+		"name": "NVIDIA NVAPI (minimal excerpt)",
+		"source": ""
+	},
+	{
+		"name": "OK Lab color space",
+		"source": ""
+	},
+	{
+		"name": "Minimal PCG32 implementation",
+		"source": ""
+	},
+	{
+		"name": "PolyPartition / Triangulator",
+		"source": ""
+	},
+	{
+		"name": "Quite OK Audio Format",
+		"source": ""
+	},
+	{
+		"name": "r128 library",
+		"source": ""
+	},
+	{
+		"name": "SMAZ",
+		"source": ""
+	},
+	{
+		"name": "SMOL-V",
+		"source": ""
+	},
+	{
+		"name": "stb libraries",
+		"source": ""
+	},
+	{
+		"name": "YUV2RGB",
+		"source": ""
+	},
+	{
+		"name": "Multi-channel signed distance field generator",
+		"source": ""
+	},
+	{
+		"name": "OpenXR Loader",
+		"source": ""
+	},
+	{
+		"name": "PCRE2",
+		"source": ""
+	},
+	{
+		"name": "Recast",
+		"source": ""
+	},
+	{
+		"name": "RVO2",
+		"source": ""
+	},
+	{
+		"name": "SDL",
+		"source": ""
+	},
+	{
+		"name": "hidapi",
+		"source": ""
+	},
+	{
+		"name": "SPIRV-Cross",
+		"source": ""
+	},
+	{
+		"name": "SPIRV-Headers",
+		"source": ""
+	},
+	{
+		"name": "SPIRV-Reflect",
+		"source": ""
+	},
+	{
+		"name": "Swappy",
+		"source": ""
+	},
+	{
+		"name": "ThorVG",
+		"source": ""
+	},
+	{
+		"name": "TinyEXR",
+		"source": ""
+	},
+	{
+		"name": "ufbx",
+		"source": ""
+	},
+	{
+		"name": "V-HACD",
+		"source": ""
+	},
+	{
+		"name": "volk",
+		"source": ""
+	},
+	{
+		"name": "Vulkan Headers",
+		"source": ""
+	},
+	{
+		"name": "Vulkan Memory Allocator",
+		"source": ""
+	},
+	{
+		"name": "Wayland core protocol",
+		"source": ""
+	},
+	{
+		"name": "Wayland protocols",
+		"source": ""
+	},
+	{
+		"name": "Mesa Wayland protocols",
+		"source": ""
+	},
+	{
+		"name": "Wslay",
+		"source": ""
+	},
+	{
+		"name": "xatlas",
+		"source": ""
+	},
+	{
+		"name": "zlib",
+		"source": ""
+	},
+	{
+		"name": "Zstandard",
+		"source": ""
+	}
+]

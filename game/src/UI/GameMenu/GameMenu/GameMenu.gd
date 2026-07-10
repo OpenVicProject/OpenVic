@@ -34,7 +34,7 @@ func _on_lobby_menu_back_button_pressed() -> void:
 	_lobby_menu.hide()
 
 
-func _on_credits_back_button_pressed() -> void:
+func _on_credits_menu_close_requested() -> void:
 	_credits_menu.hide()
 	_main_menu.show()
 

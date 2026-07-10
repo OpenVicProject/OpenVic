@@ -5,13 +5,16 @@
 #include <string_view>
 
 #include <godot_cpp/core/defs.hpp>
+#include <godot_cpp/templates/span.hpp>
 #include <godot_cpp/variant/char_string.hpp>
 #include <godot_cpp/variant/color.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector2i.hpp>
 
 #include <openvic-simulation/core/memory/String.hpp>
+#include <openvic-simulation/core/memory/Vector.hpp>
 #include <openvic-simulation/core/template/Concepts.hpp>
 #include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/Vector.hpp>
@@ -77,5 +80,26 @@ namespace OpenVic {
 	template<>
 	[[nodiscard]] _FORCE_INLINE_ godot::Vector2 convert_to(fvec2_t const& from) {
 		return { static_cast<real_t>(from.x), static_cast<real_t>(from.y) };
+	}
+
+	template<>
+	[[nodiscard]] _FORCE_INLINE_ godot::PackedStringArray convert_to(std::span<const std::string_view> const& from) {
+		godot::PackedStringArray result;
+		result.resize(from.size());
+		for (size_t index = 0; std::string_view const& view : from) {
+			result[index] = convert_to<godot::String>(view);
+			++index;
+		}
+		return result;
+	}
+
+	template<>
+	[[nodiscard]] _FORCE_INLINE_ memory::vector<memory::string> convert_to(godot::Span<const godot::String> const& from) {
+		memory::vector<memory::string> result;
+		result.reserve(from.size());
+		for (godot::String const& str : from) {
+			result.push_back(convert_to<memory::string>(str));
+		}
+		return result;
 	}
 }

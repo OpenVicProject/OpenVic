@@ -1,0 +1,180 @@
+[gd_scene format=3 uid="uid://coah5prguom4a"]
+
+[ext_resource type="Script" uid="uid://d1sxpmooq0okb" path="res://addons/quick_licenses/quick_licenses.gd" id="1_p03sv"]
+
+[node name="QuickLicenses" type="Control" unique_id=1329122281]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_p03sv")
+
+[node name="List" type="VBoxContainer" parent="." unique_id=1421219577]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="List" unique_id=916379453]
+layout_mode = 2
+text = "Credits"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="List" unique_id=1321741466]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="List" unique_id=706067112]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="MarginContainer" type="MarginContainer" parent="List/ScrollContainer" unique_id=1420145981]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="List/ScrollContainer/MarginContainer" unique_id=1816744740]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HSeparator2" type="HSeparator" parent="List" unique_id=429796316]
+layout_mode = 2
+
+[node name="Back" type="Button" parent="List" unique_id=1537076862]
+layout_mode = 2
+text = "Back to Menu"
+
+[node name="Component" type="VBoxContainer" parent="." unique_id=2070135681]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="Component" unique_id=1861583637]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="Component" unique_id=68209033]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Component" unique_id=797229307]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Component/ScrollContainer" unique_id=905382035]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Component/ScrollContainer/MarginContainer" unique_id=863752295]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HSeparator2" type="HSeparator" parent="Component" unique_id=1682650850]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Component" unique_id=1737711093]
+layout_mode = 2
+text = "Back"
+
+[node name="License" type="VBoxContainer" parent="." unique_id=72016314]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="License" unique_id=835718340]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="License" unique_id=43322899]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="License" unique_id=1339363120]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="License/ScrollContainer" unique_id=1545257749]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Text" type="Label" parent="License/ScrollContainer/MarginContainer" unique_id=2026183347]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"SmallLabel"
+autowrap_mode = 3
+
+[node name="HSeparator2" type="HSeparator" parent="License" unique_id=1801251890]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="License" unique_id=2007428260]
+layout_mode = 2
+text = "Back"
+
+[node name="Contributors" type="VBoxContainer" parent="." unique_id=1085409374]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="Contributors" unique_id=298725504]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Contributors" unique_id=1670304166]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Contributors" unique_id=1217991903]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="Contributors/ScrollContainer" unique_id=772488097]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Contributors/ScrollContainer/MarginContainer" unique_id=8336801]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"SmallLabel"
+
+[node name="HSeparator2" type="HSeparator" parent="Contributors" unique_id=1851546315]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="Contributors" unique_id=1740631747]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="List/Back" to="." method="_on_list_back_pressed"]
+[connection signal="pressed" from="Component/Button" to="." method="_on_component_back_pressed"]
+[connection signal="pressed" from="License/Button" to="." method="_on_license_back_pressed"]
+[connection signal="pressed" from="Contributors/Button" to="." method="_on_contributors_back_pressed"]
