@@ -1,6 +1,7 @@
 extends Node
 
-var ShaderManager : ShaderManagerClass
+var ShaderManager: ShaderManagerClass
+
 
 func _init() -> void:
 	ShaderManager = ShaderManagerClass.new()

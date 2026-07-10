@@ -1,23 +1,29 @@
 extends "res://addons/kenyoni/app_settings/app_settings.gd"
 
+# File
 const SETTINGS_FILE: String = "user://mods.cfg"
-
+#
+# Mods Settings
 const MODS_LOAD_LIST := &"mods/load_list"
+
 
 func _init() -> void:
 	self.add_setting(Setting.new(MODS_LOAD_LIST, PackedStringArray())
 		.set_validate_fn(_load_list_validate)
 		.add_meta(&"type", TYPE_PACKED_STRING_ARRAY))
-	
+
 	self.load()
 	self.apply_all()
+
 
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_WM_CLOSE_REQUEST: return
 	save()
 
+
 func save() -> Error:
 	return self.to_config().save(SETTINGS_FILE)
+
 
 func load() -> Error:
 	var cfg: ConfigFile = ConfigFile.new()
@@ -30,8 +36,10 @@ func load() -> Error:
 
 	return Error.OK
 
+
 func get_load_list() -> PackedStringArray:
 	return get_setting(MODS_LOAD_LIST).value() as PackedStringArray
+
 
 func _load_list_validate(_stg: Setting, val: Variant) -> bool:
 	var result := true

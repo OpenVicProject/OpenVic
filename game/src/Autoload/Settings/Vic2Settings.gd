@@ -1,16 +1,18 @@
 extends "res://addons/kenyoni/app_settings/app_settings.gd"
 
-const LEGACY_SETTINGS_FILES : PackedStringArray = []
-
-const BASE_DEFINES_LEGACY_PATHS : PackedStringArray = [
-	"general/base_defines_path"
+const LEGACY_SETTINGS_FILES: PackedStringArray = []
+const BASE_DEFINES_LEGACY_PATHS: PackedStringArray = [
+	"general/base_defines_path",
 ]
-
+#
+# File
 const SETTINGS_FILE: String = "user://vic2.cfg"
-
+#
+# General Settings
 const GENERAL_BASE_DEFINES_PATH := &"victoria_2/base_defines_path"
 
 var _base_path_find_dialog := FileDialog.new()
+
 
 func _init() -> void:
 	self.add_setting(Setting.new(GENERAL_BASE_DEFINES_PATH, "")
@@ -38,16 +40,19 @@ func _init() -> void:
 	_base_path_find_dialog.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	add_child(_base_path_find_dialog)
 
+
 func _notification(what: int) -> void:
 	if what != NOTIFICATION_WM_CLOSE_REQUEST: return
 	save()
 
+
 func save() -> Error:
 	return self.to_config().save(SETTINGS_FILE)
 
+
 func load() -> Error:
 	var cfg := ConfigFile.new()
-	var err : Error
+	var err: Error
 
 	var settings_with_legacy: Array[Setting] = get_section("", -1, func(stg: Setting) -> bool: return stg.has_meta(&"legacy_paths"))
 
@@ -69,14 +74,17 @@ func load() -> Error:
 
 	return Error.OK
 
+
 func get_base_defines_path() -> String:
 	return get_setting(GENERAL_BASE_DEFINES_PATH).value()
+
 
 func find_base_path(search_path: String) -> String:
 	var result := GameSingleton.search_for_game_path(search_path)
 	if not result:
 		push_warning("Failed to find base path using ", search_path)
 	return result
+
 
 func show_base_path_find_dialog() -> void:
 	var setting := get_setting(GENERAL_BASE_DEFINES_PATH)
@@ -95,11 +103,14 @@ func show_base_path_find_dialog() -> void:
 	_base_path_find_dialog.canceled.disconnect(_on_base_path_find_dialog_failed)
 	get_tree().paused = false
 
+
 func _base_defines_path_validate(_stg: Setting, val: Variant) -> bool:
 	return (val as String).is_absolute_path() and DirAccess.dir_exists_absolute(val)
 
+
 func _show_alert() -> void:
 	OS.alert(tr("ERROR_ASSET_PATH_NOT_FOUND_MESSAGE"), tr("ERROR_ASSET_PATH_NOT_FOUND"))
+
 
 func _on_base_path_find_dialog_failed() -> void:
 	get_window().mode = Window.MODE_WINDOWED
@@ -107,11 +118,17 @@ func _on_base_path_find_dialog_failed() -> void:
 	get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 	get_tree().quit()
 
-func _on_base_path_find_dialog_dir_selected(dir : String) -> void:
+
+func _on_base_path_find_dialog_dir_selected(dir: String) -> void:
 	var setting := get_setting(GENERAL_BASE_DEFINES_PATH)
 	setting.set_value(GameSingleton.search_for_game_path(dir))
 
-func _load_legacy_value(config: ConfigFile, setting: Setting, skip_non_legacy: bool = false) -> void:
+
+func _load_legacy_value(
+	config: ConfigFile,
+	setting: Setting,
+	skip_non_legacy: bool = false,
+) -> void:
 	var split: PackedStringArray
 
 	var legacy_paths: PackedStringArray = setting.get_meta(&"legacy_paths")
