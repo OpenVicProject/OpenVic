@@ -250,6 +250,10 @@ func _on_component_button_pressed(component) -> void:
 				if license == "BSD-3-Clause":
 					license = "BSD-3-clause"
 
+				# Ensures MIT/Expat license is called MIT and only referenced once
+				if license == "Expat":
+					license = "MIT"
+
 				if license in engine_licenses or license in game_licenses or license in sim_licenses:
 					var button := Button.new()
 					button.theme_type_variation = theme_type_small_button
