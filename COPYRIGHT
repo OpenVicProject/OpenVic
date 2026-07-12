@@ -23,7 +23,7 @@ License: Expat
 Files: extension/deps/openvic-simulation/*
 Comment: OpenVic Simulation
 Copyright: 2023-present OpenVic Simulation contributors
-License: GPL-3.0-only
+License: Expat
 
 Files: godot-cpp/*
 Comment: Godot Engine C++ Bindings
