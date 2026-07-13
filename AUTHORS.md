@@ -15,6 +15,7 @@ ways to development of the game.
     Hop311
     George L. Albany (Spartan322)
     BrickPi
+    Justin Nolan (FakeByte)
 
 ## Developers
 
@@ -30,7 +31,6 @@ ways to development of the game.
 
     joethepro36
     ZincLadder (ClarkeCode)
-    FakeByte
     random person (unique-usernames-are-annoying)
     Gone2Daly
     Frédéric Van Aken
