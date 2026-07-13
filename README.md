@@ -4,9 +4,9 @@
 Main Repo for the OpenVic Project
 
 ### Links
-- Website: https://www.openvic.com/
-- Discord: https://discord.gg/vM4E3BFkqH
-- Youtube: [@OpenVicProject](https://www.youtube.com/@OpenVicProject)
+- [<img src="https://img.shields.io/badge/Website-Color?color=3B1919" height="25" align="middle">](https://www.openvic.com/)
+- [<img src="https://img.shields.io/badge/Discord-Color?logo=discord&color=1F1F1F" height="25" align="middle">](https://discord.gg/vM4E3BFkqH)
+- [<img src="https://img.shields.io/badge/Youtube-Color?logo=youtube&logoColor=FF0033&color=212121" height="25" align="middle">](https://www.youtube.com/@OpenVicProject)
 
 ## Quickstart Guide
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/CONTRIBUTING.md)
