@@ -23,6 +23,7 @@ jobs:
       sources-changed: ${{ steps.changed-files.outputs.sources_any_changed }}
       godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
       godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
+      godot-version: ${{ steps.godot-env.outputs.godot-version }}
       godot-api-version: ${{ steps.godot-env.outputs.godot-api-version }}
     steps:
       - name: Checkout project
@@ -105,6 +106,35 @@ jobs:
           cd ..
           git diff --color --exit-code -- '*.xml' && ! git ls-files --others --exclude-standard | sed -e 's/^/New doc file missing in PR: /' | grep 'xml$'
 
+  godot-unit-tests:
+    runs-on: ubuntu-latest
+    needs: [static-checks-builds, build-master]
+    name: 🧪 Run gdUnit4 unit tests
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 0 # Treeless clone. Slightly less performant than a shallow clone, but makes finding diffs instantaneous.
+          filter: tree:0 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
+          persist-credentials: false
+
+      - name: Download artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: game/bin/openvic
+          pattern: ${{ github.event.repository.name }}-*-extension
+          merge-multiple: true
+
+      - name: Run unit tests
+        uses: godot-gdunit-labs/gdUnit4-action@17eeffa988f9732fdc3dba3067405d16b55809de # v1.3.2
+        with:
+          version: installed
+          godot-version: ${{ needs.static-checks-builds.outputs.godot-version }}
+          paths: 'res://tests'
+          project_dir: './game/'
+          arguments: ${{ runner.debug && '--verbose' || '' }}
+
   export-master:
     runs-on: ubuntu-latest
     needs:  [static-checks-builds, build-master]
@@ -150,11 +180,11 @@ jobs:
   validate-master:
     name: ✅ Validate Success
     if: always()
-    needs: [static-checks-builds, build-master, godot-debug-checks, export-master, merge-library-files]
+    needs: [static-checks-builds, build-master, godot-debug-checks, godot-unit-tests, export-master, merge-library-files]
     runs-on: Ubuntu-latest
     steps:
       - name: Check
         uses: re-actors/alls-green@a638d6464689bbb24c325bb3fe9404d63a913030
         with:
-          allowed-skips: static-checks-builds, build-master, godot-debug-checks, export-master, merge-library-files
+          allowed-skips: static-checks-builds, build-master, godot-debug-checks, godot-unit-tests, export-master, merge-library-files
           jobs: ${{ toJson(needs) }}

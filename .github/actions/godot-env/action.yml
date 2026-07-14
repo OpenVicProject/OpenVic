@@ -19,6 +19,9 @@ outputs:
   godot-template-url:
     description: The link to the `.tpz` archive of export templates that was generated.
     value: ${{ steps.variables.outputs.godot-template-url }}
+  godot-version:
+    description: The version of Godot
+    value: ${{ inputs.godot-version }}${{ inputs.godot-version-type != 'stable' && format('-{0}', inputs.godot-version-type) || '' }}
   godot-api-version:
     description: The api_version to send to godot-cpp
     value: ${{ steps.variables.outputs.godot-api-version }}
