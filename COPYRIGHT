@@ -55,6 +55,11 @@ Comment: Quick Licenses Godot Plugin
 Copyright: 2025 ProgrammerOnCoffee
 License: MIT
 
+Files: game/addons/gdUnit4/*
+Comment: gdUnit4 Godot Plugin
+Copyright: 2023 Mike Schulze
+License: MIT
+
 Files: game/assets/audio/music/*.mp3
 Comment: OpenVic Game music
 Copyright: 2023-present Catylist
