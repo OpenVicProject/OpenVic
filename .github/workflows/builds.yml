@@ -96,7 +96,7 @@ jobs:
 
       - name: Check for class reference updates
         env:
-          EXPORT_GAME_OUTPUTS_EXECUTABLE_PATH: ${{ steps.export_game.outputs.executable_path }}
+          EXPORT_GAME_OUTPUTS_EXECUTABLE_PATH: ${{ steps.export_game.outputs.executable-path }}
         run: |
           echo "Running --doctool to see if this changes the public API without updating the documentation."
           echo -e "If a diff is shown, it means that your code/doc changes are incomplete and you should update the class reference with --doctool.\n\n"
