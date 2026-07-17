@@ -4,13 +4,39 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "configure",
+            "group": "build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "windows-x64-editor"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "configure_dev",
+            "group": "build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "windows-x64-editor-dev"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build",
             "group": "build",
             "type": "shell",
-            "command": "scons",
+            "command": "cmake",
             "args": [
-                // enable for debugging with breakpoints
-                //"dev_build=yes",
+                "--build",
+                "--preset",
+                "windows-x64-editor"
+            ],
+            "dependsOn": [
+                "configure"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -18,10 +44,27 @@
             "label": "dev_build",
             "group": "build",
             "type": "shell",
-            "command": "scons",
+            "command": "cmake",
             "args": [
-                // enable for debugging with breakpoints
-                "dev_build=yes"
+                "--build",
+                "--preset",
+                "windows-x64-editor-dev"
+            ],
+            "dependsOn": [
+                "configure_dev"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "install",
+            "group": "build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--install",
+                "out/build/windows-x64-editor",
+                "--config",
+                "RelWithDebInfo"
             ],
             "dependsOn": [
                 "build"
@@ -32,9 +75,13 @@
             "label": "clean",
             "group": "build",
             "type": "shell",
-            "command": "scons",
+            "command": "cmake",
             "args": [
-                "--clean"
+                "--build",
+                "--preset",
+                "windows-x64-editor",
+                "--target",
+                "clean"
             ],
             "problemMatcher": "$msCompile"
         },

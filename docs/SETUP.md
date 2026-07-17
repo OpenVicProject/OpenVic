@@ -3,7 +3,7 @@
 ## Required Software
 - A way to use `git` such as Git Bash or the Windows-Linux Subsystem
 - Python 3.x
-- Scons
+- CMake 3.28+ and Ninja (included with Visual Studio's "C++ CMake tools for Windows" component)
 - Godot
 - A programming IDE such as Visual Studio Code
 
@@ -28,10 +28,9 @@
 ![](images/installation/python-installer.png)
 
 
-## 3. Scons
-- Open Windows Powershell and run the command `pip install scons==4.7.0`
-
-![](images/installation/scons-install.png)
+## 3. CMake and Ninja
+- Install [CMake](https://cmake.org/download/) (3.28 or newer) and [Ninja](https://ninja-build.org/), or select the "C++ CMake tools for Windows" component in the Visual Studio Installer, which includes both
+- Verify with `cmake --version` and `ninja --version` in Powershell
 
 ## 4. [Godot](https://github.com/godotengine/godot/releases/latest)
 - Download Godot 4.7 The current version for the project will be on the [main README](../README.md) page.
@@ -71,10 +70,13 @@
 
 ![](images/proj-setup/04-new-branch.png)
 
-7. Build the C++ portion of the project by running `scons` in Powershell
-    - It will take a minute to initially compile. Any future C++ changes only need to recompile the files that were changed and are much faster
-
-![](images/proj-setup/05-scons.png)
+7. Build the C++ portion of the project by running the following in a "x64 Native Tools Command Prompt for VS" (or any shell with the MSVC environment loaded):
+    ```
+    cmake --preset windows-x64-template_debug
+    cmake --build --preset windows-x64-template_debug
+    cmake --install out/build/windows-x64-template_debug --config Debug
+    ```
+    - It will take a few minutes to initially compile (third-party dependencies are downloaded automatically during configure). Any future C++ changes only need to recompile the files that were changed and are much faster
 
 8. Run the Godot executable
 
