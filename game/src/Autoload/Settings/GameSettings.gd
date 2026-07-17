@@ -340,8 +340,13 @@ func _resolution_apply(stg: Setting) -> void:
 	if Engine.is_embedded_in_editor():
 		_push_embedded_warning(str(stg.value()))
 		return
+
 	var window := get_window()
-	match window.mode:
+	var mode: Window.Mode = Window.MODE_WINDOWED
+	if window != null:
+		mode = window.mode
+
+	match mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
 			if window != null: window.content_scale_size = stg.value() as Vector2i
 		_:
