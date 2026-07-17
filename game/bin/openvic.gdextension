@@ -6,11 +6,12 @@ reloadable = true
 
 [libraries]
 
+linux.x86_64.editor = "res://bin/openvic/libopenvic.linux.editor.x86_64.so"
+windows.x86_64.editor = "res://bin/openvic/openvic.windows.editor.x86_64.dll"
+macos.editor = "res://bin/openvic/libopenvic.macos.editor.dylib"
 linux.x86_64.debug = "res://bin/openvic/libopenvic.linux.template_debug.x86_64.so"
 linux.x86_64.release = "res://bin/openvic/libopenvic.linux.template_release.x86_64.so"
-linux.debug.arm64 = "res://bin/openvic/libopenvic.linux.template_debug.arm64.so"
-linux.release.arm64 = "res://bin/openvic/libopenvic.linux.template_release.arm64.so"
-windows.x86_64.debug = "res://bin/openvic/libopenvic.windows.template_debug.x86_64.dll"
-windows.x86_64.release = "res://bin/openvic/libopenvic.windows.template_release.x86_64.dll"
-macos.debug = "res://bin/openvic/libopenvic.macos.template_debug.framework"
-macos.release = "res://bin/openvic/libopenvic.macos.template_release.framework"
+windows.x86_64.debug = "res://bin/openvic/openvic.windows.template_debug.x86_64.dll"
+windows.x86_64.release = "res://bin/openvic/openvic.windows.template_release.x86_64.dll"
+macos.debug = "res://bin/openvic/libopenvic.macos.template_debug.dylib"
+macos.release = "res://bin/openvic/libopenvic.macos.template_release.dylib"

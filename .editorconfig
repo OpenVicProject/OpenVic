@@ -9,7 +9,7 @@ insert_final_newline = true
 max_line_length = 120
 trim_trailing_whitespace = true
 
-[{*.py,SConstruct,SCsub}]
+[*.py]
 indent_style = space
 
 [{*.{yml,yaml},.clang{-format,-tidy,d}}]

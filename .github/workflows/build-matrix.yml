@@ -2,15 +2,7 @@ name: 🔢 Build Matrix
 
 on:
   workflow_call:
-    inputs:
-      godot-api-version:
-        type: string
-        required: true
   workflow_dispatch:
-    inputs:
-      godot-api-version:
-        type: string
-        required: true
 
 jobs:
   build-matrix:
@@ -25,44 +17,56 @@ jobs:
           - identifier: windows-debug
             os: windows-latest
             name: 🏁 Windows Debug
-            target: template_debug
-            platform: windows
-            arch: x86_64
+            preset: windows-x64-template_debug
+            configuration: Debug
 
           - identifier: windows-release
             os: windows-latest
             name: 🏁 Windows Release
-            target: template_release
-            platform: windows
-            arch: x86_64
+            preset: windows-x64-template_release
+            configuration: Release
+
+          - identifier: windows-editor
+            os: windows-latest
+            name: 🏁 Windows Editor
+            preset: windows-x64-editor
+            configuration: RelWithDebInfo
 
           - identifier: macos-debug
             os: macos-latest
             name: 🍎 macOS (universal) Debug
-            target: template_debug
-            platform: macos
-            arch: universal
+            preset: macos-universal-template_debug
+            configuration: Debug
 
           - identifier: macos-release
             os: macos-latest
             name: 🍎 macOS (universal) Release
-            target: template_release
-            platform: macos
-            arch: universal
+            preset: macos-universal-template_release
+            configuration: Release
+
+          - identifier: macos-editor
+            os: macos-latest
+            name: 🍎 macOS (universal) Editor
+            preset: macos-universal-editor
+            configuration: RelWithDebInfo
 
           - identifier: linux-debug
             os: ubuntu-22.04
             name: 🐧 Linux Debug
-            target: template_debug
-            platform: linux
-            arch: x86_64
+            preset: linux-x64-template_debug
+            configuration: Debug
 
           - identifier: linux-release
             os: ubuntu-22.04
             name: 🐧 Linux Release
-            target: template_release
-            platform: linux
-            arch: x86_64
+            preset: linux-x64-template_release
+            configuration: Release
+
+          - identifier: linux-editor
+            os: ubuntu-22.04
+            name: 🐧 Linux Editor
+            preset: linux-x64-editor
+            configuration: RelWithDebInfo
 
     steps:
       - name: Checkout project
@@ -75,7 +79,5 @@ jobs:
         uses: ./.github/actions/openvic-build
         with:
           identifier: ${{ matrix.identifier }}
-          target: ${{ matrix.target }}
-          platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          api-version: ${{ inputs.godot-api-version }}
+          preset: ${{ matrix.preset }}
+          configuration: ${{ matrix.configuration }}

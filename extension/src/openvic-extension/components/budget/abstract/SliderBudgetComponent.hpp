@@ -8,7 +8,7 @@
 namespace OpenVic {
 	struct CountryInstance;
 	struct GUILabel;
-	struct GUINode;
+	class GUINode;
 	struct GUIScrollbar;
 	struct ReadOnlyClampedValue;
 

@@ -4,7 +4,7 @@
 #include "openvic-extension/components/overview/ScoreOverview.hpp"
 
 namespace OpenVic {
-	struct GUINode;
+	class GUINode;
 
 	struct TopBar {
 	private:

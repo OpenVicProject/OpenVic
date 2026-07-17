@@ -4,23 +4,23 @@ everything: &everything
   - "**"
 
 # Determines if build actions should occur after static checks are ran. Broadly speaking, these
-#  files changing would result in SCons rebuilding the engine, or are otherwise pertinent to the
+#  files changing would result in CMake rebuilding, or are otherwise pertinent to the
 #  buildsystem itself.
 sources:
   - .github/{actions/*,workflows}/*.yml
-  - "**/{SConstruct,SCsub,*.py}"
+  - "**/CMakeLists.txt"
+  - "**/*.cmake"
+  - "**/CMakePresets.json"
+  - "**/*.py"
   - "**/*.{hpp,cpp,inc,gd,tscn,scn,tres,res}"
   - "**/*.{cfg,godot,gdextension,uid,import}"
   - "**/*.{svg,ico,icns,png,ogv,ogg,mp3,csv,xml}"
-  - scripts
-  - godot-cpp
   - extension/deps/**
 
 pre-commit:
   - *everything
-  - '!scripts/**'
-  - '!godot-cpp/**'
-  - '!extension/deps/*/**'
+  # The first-party submodule (openvic-simulation) runs its own checks.
+  - '!extension/deps/openvic-simulation/**'
 
 # Determines which files are appropriate for running clangd-tidy checks on.
 clangd:

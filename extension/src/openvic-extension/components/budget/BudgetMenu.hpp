@@ -16,7 +16,7 @@
 
 namespace OpenVic {
 	struct CountryInstance;
-	struct GUINode;
+	class GUINode;
 	struct GUILabel;
 
 	struct BudgetMenu {

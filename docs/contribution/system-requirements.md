@@ -1,24 +1,25 @@
 # System Requirements
 
 ## Build Requirements
-* [Python 3.6+](https://www.python.org/downloads/)
-* [Scons 3.0+](https://scons.org/)
+* [CMake 3.28+](https://cmake.org/download/)
+* [Ninja](https://ninja-build.org/)
+* [Python 3.6+](https://www.python.org/downloads/) (used by the build for code generation)
 * [Godot 4](https://github.com/godotengine/godot)
 
 ### Windows Requirements
 * [Visual Studio Community](https://www.visualstudio.com/vs/community/)
 * [Python 3.6+](https://www.python.org/downloads/windows/) - Ensure the installer adds Python to your PATH (you can rerun the installer to do so)
+* Optional alternative compilers, each with its own build preset (see [Run, Build, and Export](run-build-and-export.md#alternative-windows-toolchains)):
+    * [LLVM](https://releases.llvm.org/) clang-cl (Visual Studio still required for the standard library, linker, and Windows SDK)
+    * [mingw-w64](https://www.mingw-w64.org/) GCC 13+
 
-#### Installing Scons
-With Python 3.6+ installed, you can install Scons through pip:
-```sh
-python -m pip install scons
+#### Installing CMake and Ninja
+Download CMake from [cmake.org](https://cmake.org/download/) (or install the "C++ CMake tools for Windows" component in the Visual Studio Installer, which includes Ninja). When finished call:
 ```
-If you get `Defaulting to user installation because normal site-packages is not writable` then open a command prompt as Administrator and run the command again. When finished call:
+cmake --version
+ninja --version
 ```
-scons --version
-```
-to ensure that you are using a correct version of Scons.
+to ensure both are on your PATH. Configure and build from a "x64 Native Tools Command Prompt for VS" (or any shell where the MSVC environment is loaded) so CMake can find the compiler.
 
 #### Installing Visual Studio
 Ensure that if you install from Visual Studio 2017, 2019 or 2022, ensure you're installing the C++ tools.
@@ -33,7 +34,8 @@ If you're installing Visual Studio 2015, ensure you choose custom and pick C++ a
 ```sh
 apt-get install \
   build-essential \
-  scons \
+  cmake \
+  ninja-build \
   pkg-config \
   libx11-dev \
   libxcursor-dev \
@@ -55,7 +57,8 @@ update-alternatives --set g++ /usr/bin/g++-12
 #### Arch Linux Requirements
 ```sh
 pacman -S --needed \
-  scons \
+  cmake \
+  ninja \
   pkgconf \
   gcc \
   libxcursor \
@@ -76,12 +79,12 @@ pacman -S --needed \
 
 #### Homebrew
 ```sh
-brew install scons
+brew install cmake ninja
 ```
 
 #### MacPorts
 ```sh
-sudo port install scons
+sudo port install cmake ninja
 ```
 
 Credit: [Godot Docs](https://docs.godotengine.org/en/stable/contributing/development/compiling/index.html)
