@@ -20,7 +20,7 @@ var _language_button: SettingsContainer.EnumOptionButton
 func _ready() -> void:
 	_on_new_game_button_visibility_changed()
 
-	var language_setting := GameSettings.get_setting(GameSettings.GENERAL_LANGUAGE)
+	var language_setting: GameSettings.Setting = GameSettings.get_setting(GameSettings.GENERAL_LANGUAGE)
 	_language_button = SettingsContainer.EnumOptionButton.new(language_setting)
 	_language_button.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_bottom_margin.add_child(_language_button)

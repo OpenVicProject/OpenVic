@@ -98,7 +98,7 @@ func _try_update(key: StringName) -> void:
 
 func _on_setting_applied(key: StringName) -> void:
 	if not key.begins_with(section_key + "/"): return
-	var stg := GameSettings.get_setting(key)
+	var stg: GameSettings.Setting = GameSettings.get_setting(key)
 	if not stg.has_meta(&"revert_value"): return
 
 	var previous_value: Variant = stg.get_meta(&"revert_value")
