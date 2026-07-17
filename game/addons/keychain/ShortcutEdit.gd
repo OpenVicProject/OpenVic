@@ -410,7 +410,7 @@ func _on_shortcut_tree_item_selected() -> void:
 		if not Keychain.actions.has(action):
 			mouse_movement_options.visible = false
 			return
-		var keychain_action := Keychain.actions[action]
+		var keychain_action: Keychain.InputAction = Keychain.actions[action]
 		if keychain_action is Keychain.MouseMovementInputAction:
 			mouse_movement_options.visible = true
 			currently_editing_mouse_movement_action = keychain_action
@@ -463,7 +463,7 @@ func _on_mouse_movement_angle_changed(button: BaseButton) -> void:
 
 
 func _press_mouse_movement_angle_button() -> void:
-	var dir := currently_editing_mouse_movement_action.mouse_dir
+	var dir: Vector2 = currently_editing_mouse_movement_action.mouse_dir
 	match dir:
 		Vector2(-1, -1):
 			mm_top_left.button_pressed = true
