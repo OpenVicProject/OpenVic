@@ -58,7 +58,7 @@ func _setup_compatibility_mode_paths() -> void:
 	var arg_base_path: String = ArgumentParser.get_option_value(&"base-path")
 	var arg_search_path: String = ArgumentParser.get_option_value(&"search-path")
 
-	var setting := Vic2Settings.get_setting(Vic2Settings.GENERAL_BASE_DEFINES_PATH)
+	var setting: Vic2Settings.Setting = Vic2Settings.get_setting(Vic2Settings.GENERAL_BASE_DEFINES_PATH)
 
 	if arg_base_path:
 		if arg_search_path:
@@ -76,15 +76,15 @@ func _setup_compatibility_mode_paths() -> void:
 	if Vic2Settings.get_base_defines_path().is_empty():
 		# Check if the program is being run from inside the install directory,
 		# and if not also search for a Steam install
-		var root_base_path := Vic2Settings.find_base_path(".")
+		var root_base_path: String = Vic2Settings.find_base_path(".")
 		if root_base_path.is_empty():
 			await Vic2Settings.show_base_path_find_dialog()
 		else:
 			setting.set_value(root_base_path)
 
 	# Add mod paths
-	var load_list_setting := ModSettings.get_setting(ModSettings.MODS_LOAD_LIST)
-	var load_list := ModSettings.get_load_list()
+	var load_list_setting: ModSettings.Setting = ModSettings.get_setting(ModSettings.MODS_LOAD_LIST)
+	var load_list: PackedStringArray = ModSettings.get_load_list()
 	for mod in ArgumentParser.get_option_value(&"mod"):
 		if mod not in load_list and mod != "":
 			load_list.append(mod)

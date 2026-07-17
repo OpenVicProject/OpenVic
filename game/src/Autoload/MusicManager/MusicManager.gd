@@ -35,7 +35,7 @@ func _ready() -> void:
 	add_ootb_music()
 	#don't start the current song for compat mode, do that from
 	#GameStart so we can wait until the music is loaded
-	var auto_start_music := GameSettings.get_setting(GameSettings.AUDIO_MUSIC_START_PLAY)
+	var auto_start_music: GameSettings.Setting = GameSettings.get_setting(GameSettings.AUDIO_MUSIC_START_PLAY)
 	set_startup_music(auto_start_music.value())
 
 
