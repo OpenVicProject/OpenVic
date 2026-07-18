@@ -8,7 +8,7 @@ With the project installed and system requirements ready:
 
 1. Run `scons` in the project root.
     * Ensure a `game/bin/openvic/libopenvic` file is produced for your platform (windows, linux, macos)
-2. Open Godot, click import, naivgate to the `game` directory and click `Import and Edit`.
+2. Open Godot, click import, navigate to the `game` directory and click `Import and Edit`.
     * Wait for the import to finish, close the editor without saving, then reopen the project in Godot.
 3. Press the play button at the top right of the editor.
 

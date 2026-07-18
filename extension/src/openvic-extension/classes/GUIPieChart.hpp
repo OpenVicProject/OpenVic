@@ -1,5 +1,6 @@
 #pragma once
 
+#include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/texture_rect.hpp>
 
 #include <openvic-simulation/interface/GFXSprite.hpp>

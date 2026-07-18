@@ -36,11 +36,20 @@ default.extend-ignore-re = [
 	"id=\"[^\"]+\"",                                                     # Ignore scene ids
 	"ExtResource\\(\"[^\"]+\"\\)",                                       # Ignore scene ids
 ]
-type.xml.locale = "en-us"
-type.xml.check-filename = false
-type.xml.extend-ignore-re = [
+
+[tool.typos.type.xml]
+locale = "en-us"
+check-filename = false
+extend-ignore-re = [
 	'<.* name="[^"]+".*>',
 	'\[(param|member|method)?.+\]',
 ]
+
+[tool.typos.type.skip_names]
+extend-glob = ["AUTHORS.md", "COPYRIGHT", "CODE_OF_CONDUCT.md", "credits.csv"]
+
+[tool.typos.type.skip_names.extend-identifiers]
+Catylist = "Catylist"
+
 [tool.typos.default.extend-identifiers]
 PNGs = "PNGs"
