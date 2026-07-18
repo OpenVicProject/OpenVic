@@ -4,11 +4,16 @@
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/classes/os.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
+#include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/core/memory.hpp>
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/core/print_string.hpp>
 #include <godot_cpp/core/property_info.hpp>
+#include <godot_cpp/core/type_info.hpp>
+#include <godot_cpp/templates/hash_set.hpp>
+#include <godot_cpp/templates/local_vector.hpp>
+#include <godot_cpp/templates/pair.hpp>
 #include <godot_cpp/variant/aabb.hpp>
 #include <godot_cpp/variant/basis.hpp>
 #include <godot_cpp/variant/color.hpp>
@@ -53,10 +58,10 @@ using namespace godot;
 
 ArgumentOption::ArgumentOption(
 	StringName const& name, Variant const& default_value, String const& description, PackedStringArray const& aliases,
-	String option_args
+	String const& option_args, BitField<ArgumentConflictType> conflict_type
 )
 	: name { name }, default_value { default_value }, description { description }, aliases(aliases),
-	  option_arguments { option_args } {
+	  option_arguments { option_args }, conflict_type { conflict_type } {
 	aliases_set.reserve(aliases.size());
 	for (String const& alias : aliases) {
 		aliases_set.insert(alias);
@@ -89,6 +94,10 @@ Variant ArgumentOption::get_default_value() const {
 
 String ArgumentOption::get_description() const {
 	return description;
+}
+
+BitField<ArgumentOption::ArgumentConflictType> ArgumentOption::get_conflict_type() const {
+	return conflict_type;
 }
 
 String ArgumentOption::get_help_string(bool p_is_rich) const {
@@ -187,16 +196,16 @@ Variant ArgumentOption::_get_empty_value_for(Variant::Type p_type) {
 
 Ref<ArgumentOption> ArgumentOption::create(
 	StringName const& p_name, Variant::Type p_type, String const& p_description, PackedStringArray const& p_aliases,
-	String p_option_args
+	String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
 ) {
-	return create_with_default(p_name, _get_empty_value_for(p_type), p_description, p_aliases, p_option_args);
+	return create_with_default(p_name, _get_empty_value_for(p_type), p_description, p_aliases, p_option_args, p_conflict_type);
 }
 
 Ref<ArgumentOption> ArgumentOption::create_with_default(
 	StringName const& p_name, Variant const& p_default, String const& p_description, PackedStringArray const& p_aliases,
-	String p_option_args
+	String const& p_option_args, BitField<ArgumentConflictType> p_conflict_type
 ) {
-	return memnew(ArgumentOption(p_name, p_default, p_description, p_aliases, p_option_args));
+	return memnew(ArgumentOption(p_name, p_default, p_description, p_aliases, p_option_args, p_conflict_type));
 }
 
 void ArgumentOption::_bind_methods() {
@@ -230,6 +239,14 @@ void ArgumentOption::_bind_methods() {
 	OV_BIND_METHOD(ArgumentOption::get_description);
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "description"), "", "get_description");
 
+	BIND_BITFIELD_FLAG(ARGUMENT_CONFLICT_NONE);
+	BIND_BITFIELD_FLAG(ARGUMENT_CONFLICT_SHORTHAND);
+	BIND_BITFIELD_FLAG(ARGUMENT_CONFLICT_LONG);
+	BIND_BITFIELD_FLAG(ARGUMENT_CONFLICT_ALIASES);
+
+	OV_BIND_METHOD(ArgumentOption::get_conflict_type);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "conflict_type"), "", "get_conflict_type");
+
 	OV_BIND_METHOD(ArgumentOption::get_help_string, { "is_rich" });
 }
 
@@ -237,18 +254,30 @@ ArgumentParser::ArgumentParser() {
 	singleton = this;
 
 	options.push_back(ArgumentOption::create("help", Variant::BOOL, "Displays help and quits.", { "h" }));
+
 	options.push_back(
-		ArgumentOption::create("game-debug", Variant::BOOL, "Start the game in debug mode.", { "d", "debug", "debug-mode" })
+		ArgumentOption::create(
+			"game-debug", Variant::BOOL, "Start the game in debug mode.", { "d", "debug", "debug-mode" }, "",
+			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND | ArgumentOption::ARGUMENT_CONFLICT_ALIASES
+		)
+	);
+	options.push_back(ArgumentOption::create("game-debug", Variant::BOOL, "Start the game in debug mode.", { "debug-mode" }));
+
+	options.push_back(
+		ArgumentOption::create(
+			"base-path", Variant::STRING, "Load Victoria 2 assets from a specific path.", { "b" }, "[path]",
+			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
+		)
 	);
 	options.push_back(
-		ArgumentOption::create("base-path", Variant::STRING, "Load Victoria 2 assets from a specific path.", { "b" }, "[path]")
+		ArgumentOption::create(
+			"search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]",
+			ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND
+		)
 	);
-	options.push_back(ArgumentOption::create(
-		"search-path", Variant::STRING, "Search for Victoria 2 assets at a specific path.", { "s" }, "[path]"
-	));
 	options.push_back(ArgumentOption::create("mod", Variant::PACKED_STRING_ARRAY, "Load Victoria 2 mods.", { "m" }, "<mods>"));
 
-	parse_arguments(OS::get_singleton()->get_cmdline_args(), false);
+	parse_arguments(OS::get_singleton()->get_cmdline_args(), false, true);
 	parse_arguments(OS::get_singleton()->get_cmdline_user_args());
 
 	static const StringName ARGS_PATH = "openvic/data/arguments";
@@ -313,7 +342,7 @@ Variant ArgumentParser::get_option_value(StringName const& p_arg_name) const {
 	return it->value;
 }
 
-void ArgumentParser::set_option_value(StringName const& p_arg_name, Variant p_value) {
+void ArgumentParser::set_option_value(StringName const& p_arg_name, Variant const& p_value) {
 	decltype(options)::Iterator it = _find_option(p_arg_name);
 
 	ERR_FAIL_COND_MSG(it == options.end(), vformat("No option name/alias found for '%s'.", p_arg_name));
@@ -338,10 +367,20 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 	static const StringName APP_DESCRIPTION_PATH = "application/config/description";
 
 	PackedStringArray option_help;
-	option_help.resize(options.size());
-	for (size_t i = 0; String & help : option_help) {
-		help = "  " + options[i]->get_help_string(p_is_rich);
-		i++;
+	{
+		HashSet<String> handled_options;
+		handled_options.reserve(options.size());
+		option_help.resize(options.size());
+		for (size_t i = 0, help_index = 0; i < options.size(); i++, help_index++) {
+			StringName name = options[i]->get_name();
+			if (handled_options.has(name)) {
+				help_index--;
+				continue;
+			}
+			option_help[help_index] = "  " + options[i]->get_help_string(p_is_rich);
+			handled_options.insert(name);
+		}
+		option_help.resize(handled_options.size());
 	}
 
 	String app_name = ProjectSettings::get_singleton()->get_setting_with_override(APP_NAME_PATH);
@@ -359,8 +398,7 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 		app_description = vformat("[color=gray]%s[/color]", app_description);
 	}
 
-	String app_copyright =
-		"(c) " + convert_to<String>(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
+	String app_copyright = "(c) " + convert_to<String>(GAME_COPYRIGHT_INFO[0].parts.front().copyright_statements.front());
 	if (p_is_rich) {
 		app_copyright = vformat("[color=gray]%s[/color]", app_copyright);
 	}
@@ -415,9 +453,9 @@ decltype(ArgumentParser::options)::Iterator ArgumentParser::_find_option(godot::
 }
 
 Variant ArgumentParser::_parse_value( //
-	StringName const& p_arg_name, String const& p_value_string, ArgumentOption const* p_option
+	StringName const& p_arg_name, String const& p_value_string, Ref<ArgumentOption>& p_option
 ) {
-	if (p_option == nullptr) {
+	if (p_option.is_null()) {
 		decltype(options)::Iterator it = _find_option(p_arg_name);
 		ERR_FAIL_COND_V_EDMSG(
 			it == options.end(), Variant(), vformat("Could not find option name/alias for '%s'.", p_arg_name)
@@ -534,85 +572,151 @@ Variant ArgumentParser::_parse_value( //
 	}
 }
 
-Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_error_unknown) {
+LocalVector<Ref<ArgumentOption>> ArgumentParser::_parse_argument_bool_list(String const& p_arg_list) {
+	LocalVector<Ref<ArgumentOption>> result;
+	result.reserve(p_arg_list.length());
+
+	for (size_t i = 0; i < p_arg_list.length(); i++) {
+		char32_t const& c = p_arg_list[i];
+		if (!is_ascii_alphabet_char(c)) {
+			break;
+		}
+
+		decltype(options)::Iterator it = _find_option(p_arg_list);
+		if (it == options.end()) {
+			WARN_PRINT(vformat("Shorthand alias '%s' not found, skipping.", c));
+			continue;
+		}
+
+		if (it->ptr()->get_type() == Variant::BOOL) {
+			result.push_back(it->ptr());
+		} else {
+			WARN_PRINT(vformat("Shorthand alias '%s' is not a boolean type, skipping.", c));
+		}
+	}
+
+	return result;
+}
+
+Pair<const Ref<ArgumentOption>, Variant> ArgumentParser::_parse_argument(
+	String const& p_argument, bool p_error_unknown, bool p_skip_conflict_args //
+) {
+	size_t equal_index = p_argument.find("=");
 	String key;
-	ArgumentOption const* option = nullptr;
+	String value;
+	if (equal_index != -1) {
+		key = p_argument.substr(0, equal_index);
+		value = p_argument.substr(equal_index + 1);
+	} else {
+		key = p_argument;
+	}
+
+	if (key.begins_with("-")) {
+		if (key.length() == 2) {
+			WARN_PRINT(vformat("Invalid argument '%s' name is too short, skipping.", p_argument));
+			return {};
+		}
+		key = key.substr(1);
+	}
+
+	decltype(options)::Iterator it = _find_option(key);
+	if (it == options.end()) {
+		if (p_error_unknown) {
+			ERR_PRINT(vformat("Invalid argument '%s' found, skipping.", key));
+		}
+		return {};
+	}
+	ArgumentOption* option = it->ptr();
+
+	if (p_skip_conflict_args) {
+		const BitField<ArgumentOption::ArgumentConflictType> conflict_type = option->get_conflict_type();
+		if (conflict_type.has_flag(ArgumentOption::ARGUMENT_CONFLICT_SHORTHAND) && key.length() == 1) {
+			return {};
+		}
+		if (conflict_type.has_flag(ArgumentOption::ARGUMENT_CONFLICT_LONG) && key.length() > 1) {
+			return {};
+		}
+		if (conflict_type.has_flag(ArgumentOption::ARGUMENT_CONFLICT_ALIASES) && option->has_alias(key)) {
+			return {};
+		}
+	}
+
+	if (equal_index != -1) {
+		Ref<ArgumentOption> ref = option;
+		Variant arg_value = _parse_value(key, value, ref);
+		if (arg_value != Variant()) {
+			return { ref, arg_value };
+		}
+	} else if (option->get_type() == Variant::BOOL) {
+		return { option, true };
+	} else {
+		WARN_PRINT(vformat("Argument '%s' treated like a boolean but does not support a boolean value, skipping.", key));
+	}
+
+	return { option, {} };
+}
+
+Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_error_unknown, bool p_skip_conflict_args) {
+	String key;
+	Ref<ArgumentOption> option;
 	for (String const& arg : p_args) {
 		const bool arg_begins_with_minus = arg.begins_with("-");
 
-		if (option != nullptr) {
+		if (option.is_valid()) {
 			if (!arg_begins_with_minus) {
 				Variant value = _parse_value(key, arg, option);
 				if (value != Variant()) {
 					arguments[option->get_name()] = value;
 				}
-				option = nullptr;
+				option = {};
+				key = "";
 				continue;
+			} else if (option->get_type() == Variant::BOOL) {
+				// Boolean did not have an explicit value
+				option = {};
+				key = "";
 			} else {
 				WARN_PRINT(vformat("Valid argument '%s' was not set as a value, skipping.", key));
 			}
 		}
 
-		if (arg_begins_with_minus) {
-			String arg_name = arg.substr(1);
-			if (arg_name.length() > 1 && arg_name[0] != U'-' and arg_name[1] != U'=') {
-				for (size_t i = 0; i < arg_name.length(); i++) {
-					char32_t const& c = arg_name[i];
-					if (!((c >= U'a' && c <= U'z') || (c >= U'A' && c <= U'Z'))) {
-						break;
-					}
-
-					decltype(options)::Iterator it = _find_option(arg_name);
-					if (it == options.end()) {
-						WARN_PRINT(vformat("Shorthand alias '%s' not found, skipping.", c));
-						continue;
-					}
-
-					if (it->ptr()->get_type() == Variant::BOOL) {
-						arguments[option->get_name()] = true;
-					} else {
-						WARN_PRINT(vformat("Shorthand alias '%s' is not a boolean type, skipping.", c));
-					}
-				}
-				continue;
+		if (!arg_begins_with_minus) {
+			if (p_error_unknown) {
+				ERR_PRINT(vformat("Unknown argument value '%s' found, skipping.", arg));
 			}
+			continue;
+		}
 
-			size_t equal_index = arg_name.find("=");
-			String value;
-			if (equal_index != -1) {
-				key = arg_name.substr(0, equal_index);
-				value = arg_name.substr(equal_index + 1);
-			} else {
-				key = arg_name;
-			}
+		if (!option.is_null()) {
+			WARN_PRINT(vformat("Argument '%s' value expected, skipping.", key));
+			option = {};
+			key = "";
+		}
 
-			if (key.length() > 2 && key.begins_with("-")) {
-				key = key.substr(1);
+		key = arg.substr(1);
+		if (key.length() > 1 && key[0] != U'-' and key[1] != U'=') {
+			for (const Ref<ArgumentOption> opt : _parse_argument_bool_list(key)) {
+				arguments[opt->get_name()] = true;
 			}
+			option = {};
+			continue;
+		}
 
-			decltype(options)::Iterator it = _find_option(key);
-			if (it == options.end()) {
-				if (p_error_unknown) {
-					ERR_PRINT(vformat("Invalid argument '%s' found, skipping.", key));
-				}
-				continue;
-			}
-			option = it->ptr();
-
-			if (equal_index != -1) {
-				Variant arg_value = _parse_value(key, value, option);
-				if (arg_value != Variant()) {
-					arguments[option->get_name()] = arg_value;
-					option = nullptr;
-				}
-			} else if (option->get_type() == Variant::BOOL) {
-				arguments[option->get_name()] = true;
-			} else {
-				WARN_PRINT(vformat("Argument '%s' treated like a boolean but does not support a boolean value, skipping.", key)
-				);
-			}
-		} else if (p_error_unknown) {
-			ERR_PRINT(vformat("Unknown argument '%s' found, skipping.", arg));
+		Pair<const Ref<ArgumentOption>, Variant> argument = _parse_argument(key, p_error_unknown, p_skip_conflict_args);
+		if (argument.first.is_null()) {
+			option = {};
+			continue;
+		} else if (argument.second == Variant {}) {
+			option = argument.first;
+			continue;
+		} else if (argument.first->get_type() == Variant::BOOL) {
+			// Boolean options could still have an explicit value
+			option = argument.first;
+			arguments[argument.first->get_name()] = argument.second;
+			continue;
+		} else {
+			arguments[argument.first->get_name()] = argument.second;
+			continue;
 		}
 	}
 
@@ -625,5 +729,7 @@ void ArgumentParser::_bind_methods() {
 	OV_BIND_METHOD(ArgumentParser::get_option_value, { "arg_name" });
 	OV_BIND_METHOD(ArgumentParser::set_option_value, { "arg_name", "value" });
 	OV_BIND_METHOD(ArgumentParser::get_help, { "is_rich" });
-	OV_BIND_METHOD(ArgumentParser::parse_arguments, { "args", "error_unknown" }, DEFVAL(true));
+	OV_BIND_METHOD(
+		ArgumentParser::parse_arguments, { "args", "error_unknown", "skip_conflict_args" }, DEFVAL(true), DEFVAL(false)
+	);
 }

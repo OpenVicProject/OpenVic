@@ -28,6 +28,8 @@
 		<member name="aliases" type="PackedStringArray" setter="" getter="get_aliases" default="PackedStringArray()">
 			The alternative names the option can be known by.
 		</member>
+		<member name="conflict_type" type="int" setter="" getter="get_conflict_type" enum="ArgumentOption.ArgumentConflictType" is_bitfield="true" default="0">
+		</member>
 		<member name="default_value" type="Variant" setter="" getter="get_default_value" default="null">
 			The default value the option returns if not set.
 		</member>
@@ -46,4 +48,14 @@
 			The expected type of option.
 		</member>
 	</members>
+	<constants>
+		<constant name="ARGUMENT_CONFLICT_NONE" value="0" enum="ArgumentConflictType" is_bitfield="true">
+		</constant>
+		<constant name="ARGUMENT_CONFLICT_SHORTHAND" value="1" enum="ArgumentConflictType" is_bitfield="true">
+		</constant>
+		<constant name="ARGUMENT_CONFLICT_LONG" value="2" enum="ArgumentConflictType" is_bitfield="true">
+		</constant>
+		<constant name="ARGUMENT_CONFLICT_ALIASES" value="4" enum="ArgumentConflictType" is_bitfield="true">
+		</constant>
+	</constants>
 </class>
