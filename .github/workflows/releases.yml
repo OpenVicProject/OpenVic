@@ -77,7 +77,7 @@ jobs:
           packages: libxml2-utils
 
       - name: Style checks via prek
-        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
+        uses: j178/prek-action@5337cb91e0fa35a7ff31b9ca345126d8bbbcdf16 # v2.0.6
 
   build-release:
     name: ${{ matrix.name }} Release
