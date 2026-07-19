@@ -150,9 +150,13 @@ func _ready() -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_MOUSE_EXIT:
-		_mouse_over_viewport = false
-		province_unhovered.emit()
+	match what:
+		NOTIFICATION_WM_MOUSE_ENTER:
+			_mouse_over_viewport = true
+			queue_province_hover_update()
+		NOTIFICATION_WM_MOUSE_EXIT, NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+			_mouse_over_viewport = false
+			province_unhovered.emit()
 
 
 func _world_to_map_coords(pos: Vector3) -> Vector2:
@@ -261,7 +265,6 @@ var _cardinal_movement_vector := Vector2.ZERO
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		_mouse_over_viewport = true
 		queue_province_hover_update()
 
 	elif event.is_action(_action_north) or event.is_action(_action_south)\
@@ -339,10 +342,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if _cardinal_movement_vector != Vector2.ZERO and get_window().gui_get_focus_owner() != null:
 		_cardinal_movement_vector = Vector2.ZERO
-
-	if _is_viewport_inactive():
-		_mouse_over_viewport = false
-		province_unhovered.emit()
 
 	_viewport_dims = Vector2(GameSettings.get_game_resolution())
 	# Process movement
