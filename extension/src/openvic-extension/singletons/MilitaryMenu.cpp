@@ -391,19 +391,19 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		war_exhaustion_template_string, war_exhaustion_string, max_war_exhaustion_string
 	);
 
-	static const StringName war_exhaution_localisation_key = "MILITARY_WAR_EXHAUSTION_TOOLTIP";
-	static const StringName max_war_exhaution_localisation_key = "MILITARY_MAX_WAR_EXHAUSTION_TOOLTIP";
+	static const StringName war_exhaustion_localisation_key = "MILITARY_WAR_EXHAUSTION_TOOLTIP";
+	static const StringName max_war_exhaustion_localisation_key = "MILITARY_MAX_WAR_EXHAUSTION_TOOLTIP";
 	static const String current_effects_localisation_key = "WEX_EFFECTS";
 	static const String war_exhaustion_tooltip_template_string = "%s%s\n\n%s%s" + get_tooltip_separator() + "%s%s";
 
 	ret[military_info_war_exhaustion_tooltip_key] = Utilities::format(
 		war_exhaustion_tooltip_template_string,
-		tr(war_exhaution_localisation_key).replace(
+		tr(war_exhaustion_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),
 			war_exhaustion_string
 		),
 		_make_modifier_effect_contributions_tooltip(*country, *modifier_effect_cache.get_war_exhaustion_monthly()),
-		tr(max_war_exhaution_localisation_key).replace(
+		tr(max_war_exhaustion_localisation_key).replace(
 			Utilities::get_long_value_placeholder(),
 			max_war_exhaustion_string
 		),

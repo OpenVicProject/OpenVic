@@ -116,7 +116,7 @@ GameSingleton::GameSingleton()
 		std::bind(&GameSingleton::_on_gamestate_updated, this),
 		std::bind(&Time::get_ticks_usec, Time::get_singleton()),
 		std::bind(&Time::get_ticks_msec, Time::get_singleton())
-	}, mapmode { &Mapmode::ERROR_MAPMODE } {
+	} {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -220,7 +220,7 @@ Error GameSingleton::setup_game(int32_t bookmark_index) {
 	// TODO - remove this temporary crime assignment
 	InstanceManager* instance_manager = get_instance_manager();
 	ERR_FAIL_NULL_V_MSG(instance_manager, FAILED, "Failed to setup instance manager!");
-	
+
 	CrimeManager const& crime_manager = definition_manager.get_crime_manager();
 	for (ProvinceInstance& province : instance_manager->get_map_instance().get_province_instances()) {
 		const crime_index_t crime_index = crime_index_t(type_safe::get(province.index) % crime_manager.get_crime_modifier_count());

@@ -222,7 +222,7 @@ void GUILabel::_notification(int what) {
 	}
 }
 
-GUILabel::GUILabel() : font_size { DEFAULT_FONT_SIZE } {}
+GUILabel::GUILabel() {}
 
 void GUILabel::clear() {
 	gui_text = nullptr;

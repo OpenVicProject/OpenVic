@@ -24,14 +24,22 @@ repos:
     hooks:
       - id: clang-tidy
         files: \.(c|h|cpp|hpp|inc)$
-        args: [--fix, --quiet, --use-color]
+        args:
+          [
+            --fix,
+            --quiet,
+            --use-color,
+            -p=compile_commands.json,
+            -extra-arg=-Wno-unknown-warning-option,
+            -checks=-modernize-use-bool-literals,
+          ]
         types_or: [text]
-        additional_dependencies: [clang-tidy==19.1.0]
+        additional_dependencies: [clang-tidy==22.1.8]
         require_serial: true
         stages: [manual] # Not automatically triggered, invoked via `pre-commit run --hook-stage manual clang-tidy`
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.2
+    rev: v0.15.22
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -42,7 +50,7 @@ repos:
         types_or: [text]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    rev: v2.3.0
     hooks:
       - id: mypy
         files: \.py$
@@ -60,7 +68,7 @@ repos:
         types_or: [text]
 
   - repo: https://github.com/crate-ci/typos
-    rev: v1.29.4
+    rev: v1.48.0
     hooks:
       - id: typos
         exclude: |
@@ -69,21 +77,21 @@ repos:
             game/addons/.*
           )
 
-
   - repo: local
     hooks:
       - id: make-rst
         name: make-rst
         language: python
         entry: python extension/doc_tools/make_rst.py
-        args: [
-          extension/doc_tools/cache/engine/godot/doc/classes,
-          extension/doc_tools/cache/engine/godot/modules,
-          extension/doc_tools/cache/engine/godot/platform,
-          extension/doc_classes,
-          --dry-run,
-          --color
-        ]
+        args:
+          [
+            extension/doc_tools/cache/engine/godot/doc/classes,
+            extension/doc_tools/cache/engine/godot/modules,
+            extension/doc_tools/cache/engine/godot/platform,
+            extension/doc_classes,
+            --dry-run,
+            --color,
+          ]
         pass_filenames: false
         files: ^(extension/doc_classes)/.*\.xml$
 

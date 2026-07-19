@@ -20,6 +20,10 @@ namespace OpenVic {
 	class GUILabel : public godot::Control {
 		GDCLASS(GUILabel, godot::Control)
 
+	public:
+		static constexpr int32_t DEFAULT_FONT_SIZE = 16;
+
+	private:
 		GUI_TOOLTIP_DEFINITIONS
 
 		using colour_instructions_t = std::vector<std::pair<int64_t, char>>;
@@ -35,7 +39,7 @@ namespace OpenVic {
 		bool PROPERTY_CUSTOM_PREFIX(auto_adjust_to_content_size, will, false);
 
 		godot::Ref<godot::Font> font;
-		int32_t PROPERTY(font_size);
+		int32_t PROPERTY(font_size, DEFAULT_FONT_SIZE);
 		godot::Color PROPERTY(default_colour);
 		GFX::Font::colour_codes_t const* colour_codes = nullptr;
 		godot::Ref<GFXSpriteTexture> currency_texture;

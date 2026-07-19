@@ -75,7 +75,7 @@ namespace OpenVic {
 
 			struct pop_filter_t {
 				pop_size_t count, promotion_demotion_change;
-				bool selected;
+				bool selected = false;
 			};
 			ordered_map<PopType const*, pop_filter_t> pop_filters;
 

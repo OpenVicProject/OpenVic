@@ -136,7 +136,7 @@ namespace OpenVic {
 			ReadOnlyClampedValue& slider_value
 		);
 
-		/* Override the main dimension of gui_scollbar's size with the specified length. */
+		/* Override the main dimension of gui_scrollbar's size with the specified length. */
 		void set_length_override(real_t new_length_override);
 	};
 }
