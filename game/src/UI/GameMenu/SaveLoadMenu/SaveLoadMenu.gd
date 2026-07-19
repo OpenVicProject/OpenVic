@@ -32,8 +32,8 @@ func filter_for_tag(tag: StringName) -> void:
 
 
 func show_for_load() -> void:
-	_label.text = "SAVELOADMENU_LOAD_TITLE"
-	_save_load_button.text = "SAVELOADMENU_LOAD_BUTTON"
+	_label.text = "Load Menu"
+	_save_load_button.text = "Load"
 	_save_line_edit.editable = false
 	is_save_menu = false
 	show()
@@ -44,15 +44,15 @@ func show_for_load() -> void:
 
 
 func show_for_save() -> void:
-	_label.text = "SAVELOADMENU_SAVE_TITLE"
-	_save_load_button.text = "SAVELOADMENU_SAVE_BUTTON"
+	_label.text = "Save Menu"
+	_save_load_button.text = "Save"
 	_save_line_edit.editable = true
 	is_save_menu = true
 	show()
 
 
 func _build_save_list() -> void:
-	_tag_selection_tab.add_tab("SAVELOADMENU_TABSELECTIONTABBAR_ALL")
+	_tag_selection_tab.add_tab("All")
 	for save_name: StringName in SaveManager._save_dictionary:
 		var save: SaveResource = SaveManager._save_dictionary[save_name]
 		var save_node := _create_save_node(save)
@@ -103,8 +103,8 @@ func _on_overwrite_dialog_confirmed() -> void:
 func _on_save_line_edit_text_submitted(new_text) -> void:
 	_submitted_text = new_text
 	if SaveManager.has_save(new_text):
-		_overwrite_dialog.dialog_text = tr("SAVELOADMENU_OVERWRITE_DIALOG_TEXT").format({ "file_name": _submitted_text })
-		_overwrite_dialog.title = tr("SAVELOADMENU_OVERWRITE_DIALOG_TITLE").format({ "file_name": _submitted_text })
+		_overwrite_dialog.dialog_text = tr("Are you sure you want to overwrite {file_name}?").format({ "file_name": _submitted_text })
+		_overwrite_dialog.title = tr("Overwrite {file_name}").format({ "file_name": _submitted_text })
 		_overwrite_dialog.popup_centered()
 		return
 	_on_overwrite_dialog_confirmed()
@@ -117,8 +117,8 @@ func _on_save_load_button_pressed() -> void:
 
 func _on_save_node_delete_requested(node: Control) -> void:
 	_requested_node_to_delete = node
-	_delete_dialog.dialog_text = tr("SAVELOADMENU_DELETE_DIALOG_TEXT").format({ "file_name": _requested_node_to_delete.resource.save_name })
-	_delete_dialog.title = tr("SAVELOADMENU_DELETE_DIALOG_TITLE").format({ "file_name": _requested_node_to_delete.resource.save_name })
+	_delete_dialog.dialog_text = tr("Are you sure you want to delete {file_name}?").format({ "file_name": _requested_node_to_delete.resource.save_name })
+	_delete_dialog.title = tr("Delete {file_name}").format({ "file_name": _requested_node_to_delete.resource.save_name })
 	_delete_dialog.popup_centered()
 
 

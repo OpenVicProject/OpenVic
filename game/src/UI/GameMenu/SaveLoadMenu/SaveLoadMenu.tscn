@@ -45,7 +45,7 @@ alignment = 2
 [node name="SaveLoadLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TitleBarList" unique_id=664891856]
 layout_mode = 2
 size_flags_horizontal = 6
-text = "SAVELOADMENU_SAVE_TITLE"
+text = "Save Menu"
 
 [node name="CloseButton" type="Button" parent="SaveLoadPanel/SaveLoadList/TitleBarList" unique_id=1849136111]
 editor_description = "UI-87, UI-94"
@@ -57,14 +57,14 @@ layout_mode = 2
 
 [node name="TagSelectionLabel" type="Label" parent="SaveLoadPanel/SaveLoadList/TagSelectionList" unique_id=1194915598]
 layout_mode = 2
-text = "SAVELOADMENU_SESSION"
+text = "Session:"
 
 [node name="TagSelectionTabBar" type="TabBar" parent="SaveLoadPanel/SaveLoadList/TagSelectionList" unique_id=114034506]
 layout_mode = 2
 size_flags_horizontal = 3
 current_tab = 0
 tab_count = 1
-tab_0/title = "SAVELOADMENU_TABSELECTIONTABBAR_ALL"
+tab_0/title = "All"
 
 [node name="SaveLoadScroll" type="ScrollContainer" parent="SaveLoadPanel/SaveLoadList" unique_id=999219138]
 editor_description = "UI-83, UI-90"
@@ -86,21 +86,17 @@ layout_mode = 2
 size_flags_horizontal = 4
 shortcut = SubResource("Shortcut_o1f2l")
 shortcut_feedback = false
-text = "SAVELOADMENU_SAVE_BUTTON"
+text = "Save"
 
 [node name="DeleteDialog" type="ConfirmationDialog" parent="." unique_id=214640647]
 disable_3d = true
-title = "SAVELOADMENU_DELETE_DIALOG_TITLE"
-ok_button_text = "DIALOG_OK"
-dialog_text = "SAVELOADMENU_DELETE_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+title = "Delete {file_name}"
+dialog_text = "Are you sure you want to delete {file_name}?"
 
 [node name="OverwriteDialog" type="ConfirmationDialog" parent="." unique_id=180565257]
 disable_3d = true
-title = "SAVELOADMENU_OVERWRITE_DIALOG_TITLE"
-ok_button_text = "DIALOG_OK"
-dialog_text = "SAVELOADMENU_OVERWRITE_DIALOG_TEXT"
-cancel_button_text = "DIALOG_CANCEL"
+title = "Overwrite {file_name}"
+dialog_text = "Are you sure you want to overwrite {file_name}?"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="pressed" from="SaveLoadPanel/SaveLoadList/TitleBarList/CloseButton" to="." method="_on_close_button_pressed"]

@@ -128,9 +128,9 @@ class SettingLabel extends Label:
 		setting = stg
 		text = setting.get_meta(
 			&"display_name",
-			"OPTIONS_" + setting.key().replace("/", "_").to_upper())
+			setting.key().get_slice("/", setting.key().get_slice_count("/") - 1).capitalize())
 		tooltip_text = setting.description()
-		custom_minimum_size = Vector2(145, 0)
+		custom_minimum_size = Vector2(150, 0)
 		autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		mouse_filter = Control.MOUSE_FILTER_PASS
 		set_meta(&"setting_key", setting.key())
@@ -177,38 +177,30 @@ class EnumOptionButton extends OptionButton:
 
 	func _init(stg: GameSettings.Setting) -> void:
 		setting = stg
-		var values: Array[Variant] = setting.get_meta(&"values", [])
-		var display_values: Array[String] = []
-		display_values.assign(setting.get_meta(&"display_values", []))
-		var translate_function: Callable = setting.get_meta(
-			&"translate_value_function",
-			func(_s, _v, display_value: String) -> String: return display_value)
-
 		set_meta(&"setting_key", setting.key())
 		size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var sel_idx: int = 0
-		for idx: int in range(len(values)):
-			var translated_display: String = translate_function.call(
-				setting,
-				values[idx],
-				display_values[idx],
-			)
-			add_item(translated_display)
-			if setting.staged_or_value() == values[idx]:
-				sel_idx = idx
-		update(sel_idx)
+		_update_items()
 		item_selected.connect(func(idx: int) -> void:
 			setting.set_value(setting.get_meta(&"values")[idx])
 		)
 
 
+	func _notification(what: int) -> void:
+		if what != NOTIFICATION_TRANSLATION_CHANGED: return
+		if not setting.has_meta(&"display_template"): return
+		_update_items()
+
+
 	static func create_button(stg: GameSettings.Setting) -> Control:
 		var values: Array[Variant] = stg.get_meta(&"values", [])
-		var display_values: Array[String] = []
-		display_values.assign(stg.get_meta(&"display_values", []))
-		if values.size() != display_values.size():
-			push_error("Setting %s has mismatched values and display_values size.".format(stg.key()))
-			return PlaceholderLabel.new(stg)
+		if not stg.has_meta(&"display_template"):
+			var display_values: PackedStringArray = stg.get_meta(
+				&"display_values",
+				PackedStringArray(),
+			)
+			if values.size() != display_values.size():
+				push_error("Setting %s has mismatched values and display_values size.".format(stg.key()))
+				return PlaceholderLabel.new(stg)
 		return EnumOptionButton.new(stg)
 
 
@@ -219,6 +211,29 @@ class EnumOptionButton extends OptionButton:
 			select(values.find(setting.staged_or_value()))
 		else:
 			select(index)
+
+
+	func _update_items() -> void:
+		clear()
+		var values: Array[Variant] = setting.get_meta(&"values", [])
+		var display_values: PackedStringArray = _get_display_values()
+		var sel_idx: int = 0
+		for idx: int in range(len(values)):
+			var translated_display: String = display_values[idx]
+			add_item(translated_display)
+			if setting.staged_or_value() == values[idx]: sel_idx = idx
+		update(sel_idx)
+
+
+	func _get_display_values() -> PackedStringArray:
+		if not setting.has_meta(&"display_template"):
+			return setting.get_meta(&"display_values", PackedStringArray())
+
+		var result := PackedStringArray()
+		var template: String = setting.get_meta(&"display_template")
+		for value in setting.get_meta(&"values", []):
+			result.append(tr(template).format({ "value": value }))
+		return result
 
 
 class RangeSlider extends HBoxContainer:
@@ -339,8 +354,8 @@ class RevertDialog extends ConfirmationDialog:
 	func _init(revert_group: GameSettings.RevertGroup) -> void:
 		_revert_group = revert_group
 		title = _revert_group.title
-		cancel_button_text = "DIALOG_CANCEL"
-		ok_button_text = "DIALOG_OK"
+		cancel_button_text = "Cancel"
+		ok_button_text = "Ok"
 		disable_3d = true
 		size = Vector2i(730, 100)
 		confirmed.connect(_on_confirmed)
