@@ -52,7 +52,7 @@ jobs:
           files_yaml_from_source_file: .github/changed-files.yml
 
       - name: Style checks via prek
-        uses: j178/prek-action@bdca6f102f98e2b4c7029491a53dfd366469e33d # v2.0.4
+        uses: j178/prek-action@5337cb91e0fa35a7ff31b9ca345126d8bbbcdf16 # v2.0.6
         env:
           CHANGED_FILES: '"${{ steps.changed-files.outputs.pre-commit_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators
         with:
