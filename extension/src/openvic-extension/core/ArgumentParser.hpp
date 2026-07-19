@@ -4,9 +4,12 @@
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/wrapped.hpp>
+#include <godot_cpp/core/binder_common.hpp>
+#include <godot_cpp/core/type_info.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/templates/hash_set.hpp>
 #include <godot_cpp/templates/local_vector.hpp>
+#include <godot_cpp/templates/pair.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/string_name.hpp>
@@ -18,18 +21,29 @@ namespace OpenVic {
 	class ArgumentOption : public godot::RefCounted {
 		GDCLASS(ArgumentOption, godot::RefCounted);
 
+	public:
+		enum ArgumentConflictType {
+			ARGUMENT_CONFLICT_NONE = 0,
+			ARGUMENT_CONFLICT_SHORTHAND = 1 << 0,
+			ARGUMENT_CONFLICT_LONG = 1 << 1,
+			ARGUMENT_CONFLICT_ALIASES = 1 << 2
+		};
+
+	private:
 		godot::StringName name;
 		godot::String option_arguments;
 		godot::Variant default_value;
 		godot::String description;
 		godot::PackedStringArray aliases;
 		godot::HashSet<godot::String> aliases_set;
+		godot::BitField<ArgumentConflictType> conflict_type = ARGUMENT_CONFLICT_NONE;
 
 		static godot::Variant _get_empty_value_for(godot::Variant::Type p_type);
 
 		ArgumentOption(
 			godot::StringName const& name, godot::Variant const& default_value, godot::String const& description,
-			godot::PackedStringArray const& aliases, godot::String option_args
+			godot::PackedStringArray const& aliases, godot::String const& option_args,
+			godot::BitField<ArgumentConflictType> conflict_type
 		);
 
 	protected:
@@ -49,16 +63,20 @@ namespace OpenVic {
 
 		godot::String get_description() const;
 
+		godot::BitField<ArgumentConflictType> get_conflict_type() const;
+
 		godot::String get_help_string(bool p_is_rich = false) const;
 
 		static godot::Ref<ArgumentOption> create(
 			godot::StringName const& p_name, godot::Variant::Type p_type, godot::String const& p_description,
-			godot::PackedStringArray const& p_aliases = {}, godot::String p_option_args = godot::String()
+			godot::PackedStringArray const& p_aliases = {}, godot::String const& p_option_args = godot::String(),
+			godot::BitField<ArgumentConflictType> p_conflict_type = ARGUMENT_CONFLICT_NONE
 		);
 
 		static godot::Ref<ArgumentOption> create_with_default(
 			godot::StringName const& p_name, godot::Variant const& p_default, godot::String const& p_description,
-			godot::PackedStringArray const& p_aliases = {}, godot::String p_option_args = godot::String()
+			godot::PackedStringArray const& p_aliases = {}, godot::String const& p_option_args = godot::String(),
+			godot::BitField<ArgumentConflictType> p_conflict_type = ARGUMENT_CONFLICT_NONE
 		);
 
 		ArgumentOption() {}
@@ -77,8 +95,15 @@ namespace OpenVic {
 
 		decltype(options)::Iterator _find_option(godot::String const& p_arg_name);
 
+		godot::LocalVector<godot::Ref<ArgumentOption>> _parse_argument_bool_list(godot::String const& p_arg_list);
+
+		godot::Pair<const godot::Ref<ArgumentOption>, godot::Variant> _parse_argument(
+			godot::String const& p_argument, bool p_error_unknown, bool p_skip_conflict_args //
+		);
+
 		godot::Variant _parse_value(
-			godot::StringName const& p_arg_name, godot::String const& p_value_string, ArgumentOption const* p_option = nullptr
+			godot::StringName const& p_arg_name, godot::String const& p_value_string,
+			godot::Ref<ArgumentOption>& p_option
 		);
 
 	protected:
@@ -92,13 +117,17 @@ namespace OpenVic {
 		bool has_option(godot::StringName const& p_arg_name, bool p_include_aliases = false) const;
 		bool is_option_set(godot::StringName const& p_arg_name, bool p_include_aliases = false) const;
 		godot::Variant get_option_value(godot::StringName const& p_arg_name) const;
-		void set_option_value(godot::StringName const& p_arg_name, godot::Variant p_value);
+		void set_option_value(godot::StringName const& p_arg_name, godot::Variant const& p_value);
 
 		godot::String get_help(bool p_is_rich = false) const;
 
-		godot::Error parse_arguments(godot::PackedStringArray const& p_args, bool p_error_unknown = true);
+		godot::Error parse_arguments(
+			godot::PackedStringArray const& p_args, bool p_error_unknown = true, bool p_skip_conflict_args = false //
+		);
 
 		ArgumentParser();
 		~ArgumentParser();
 	};
 }
+
+VARIANT_BITFIELD_CAST(OpenVic::ArgumentOption::ArgumentConflictType);

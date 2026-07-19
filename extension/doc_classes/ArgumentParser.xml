@@ -47,6 +47,7 @@
 			<return type="int" enum="Error" />
 			<param index="0" name="args" type="PackedStringArray" />
 			<param index="1" name="error_unknown" type="bool" default="true" />
+			<param index="2" name="skip_conflict_args" type="bool" default="false" />
 			<description>
 				Parses the arguments for the commandline into the [ArgumentParser]. This is run before game initialization for [method OS.get_cmdline_args] and [method OS.get_cmdline_user_args].
 				Prints errors for unknown arguments when [param error_unknown] is true.
