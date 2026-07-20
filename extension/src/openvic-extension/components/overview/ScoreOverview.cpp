@@ -249,13 +249,10 @@ godot::String ScoreOverview::generate_military_tooltip(CountryInstance& country)
 	static const godot::StringName military_power_from_sea_key = "MIL_FROM_CAP_SHIPS";
 	static const godot::StringName military_power_from_leaders_key = "MIL_FROM_LEADERS";
 
-	for (
-		auto const& [source, power] : {
-			std::pair { military_power_from_land_key, country.get_military_power_from_land_untracked() },
-			{ military_power_from_sea_key, country.get_military_power_from_sea_untracked() },
-			{ military_power_from_leaders_key, country.get_military_power_from_leaders_untracked() }
-		} //
-	) {
+	for (auto const& [source, power] :
+	     { std::pair { military_power_from_land_key, country.get_military_power_from_land_untracked() },
+	       { military_power_from_sea_key, country.get_military_power_from_sea_untracked() },
+	       { military_power_from_leaders_key, country.get_military_power_from_leaders_untracked() } }) {
 		if (power != 0) {
 			military_power_tooltip += "\n" + military_score_label.tr(source) + ": " + GUILabel::get_colour_marker() + "Y" +
 			                          Utilities::fixed_point_to_string_dp(power, 3) + GUILabel::get_colour_marker() + "!";

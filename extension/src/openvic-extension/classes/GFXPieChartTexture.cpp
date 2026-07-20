@@ -121,12 +121,8 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 		        !slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
 		    Utilities::format("Invalid slice keys at index %d", i)
 		);
-		const slice_t slice {
-			slice_dict[_slice_identifier_key()],
-			slice_dict[_slice_tooltip_key()], //
-			slice_dict[_slice_colour_key()], //
-			slice_dict[_slice_weight_key()] //
-		};
+		const slice_t slice { slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()],
+			                  slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()] };
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
 			slices.push_back(slice);

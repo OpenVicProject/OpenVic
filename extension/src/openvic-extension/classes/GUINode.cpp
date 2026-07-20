@@ -187,10 +187,9 @@ Ref<Texture2D> GUINode::get_texture_from_node(Node* node) {
 		return result;
 	}
 	ERR_FAIL_V_MSG(
-	    nullptr, //
-	    Utilities::format(
-	        "Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
-	    )
+	    nullptr, Utilities::format(
+	                 "Failed to cast node %s from type %s to TextureRect or GUIButton", node->get_name(), node->get_class()
+	             )
 	);
 }
 

@@ -68,11 +68,8 @@ namespace OpenVic {
 		    std::span<std::add_const_t<KeyType>> keys, std::span<std::add_const_t<ValueType>> values,
 		    NodeTools::Functor<
 		        // return tooltip; args: key const*, identifier, weight, total weight
-		        godot::String, //
-		        std::add_const_t<std::remove_pointer_t<KeyType>>&, //
-		        godot::String const&, //
-		        float, //
-		        float> auto make_tooltip,
+		        godot::String, std::add_const_t<std::remove_pointer_t<KeyType>>&, godot::String const&, float, float> auto
+		        make_tooltip,
 		    godot::String const& identifier_suffix = {}
 		) {
 			assert(keys.size() == values.size());
@@ -155,12 +152,8 @@ namespace OpenVic {
 		    MapType const& distribution,
 		    NodeTools::Functor<
 		        // return tooltip; args: key const*, identifier, weight, total weight
-		        godot::String, //
-		        std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&, //
-		        godot::String const&, //
-		        float, //
-		        float //
-		        > auto make_tooltip,
+		        godot::String, std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&, godot::String const&, float,
+		        float> auto make_tooltip,
 		    godot::String const& identifier_suffix = {}
 		) {
 			memory::FixedVector<map_key_t<MapType>> keys { create_empty, distribution.size() };

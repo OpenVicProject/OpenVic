@@ -86,10 +86,8 @@ String MenuSingleton::_make_modifier_effect_contributions_tooltip(
 
 	modifier_sum.for_each_contributing_modifier(
 	    effect,
-	    [ //
-	        this, &effect, effect_value, &prefix, &suffix,
-	        &result //
-	](modifier_entry_t const& modifier_entry, fixed_point_t value) -> void {
+	    [this, &effect, effect_value, &prefix, &suffix,
+	     &result](modifier_entry_t const& modifier_entry, fixed_point_t value) -> void {
 		    using enum Modifier::modifier_type_t;
 
 		    if (effect_value != nullptr) {
@@ -755,11 +753,10 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			if (size_from_tech != fixed_point_t::_0) {
 				static const StringName from_technology_localisation_key = "employ_from_tech";
 
-				size_string += //
-				    tr(from_technology_localisation_key) +
-				    _make_modifier_effect_value_coloured(
-				        *modifier_effect_cache.get_farm_rgo_size_global(), size_from_tech, false
-				    );
+				size_string += tr(from_technology_localisation_key) +
+				               _make_modifier_effect_value_coloured(
+				                   *modifier_effect_cache.get_farm_rgo_size_global(), size_from_tech, false
+				               );
 			}
 
 			static const String tech_modifier_template_string = modifier_effect_contributions_prefix + String { "%s: %s" };
@@ -859,10 +856,8 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	ret[province_info_total_population_key] = type_safe::get(province->get_total_population());
 
-	const auto make_pie_chart_tooltip = //
-	    [ //
-	        this //
-	](auto const& key, String const& identifier, float weight, float total_weight) -> String {
+	const auto make_pie_chart_tooltip =
+	    [this](auto const& key, String const& identifier, float weight, float total_weight) -> String {
 		static const String format_key = "%d%% %s";
 		return Utilities::format(format_key, static_cast<int32_t>(100.0f * weight / total_weight), tr(identifier));
 	};

@@ -666,58 +666,56 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<String> localised_items;
 	std::vector<size_t> sorted_items;
 
-	const auto generate_sort_cache_indexed = //
-	    [ //
-	        this, &localised_items, &sorted_items //
-	]<has_get_identifier T>(IndexedFlatMap<T, size_t>& cache, std::span<const T> items) {
-		    localised_items.resize(items.size());
-		    sorted_items.resize(items.size());
+	const auto generate_sort_cache_indexed = [this, &localised_items, &sorted_items]<has_get_identifier T>(
+	                                             IndexedFlatMap<T, size_t>& cache, std::span<const T> items
+	                                         ) {
+		localised_items.resize(items.size());
+		sorted_items.resize(items.size());
 
-		    for (size_t idx = 0; idx < items.size(); ++idx) {
-			    String identifier = convert_to<String>(items[idx].get_identifier());
-			    if constexpr (std::is_same_v<T, ProvinceInstance>) {
-				    identifier = GUINode::format_province_name(identifier);
-			    }
-			    localised_items[idx] = tr(identifier).to_lower();
-			    sorted_items[idx] = idx;
-		    }
+		for (size_t idx = 0; idx < items.size(); ++idx) {
+			String identifier = convert_to<String>(items[idx].get_identifier());
+			if constexpr (std::is_same_v<T, ProvinceInstance>) {
+				identifier = GUINode::format_province_name(identifier);
+			}
+			localised_items[idx] = tr(identifier).to_lower();
+			sorted_items[idx] = idx;
+		}
 
-		    std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
-			    return localised_items[a] < localised_items[b];
-		    });
+		std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
+			return localised_items[a] < localised_items[b];
+		});
 
-		    IndexedFlatMap<T, size_t> sorted_cache { items };
-		    for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
-			    sorted_cache.at_index(static_cast<typename get_index_t<T>::type>(sorted_items[idx])) = idx;
-		    }
-		    cache = std::move(sorted_cache);
-	    };
-	const auto generate_sort_cache_ordered = //
-	    [ //
-	        this, &localised_items, &sorted_items //
-	]<has_get_identifier T>(ordered_map<T const*, size_t>& cache, std::span<const T> items) {
-		    localised_items.resize(items.size());
-		    sorted_items.resize(items.size());
+		IndexedFlatMap<T, size_t> sorted_cache { items };
+		for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
+			sorted_cache.at_index(static_cast<typename get_index_t<T>::type>(sorted_items[idx])) = idx;
+		}
+		cache = std::move(sorted_cache);
+	};
+	const auto generate_sort_cache_ordered = [this, &localised_items, &sorted_items]<has_get_identifier T>(
+	                                             ordered_map<T const*, size_t>& cache, std::span<const T> items
+	                                         ) {
+		localised_items.resize(items.size());
+		sorted_items.resize(items.size());
 
-		    for (size_t idx = 0; idx < items.size(); ++idx) {
-			    String identifier = convert_to<String>(items[idx].get_identifier());
-			    if constexpr (std::is_same_v<T, ProvinceInstance>) {
-				    identifier = GUINode::format_province_name(identifier);
-			    }
-			    localised_items[idx] = tr(identifier).to_lower();
-			    sorted_items[idx] = idx;
-		    }
+		for (size_t idx = 0; idx < items.size(); ++idx) {
+			String identifier = convert_to<String>(items[idx].get_identifier());
+			if constexpr (std::is_same_v<T, ProvinceInstance>) {
+				identifier = GUINode::format_province_name(identifier);
+			}
+			localised_items[idx] = tr(identifier).to_lower();
+			sorted_items[idx] = idx;
+		}
 
-		    std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
-			    return localised_items[a] < localised_items[b];
-		    });
+		std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
+			return localised_items[a] < localised_items[b];
+		});
 
-		    cache.clear();
-		    for (size_t i = 0; i < sorted_items.size(); ++i) {
-			    T const* key = &items[sorted_items[i]];
-			    cache[key] = i;
-		    }
-	    };
+		cache.clear();
+		for (size_t i = 0; i < sorted_items.size(); ++i) {
+			T const* key = &items[sorted_items[i]];
+			cache[key] = i;
+		}
+	};
 
 	generate_sort_cache_indexed(
 	    population_menu.pop_type_sort_cache, { game_singleton->get_definition_manager().get_pop_manager().get_pop_types() }
@@ -1082,10 +1080,10 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	TypedArray<Array> array;
 	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
-	const auto make_pie_chart_tooltip = //
-	    [ //
-	        this //
-	](has_get_identifier_and_colour auto const& key, String const& identifier, float weight, float total_weight) -> String {
+	const auto make_pie_chart_tooltip = [this](
+	                                        has_get_identifier_and_colour auto const& key, String const& identifier,
+	                                        float weight, float total_weight
+	                                    ) -> String {
 		static const String format_key =
 		    GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
 		return Utilities::format(format_key, tr(identifier), Utilities::float_to_string_dp(100.0f * weight / total_weight, 2));

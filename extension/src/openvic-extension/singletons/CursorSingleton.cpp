@@ -539,11 +539,8 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 	}
 
 	cursors.insert(
-	    name, //
-	    cursor_asset_t {
-	        std::move(hotspots_by_resolution), std::move(frames_by_resolution), resolutions,
-	        static_cast<int32_t>(sequence.size()), display_rates, sequence //
-	    }
+	    name, cursor_asset_t { std::move(hotspots_by_resolution), std::move(frames_by_resolution), resolutions,
+	                           static_cast<int32_t>(sequence.size()), display_rates, sequence }
 	);
 	cursor_names.append(name);
 
@@ -574,12 +571,7 @@ bool CursorSingleton::_load_cursor_cur(StringName const& name, String const& pat
 		hotspots_by_resolution.push_back(hotspots);
 	}
 
-	cursors.insert(
-	    name, //
-	    cursor_asset_t {
-	        std::move(hotspots_by_resolution), std::move(frames_by_resolution), resolutions, 1 //
-	    }
-	);
+	cursors.insert(name, cursor_asset_t { std::move(hotspots_by_resolution), std::move(frames_by_resolution), resolutions, 1 });
 	cursor_names.append(name);
 
 	return true;

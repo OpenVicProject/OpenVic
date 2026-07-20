@@ -159,7 +159,7 @@ static Error try_create_shortcut_action_for_button(
 	InputMap* const im = InputMap::get_singleton();
 	String action_name;
 	if (shortcut_hotkey_name.is_empty()) {
-		action_name = //
+		action_name =
 		    Utilities::format("button_%s_hotkey", gui_button->get_name().to_lower().replace("button", "").replace("hotkey", ""))
 		        .replace("__", "_");
 	} else {

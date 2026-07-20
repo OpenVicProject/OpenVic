@@ -190,10 +190,8 @@ void GUIScrollbar::_calculate_rects() {
 			/* For some reason vertical scrollbar track textures overlap with their more buttons by a single pixel.
 			 * They have a row of transparent pixels at the top to account for this, so we must also draw them
 			 * one pixel taller to avoid having a gap between the track and the more button. */
-			track_rect = {
-				{ (average_button_width - track_width) / 2.0f, slider_start - 1.0f }, //
-				{ track_width, slider_distance + 1.0f } //
-			};
+			track_rect = { { (average_button_width - track_width) / 2.0f, slider_start - 1.0f },
+				           { track_width, slider_distance + 1.0f } };
 		} else {
 			track_rect = {};
 		}
@@ -201,10 +199,7 @@ void GUIScrollbar::_calculate_rects() {
 		if (slider_texture.is_valid()) {
 			const Size2 slider_size = slider_texture->get_size();
 
-			slider_rect = {
-				{ (average_button_width - slider_size.width) / 2.0f, 0.0f }, //
-				slider_size //
-			};
+			slider_rect = { { (average_button_width - slider_size.width) / 2.0f, 0.0f }, slider_size };
 
 			slider_distance -= slider_rect.size.height;
 		} else {
@@ -370,10 +365,9 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	/* _Element is either GUI::Button or GUI::Icon, both of which have their own
 	 * separately defined get_sprite(), hence the need for a template. */
-	const auto set_texture = //
-	    [ //
-	        &gui_scrollbar_name //
-	]<typename _Element>(String const& target, _Element const* element, Ref<GFXSpriteTexture>& texture) -> bool {
+	const auto set_texture = [&gui_scrollbar_name]<typename _Element>(
+	                             String const& target, _Element const* element, Ref<GFXSpriteTexture>& texture
+	                         ) -> bool {
 		ERR_FAIL_NULL_V_MSG(
 		    element, false, Utilities::format("Invalid %s element for GUIScrollbar %s - null!", target, gui_scrollbar_name)
 		);
@@ -440,11 +434,8 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 
 	_calculate_rects();
 
-	auto adjust_for_min_and_step_size = //
-	    [ //
-	        min_value = gui_scrollbar->get_min_value(),
-	        step_size = gui_scrollbar->get_step_size() //
-	](const int32_t val) -> int32_t {
+	auto adjust_for_min_and_step_size = [min_value = gui_scrollbar->get_min_value(),
+	                                     step_size = gui_scrollbar->get_step_size()](const int32_t val) -> int32_t {
 		assert(step_size != 0);
 		return ((val - min_value) / step_size).truncate<int32_t>();
 	};

@@ -255,11 +255,9 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	set_text(convert_to<String>(gui_text->get_text()));
 
 	using enum text_format_t;
-	static const ordered_map<text_format_t, HorizontalAlignment> format_map {
-		{ left, HORIZONTAL_ALIGNMENT_LEFT }, //
-		{ centre, HORIZONTAL_ALIGNMENT_CENTER }, //
-		{ right, HORIZONTAL_ALIGNMENT_RIGHT } //
-	};
+	static const ordered_map<text_format_t, HorizontalAlignment> format_map { { left, HORIZONTAL_ALIGNMENT_LEFT },
+		                                                                      { centre, HORIZONTAL_ALIGNMENT_CENTER },
+		                                                                      { right, HORIZONTAL_ALIGNMENT_RIGHT } };
 
 	const decltype(format_map)::const_iterator it = format_map.find(gui_text->get_format());
 	set_horizontal_alignment(it != format_map.end() ? it->second : HORIZONTAL_ALIGNMENT_LEFT);
@@ -819,10 +817,8 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 							if (last_marker_pos != 0 || !current_line->segments.empty()) {
 								if (!new_segment_string.is_empty()) {
 									current_line->segments.emplace_back(
-									    string_segment_t {
-									        std::move(new_segment_string), string_segment->colour,
-									        new_segment_width //
-									    }
+									    string_segment_t { std::move(new_segment_string), string_segment->colour,
+									                       new_segment_width }
 									);
 									current_line->width += new_segment_width;
 								}
@@ -835,9 +831,7 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 							}
 						}
 						current_line->segments.emplace_back(
-						    string_segment_t {
-						        std::move(whole_segment_string), string_segment->colour, whole_segment_width //
-						    }
+						    string_segment_t { std::move(whole_segment_string), string_segment->colour, whole_segment_width }
 						);
 						current_line->width += whole_segment_width;
 						break;

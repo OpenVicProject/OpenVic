@@ -310,22 +310,14 @@ Dictionary MenuSingleton::make_in_progress_unit_dict() const {
 	const Date eta { 1900 };
 	const fixed_point_t progress = fixed_point_t::_0_50;
 	const ordered_map<GoodDefinition const*, std::pair<fixed_point_t, fixed_point_t>> required_goods {
-		{
-		    good_definition_manager.get_good_definition_by_index(good_index_t(0)),
-		    { fixed_point_t(1234) / 100, fixed_point_t(1900) / 100 } //
-		},
-		{
-		    good_definition_manager.get_good_definition_by_index(good_index_t(1)),
-		    { fixed_point_t(888) / 100, fixed_point_t(1444) / 100 } //
-		},
-		{
-		    good_definition_manager.get_good_definition_by_index(good_index_t(2)),
-		    { fixed_point_t(1622) / 100, fixed_point_t(1622) / 100 } //
-		},
-		{
-		    good_definition_manager.get_good_definition_by_index(good_index_t(3)),
-		    { fixed_point_t(211) / 100, fixed_point_t(805) / 100 } //
-		}
+		{ good_definition_manager.get_good_definition_by_index(good_index_t(0)),
+		  { fixed_point_t(1234) / 100, fixed_point_t(1900) / 100 } },
+		{ good_definition_manager.get_good_definition_by_index(good_index_t(1)),
+		  { fixed_point_t(888) / 100, fixed_point_t(1444) / 100 } },
+		{ good_definition_manager.get_good_definition_by_index(good_index_t(2)),
+		  { fixed_point_t(1622) / 100, fixed_point_t(1622) / 100 } },
+		{ good_definition_manager.get_good_definition_by_index(good_index_t(3)),
+		  { fixed_point_t(211) / 100, fixed_point_t(805) / 100 } }
 	};
 
 	Dictionary in_progress_unit_dict;

@@ -419,17 +419,9 @@ String ArgumentParser::get_help(bool p_is_rich) const {
 	}
 
 	godot::String help = vformat(
-	    "%s - %s - %s - %s\n%s\n%s\n\n%s\n  %s -- %s\n\n%s\n%s", //
-	    app_name, //
-	    convert_to<String>(GAME_TAG), //
-	    convert_to<String>(GAME_COMMIT_HASH).substr(0, 7), //
-	    app_website, //
-	    app_description, //
-	    app_copyright, //
-	    usage,
-	    OS::get_singleton()->get_executable_path().get_file(), //
-	    options_arg_str, //
-	    options_category_str, //
+	    "%s - %s - %s - %s\n%s\n%s\n\n%s\n  %s -- %s\n\n%s\n%s", app_name, convert_to<String>(GAME_TAG),
+	    convert_to<String>(GAME_COMMIT_HASH).substr(0, 7), app_website, app_description, app_copyright, usage,
+	    OS::get_singleton()->get_executable_path().get_file(), options_arg_str, options_category_str,
 	    String("\n").join(option_help)
 	);
 
@@ -495,8 +487,7 @@ Variant ArgumentParser::_parse_value(
 		    Variant(), vformat("'%s' must be a valid float, '%s' is an invalid value.", p_arg_name, p_value_string)
 		);
 	case STRING:
-	case STRING_NAME: //
-		return p_value_string;
+	case STRING_NAME: return p_value_string;
 
 	case VECTOR2:
 	case VECTOR2I:
@@ -505,7 +496,7 @@ Variant ArgumentParser::_parse_value(
 	case VECTOR3:
 	case VECTOR3I:
 	case VECTOR4:
-	case VECTOR4I: {
+	case VECTOR4I:    {
 		PackedStringArray array = p_value_string.lstrip("(").rstrip(")").split(",", false);
 		switch (type) {
 		case VECTOR2:

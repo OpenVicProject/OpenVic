@@ -46,10 +46,7 @@ godot::StringName const& Utilities::get_colour_and_sign(const fixed_point_t valu
  * or normal integer string if less than the smallest suffix. */
 String Utilities::int_to_string_suffixed(int64_t val) {
 	static const std::vector<std::pair<int64_t, String>> suffixes {
-		{ 1'000'000'000'000, "T" }, //
-		{ 1'000'000'000, "B" }, //
-		{ 1'000'000, "M" }, //
-		{ 1'000, "k" } //
+		{ 1'000'000'000'000, "T" }, { 1'000'000'000, "B" }, { 1'000'000, "M" }, { 1'000, "k" }
 	};
 	static constexpr int64_t decimal_places_multiplier = 100;
 	const bool negative = val < 0;

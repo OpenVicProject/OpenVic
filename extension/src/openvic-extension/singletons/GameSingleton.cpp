@@ -112,11 +112,9 @@ void GameSingleton::_on_gamestate_updated() {
  * MAP-21, MAP-23, MAP-25, MAP-32, MAP-33, MAP-34
  */
 GameSingleton::GameSingleton() :
-    game_manager {
-	    std::bind(&GameSingleton::_on_gamestate_updated, this), //
-	    std::bind(&Time::get_ticks_usec, Time::get_singleton()), //
-	    std::bind(&Time::get_ticks_msec, Time::get_singleton()) //
-    } {
+    game_manager { std::bind(&GameSingleton::_on_gamestate_updated, this),
+	               std::bind(&Time::get_ticks_usec, Time::get_singleton()),
+	               std::bind(&Time::get_ticks_msec, Time::get_singleton()) } {
 	ERR_FAIL_COND(singleton != nullptr);
 	singleton = this;
 }
@@ -384,11 +382,10 @@ Error GameSingleton::_update_colour_image() {
 	InstanceManager const* instance_manager = get_instance_manager();
 	PlayerSingleton const& player_singleton = *PlayerSingleton::get_singleton();
 	MapmodeManager const& mapmode_manager = get_definition_manager().get_mapmode_manager();
-	if (instance_manager != nullptr && //
-	    !mapmode_manager.generate_mapmode_colours(
-	        instance_manager->get_map_instance(), mapmode, player_singleton.get_player_country(),
-	        player_singleton.get_selected_province(), colour_data_array.ptrw()
-	    )) {
+	if (instance_manager != nullptr && !mapmode_manager.generate_mapmode_colours(
+	                                       instance_manager->get_map_instance(), mapmode, player_singleton.get_player_country(),
+	                                       player_singleton.get_selected_province(), colour_data_array.ptrw()
+	                                   )) {
 		err = FAILED;
 	}
 
