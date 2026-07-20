@@ -4,7 +4,7 @@
 #include <godot_cpp/classes/wrapped.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
-#include "openvic-simulation/utility/Getters.hpp"
+#include <openvic-simulation/utility/Getters.hpp>
 
 namespace OpenVic {
 	class GitInfo : public godot::Object {

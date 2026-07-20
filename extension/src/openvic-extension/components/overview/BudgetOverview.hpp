@@ -9,6 +9,7 @@ namespace OpenVic {
 	private:
 		GUILabel& funds_label;
 		GUILineChart& history_chart;
+
 	public:
 		BudgetOverview(GUINode const& parent);
 		void update();

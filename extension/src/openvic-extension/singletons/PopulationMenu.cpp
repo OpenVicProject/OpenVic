@@ -1,20 +1,19 @@
-#include "MenuSingleton.hpp"
-
 #include <functional>
 #include <type_traits>
 
 #include <godot_cpp/variant/utility_functions.hpp>
-#include <type_safe/strong_typedef.hpp>
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
 #include <openvic-simulation/map/ProvinceDefinition.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/population/Culture.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/OrderedContainersMath.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
+#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+
+#include <type_safe/strong_typedef.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
@@ -22,6 +21,8 @@
 #include "openvic-extension/singletons/GameSingleton.hpp"
 #include "openvic-extension/utility/MapHelpers.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
+
+#include "MenuSingleton.hpp"
 
 using namespace godot;
 using namespace OpenVic;
@@ -40,10 +41,9 @@ Error MenuSingleton::_population_menu_update_provinces() {
 
 	MapInstance const& map_instance = instance_manager->get_map_instance();
 
-	for (CountryInstance const* country : {
-		// Example country
-		instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG")
-	}) {
+	for (CountryInstance const* country :
+	     // Example Country
+	     { instance_manager->get_country_instance_manager().get_country_instance_by_identifier("ENG") }) {
 		ERR_CONTINUE(country == nullptr);
 
 		population_menu.province_list_entries.emplace_back(population_menu_t::country_entry_t { *country });
@@ -81,8 +81,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 	}
 
 	ERR_FAIL_INDEX_V_MSG(
-		start, population_menu.visible_province_list_entries, {},
-		Utilities::format("Invalid start for population menu province list rows: %d", start)
+	    start, population_menu.visible_province_list_entries, {},
+	    Utilities::format("Invalid start for population menu province list rows: %d", start)
 	);
 	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for population menu province list rows: %d", count));
 
@@ -176,8 +176,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 		}
 	} entry_visitor { *this, start, count };
 
-	while (entry_visitor.index < population_menu.province_list_entries.size()
-		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
+	while (entry_visitor.index < population_menu.province_list_entries.size() &&
+	       std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
 		entry_visitor.index++;
 	}
 
@@ -257,23 +257,21 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 	}
 
 	emit_signal(
-		_signal_population_menu_province_list_selected_changed(),
-		set_scroll_index ? entry_visitor.selected_visible_index : -1
+	    _signal_population_menu_province_list_selected_changed(), set_scroll_index ? entry_visitor.selected_visible_index : -1
 	);
 
 	return _population_menu_update_pops();
 }
 
 Error MenuSingleton::population_menu_select_province(int32_t province_number) {
-	const province_index_t  province_index = ProvinceDefinition::get_index_from_province_number(province_number);
+	const province_index_t province_index = ProvinceDefinition::get_index_from_province_number(province_number);
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
 	ERR_FAIL_NULL_V(instance_manager, FAILED);
 
 	ERR_FAIL_COND_V(
-		!instance_manager->get_map_instance().get_province_instance_by_definition().contains_index(province_index),
-		FAILED
+	    !instance_manager->get_map_instance().get_province_instance_by_definition().contains_index(province_index), FAILED
 	);
 
 	struct entry_visitor_t {
@@ -319,14 +317,14 @@ Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 
 	} entry_visitor { *this, province_index };
 
-	while (entry_visitor.index < population_menu.province_list_entries.size()
-		&& std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
+	while (entry_visitor.index < population_menu.province_list_entries.size() &&
+	       std::visit(entry_visitor, population_menu.province_list_entries[entry_visitor.index])) {
 		entry_visitor.index++;
 	}
 
 	ERR_FAIL_COND_V_MSG(
-		entry_visitor.index >= population_menu.province_list_entries.size(), FAILED,
-		Utilities::format("Cannot select province number %d - not found in population menu province list!", province_number)
+	    entry_visitor.index >= population_menu.province_list_entries.size(), FAILED,
+	    Utilities::format("Cannot select province number %d - not found in population menu province list!", province_number)
 	);
 
 	return ERR(entry_visitor.ret);
@@ -336,14 +334,16 @@ Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool 
 	ERR_FAIL_INDEX_V(toggle_index, population_menu.province_list_entries.size(), FAILED);
 
 	population_menu_t::state_entry_t* state_entry =
-		std::get_if<population_menu_t::state_entry_t>(&population_menu.province_list_entries[toggle_index]);
+	    std::get_if<population_menu_t::state_entry_t>(&population_menu.province_list_entries[toggle_index]);
 
-	ERR_FAIL_NULL_V_MSG(state_entry, FAILED, Utilities::format("Cannot toggle expansion of a non-state entry! (%d)", toggle_index));
+	ERR_FAIL_NULL_V_MSG(
+	    state_entry, FAILED, Utilities::format("Cannot toggle expansion of a non-state entry! (%d)", toggle_index)
+	);
 
 	int32_t provinces = 0;
 
-	while (++toggle_index < population_menu.province_list_entries.size()
-		&& std::holds_alternative<population_menu_t::province_entry_t>(population_menu.province_list_entries[toggle_index])) {
+	while (++toggle_index < population_menu.province_list_entries.size() &&
+	       std::holds_alternative<population_menu_t::province_entry_t>(population_menu.province_list_entries[toggle_index])) {
 		provinces++;
 	}
 
@@ -374,7 +374,7 @@ Error MenuSingleton::_population_menu_update_pops() {
 
 	for (int32_t index = 0; index < population_menu.province_list_entries.size(); index++) {
 		population_menu_t::province_entry_t const* province_entry =
-			std::get_if<population_menu_t::province_entry_t>(&population_menu.province_list_entries[index]);
+		    std::get_if<population_menu_t::province_entry_t>(&population_menu.province_list_entries[index]);
 
 		if (province_entry != nullptr && province_entry->selected) {
 			for (Pop const& pop : province_entry->province.get_pops()) {
@@ -417,7 +417,8 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 			ideology_index_t ideology_index {};
 			for (const fixed_point_t supporter_equivalents : pop.get_supporter_equivalents_by_ideology()) {
 				if (supporter_equivalents > 0) {
-					population_menu.ideology_distribution[&GameSingleton::get_singleton()->get_ideology(ideology_index)] += supporter_equivalents;
+					population_menu.ideology_distribution[&GameSingleton::get_singleton()->get_ideology(ideology_index)] +=
+					    supporter_equivalents;
 					ideology_distribution_running_total += supporter_equivalents;
 				}
 				++ideology_index;
@@ -426,14 +427,14 @@ Error MenuSingleton::_population_menu_update_filtered_pops() {
 		population_menu.culture_distribution[&pop.culture] += pop_size;
 		{
 			party_policy_index_t party_policy_index {};
-			for(const fixed_point_t party_policy_support : pop.get_supporter_equivalents_by_party_policy()) {
+			for (const fixed_point_t party_policy_support : pop.get_supporter_equivalents_by_party_policy()) {
 				population_menu.issue_distribution[&GameSingleton::get_singleton()->get_party_policy(party_policy_index)];
 				++party_policy_index;
 			}
 		}
 		{
 			reform_index_t reform_index {};
-			for(const fixed_point_t reform_support : pop.get_supporter_equivalents_by_reform()) {
+			for (const fixed_point_t reform_support : pop.get_supporter_equivalents_by_reform()) {
 				population_menu.issue_distribution[&GameSingleton::get_singleton()->get_reform(reform_index)];
 				++reform_index;
 			}
@@ -472,10 +473,12 @@ static bool ordered_map_lookup_less_than(ordered_map<T const*, size_t> const& ma
 }
 
 template<typename KeyType, typename ValueType>
-static ordered_map<KeyType const*, ValueType> copy_non_default_to_ordered_map(IndexedFlatMap<KeyType, ValueType> const& indexed_flat_map) {
+static ordered_map<KeyType const*, ValueType> copy_non_default_to_ordered_map(
+    IndexedFlatMap<KeyType, ValueType> const& indexed_flat_map
+) {
 	ordered_map<KeyType const*, ValueType> result {};
 	for (auto const& [key, value] : indexed_flat_map) {
-		if constexpr(!std::is_default_constructible_v<ValueType>) {
+		if constexpr (!std::is_default_constructible_v<ValueType>) {
 			result[&key] = value;
 		} else if (value != ValueType()) {
 			result[&key] = value;
@@ -485,8 +488,7 @@ static ordered_map<KeyType const*, ValueType> copy_non_default_to_ordered_map(In
 }
 
 static bool sort_by_ideologies_less_than(
-	TypedSpan<ideology_index_t, const fixed_point_t> lhs,
-	TypedSpan<ideology_index_t, const fixed_point_t> rhs
+    TypedSpan<ideology_index_t, const fixed_point_t> lhs, TypedSpan<ideology_index_t, const fixed_point_t> rhs
 ) {
 	assert(lhs.size() == rhs.size());
 	ideology_index_t index_of_lhs_max {}, index_of_rhs_max {};
@@ -508,10 +510,9 @@ static bool sort_by_ideologies_less_than(
 }
 
 static bool sort_by_issues_less_than(
-	TypedSpan<party_policy_index_t, const fixed_point_t> lhs_party_policies,
-	TypedSpan<party_policy_index_t, const fixed_point_t> rhs_party_policies,
-	TypedSpan<reform_index_t, const fixed_point_t> lhs_reforms,
-	TypedSpan<reform_index_t, const fixed_point_t> rhs_reforms
+    TypedSpan<party_policy_index_t, const fixed_point_t> lhs_party_policies,
+    TypedSpan<party_policy_index_t, const fixed_point_t> rhs_party_policies,
+    TypedSpan<reform_index_t, const fixed_point_t> lhs_reforms, TypedSpan<reform_index_t, const fixed_point_t> rhs_reforms
 ) {
 	assert(lhs_party_policies.size() == rhs_party_policies.size());
 	assert(lhs_reforms.size() == rhs_reforms.size());
@@ -581,14 +582,14 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 	case SORT_IDEOLOGY:
 		return [](Pop const& a, Pop const& b) -> bool {
 			return sort_by_ideologies_less_than(
-				a.get_supporter_equivalents_by_ideology(), b.get_supporter_equivalents_by_ideology()
+			    a.get_supporter_equivalents_by_ideology(), b.get_supporter_equivalents_by_ideology()
 			);
 		};
 	case SORT_ISSUES:
 		return [](Pop const& a, Pop const& b) -> bool {
 			return sort_by_issues_less_than(
-				a.get_supporter_equivalents_by_party_policy(), b.get_supporter_equivalents_by_party_policy(),
-				a.get_supporter_equivalents_by_reform(), b.get_supporter_equivalents_by_reform()
+			    a.get_supporter_equivalents_by_party_policy(), b.get_supporter_equivalents_by_party_policy(),
+			    a.get_supporter_equivalents_by_reform(), b.get_supporter_equivalents_by_reform()
 			);
 		};
 	case SORT_UNEMPLOYMENT:
@@ -615,9 +616,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		return [this](Pop const& a, Pop const& b) -> bool {
 			// TODO - include country adjective for [pan-]nationalist rebels
 			// TODO - handle social/political reform movements
-			return indexed_map_lookup_less_than(
-				population_menu.rebel_type_sort_cache, a.get_rebel_type(), b.get_rebel_type()
-			);
+			return indexed_map_lookup_less_than(population_menu.rebel_type_sort_cache, a.get_rebel_type(), b.get_rebel_type());
 		};
 	case SORT_SIZE_CHANGE:
 		return [](Pop const& a, Pop const& b) -> bool {
@@ -629,27 +628,26 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 		};
 	default:
 		UtilityFunctions::push_error("Invalid population menu sort key: ", sort_key);
-		return [](Pop const& a, Pop const& b) -> bool { return false; };
+		return [](Pop const& a, Pop const& b) -> bool {
+			return false;
+		};
 	}
 }
 
 Error MenuSingleton::_population_menu_sort_pops() {
 	if (population_menu.sort_key != SORT_NONE) {
-		if (
-			population_menu.pop_type_sort_cache.get_keys().empty()
-			|| population_menu.culture_sort_cache.empty()
-			|| population_menu.religion_sort_cache.empty()
-			|| population_menu.province_sort_cache.get_keys().empty()
-			|| population_menu.rebel_type_sort_cache.get_keys().empty()
-		) {
+		if (population_menu.pop_type_sort_cache.get_keys().empty() || population_menu.culture_sort_cache.empty() ||
+		    population_menu.religion_sort_cache.empty() || population_menu.province_sort_cache.get_keys().empty() ||
+		    population_menu.rebel_type_sort_cache.get_keys().empty()) {
 			ERR_FAIL_COND_V(population_menu_update_locale_sort_cache() != OK, FAILED);
 		}
 
 		const sort_func_t base_sort_func = _get_population_menu_sort_func(population_menu.sort_key);
 
-		const sort_func_t sort_func = population_menu.sort_descending
-			? base_sort_func
-			: [base_sort_func](Pop const& a, Pop const& b) { return base_sort_func(b, a); };
+		const sort_func_t sort_func =
+		    population_menu.sort_descending ? base_sort_func : [base_sort_func](Pop const& a, Pop const& b) {
+			    return base_sort_func(b, a);
+		    };
 
 		std::sort(population_menu.filtered_pops.begin(), population_menu.filtered_pops.end(), sort_func);
 	}
@@ -669,8 +667,8 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	std::vector<size_t> sorted_items;
 
 	const auto generate_sort_cache_indexed = [this, &localised_items, &sorted_items]<has_get_identifier T>(
-		IndexedFlatMap<T, size_t>& cache, std::span<const T> items
-	) {
+	                                             IndexedFlatMap<T, size_t>& cache, std::span<const T> items
+	                                         ) {
 		localised_items.resize(items.size());
 		sorted_items.resize(items.size());
 
@@ -683,25 +681,19 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 			sorted_items[idx] = idx;
 		}
 
-		std::sort(
-			sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
-				return localised_items[a] < localised_items[b];
-			}
-		);
+		std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
+			return localised_items[a] < localised_items[b];
+		});
 
 		IndexedFlatMap<T, size_t> sorted_cache { items };
 		for (size_t idx = 0; idx < sorted_items.size(); ++idx) {
-			sorted_cache.at_index(
-				static_cast<typename get_index_t<T>::type>(
-					sorted_items[idx]
-				)
-			) = idx;
+			sorted_cache.at_index(static_cast<typename get_index_t<T>::type>(sorted_items[idx])) = idx;
 		}
 		cache = std::move(sorted_cache);
 	};
 	const auto generate_sort_cache_ordered = [this, &localised_items, &sorted_items]<has_get_identifier T>(
-		ordered_map<T const*, size_t>& cache, std::span<const T> items
-	) {
+	                                             ordered_map<T const*, size_t>& cache, std::span<const T> items
+	                                         ) {
 		localised_items.resize(items.size());
 		sorted_items.resize(items.size());
 
@@ -714,11 +706,9 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 			sorted_items[idx] = idx;
 		}
 
-		std::sort(
-			sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
-				return localised_items[a] < localised_items[b];
-			}
-		);
+		std::sort(sorted_items.begin(), sorted_items.end(), [&localised_items](size_t a, size_t b) -> bool {
+			return localised_items[a] < localised_items[b];
+		});
 
 		cache.clear();
 		for (size_t i = 0; i < sorted_items.size(); ++i) {
@@ -728,24 +718,22 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	};
 
 	generate_sort_cache_indexed(
-		population_menu.pop_type_sort_cache,
-		{ game_singleton->get_definition_manager().get_pop_manager().get_pop_types() }
+	    population_menu.pop_type_sort_cache, { game_singleton->get_definition_manager().get_pop_manager().get_pop_types() }
 	);
 	generate_sort_cache_ordered(
-		population_menu.culture_sort_cache,
-		{ game_singleton->get_definition_manager().get_pop_manager().get_culture_manager().get_cultures() }
+	    population_menu.culture_sort_cache,
+	    { game_singleton->get_definition_manager().get_pop_manager().get_culture_manager().get_cultures() }
 	);
 	generate_sort_cache_ordered(
-		population_menu.religion_sort_cache,
-		{ game_singleton->get_definition_manager().get_pop_manager().get_religion_manager().get_religions() }
+	    population_menu.religion_sort_cache,
+	    { game_singleton->get_definition_manager().get_pop_manager().get_religion_manager().get_religions() }
 	);
 	generate_sort_cache_indexed(
-		population_menu.province_sort_cache,
-		{ instance_manager->get_map_instance().get_province_instances() }
+	    population_menu.province_sort_cache, { instance_manager->get_map_instance().get_province_instances() }
 	);
 	generate_sort_cache_indexed(
-		population_menu.rebel_type_sort_cache,
-		{ game_singleton->get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types() }
+	    population_menu.rebel_type_sort_cache,
+	    { game_singleton->get_definition_manager().get_politics_manager().get_rebel_manager().get_rebel_types() }
 	);
 
 	return OK;
@@ -754,8 +742,8 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 	/* sort_key must be cast here to avoid causing clang to segfault during compilation. */
 	ERR_FAIL_INDEX_V_MSG(
-		static_cast<int32_t>(sort_key), static_cast<int32_t>(MAX_SORT_KEY), FAILED,
-		Utilities::format("Invalid population menu sort key: %d (must be under %d)", sort_key, MAX_SORT_KEY)
+	    static_cast<int32_t>(sort_key), static_cast<int32_t>(MAX_SORT_KEY), FAILED,
+	    Utilities::format("Invalid population menu sort key: %d (must be under %d)", sort_key, MAX_SORT_KEY)
 	);
 
 	if (sort_key == population_menu.sort_key) {
@@ -771,7 +759,7 @@ Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 
 template<IsPieChartKey KeyType, IsPieChartValue ValueType>
 GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_menu_pop_row_pie_chart_data(
-	std::span<std::add_const_t<KeyType>> keys, std::span<std::add_const_t<ValueType>> values, String const& identifier_suffix
+    std::span<std::add_const_t<KeyType>> keys, std::span<std::add_const_t<ValueType>> values, String const& identifier_suffix
 ) const {
 	assert(keys.size() == values.size());
 	using key_t = std::add_const_t<std::remove_pointer_t<KeyType>&>;
@@ -783,26 +771,26 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 
 	float total_weight = 0.0f;
 	for (const ValueType weight : values) {
-		if constexpr(IsPieChartValueTypeSafe<ValueType>) {
+		if constexpr (IsPieChartValueTypeSafe<ValueType>) {
 			total_weight += static_cast<float>(type_safe::get(weight));
 		} else {
 			total_weight += static_cast<float>(weight);
 		}
 	}
 
-	static const String pie_chart_tooltip_format_key = "%s: " + GUILabel::get_colour_marker() + "Y%s%%" +
-		GUILabel::get_colour_marker() + "!";
+	static const String pie_chart_tooltip_format_key =
+	    "%s: " + GUILabel::get_colour_marker() + "Y%s%%" + GUILabel::get_colour_marker() + "!";
 
 	for (size_t i = 0; i < keys.size(); ++i) {
 		key_t key = [&]() -> key_t {
-			if constexpr(requires { static_cast<key_t>(keys[i]); }) {
+			if constexpr (requires { static_cast<key_t>(keys[i]); }) {
 				return keys[i];
 			} else if (requires { static_cast<key_t>(*keys[i]); }) {
 				return *keys[i];
 			}
 		}();
 		float weight;
-		if constexpr(IsPieChartValueTypeSafe<ValueType>) {
+		if constexpr (IsPieChartValueTypeSafe<ValueType>) {
 			weight = static_cast<float>(type_safe::get(values[i]));
 		} else {
 			weight = static_cast<float>(values[i]);
@@ -810,9 +798,8 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 
 		if (weight > 0.0f) {
 			String tooltip = Utilities::format(
-				pie_chart_tooltip_format_key,
-				tr(convert_to<String>(key.get_identifier()) + identifier_suffix),
-				Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
+			    pie_chart_tooltip_format_key, tr(convert_to<String>(key.get_identifier()) + identifier_suffix),
+			    Utilities::float_to_string_dp(100.0f * static_cast<float>(weight) / total_weight, 1)
 			);
 			full_tooltip += "\n" + tooltip;
 			tooltips.emplace(key, std::move(tooltip));
@@ -822,31 +809,28 @@ GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_me
 	}
 
 	return GFXPieChartTexture::distribution_to_slices_array<KeyType, ValueType>(
-		keys, values,
-		[&tooltips, full_tooltip](key_t key, String const& identifier, float weight, float total_weight) -> String {
-			return tooltips.at(key) + full_tooltip;
-		},
-		identifier_suffix
+	    keys, values,
+	    [&tooltips, full_tooltip](key_t key, String const& identifier, float weight, float total_weight) -> String {
+		    return tooltips.at(key) + full_tooltip;
+	    },
+	    identifier_suffix
 	);
 }
 
 template<IsPieChartDistribution MapType>
 GFXPieChartTexture::godot_pie_chart_data_t MenuSingleton::generate_population_menu_pop_row_pie_chart_data(
-	MapType const& distribution, String const& identifier_suffix
+    MapType const& distribution, String const& identifier_suffix
 ) const {
 	using key_t = std::remove_const_t<map_key_t<MapType>>;
 	using value_t = std::remove_cv_t<map_value_t<MapType>>;
 
 	memory::FixedVector<key_t> keys { create_empty, distribution.size() };
 	memory::FixedVector<value_t> values { create_empty, distribution.size() };
-	for (auto const& [k,v] : distribution) {
+	for (auto const& [k, v] : distribution) {
 		keys.emplace_back(k);
 		values.emplace_back(v);
 	}
-	return generate_population_menu_pop_row_pie_chart_data<key_t, value_t>(
-		keys, values,
-		identifier_suffix
-	);
+	return generate_population_menu_pop_row_pie_chart_data<key_t, value_t>(keys, values, identifier_suffix);
 }
 
 TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start, int32_t count) const {
@@ -854,7 +838,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		return {};
 	}
 	ERR_FAIL_INDEX_V_MSG(
-		start, population_menu.filtered_pops.size(), {}, Utilities::format("Invalid start for population menu pop rows: %d", start)
+	    start, population_menu.filtered_pops.size(), {},
+	    Utilities::format("Invalid start for population menu pop rows: %d", start)
 	);
 	ERR_FAIL_COND_V_MSG(count <= 0, {}, Utilities::format("Invalid count for population menu pop rows: %d", count));
 
@@ -923,14 +908,14 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		fixed_point_map_t<BaseIssue const*> supporter_equivalents_by_issue;
 		{
 			party_policy_index_t party_policy_index {};
-			for(const fixed_point_t party_policy_support : pop.get_supporter_equivalents_by_party_policy()) {
+			for (const fixed_point_t party_policy_support : pop.get_supporter_equivalents_by_party_policy()) {
 				supporter_equivalents_by_issue[&GameSingleton::get_singleton()->get_party_policy(party_policy_index)];
 				++party_policy_index;
 			}
 		}
 		{
 			reform_index_t reform_index {};
-			for(const fixed_point_t reform_support : pop.get_supporter_equivalents_by_reform()) {
+			for (const fixed_point_t reform_support : pop.get_supporter_equivalents_by_reform()) {
 				supporter_equivalents_by_issue[&GameSingleton::get_singleton()->get_reform(reform_index)];
 				++reform_index;
 			}
@@ -945,12 +930,10 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_militancy_key] = static_cast<real_t>(pop.get_militancy());
 		pop_dict[pop_consciousness_key] = static_cast<real_t>(pop.get_consciousness());
 		pop_dict[pop_ideology_key] = generate_population_menu_pop_row_pie_chart_data<const Ideology, fixed_point_t>(
-			GameSingleton::get_singleton()->get_ideologies(),
-			pop.get_supporter_equivalents_by_ideology()
+		    GameSingleton::get_singleton()->get_ideologies(), pop.get_supporter_equivalents_by_ideology()
 		);
-		pop_dict[pop_issues_key] = generate_population_menu_pop_row_pie_chart_data(
-			supporter_equivalents_by_issue, get_issue_identifier_suffix()
-		);
+		pop_dict[pop_issues_key] =
+		    generate_population_menu_pop_row_pie_chart_data(supporter_equivalents_by_issue, get_issue_identifier_suffix());
 		pop_dict[pop_unemployment_key] = static_cast<real_t>(pop.get_unemployment_fraction());
 		pop_dict[pop_cash_key] = static_cast<real_t>(pop.get_cash().get_copy_of_value());
 		pop_dict[pop_daily_money_key] = static_cast<real_t>(pop.get_income());
@@ -1026,7 +1009,8 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 
 Error MenuSingleton::population_menu_toggle_pop_filter(int32_t index) {
 	ERR_FAIL_COND_V_MSG(
-		index < 0 || index >= population_menu.pop_filters.size(), FAILED, Utilities::format("Invalid pop filter index: %d", index)
+	    index < 0 || index >= population_menu.pop_filters.size(), FAILED,
+	    Utilities::format("Invalid pop filter index: %d", index)
 	);
 
 	population_menu_t::pop_filter_t& filter = mutable_iterator(population_menu.pop_filters).begin()[index].second;
@@ -1071,12 +1055,12 @@ Error MenuSingleton::population_menu_deselect_all_pop_filters() {
 PackedStringArray MenuSingleton::get_population_menu_distribution_setup_info() const {
 	static const PackedStringArray distribution_names = []() -> PackedStringArray {
 		constexpr std::array<char const*, population_menu_t::DISTRIBUTION_COUNT> NAMES {
-			/* Workforce (PopType)   */       "WORKFORCE_DISTTITLE",
-			/* Religion              */        "RELIGION_DISTTITLE",
-			/* Ideology              */        "IDEOLOGY_DISTTITLE",
-			/* Nationality (Culture) */     "NATIONALITY_DISTTITLE",
+			/* Workforce (PopType)   */ "WORKFORCE_DISTTITLE",
+			/* Religion              */ "RELIGION_DISTTITLE",
+			/* Ideology              */ "IDEOLOGY_DISTTITLE",
+			/* Nationality (Culture) */ "NATIONALITY_DISTTITLE",
 			/* Issues                */ "DOMINANT_ISSUES_DISTTITLE",
-			/* Vote                  */      "ELECTORATE_DISTTITLE"
+			/* Vote                  */ "ELECTORATE_DISTTITLE"
 		};
 
 		PackedStringArray array;
@@ -1097,15 +1081,12 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	ERR_FAIL_COND_V(array.resize(population_menu_t::DISTRIBUTION_COUNT) != OK, {});
 
 	const auto make_pie_chart_tooltip = [this](
-		has_get_identifier_and_colour auto const& key, String const& identifier, float weight, float total_weight
-	) -> String {
+	                                        has_get_identifier_and_colour auto const& key, String const& identifier,
+	                                        float weight, float total_weight
+	                                    ) -> String {
 		static const String format_key =
-			GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
-		return  Utilities::format(
-			format_key,
-			tr(identifier),
-			Utilities::float_to_string_dp(100.0f * weight / total_weight, 2)
-		);
+		    GUILabel::get_colour_marker() + String { "Y%s" } + GUILabel::get_colour_marker() + "!: %s%%";
+		return Utilities::format(format_key, tr(identifier), Utilities::float_to_string_dp(100.0f * weight / total_weight, 2));
 	};
 
 	array[0] = GFXPieChartTexture::distribution_to_slices_array(population_menu.workforce_distribution, make_pie_chart_tooltip);
@@ -1113,7 +1094,7 @@ TypedArray<Array> MenuSingleton::get_population_menu_distribution_info() const {
 	array[2] = GFXPieChartTexture::distribution_to_slices_array(population_menu.ideology_distribution, make_pie_chart_tooltip);
 	array[3] = GFXPieChartTexture::distribution_to_slices_array(population_menu.culture_distribution, make_pie_chart_tooltip);
 	array[4] = GFXPieChartTexture::distribution_to_slices_array(
-		population_menu.issue_distribution, make_pie_chart_tooltip, get_issue_identifier_suffix()
+	    population_menu.issue_distribution, make_pie_chart_tooltip, get_issue_identifier_suffix()
 	);
 	array[5] = GFXPieChartTexture::distribution_to_slices_array(population_menu.vote_distribution, make_pie_chart_tooltip);
 

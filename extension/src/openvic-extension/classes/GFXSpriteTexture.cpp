@@ -3,9 +3,9 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/AssetManager.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -16,7 +16,7 @@ void GFXSpriteTexture::_bind_methods() {
 	OV_BIND_METHOD(GFXSpriteTexture::clear);
 
 	OV_BIND_METHOD(
-		GFXSpriteTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name", "icon" }, DEFVAL(GFX::NO_FRAMES)
+	    GFXSpriteTexture::set_gfx_texture_sprite_name, { "gfx_texture_sprite_name", "icon" }, DEFVAL(GFX::NO_FRAMES)
 	);
 	OV_BIND_METHOD(GFXSpriteTexture::get_gfx_texture_sprite_name);
 
@@ -31,7 +31,7 @@ void GFXSpriteTexture::_bind_methods() {
 GFXSpriteTexture::GFXSpriteTexture() : icon_index { GFX::NO_FRAMES }, icon_count { GFX::NO_FRAMES } {}
 
 Ref<GFXSpriteTexture> GFXSpriteTexture::make_gfx_sprite_texture(
-	GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon
+    GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon
 ) {
 	Ref<GFXSpriteTexture> texture;
 	texture.instantiate();
@@ -79,7 +79,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 		}
 
 		GFX::CorneredTileTextureSprite const* const cornered_tile_texture_sprite =
-			gfx_texture_sprite->cast_to<GFX::CorneredTileTextureSprite>();
+		    gfx_texture_sprite->cast_to<GFX::CorneredTileTextureSprite>();
 		if (cornered_tile_texture_sprite != nullptr) {
 			cornered_tile_border_size = convert_to<Vector2i>(cornered_tile_texture_sprite->get_border_size());
 		} else {
@@ -97,11 +97,11 @@ Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sp
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::TextureSprite const* new_texture_sprite = sprite->cast_to<GFX::TextureSprite>();
 	ERR_FAIL_NULL_V_MSG(
-		new_texture_sprite, FAILED, Utilities::format(
-			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name,
-			convert_to<String>(sprite->get_type()),
-			convert_to<String>(GFX::TextureSprite::get_type_static())
-		)
+	    new_texture_sprite, FAILED,
+	    Utilities::format(
+	        "Invalid type for GFX sprite %s: %s (expected %s)", gfx_texture_sprite_name, convert_to<String>(sprite->get_type()),
+	        convert_to<String>(GFX::TextureSprite::get_type_static())
+	    )
 	);
 	return set_gfx_texture_sprite(new_texture_sprite, icon);
 }
@@ -127,7 +127,7 @@ Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
 			icon_index = 1;
 			if (new_icon_index > icon_count) {
 				UtilityFunctions::push_warning(
-					"Invalid icon index ", new_icon_index, " out of count ", icon_count, " - defaulting to ", icon_index
+				    "Invalid icon index ", new_icon_index, " out of count ", icon_count, " - defaulting to ", icon_index
 				);
 			}
 		}

@@ -61,8 +61,8 @@ GFXPieChartTexture::slice_t const* GFXPieChartTexture::get_slice(Vector2 const& 
 Error GFXPieChartTexture::_generate_pie_chart_image() {
 	ERR_FAIL_NULL_V(gfx_pie_chart, FAILED);
 	ERR_FAIL_COND_V_MSG(
-		gfx_pie_chart->get_size() <= 0, FAILED,
-		Utilities::format("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
+	    gfx_pie_chart->get_size() <= 0, FAILED,
+	    Utilities::format("Invalid GFX::PieChart size for GFXPieChartTexture - %d", gfx_pie_chart->get_size())
 	);
 
 	const int32_t pie_chart_radius = gfx_pie_chart->get_size();
@@ -70,8 +70,8 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 
 	/* Whether we've already set the ImageTexture to an image of the right dimensions,
 	 * and so can update it without creating and setting a new image, or not. */
-	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_diameter
-		&& pie_chart_image->get_height() == pie_chart_diameter;
+	const bool can_update = pie_chart_image.is_valid() && pie_chart_image->get_width() == pie_chart_diameter &&
+	                        pie_chart_image->get_height() == pie_chart_diameter;
 
 	if (!can_update) {
 		pie_chart_image = Image::create(pie_chart_diameter, pie_chart_diameter, false, Image::FORMAT_RGBA8);
@@ -99,9 +99,7 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 			}
 		}
 	} else {
-
 		pie_chart_image->fill(background_colour);
-
 	}
 
 	if (can_update) {
@@ -119,14 +117,12 @@ Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_sli
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
 		Dictionary const& slice_dict = new_slices[i];
 		ERR_CONTINUE_MSG(
-			!slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_tooltip_key()) ||
-				!slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
-			Utilities::format("Invalid slice keys at index %d", i)
+		    !slice_dict.has(_slice_identifier_key()) || !slice_dict.has(_slice_tooltip_key()) ||
+		        !slice_dict.has(_slice_colour_key()) || !slice_dict.has(_slice_weight_key()),
+		    Utilities::format("Invalid slice keys at index %d", i)
 		);
-		const slice_t slice {
-			slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()], slice_dict[_slice_colour_key()],
-			slice_dict[_slice_weight_key()]
-		};
+		const slice_t slice { slice_dict[_slice_identifier_key()], slice_dict[_slice_tooltip_key()],
+			                  slice_dict[_slice_colour_key()], slice_dict[_slice_weight_key()] };
 		if (slice.weight > 0.0f) {
 			total_weight += slice.weight;
 			slices.push_back(slice);
@@ -184,11 +180,11 @@ Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_nam
 	ERR_FAIL_NULL_V(sprite, FAILED);
 	GFX::PieChart const* new_pie_chart = sprite->cast_to<GFX::PieChart>();
 	ERR_FAIL_NULL_V_MSG(
-		new_pie_chart, FAILED, Utilities::format(
-			"Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name,
-			convert_to<String>(sprite->get_type()),
-			convert_to<String>(GFX::PieChart::get_type_static())
-		)
+	    new_pie_chart, FAILED,
+	    Utilities::format(
+	        "Invalid type for GFX sprite %s: %s (expected %s)", gfx_pie_chart_name, convert_to<String>(sprite->get_type()),
+	        convert_to<String>(GFX::PieChart::get_type_static())
+	    )
 	);
 	return set_gfx_pie_chart(new_pie_chart);
 }

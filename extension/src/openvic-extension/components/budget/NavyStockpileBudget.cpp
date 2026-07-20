@@ -7,15 +7,9 @@
 
 using namespace OpenVic;
 
-NavyStockpileBudget::NavyStockpileBudget(GUINode const& parent):
-	SliderBudgetComponent(
-		parent,
-		"MILITARY_SPENDINGS_NAVAL",
-		EXPENSES,
-		"./country_budget/naval_stockpile_slider"
-	),
-	BudgetExpenseComponent("MILITARY_SPENDINGS_NAVAL")
-{
+NavyStockpileBudget::NavyStockpileBudget(GUINode const& parent) :
+    SliderBudgetComponent(parent, "MILITARY_SPENDINGS_NAVAL", EXPENSES, "./country_budget/naval_stockpile_slider"),
+    BudgetExpenseComponent("MILITARY_SPENDINGS_NAVAL") {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -27,10 +21,9 @@ fixed_point_t NavyStockpileBudget::get_expenses() const {
 }
 
 fixed_point_t NavyStockpileBudget::calculate_budget_and_update_custom(
-	CountryInstance& country,
-	const fixed_point_t scaled_value
+    CountryInstance& country, const fixed_point_t scaled_value
 ) {
-	return scaled_value * 2; //TODO connect with sim once sim has this
+	return scaled_value * 2; // TODO connect with sim once sim has this
 }
 
 ReadOnlyClampedValue& NavyStockpileBudget::get_clamped_value(CountryInstance& country) const {
