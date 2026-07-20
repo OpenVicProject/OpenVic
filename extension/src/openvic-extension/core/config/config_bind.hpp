@@ -54,4 +54,50 @@ namespace OpenVic::CoreBind {
 		OVSimulation();
 		~OVSimulation();
 	};
+
+	class OVDataloader : public godot::Object {
+		GDCLASS(OVDataloader, godot::Object);
+
+		static inline OVDataloader* singleton = nullptr;
+
+	protected:
+		static void _bind_methods();
+
+	public:
+		static OVDataloader* get_singleton() {
+			return singleton;
+		}
+
+		godot::TypedDictionary<godot::String, godot::PackedStringArray> get_author_info() const;
+		godot::TypedArray<godot::Dictionary> get_copyright_info() const;
+		godot::TypedDictionary<godot::String, godot::String> get_license_info() const;
+		godot::String get_license_text() const;
+		godot::Dictionary get_version_info() const;
+
+		OVDataloader();
+		~OVDataloader();
+	};
+
+	class OVLexyVDF : public godot::Object {
+		GDCLASS(OVLexyVDF, godot::Object);
+
+		static inline OVLexyVDF* singleton = nullptr;
+
+	protected:
+		static void _bind_methods();
+
+	public:
+		static OVLexyVDF* get_singleton() {
+			return singleton;
+		}
+
+		godot::TypedDictionary<godot::String, godot::PackedStringArray> get_author_info() const;
+		godot::TypedArray<godot::Dictionary> get_copyright_info() const;
+		godot::TypedDictionary<godot::String, godot::String> get_license_info() const;
+		godot::String get_license_text() const;
+		godot::Dictionary get_version_info() const;
+
+		OVLexyVDF();
+		~OVLexyVDF();
+	};
 }

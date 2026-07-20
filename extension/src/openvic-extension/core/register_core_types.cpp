@@ -12,6 +12,8 @@ using namespace godot;
 static ArgumentParser* _argument_parser = nullptr;
 static CoreBind::OVGame* _ov_game = nullptr;
 static CoreBind::OVSimulation* _ov_simulation = nullptr;
+static CoreBind::OVDataloader* _ov_dataloader = nullptr;
+static CoreBind::OVLexyVDF* _ov_lexy_vdf = nullptr;
 
 void OpenVic::register_core_types() {
 	GDREGISTER_CLASS(ArgumentParser);
@@ -19,6 +21,8 @@ void OpenVic::register_core_types() {
 
 	GDREGISTER_CLASS(CoreBind::OVGame);
 	GDREGISTER_CLASS(CoreBind::OVSimulation);
+	GDREGISTER_CLASS(CoreBind::OVDataloader);
+	GDREGISTER_CLASS(CoreBind::OVLexyVDF);
 
 	_argument_parser = memnew(ArgumentParser);
 	Engine::get_singleton()->register_singleton("ArgumentParser", ArgumentParser::get_singleton());
@@ -28,6 +32,12 @@ void OpenVic::register_core_types() {
 
 	_ov_simulation = memnew(CoreBind::OVSimulation);
 	Engine::get_singleton()->register_singleton("OVSimulation", CoreBind::OVSimulation::get_singleton());
+
+	_ov_dataloader = memnew(CoreBind::OVDataloader);
+	Engine::get_singleton()->register_singleton("OVDataloader", CoreBind::OVDataloader::get_singleton());
+
+	_ov_lexy_vdf = memnew(CoreBind::OVLexyVDF);
+	Engine::get_singleton()->register_singleton("OVLexyVDF", CoreBind::OVLexyVDF::get_singleton());
 }
 
 void OpenVic::unregister_core_types() {
@@ -39,4 +49,10 @@ void OpenVic::unregister_core_types() {
 
 	Engine::get_singleton()->unregister_singleton("OVSimulation");
 	memdelete(_ov_simulation);
+
+	Engine::get_singleton()->unregister_singleton("OVDataloader");
+	memdelete(_ov_dataloader);
+
+	Engine::get_singleton()->unregister_singleton("OVLexyVDF");
+	memdelete(_ov_lexy_vdf);
 }

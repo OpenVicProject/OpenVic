@@ -76,6 +76,8 @@ func _ready() -> void:
 	var engine_licenses := Engine.get_license_info()
 	var game_licenses := OVGame.get_license_info()
 	var sim_licenses := OVSimulation.get_license_info()
+	var dataloader_licenses := OVDataloader.get_license_info()
+	var lexy_vdf_licenses := OVLexyVDF.get_license_info()
 
 	# Set control theme type variations
 	for label in [$List/Label, $Component/Title, $License/Title]:
@@ -109,36 +111,52 @@ func load_components() -> void:
 			component.source = components[index].source
 		_add_component(component)
 
-	_component_list.add_child(HSeparator.new())
-	_add_contributor_button("Simulation Contributors", OVSimulation.get_author_info())
-	_component_list.add_child(HSeparator.new())
+	var component_infos: Array[Dictionary] = [
+		{
+			"contributor_header": "Simulation Contributors",
+			"author_info": OVSimulation.get_author_info(),
+			"header_node_name": &"SimHeader",
+			"header_node_text": "Simulation Components",
+			"copyright_info": OVSimulation.get_copyright_info()
+		},
+		{
+			"contributor_header": "Dataloader Contributors",
+			"author_info": OVDataloader.get_author_info(),
+			"header_node_name": &"DataloaderHeader",
+			"header_node_text": "Dataloader Components",
+			"copyright_info": OVDataloader.get_copyright_info()
+		},
+		{
+			"contributor_header": "lexy-vdf Contributors",
+			"author_info": OVLexyVDF.get_author_info(),
+			"header_node_name": &"LexyVDFHeader",
+			"header_node_text": "lexy-vdf Components",
+			"copyright_info": OVLexyVDF.get_copyright_info()
+		},
+		{
+			"contributor_header": "Godot Contributors",
+			"author_info": Engine.get_author_info(),
+			"header_node_name": &"GodotHeader",
+			"header_node_text": "Godot Components",
+			"copyright_info": Engine.get_copyright_info()
+		}
+	]
 
-	var sim_header := Label.new()
-	sim_header.name = &"SimHeader"
-	sim_header.text = "Simulation Components"
-	_component_list.add_child(sim_header)
-	_component_list.add_child(HSeparator.new())
-	for component in OVSimulation.get_copyright_info():
-		var index := components.find_custom(func(c : Dictionary) -> bool: return c.name == component.name)
-		if index != -1 and not components[index].source.is_empty():
-			component.source = components[index].source
-		_add_component(component)
+	for component_info: Dictionary in component_infos:
+		_component_list.add_child(HSeparator.new())
+		_add_contributor_button(component_info.contributor_header, component_info.author_info)
+		_component_list.add_child(HSeparator.new())
 
-	_component_list.add_child(HSeparator.new())
-	_add_contributor_button("Godot Contributors", Engine.get_author_info())
-	_component_list.add_child(HSeparator.new())
-
-	_component_list.add_child(HSeparator.new())
-	var godot_header := Label.new()
-	godot_header.name = &"GodotHeader"
-	godot_header.text = "Godot Engine Components"
-	_component_list.add_child(godot_header)
-	_component_list.add_child(HSeparator.new())
-	for component in Engine.get_copyright_info():
-		var index := components.find_custom(func(c : Dictionary) -> bool: return c.name == component.name)
-		if index != -1 and not components[index].source.is_empty():
-			component.source = components[index].source
-		_add_component(component)
+		var header := Label.new()
+		header.name = component_info.header_node_name
+		header.text = component_info.header_node_text
+		_component_list.add_child(header)
+		_component_list.add_child(HSeparator.new())
+		for component in component_info.copyright_info:
+			var index := components.find_custom(func(c : Dictionary) -> bool: return c.name == component.name)
+			if index != -1 and not components[index].source.is_empty():
+				component.source = components[index].source
+			_add_component(component)
 
 	_is_loaded = true
 
@@ -211,6 +229,16 @@ func _on_component_button_pressed(component) -> void:
 	var engine_licenses := Engine.get_license_info()
 	var game_licenses := OVGame.get_license_info()
 	var sim_licenses := OVSimulation.get_license_info()
+	var dataloader_licenses := OVDataloader.get_license_info()
+	var lexy_vdf_licenses := OVLexyVDF.get_license_info()
+
+	var license_groups: Array[Dictionary] = [
+		engine_licenses,
+		game_licenses,
+		sim_licenses,
+		dataloader_licenses,
+		lexy_vdf_licenses
+	]
 
 	if not _is_transitioning:
 		$Component/Title.text = component.name
@@ -254,15 +282,20 @@ func _on_component_button_pressed(component) -> void:
 				if license == "Expat":
 					license = "MIT"
 
-				if license in engine_licenses or license in game_licenses or license in sim_licenses:
-					var button := Button.new()
-					button.theme_type_variation = theme_type_small_button
-					button.text = license
-					if _button_feedback:
-						_button_feedback.setup_button(button)
-					button.pressed.connect(_on_license_button_pressed.bind(license))
-					license_hbox.add_child(button)
-				else:
+				var in_group := false
+				for license_group: Dictionary[String, String] in license_groups:
+					if license in license_group:
+						var button := Button.new()
+						button.theme_type_variation = theme_type_small_button
+						button.text = license
+						if _button_feedback:
+							_button_feedback.setup_button(button)
+						button.pressed.connect(_on_license_button_pressed.bind(license))
+						license_hbox.add_child(button)
+						in_group = true
+						break
+
+				if not in_group:
 					var label := Label.new()
 					label.theme_type_variation = theme_type_small_label
 					label.text = license
@@ -287,13 +320,25 @@ func _on_license_button_pressed(license: String) -> void:
 		var engine_licenses := Engine.get_license_info()
 		var game_licenses := OVGame.get_license_info()
 		var sim_licenses := OVSimulation.get_license_info()
-		if license in engine_licenses:
-			_license_label.text = engine_licenses[license]
-		elif license in game_licenses:
-			_license_label.text = game_licenses[license]
-		elif license in sim_licenses:
-			_license_label.text = sim_licenses[license]
-		else:
+		var dataloader_licenses := OVDataloader.get_license_info()
+		var lexy_vdf_licenses := OVLexyVDF.get_license_info()
+
+		var license_groups: Array[Dictionary] = [
+			engine_licenses,
+			game_licenses,
+			sim_licenses,
+			dataloader_licenses,
+			lexy_vdf_licenses
+		]
+
+		var in_group := false
+		for license_group: Dictionary[String, String] in license_groups:
+			if license in license_group:
+				_license_label.text = license_group[license]
+				in_group = true
+				break
+
+		if not in_group:
 			_license_label.text = preload("res://addons/quick_licenses/licenses.json").data[license]
 		$License/ScrollContainer.scroll_vertical = 0.0
 		_transition($Component, $License)
