@@ -3,7 +3,7 @@
 namespace OpenVic {
 	struct GUILabel;
 	struct GUILineChart;
-	struct GUINode;
+	class GUINode;
 
 	struct BudgetOverview {
 	private:

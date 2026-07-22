@@ -24,7 +24,6 @@ jobs:
       commit: ${{ steps.check_for_new_commits.outputs.commit }}
       godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
       godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
-      godot-api-version: ${{ steps.godot-env.outputs.godot-api-version }}
       latest-tag: ${{ steps.default-values.outputs.latest-tag || steps.master-values.outputs.latest-tag || steps.nightly-values.outputs.latest-tag }}
       commit-hash: ${{ steps.default-values.outputs.commit-hash || steps.master-values.outputs.commit-hash || steps.nightly-values.outputs.commit-hash }}
       from-ref: ${{ steps.default-values.outputs.from-ref || steps.master-values.outputs.from-ref || steps.nightly-values.outputs.from-ref }}
@@ -100,15 +99,14 @@ jobs:
         run: |
           relevant_files=(
             "extension/deps/*"
-            "scripts"
-            "godot-cpp"
             "extension/src/*.hpp"
             "extension/src/*.cpp"
             "game/*"
             ':!extension/src/openvic-extension/pch.hpp'
             ':!extension/src/openvic-extension/pch.cpp'
             "pyproject.toml"
-            "SConstruct"
+            "CMakeLists.txt"
+            "CMakePresets.json"
             ".github/workflows/builds.yml"
             ".github/actions/openvic-build/action.yml"
             ".github/actions/openvic-release/action.yml"
@@ -227,39 +225,37 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # RelWithDebInfo = optimized with debug symbols (the old
+          # optimize=speed_trace debug_symbols=yes flavor).
           - identifier: windows-release
             os: windows-latest
             name: 🏁 Windows Release
-            target: template_release
-            platform: windows
-            arch: x86_64
-            scons-flags: optimize=speed_trace
+            preset: windows-x64-template_release
+            configuration: RelWithDebInfo
+            cmake-args: ''
 
           - identifier: macos-release
             os: macos-latest
             name: 🍎 macOS (universal) Release
-            target: template_release
-            platform: macos
-            arch: universal
-            scons-flags: "optimize=speed_trace lto=full"
+            preset: macos-universal-template_release
+            configuration: RelWithDebInfo
+            cmake-args: -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
 
           - identifier: linux-release
             os: ubuntu-latest
             name: 🐧 Linux Release
             runner: ubuntu-22.04
-            target: template_release
-            platform: linux
-            arch: x86_64
-            scons-flags: "optimize=speed_trace lto=full use_static_cpp=yes"
+            preset: linux-x64-template_release
+            configuration: RelWithDebInfo
+            cmake-args: -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
 
           - identifier: linux-debug
             os: ubuntu-latest
             name: 🐧 Linux Debug
             runner: ubuntu-latest
-            target: template_debug
-            platform: linux
-            arch: x86_64
-            scons-flags: optimize=none
+            preset: linux-x64-template_debug
+            configuration: Debug
+            cmake-args: ''
 
     steps:
       - name: Checkout project
@@ -272,13 +268,10 @@ jobs:
         uses: ./.github/actions/openvic-build
         with:
           identifier: ${{ matrix.identifier }}
-          target: ${{ matrix.target }}
-          platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          api-version: ${{ needs.nightly-check.outputs.godot-api-version }}
+          preset: ${{ matrix.preset }}
+          configuration: ${{ matrix.configuration }}
           tag-name: ${{ needs.nightly-check.outputs.tag-name }}
-          disable-cache: true
-          scons-flags: use_hot_reload=no debug_symbols=yes ${{ matrix.scons-flags }}
+          cmake-args: ${{ matrix.cmake-args }}
 
   publish-nightly-release:
     name: Publish Release

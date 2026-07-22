@@ -11,7 +11,7 @@ namespace OpenVic {
 	struct GUIIcon;
 	struct GUIMaskedFlagButton;
 	struct GUILabel;
-	struct GUINode;
+	class GUINode;
 	struct fixed_point_t;
 
 	struct ScoreOverview : public observer {

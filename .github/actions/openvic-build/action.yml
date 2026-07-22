@@ -1,30 +1,18 @@
 name: Build OpenVic
-description: Setup and Build OpenVic with the provided options
+description: Configure, build, and install OpenVic with CMake
 
 inputs:
   identifier:
-    description: Identifier of this build
-  target:
-    description: Target type to build for
+    description: Identifier of this build (artifact name)
+  preset:
+    description: CMake configure preset
     required: true
-  platform:
-    description: Platform to build for
+  configuration:
+    description: Build configuration (Debug, Release, RelWithDebInfo)
     required: true
-  arch:
-    description: Architecture to build for
-    required: true
-  api-version:
-    description: API version to build for
-    required: true
-  scons-flags:
-    description: Additional flags to send to SCons
+  cmake-args:
+    description: Additional -D flags passed to the CMake configure step
     default: ''
-  cache-base-branch:
-    description: Branch to base the cache upon
-    default: 'master'
-  disable-cache:
-    description: Whether to disable the build cache
-    default: 'false'
   tag-name:
     description: Name of tag
     default: ''
@@ -35,34 +23,40 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup build cache
-      uses: OpenVicProject/openvic-cache@master
-      if: ${{ inputs.disable-cache != 'true' }}
-      with:
-        cache-name: ${{ inputs.identifier }}
-        base-branch: ${{ inputs.cache-base-branch }}
-      continue-on-error: true
+    - name: Setup MSVC environment
+      if: ${{ runner.os == 'Windows' }}
+      shell: pwsh
+      run: |
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+        Import-Module (Join-Path $vsPath "Common7\Tools\Microsoft.VisualStudio.DevShell.dll")
+        Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'
+        Get-ChildItem env: | ForEach-Object { Add-Content -Path $env:GITHUB_ENV -Value "$($_.Name)=$($_.Value)" }
 
-    - name: Set up Python
-      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-      with:
-        python-version: "3.x"
-
-    - name: Set up SCons
+    - name: Setup Ninja
       shell: bash
       run: |
-        python -c "import sys; print(sys.version)"
-        python -m pip install scons
-        scons --version
+        # Ninja is preinstalled on GitHub-hosted images; fall back to the
+        # image's package manager if a future image drops it.
+        if ! command -v ninja >/dev/null 2>&1; then
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            brew install ninja
+          elif [ "$RUNNER_OS" = "Windows" ]; then
+            choco install ninja -y
+          else
+            sudo apt-get update -y && sudo apt-get install -y ninja-build
+          fi
+        fi
+        ninja --version
 
     - name: Install APT dependencies
-      if: ${{ inputs.platform == 'linux' }}
+      if: ${{ runner.os == 'Linux' }}
       uses: awalsh128/cache-apt-pkgs-action@681749ae568c81c2037cb9185e38b709b261bd2f # v1.6.1
       with:
         packages: build-essential pkg-config libtbb-dev
 
     - name: Install and Set g++ to version 13
-      if: ${{ inputs.platform == 'linux' }}
+      if: ${{ runner.os == 'Linux' }}
       shell: sh
       run: |
         g++ --version
@@ -73,26 +67,23 @@ runs:
         sudo update-alternatives --set g++ /usr/bin/g++-13
         g++ --version
 
-    - name: Setup MinGW for Windows/MinGW build
-      if: ${{ inputs.platform == 'windows' }}
-      uses: egor-tensin/setup-mingw@ef0952fadae6794e225c0c1654887408bcadbf64
-
-    - name: Compile with SCons
-      uses: OpenVicProject/openvic-build@master
+    - name: Configure
+      shell: bash
       env:
-        GAME_TAG: ${{ inputs.tag-name }}
-        GAME_RELEASE: ${{ inputs.release-name }}
-      with:
-        platform: ${{ inputs.platform }}
-        target: ${{ inputs.target }}
-        bin-dir: "game/bin/"
-        sconsflags: arch=${{ inputs.arch }} api_version=${{ inputs.api-version }} ${{ inputs.scons-flags }}
-
-    - name: Delete compilation files
-      if: ${{ inputs.platform == 'windows' }}
-      shell: pwsh
+        # Baked into the commit-info header at configure time.
+        OPENVIC_TAG: ${{ inputs.tag-name }}
+        OPENVIC_RELEASE: ${{ inputs.release-name }}
       run: |
-        Remove-Item game/bin/openvic/* -Include *.exp,*.lib,*.pdb -Force
+        cmake --preset ${{ inputs.preset }} \
+          ${{ inputs.cmake-args }}
+
+    - name: Build
+      shell: bash
+      run: cmake --build out/build/${{ inputs.preset }} --config ${{ inputs.configuration }}
+
+    - name: Install
+      shell: bash
+      run: cmake --install out/build/${{ inputs.preset }} --config ${{ inputs.configuration }}
 
     - name: Upload extension artifact
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

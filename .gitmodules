@@ -1,12 +1,3 @@
-[submodule "godot-cpp"]
-	path = godot-cpp
-	url = https://github.com/godotengine/godot-cpp
 [submodule "extension/deps/openvic-simulation"]
 	path = extension/deps/openvic-simulation
 	url = https://github.com/OpenVicProject/OpenVic-Simulation
-[submodule "scripts"]
-	path = scripts
-	url = https://github.com/OpenVicProject/scripts
-[submodule "extension/deps/gli"]
-	path = extension/deps/gli
-	url = https://github.com/g-truc/gli

@@ -20,7 +20,6 @@ jobs:
       release-name: ${{ steps.get_release_name.outputs.release-name }}
       godot-executable-url: ${{ steps.godot-env.outputs.godot-linux-url }}
       godot-templates-url: ${{ steps.godot-env.outputs.godot-template-url }}
-      godot-api-version: ${{ steps.godot-env.outputs.godot-api-version }}
     env:
       GITHUB_REF_NAME: ${{ github.ref_name }}
     steps:
@@ -92,36 +91,32 @@ jobs:
           - identifier: windows-release
             os: windows-latest
             name: 🏁 Build Windows
-            target: template_release
-            platform: windows
-            arch: x86_64
-            scons-flags: ''
+            preset: windows-x64-template_release
+            configuration: Release
+            cmake-args: ''
 
           - identifier: macos-release
             os: macos-latest
             name: 🍎 Build macOS
-            target: template_release
-            platform: macos
-            arch: universal
-            scons-flags: lto=full
+            preset: macos-universal-template_release
+            configuration: Release
+            cmake-args: -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
 
           - identifier: linux-release
             os: ubuntu-latest
             name: 🐧 Build Linux
             runner: ubuntu-22.04
-            target: template_release
-            platform: linux
-            arch: x86_64
-            scons-flags: lto=full use_static_cpp=yes
+            preset: linux-x64-template_release
+            configuration: Release
+            cmake-args: -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
 
           - identifier: linux-debug
             os: ubuntu-latest
             name: 🐧 Build Linux (debug)
             runner: ubuntu-latest
-            target: template_debug
-            platform: linux
-            arch: x86_64
-            scons-flags: optimize=none
+            preset: linux-x64-template_debug
+            configuration: Debug
+            cmake-args: ''
 
     steps:
       - name: Checkout project
@@ -134,14 +129,11 @@ jobs:
         uses: ./.github/actions/openvic-build
         with:
           identifier: ${{ matrix.identifier }}
-          target: ${{ matrix.target }}
-          platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          version-api: ${{ needs.static-checks-release.outputs.godot-api-version }}
+          preset: ${{ matrix.preset }}
+          configuration: ${{ matrix.configuration }}
           tag-name: ${{ github.ref_name }}
           release-name: ${{ needs.static-checks-release.outputs.release-name }}
-          disable-cache: true
-          scons-flags: use_hot_reload=no ${{ matrix.scons-flags }}
+          cmake-args: ${{ matrix.cmake-args }}
 
   publish-release:
     name: Publish Release

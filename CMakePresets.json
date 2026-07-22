@@ -1,0 +1,381 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28
+    },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/game/bin/openvic",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_CONFIGURATION_TYPES": "Release;RelWithDebInfo;Debug",
+                "GODOTCPP_USE_HOT_RELOAD": "OFF",
+                "GODOTCPP_PRECISION": "single"
+            }
+        },
+        {
+            "name": "t-template_debug",
+            "hidden": true,
+            "cacheVariables": {
+                "GODOTCPP_TARGET": "template_debug",
+                "CMAKE_DEFAULT_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "t-template_release",
+            "hidden": true,
+            "cacheVariables": {
+                "GODOTCPP_TARGET": "template_release",
+                "CMAKE_DEFAULT_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "t-editor",
+            "hidden": true,
+            "cacheVariables": {
+                "GODOTCPP_TARGET": "editor",
+                "CMAKE_DEFAULT_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "t-dev",
+            "hidden": true,
+            "cacheVariables": {
+                "GODOTCPP_DEV_BUILD": "ON",
+                "CMAKE_DEFAULT_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "p-windows-x64",
+            "hidden": true,
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "GODOTCPP_USE_STATIC_CPP": "OFF"
+            }
+        },
+        {
+            "name": "p-linux-x64",
+            "hidden": true,
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++",
+                "GODOTCPP_USE_STATIC_CPP": "ON"
+            }
+        },
+        {
+            "name": "p-macos-universal",
+            "hidden": true,
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "x86_64;arm64"
+            }
+        },
+        {
+            "name": "tc-clang-cl",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
+            }
+        },
+        {
+            "name": "tc-mingw",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "GODOTCPP_USE_STATIC_CPP": "ON"
+            }
+        },
+        {
+            "name": "windows-x64-template_debug",
+            "inherits": [
+                "p-windows-x64",
+                "t-template_debug"
+            ]
+        },
+        {
+            "name": "windows-x64-template_release",
+            "inherits": [
+                "p-windows-x64",
+                "t-template_release"
+            ]
+        },
+        {
+            "name": "windows-x64-editor",
+            "inherits": [
+                "p-windows-x64",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "windows-x64-template_debug-dev",
+            "inherits": [
+                "p-windows-x64",
+                "t-template_debug",
+                "t-dev"
+            ]
+        },
+        {
+            "name": "windows-x64-editor-dev",
+            "inherits": [
+                "p-windows-x64",
+                "t-dev",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "windows-x64-template_release-clang",
+            "inherits": [
+                "tc-clang-cl",
+                "p-windows-x64",
+                "t-template_release"
+            ]
+        },
+        {
+            "name": "windows-x64-template_release-mingw",
+            "inherits": [
+                "tc-mingw",
+                "p-windows-x64",
+                "t-template_release"
+            ]
+        },
+        {
+            "name": "windows-x64-template_debug-clang",
+            "inherits": [
+                "tc-clang-cl",
+                "p-windows-x64",
+                "t-template_debug"
+            ]
+        },
+        {
+            "name": "windows-x64-template_debug-mingw",
+            "inherits": [
+                "tc-mingw",
+                "p-windows-x64",
+                "t-template_debug"
+            ]
+        },
+        {
+            "name": "windows-x64-editor-clang",
+            "inherits": [
+                "tc-clang-cl",
+                "p-windows-x64",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "windows-x64-editor-mingw",
+            "inherits": [
+                "tc-mingw",
+                "p-windows-x64",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "linux-x64-template_debug",
+            "inherits": [
+                "p-linux-x64",
+                "t-template_debug"
+            ]
+        },
+        {
+            "name": "linux-x64-template_release",
+            "inherits": [
+                "p-linux-x64",
+                "t-template_release"
+            ]
+        },
+        {
+            "name": "linux-x64-editor",
+            "inherits": [
+                "p-linux-x64",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "linux-x64-template_debug-dev",
+            "inherits": [
+                "p-linux-x64",
+                "t-template_debug",
+                "t-dev"
+            ]
+        },
+        {
+            "name": "linux-x64-editor-dev",
+            "inherits": [
+                "p-linux-x64",
+                "t-dev",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "macos-universal-template_debug",
+            "inherits": [
+                "p-macos-universal",
+                "t-template_debug"
+            ]
+        },
+        {
+            "name": "macos-universal-template_release",
+            "inherits": [
+                "p-macos-universal",
+                "t-template_release"
+            ]
+        },
+        {
+            "name": "macos-universal-editor",
+            "inherits": [
+                "p-macos-universal",
+                "t-editor"
+            ]
+        },
+        {
+            "name": "macos-universal-template_debug-dev",
+            "inherits": [
+                "p-macos-universal",
+                "t-template_debug",
+                "t-dev"
+            ]
+        },
+        {
+            "name": "macos-universal-editor-dev",
+            "inherits": [
+                "p-macos-universal",
+                "t-dev",
+                "t-editor"
+            ]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-x64-editor",
+            "configurePreset": "windows-x64-editor",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "windows-x64-template_debug",
+            "configurePreset": "windows-x64-template_debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-x64-template_release",
+            "configurePreset": "windows-x64-template_release",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-x64-template_release-clang",
+            "configurePreset": "windows-x64-template_release-clang",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-x64-template_release-mingw",
+            "configurePreset": "windows-x64-template_release-mingw",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-x64-template_debug-clang",
+            "configurePreset": "windows-x64-template_debug-clang",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-x64-template_debug-mingw",
+            "configurePreset": "windows-x64-template_debug-mingw",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-x64-editor-clang",
+            "configurePreset": "windows-x64-editor-clang",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "windows-x64-editor-mingw",
+            "configurePreset": "windows-x64-editor-mingw",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "windows-x64-editor-dev",
+            "configurePreset": "windows-x64-editor-dev",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-x64-template_debug-dev",
+            "configurePreset": "windows-x64-template_debug-dev",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-x64-editor",
+            "configurePreset": "linux-x64-editor",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "linux-x64-template_debug",
+            "configurePreset": "linux-x64-template_debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-x64-template_release",
+            "configurePreset": "linux-x64-template_release",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-x64-editor-dev",
+            "configurePreset": "linux-x64-editor-dev",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-x64-template_debug-dev",
+            "configurePreset": "linux-x64-template_debug-dev",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-universal-editor",
+            "configurePreset": "macos-universal-editor",
+            "configuration": "RelWithDebInfo"
+        },
+        {
+            "name": "macos-universal-template_debug",
+            "configurePreset": "macos-universal-template_debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-universal-template_release",
+            "configurePreset": "macos-universal-template_release",
+            "configuration": "Release"
+        },
+        {
+            "name": "macos-universal-editor-dev",
+            "configurePreset": "macos-universal-editor-dev",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-universal-template_debug-dev",
+            "configurePreset": "macos-universal-template_debug-dev",
+            "configuration": "Debug"
+        }
+    ]
+}
