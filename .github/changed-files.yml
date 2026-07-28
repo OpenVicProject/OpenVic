@@ -22,6 +22,10 @@ pre-commit:
   - '!godot-cpp/**'
   - '!extension/deps/*/**'
 
+# .pre-commit-config.yaml changing can change every file, not just the changed ones.
+pre-commit-config:
+  - ".pre-commit-config.yaml"
+
 # Determines which files are appropriate for running clangd-tidy checks on.
 clangd:
   - "**/*.{hpp,cpp,inc}"
