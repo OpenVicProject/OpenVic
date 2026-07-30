@@ -19,10 +19,36 @@ inputs:
   release-name:
     description: Name of release
     default: ''
+  enable-cache:
+    description: Whether to enable the cache for building
+    default: 'true'
 
 runs:
   using: composite
   steps:
+    - name: Install ccache and restore cache
+      if: inputs.enable-cache == 'true'
+      uses: hendrikmuhs/ccache-action@d62db5f07c26379fc4b4e0916f098a92573c3b03 # v1.2.23
+      with:
+        # Disables sporadic job summary behavior
+        job-summary:
+        append-timestamp: false
+        max-size: 1G
+        evict-old-files: job
+        key: ${{ inputs.identifier }}-${{ github.ref }}-${{ github.sha }}
+        restore-keys: |
+          ${{ inputs.identifier }}-${{ github.ref }}
+          ${{ inputs.identifier }}
+        install: yes
+
+    - name: Allow ccache to cache precompiled headers
+      if: inputs.enable-cache == 'true'
+      shell: bash
+      run: |
+        ccache --version | head -n 1
+        ccache --set-config=sloppiness=pch_defines,time_macros,include_file_mtime,include_file_ctime
+        ccache -p | grep sloppiness
+
     - name: Setup MSVC environment
       if: ${{ runner.os == 'Windows' }}
       shell: pwsh
@@ -33,21 +59,8 @@ runs:
         Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments '-arch=x64 -host_arch=x64'
         Get-ChildItem env: | ForEach-Object { Add-Content -Path $env:GITHUB_ENV -Value "$($_.Name)=$($_.Value)" }
 
-    - name: Setup Ninja
-      shell: bash
-      run: |
-        # Ninja is preinstalled on GitHub-hosted images; fall back to the
-        # image's package manager if a future image drops it.
-        if ! command -v ninja >/dev/null 2>&1; then
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            brew install ninja
-          elif [ "$RUNNER_OS" = "Windows" ]; then
-            choco install ninja -y
-          else
-            sudo apt-get update -y && sudo apt-get install -y ninja-build
-          fi
-        fi
-        ninja --version
+    - name: Get CMake and Ninja
+      uses: lukka/get-cmake@e6906078ebd1ccb8ce51ab4626ac46a1b5a517e3 # v4.4.0
 
     - name: Install APT dependencies
       if: ${{ runner.os == 'Linux' }}
@@ -67,21 +80,32 @@ runs:
         sudo update-alternatives --set g++ /usr/bin/g++-13
         g++ --version
 
-    - name: Configure
-      shell: bash
-      env:
-        # Baked into the commit-info header at configure time.
-        OPENVIC_TAG: ${{ inputs.tag-name }}
-        OPENVIC_RELEASE: ${{ inputs.release-name }}
-      run: |
-        cmake --preset ${{ inputs.preset }} \
-          ${{ inputs.cmake-args }}
-
     # A post-build step copies the extension library into game/bin/openvic, so
     # the artifact path below is populated by this step alone.
     - name: Build
-      shell: bash
-      run: cmake --build out/build/${{ inputs.preset }} --config ${{ inputs.configuration }}
+      uses: lukka/run-cmake@5d55ea7949e25f69f0ecb516d8d572297e03a956 # v10.9
+      env:
+        INPUTS_CONFIGURATION: ${{ inputs.configuration }}
+        INPUTS_TARGET: ${{ inputs.target }}
+        INPUTS_COMPLIANCE_TYPE: ${{ inputs.compliance-type }}
+        INPUTS_CMAKE_ARGS: ${{ inputs.cmake-args }}
+        INPUTS_ENABLE_CACHE: ${{ inputs.enable-cache }}
+        # Disables vcpkg on Windows
+        VCPKG_ROOT:
+        # Baked into the commit-info header at configure time.
+        OPENVIC_TAG: ${{ inputs.tag-name }}
+        OPENVIC_RELEASE: ${{ inputs.release-name }}
+      with:
+        configurePreset: ${{ inputs.preset }}
+        buildPreset: ${{ inputs.preset }}
+        # Arguments are evaluated by Javascript's eval function
+        configurePresetAdditionalArgs: |
+          [
+            $[env.INPUTS_ENABLE_CACHE] ? `-DCMAKE_C_COMPILER_LAUNCHER=ccache` : ``,
+            $[env.INPUTS_ENABLE_CACHE] ? `-DCMAKE_CXX_COMPILER_LAUNCHER=ccache` : ``,
+            $[env.INPUTS_ENABLE_CACHE] && `$[env.RUNNER_OS]` == 'Windows' ? `-DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>` : ``
+          ].concat(`$[env.INPUTS_CMAKE_ARGS]`.split(/\s+/)).filter((v) => v.length > 0)
+        buildPresetCmdString: "[`--build`, `out/build/$[env.BUILD_PRESET_NAME]`, `--config`, `$[env.INPUTS_CONFIGURATION]`]"
 
     - name: Upload extension artifact
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

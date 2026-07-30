@@ -272,6 +272,7 @@ jobs:
           configuration: ${{ matrix.configuration }}
           tag-name: ${{ needs.nightly-check.outputs.tag-name }}
           cmake-args: ${{ matrix.cmake-args }}
+          enable-cache: false
 
   publish-nightly-release:
     name: Publish Release

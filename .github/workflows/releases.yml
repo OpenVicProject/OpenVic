@@ -134,6 +134,7 @@ jobs:
           tag-name: ${{ github.ref_name }}
           release-name: ${{ needs.static-checks-release.outputs.release-name }}
           cmake-args: ${{ matrix.cmake-args }}
+          enable-cache: false
 
   publish-release:
     name: Publish Release
