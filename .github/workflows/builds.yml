@@ -52,7 +52,7 @@ jobs:
 
       - name: Style checks via prek
         if: steps.changed-files.outputs.pre-commit-config_any_changed != 'true'
-        uses: j178/prek-action@5337cb91e0fa35a7ff31b9ca345126d8bbbcdf16 # v2.0.6
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
         env:
           CHANGED_FILES: '"${{ steps.changed-files.outputs.pre-commit_all_changed_files }}"' # Wrap with quotes to bookend internal quote separators
         with:
@@ -60,7 +60,7 @@ jobs:
 
       - name: Style checks via prek for all files
         if: steps.changed-files.outputs.pre-commit-config_any_changed == 'true'
-        uses: j178/prek-action@5337cb91e0fa35a7ff31b9ca345126d8bbbcdf16 # v2.0.6
+        uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
 
       - name: Class reference schema checks
         run: xmllint --noout --schema extension/doc_tools/class.xsd extension/doc_classes/*.xml
