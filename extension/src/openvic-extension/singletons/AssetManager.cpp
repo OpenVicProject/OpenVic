@@ -2,9 +2,9 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/UITools.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
@@ -42,15 +42,14 @@ Ref<Image> AssetManager::_load_image(StringName const& path, bool flip_y) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
-	const String lookedup_path = convert_to<String>(
-		game_singleton->get_dataloader().lookup_image_file(convert_to<std::string>(path)).string()
-	);
+	const String lookedup_path =
+	    convert_to<String>(game_singleton->get_dataloader().lookup_image_file(convert_to<std::string>(path)).string());
 	ERR_FAIL_COND_V_MSG(lookedup_path.is_empty(), nullptr, Utilities::format("Failed to look up image: %s", path));
 
 	const Ref<Image> image = Utilities::load_godot_image(lookedup_path);
 	ERR_FAIL_COND_V_MSG(
-		image.is_null() || image->is_empty(), nullptr,
-		Utilities::format("Failed to load image: %s (looked up: %s)", path, lookedup_path)
+	    image.is_null() || image->is_empty(), nullptr,
+	    Utilities::format("Failed to load image: %s (looked up: %s)", path, lookedup_path)
 	);
 	if (image->detect_alpha() != Image::ALPHA_NONE) {
 		image->fix_alpha_edges();
@@ -154,16 +153,17 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	if (image.is_null()) {
 		fonts.insert(name, Ref<FontFile>());
 
-		ERR_FAIL_V_MSG(Ref<FontFile>(), Utilities::format("Failed to load font image %s for the font named %s", image_path, name));
+		ERR_FAIL_V_MSG(
+		    Ref<FontFile>(), Utilities::format("Failed to load font image %s for the font named %s", image_path, name)
+		);
 	}
 
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, Ref<FontFile>());
 
 	const String font_path = font_dir + name + font_ext;
-	const String lookedup_font_path = convert_to<String>(
-		game_singleton->get_dataloader().lookup_file(convert_to<std::string>(font_path)).string()
-	);
+	const String lookedup_font_path =
+	    convert_to<String>(game_singleton->get_dataloader().lookup_file(convert_to<std::string>(font_path)).string());
 	if (lookedup_font_path.is_empty()) {
 		fonts.insert(name, Ref<FontFile>());
 
@@ -175,8 +175,10 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 		fonts.insert(name, Ref<FontFile>());
 
 		ERR_FAIL_V_MSG(
-			Ref<FontFile>(),
-			Utilities::format("Failed to load font file %s (looked up: %s) for the font named %s", font_path, lookedup_font_path, name)
+		    Ref<FontFile>(),
+		    Utilities::format(
+		        "Failed to load font file %s (looked up: %s) for the font named %s", font_path, lookedup_font_path, name
+		    )
 		);
 	}
 

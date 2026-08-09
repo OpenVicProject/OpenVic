@@ -8,10 +8,11 @@
 #include <openvic-simulation/core/memory/String.hpp>
 #include <openvic-simulation/core/string/Utility.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
+#include <openvic-simulation/population/Culture.hpp>
 
+#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/core/Convert.hpp"
 #include "openvic-extension/singletons/GameSingleton.hpp"
-#include "openvic-extension/core/Bind.hpp"
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace godot;
@@ -44,7 +45,7 @@ GFX::Actor const* ModelSingleton::get_actor(std::string_view name, bool error_on
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	GFX::Actor const* actor =
-		game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
+	    game_singleton->get_definition_manager().get_ui_manager().get_cast_object_by_identifier<GFX::Actor>(name);
 
 	if (error_on_fail) {
 		ERR_FAIL_NULL_V_MSG(actor, nullptr, Utilities::format("Failed to find actor \"%s\"", convert_to<String>(name)));
@@ -54,16 +55,17 @@ GFX::Actor const* ModelSingleton::get_actor(std::string_view name, bool error_on
 }
 
 GFX::Actor const* ModelSingleton::get_cultural_actor(
-	std::string_view culture, std::string_view name, std::string_view fallback_name
+    std::string_view culture, std::string_view name, std::string_view fallback_name
 ) const {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 
 	ERR_FAIL_COND_V_MSG(
-		culture.empty() || name.empty(), nullptr, Utilities::format(
-			"Failed to find actor \"%s\" for culture \"%s\" - neither can be empty",
-			convert_to<String>(name), convert_to<String>(culture)
-		)
+	    culture.empty() || name.empty(), nullptr,
+	    Utilities::format(
+	        "Failed to find actor \"%s\" for culture \"%s\" - neither can be empty", convert_to<String>(name),
+	        convert_to<String>(culture)
+	    )
 	);
 
 	memory::string actor_name = append_string_views(culture, name);
@@ -73,9 +75,9 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	// Which should be tried first: "Generic***" or "***Infantry"?
 
 	if (actor == nullptr) {
+		CultureManager const& manager = game_singleton->get_definition_manager().get_pop_manager().get_culture_manager();
 		/* If no Actor exists for the specified GraphicalCultureType then try the default instead. */
-		GraphicalCultureType const* default_graphical_culture_type = game_singleton->get_definition_manager().get_pop_manager()
-			.get_culture_manager().get_default_graphical_culture_type();
+		GraphicalCultureType const* default_graphical_culture_type = manager.get_default_graphical_culture_type();
 
 		if (default_graphical_culture_type != nullptr && default_graphical_culture_type->get_identifier() != culture) {
 			actor_name = append_string_views(default_graphical_culture_type->get_identifier(), name);
@@ -89,10 +91,10 @@ GFX::Actor const* ModelSingleton::get_cultural_actor(
 	}
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, nullptr, Utilities::format(
-			"Failed to find actor \"%s\" for culture \"%s\"", convert_to<String>(name),
-			convert_to<String>(culture)
-		)
+	    actor, nullptr,
+	    Utilities::format(
+	        "Failed to find actor \"%s\" for culture \"%s\"", convert_to<String>(name), convert_to<String>(culture)
+	    )
 	);
 
 	return actor;
@@ -162,11 +164,11 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				GFX::Actor const* attachment_actor = get_actor(attachment.get_actor_name());
 
 				ERR_CONTINUE_MSG(
-					attachment_actor == nullptr, Utilities::format(
-						"Failed to find \"%s\" attachment actor for actor \"%s\"",
-						convert_to<String>(attachment.get_actor_name()),
-						convert_to<String>(actor.get_name())
-					)
+				    attachment_actor == nullptr,
+				    Utilities::format(
+				        "Failed to find \"%s\" attachment actor for actor \"%s\"",
+				        convert_to<String>(attachment.get_actor_name()), convert_to<String>(actor.get_name())
+				    )
 				);
 
 				Dictionary attachment_dict;
@@ -175,7 +177,6 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				attachment_dict[attachment_model_key] = get_model_dict(*attachment_actor);
 
 				attachments_array[idx] = std::move(attachment_dict);
-
 			}
 
 			if (!attachments_array.is_empty()) {
@@ -184,8 +185,8 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 
 		} else {
 			UtilityFunctions::push_error(
-				"Failed to resize attachments array to the correct size (", static_cast<int64_t>(attachments.size()),
-				") for model for actor \"", convert_to<String>(actor.get_name()), "\""
+			    "Failed to resize attachments array to the correct size (", static_cast<int64_t>(attachments.size()),
+			    ") for model for actor \"", convert_to<String>(actor.get_name()), "\""
 			);
 		}
 	}
@@ -199,8 +200,7 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
  * Returning true doesn't necessarily mean a unit was added, e.g. when units is empty. */
 template<unit_branch_t Branch>
 bool ModelSingleton::add_unit_dict(
-	std::span<const std::reference_wrapper<UnitInstanceGroupBranched<Branch>>> units,
-	TypedArray<Dictionary>& unit_array
+    std::span<const std::reference_wrapper<UnitInstanceGroupBranched<Branch>>> units, TypedArray<Dictionary>& unit_array
 ) {
 	using _UnitInstanceGroup = UnitInstanceGroupBranched<Branch>;
 
@@ -234,9 +234,8 @@ bool ModelSingleton::add_unit_dict(
 	GraphicalCultureType const& graphical_culture_type = country_definition.graphical_culture;
 	UnitType const* display_unit_type = unit.get_display_unit_type();
 	ERR_FAIL_NULL_V_MSG(
-		display_unit_type, false, Utilities::format(
-			"Failed to get display unit type for unit \"%s\"", convert_to<String>(unit.get_name())
-		)
+	    display_unit_type, false,
+	    Utilities::format("Failed to get display unit type for unit \"%s\"", convert_to<String>(unit.get_name()))
 	);
 
 	std::string_view actor_name = display_unit_type->get_sprite();
@@ -256,10 +255,10 @@ bool ModelSingleton::add_unit_dict(
 			}
 		} else {
 			UtilityFunctions::push_error(
-				"Mount sprite and attach node must both be set or both be empty - regiment type \"",
-				convert_to<String>(regiment_type->get_identifier()), "\" has mount \"",
-				convert_to<String>(regiment_type->get_sprite_mount()), "\" and attach node \"",
-				convert_to<String>(regiment_type->get_sprite_mount_attach_node()), "\""
+			    "Mount sprite and attach node must both be set or both be empty - regiment type \"",
+			    convert_to<String>(regiment_type->get_identifier()), "\" has mount \"",
+			    convert_to<String>(regiment_type->get_sprite_mount()), "\" and attach node \"",
+			    convert_to<String>(regiment_type->get_sprite_mount_attach_node()), "\""
 			);
 			ret = false;
 		}
@@ -267,17 +266,16 @@ bool ModelSingleton::add_unit_dict(
 
 	// TODO - default without requiring hardcoded name
 	static constexpr std::string_view default_fallback_actor_name = "Infantry";
-	GFX::Actor const* actor = get_cultural_actor(
-		graphical_culture_type.get_identifier(), actor_name, default_fallback_actor_name
-	);
+	GFX::Actor const* actor =
+	    get_cultural_actor(graphical_culture_type.get_identifier(), actor_name, default_fallback_actor_name);
 
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, Utilities::format(
-			"Failed to find \"%s\" actor of graphical culture type \"%s\" for unit \"%s\"",
-			convert_to<String>(display_unit_type->get_sprite()),
-			convert_to<String>(graphical_culture_type.get_identifier()),
-			convert_to<String>(unit.get_name())
-		)
+	    actor, false,
+	    Utilities::format(
+	        "Failed to find \"%s\" actor of graphical culture type \"%s\" for unit \"%s\"",
+	        convert_to<String>(display_unit_type->get_sprite()), convert_to<String>(graphical_culture_type.get_identifier()),
+	        convert_to<String>(unit.get_name())
+	    )
 	);
 
 	Dictionary dict;
@@ -293,12 +291,13 @@ bool ModelSingleton::add_unit_dict(
 			dict[mount_model_key] = get_model_dict(*mount_actor);
 			dict[mount_attach_node_key] = convert_to<String>(mount_attach_node_name);
 		} else {
-			UtilityFunctions::push_error(Utilities::format(
-				"Failed to find \"%s\" mount actor of graphical culture type \"%s\" for unit \"%s\"",
-				convert_to<String>(mount_actor_name),
-				convert_to<String>(graphical_culture_type.get_identifier()),
-				convert_to<String>(unit.get_name())
-			));
+			UtilityFunctions::push_error(
+			    Utilities::format(
+			        "Failed to find \"%s\" mount actor of graphical culture type \"%s\" for unit \"%s\"",
+			        convert_to<String>(mount_actor_name), convert_to<String>(graphical_culture_type.get_identifier()),
+			        convert_to<String>(unit.get_name())
+			    )
+			);
 			ret = false;
 		}
 	}
@@ -310,9 +309,7 @@ bool ModelSingleton::add_unit_dict(
 		dict[flag_floating_key] = true;
 	}
 
-	dict[position_key] = game_singleton->normalise_map_position(
-		unit.get_location().province_definition.get_unit_position()
-	);
+	dict[position_key] = game_singleton->normalise_map_position(unit.get_location().province_definition.get_unit_position());
 
 	if (display_unit_type->unit_category != UnitType::unit_category_t::INFANTRY) {
 		dict[rotation_key] = -0.25f * std::numbers::pi_v<float>;
@@ -340,13 +337,13 @@ TypedArray<Dictionary> ModelSingleton::get_units() {
 		if (province.province_definition.is_water()) {
 			if (!add_unit_dict(std::span { province.get_navies() }, ret)) {
 				UtilityFunctions::push_error(
-					"Error adding navy to province \"", convert_to<String>(province.get_identifier()), "\""
+				    "Error adding navy to province \"", convert_to<String>(province.get_identifier()), "\""
 				);
 			}
 		} else {
 			if (!add_unit_dict(std::span { province.get_armies() }, ret)) {
 				UtilityFunctions::push_error(
-					"Error adding army to province \"", convert_to<String>(province.get_identifier()), "\""
+				    "Error adding army to province \"", convert_to<String>(province.get_identifier()), "\""
 				);
 			}
 		}
@@ -389,7 +386,7 @@ Dictionary ModelSingleton::get_flag_model(bool floating) {
 }
 
 bool ModelSingleton::add_building_dict(
-	BuildingInstance const& building, ProvinceInstance const& province, TypedArray<Dictionary>& building_array
+    BuildingInstance const& building, ProvinceInstance const& province, TypedArray<Dictionary>& building_array
 ) {
 	ProvinceDefinition const& province_definition = province.province_definition;
 
@@ -402,10 +399,9 @@ bool ModelSingleton::add_building_dict(
 
 	std::string suffix;
 
-	if (
-		&building.building_type ==
-			game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type()
-	) {
+	BuildingTypeManager const& manager =
+	    game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager();
+	if (&building.building_type == manager.get_port_building_type()) {
 		/* Port */
 		if (!province_definition.has_port()) {
 			return true;
@@ -439,20 +435,19 @@ bool ModelSingleton::add_building_dict(
 
 	GFX::Actor const* actor = get_actor(actor_name);
 	ERR_FAIL_NULL_V_MSG(
-		actor, false, Utilities::format(
-			"Failed to find \"%s\" actor for building \"%s\" in province \"%s\"",
-			convert_to<String>(actor_name), convert_to<String>(building.get_identifier()),
-			convert_to<String>(province.get_identifier())
-		)
+	    actor, false,
+	    Utilities::format(
+	        "Failed to find \"%s\" actor for building \"%s\" in province \"%s\"", convert_to<String>(actor_name),
+	        convert_to<String>(building.get_identifier()), convert_to<String>(province.get_identifier())
+	    )
 	);
 
 	Dictionary dict;
 
 	dict[model_key] = get_model_dict(*actor);
 
-	dict[position_key] = game_singleton->normalise_map_position(
-		position_ptr != nullptr ? *position_ptr : province_definition.get_centre()
-	);
+	dict[position_key] =
+	    game_singleton->normalise_map_position(position_ptr != nullptr ? *position_ptr : province_definition.get_centre());
 
 	if (rotation != 0.0f) {
 		dict[rotation_key] = rotation;
@@ -477,8 +472,8 @@ TypedArray<Dictionary> ModelSingleton::get_buildings() {
 			for (BuildingInstance const& building : province.get_buildings()) {
 				if (!add_building_dict(building, province, ret)) {
 					UtilityFunctions::push_error(
-						"Error adding building \"", convert_to<String>(building.get_identifier()),
-						"\" to province \"", convert_to<String>(province.get_identifier()), "\""
+					    "Error adding building \"", convert_to<String>(building.get_identifier()), "\" to province \"",
+					    convert_to<String>(province.get_identifier()), "\""
 					);
 				}
 			}

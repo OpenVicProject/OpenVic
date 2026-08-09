@@ -27,7 +27,7 @@ namespace OpenVic {
 		/* Create a GFXSpriteTexture using the specified GFX::TextureSprite and icon index. Returns nullptr if
 		 * set_gfx_texture_sprite fails. */
 		static godot::Ref<GFXSpriteTexture> make_gfx_sprite_texture(
-			GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
+		    GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
 		/* Discard the GFX::TextureSprite, atlas texture and icon index. */
@@ -36,13 +36,13 @@ namespace OpenVic {
 		/* Set the GFX::TextureSprite, load its texture as an atlas, check if it is an IconTextureSprite,
 		 * and if so set its icon count and the current displayed icon. */
 		godot::Error set_gfx_texture_sprite(
-			GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
+		    GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
 		/* Search for a GFX::TextureSprite with the specified name and,
 		 * if successful, call set_gfx_texture_sprite to set it and its icon. */
 		godot::Error set_gfx_texture_sprite_name(
-			godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
+		    godot::String const& gfx_texture_sprite_name, GFX::frame_t icon = GFX::NO_FRAMES
 		);
 
 		/* Return the name of the GFX::TextureSprite, or an empty String if it's null. */
