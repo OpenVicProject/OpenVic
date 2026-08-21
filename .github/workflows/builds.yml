@@ -156,7 +156,7 @@ jobs:
     runs-on: Ubuntu-latest
     steps:
       - name: Check
-        uses: re-actors/alls-green@a638d6464689bbb24c325bb3fe9404d63a913030
+        uses: re-actors/alls-green@2410c4cfd1739b8daac80b163f67b3bc7e82fa8a
         with:
           allowed-skips: static-checks-builds, build-master, godot-debug-checks, export-master, merge-library-files
           jobs: ${{ toJson(needs) }}
