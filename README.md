@@ -12,7 +12,7 @@ Main Repo for the OpenVic Project
 For detailed instructions, view the Contributor Quickstart Guide [here](docs/CONTRIBUTING.md)
 
 ## System Requirements
-* [Godot 4.7](https://github.com/godotengine/godot/releases/tag/4.7-stable)
+* [Godot 4.7.2](https://github.com/godotengine/godot/releases/tag/4.7.2-stable)
 * [CMake](https://cmake.org/) 3.28+
 * [Ninja](https://ninja-build.org/)
 * Python 3 (used by the build for code generation)
@@ -33,7 +33,7 @@ See [Cloning](docs/contribution/cloning.md).
 ## [Godot Documentation](https://docs.godotengine.org/en/latest/)
 
 ## Build/Run Instructions
-1. Install [Godot 4.7](https://github.com/godotengine/godot/releases/tag/4.7-stable), [CMake](https://cmake.org/) 3.28+, and [Ninja](https://ninja-build.org/) for your system.
+1. Install [Godot 4.7.2](https://github.com/godotengine/godot/releases/tag/4.7.2-stable), [CMake](https://cmake.org/) 3.28+, and [Ninja](https://ninja-build.org/) for your system.
 2. Run the command `git submodule update --init --recursive` to retrieve all related submodules.
 3. Configure and build with the preset for your platform (`windows-x64-template_debug`, `linux-x64-template_debug`, or `macos-universal-template_debug`):
    ```sh
