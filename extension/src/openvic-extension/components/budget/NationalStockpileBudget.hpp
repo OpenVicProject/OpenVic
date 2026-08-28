@@ -1,9 +1,9 @@
 #pragma once
 
-#include "openvic-extension/components/budget/abstract/BudgetComponent.hpp"
 #include "openvic-extension/components/budget/ArmyStockpileBudget.hpp"
 #include "openvic-extension/components/budget/ConstructionStockpileBudget.hpp"
 #include "openvic-extension/components/budget/NavyStockpileBudget.hpp"
+#include "openvic-extension/components/budget/abstract/BudgetComponent.hpp"
 
 namespace OpenVic {
 	struct GUILabel;

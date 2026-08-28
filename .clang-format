@@ -1,8 +1,7 @@
 ---
 Language: Cpp
-UseCRLF: false
 Standard: c++20
-UseTab: Always
+UseTab: ForIndentation
 TabWidth: 4
 IndentWidth: 4
 ColumnLimit: 128
@@ -37,17 +36,17 @@ IndentRequiresClause: false
 IncludeBlocks: Regroup
 FixNamespaceComments: false
 EmptyLineBeforeAccessModifier: LogicalBlock
-Cpp11BracedListStyle: false
+Cpp11BracedListStyle: Block
 CompactNamespaces: false
-BreakConstructorInitializers: BeforeColon
+BreakConstructorInitializers: AfterColon
 BreakBeforeBraces: Attach
 AlwaysBreakTemplateDeclarations: Yes
-AlwaysBreakAfterReturnType: None
-PenaltyReturnTypeOnItsOwnLine: 10
+AlwaysBreakAfterReturnType: ExceptShortType
+PenaltyReturnTypeOnItsOwnLine: 500
 BreakBeforeConceptDeclarations: Always
 AllowShortLambdasOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
-AllowShortEnumsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCompoundRequirementOnASingleLine: true
@@ -58,19 +57,21 @@ AlignTrailingComments:
   OverEmptyLines: 0
 AlignEscapedNewlines: DontAlign
 AlignAfterOpenBracket: BlockIndent
-AlignOperands: DontAlign
+AlignOperands: AlignAfterOperator
 AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: true
   AcrossComments: true
   AlignCaseColons: false
-BinPackArguments: true
-BinPackParameters: true
+BinPackArguments: false
+BinPackParameters: OnePerLine
 AccessModifierOffset: -4
 InsertNewlineAtEOF: true
 InsertBraces: true
 MaxEmptyLinesToKeep: 2
 RequiresClausePosition: OwnLine
+PenaltyBreakAssignment: 100
+PenaltyIndentedWhitespace: 5
 IncludeCategories:
   - Regex: <[[:alnum:]_]+>
     Priority: 1
@@ -82,7 +83,33 @@ IncludeCategories:
     Priority: 4
   - Regex: ^<openvic-simulation/
     Priority: 5
-  - Regex: ^"openvic-extension/
+  - Regex: ^<lexy-vdf/
     Priority: 6
-  - Regex: .*
+  - Regex: ^<boost/
     Priority: 7
+  - Regex: ^<dryad/
+    Priority: 8
+  - Regex: ^<fmt/
+    Priority: 9
+  - Regex: ^<foonathan
+    Priority: 10
+  - Regex: ^<function2/
+    Priority: 11
+  - Regex: ^<plf_colony.h>
+    Priority: 12
+  - Regex: ^<range
+    Priority: 13
+  - Regex: ^<spdlog/
+    Priority: 14
+  - Regex: ^<tsl/
+    Priority: 15
+  - Regex: ^<type_safe/
+    Priority: 16
+  - Regex: ^<XoshiroCpp.hpp>
+    Priority: 17
+  - Regex: ^<gli/
+    Priority: 18
+  - Regex: ^"openvic-extension/
+    Priority: 19
+  - Regex: .*
+    Priority: 20

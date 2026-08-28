@@ -28,7 +28,7 @@ namespace OpenVic {
 		godot::Ref<godot::Image> province_colour_image;
 		godot::Ref<godot::ImageTexture> province_colour_texture;
 		Mapmode const* mapmode = &Mapmode::ERROR_MAPMODE; // This should never be null, if no mapmode is set then it'll point to
-														  // Mapmode::ERROR_MAPMODE
+		                                                  // Mapmode::ERROR_MAPMODE
 		godot::Ref<godot::Texture2DArray> terrain_texture;
 
 		inline static const godot::Vector2i PROPERTY(flag_dims, { 128, 64 }); /* The size in pixels of an individual flag. */

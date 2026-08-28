@@ -36,24 +36,17 @@ void GitInfo::_bind_methods() {
 	OV_BIND_METHOD(GitInfo::get_release_name);
 
 	ADD_PROPERTY(
-		PropertyInfo(Variant::STRING_NAME, "commit_hash", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), //
-		"", "get_commit_hash"
+	    PropertyInfo(Variant::STRING_NAME, "commit_hash", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_commit_hash"
 	);
 	ADD_PROPERTY(
-		PropertyInfo(Variant::INT, "commit_timestamp", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), //
-		"", "get_commit_timestamp"
+	    PropertyInfo(Variant::INT, "commit_timestamp", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_commit_timestamp"
 	);
 	ADD_PROPERTY(
-		PropertyInfo(Variant::STRING_NAME, "short_hash", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), //
-		"", "get_short_hash"
+	    PropertyInfo(Variant::STRING_NAME, "short_hash", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_short_hash"
 	);
+	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "tag", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_tag");
 	ADD_PROPERTY(
-		PropertyInfo(Variant::STRING_NAME, "tag", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), //
-		"", "get_tag"
-	);
-	ADD_PROPERTY(
-		PropertyInfo(Variant::STRING_NAME, "release_name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), //
-		"", "get_release_name"
+	    PropertyInfo(Variant::STRING_NAME, "release_name", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "", "get_release_name"
 	);
 }
 
