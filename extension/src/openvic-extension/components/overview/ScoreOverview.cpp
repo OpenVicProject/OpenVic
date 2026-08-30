@@ -5,9 +5,9 @@
 #include <godot_cpp/variant/string.hpp>
 
 #include <openvic-simulation/InstanceManager.hpp>
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/modifier/ModifierEffectCache.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"

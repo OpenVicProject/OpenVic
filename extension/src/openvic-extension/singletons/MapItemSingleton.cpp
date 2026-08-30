@@ -8,6 +8,7 @@
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/core/memory/SmartPtr.hpp>
+#include <openvic-simulation/core/object/Vector.hpp>
 #include <openvic-simulation/country/CountryDefinition.hpp>
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/economy/BuildingType.hpp>
@@ -16,7 +17,6 @@
 #include <openvic-simulation/map/ProvinceDefinition.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/map/State.hpp>
-#include <openvic-simulation/types/Vector.hpp>
 
 #include <type_safe/strong_typedef.hpp>
 

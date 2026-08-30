@@ -5,13 +5,13 @@
 
 #include <openvic-simulation/DefinitionManager.hpp>
 #include <openvic-simulation/InstanceManager.hpp>
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/map/ProvinceDefinition.hpp>
 #include <openvic-simulation/map/ProvinceInstance.hpp>
 #include <openvic-simulation/population/Culture.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/OrderedContainersMath.hpp>
 #include <openvic-simulation/types/TypedIndices.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include <type_safe/strong_typedef.hpp>
 

@@ -7,12 +7,12 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/image.hpp>
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/military/UnitInstanceGroup.hpp>
 #include <openvic-simulation/population/PopSize.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
 #include <openvic-simulation/types/UnitBranchType.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXPieChartTexture.hpp"
 #include "openvic-extension/components/budget/BudgetMenu.hpp"

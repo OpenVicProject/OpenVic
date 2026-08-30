@@ -1,9 +1,9 @@
 #include "AdministrationBudget.hpp"
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/defines/CountryDefines.hpp>
 #include <openvic-simulation/politics/Reform.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"

@@ -5,9 +5,9 @@
 
 #include <godot_cpp/classes/image_texture.hpp>
 
+#include <openvic-simulation/core/object/Colour.hpp>
 #include <openvic-simulation/core/template/Concepts.hpp>
 #include <openvic-simulation/interface/GFXSprite.hpp>
-#include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/IndexedFlatMap.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 

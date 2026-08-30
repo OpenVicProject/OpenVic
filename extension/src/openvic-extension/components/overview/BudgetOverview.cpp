@@ -1,6 +1,6 @@
 #include "BudgetOverview.hpp"
 
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUILineChart.hpp"

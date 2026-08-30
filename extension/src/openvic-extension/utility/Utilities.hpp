@@ -8,9 +8,9 @@
 #include <godot_cpp/variant/variant.hpp>
 
 #include <openvic-simulation/core/memory/Vector.hpp>
-#include <openvic-simulation/types/Colour.hpp>
-#include <openvic-simulation/types/Date.hpp>
-#include <openvic-simulation/types/Vector.hpp>
+#include <openvic-simulation/core/object/Colour.hpp>
+#include <openvic-simulation/core/object/Date.hpp>
+#include <openvic-simulation/core/object/Vector.hpp>
 
 #define ERR(x) ((x) ? OK : FAILED)
 

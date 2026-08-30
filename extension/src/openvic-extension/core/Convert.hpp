@@ -15,9 +15,9 @@
 
 #include <openvic-simulation/core/memory/String.hpp>
 #include <openvic-simulation/core/memory/Vector.hpp>
+#include <openvic-simulation/core/object/Colour.hpp>
+#include <openvic-simulation/core/object/Vector.hpp>
 #include <openvic-simulation/core/template/Concepts.hpp>
-#include <openvic-simulation/types/Colour.hpp>
-#include <openvic-simulation/types/Vector.hpp>
 
 namespace OpenVic {
 	template<typename To, typename From>

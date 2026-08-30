@@ -4,14 +4,14 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/object/Colour.hpp>
+#include <openvic-simulation/core/object/FixedPoint.hpp>
+#include <openvic-simulation/core/object/FixedPoint/Math.hpp>
 #include <openvic-simulation/economy/GoodDefinition.hpp>
 #include <openvic-simulation/modifier/Modifier.hpp>
 #include <openvic-simulation/politics/PartyPolicy.hpp>
 #include <openvic-simulation/population/PopType.hpp>
-#include <openvic-simulation/types/Colour.hpp>
 #include <openvic-simulation/types/PopSprite.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
-#include <openvic-simulation/types/fixed_point/Math.hpp>
 
 #include <type_safe/strong_typedef.hpp>
 

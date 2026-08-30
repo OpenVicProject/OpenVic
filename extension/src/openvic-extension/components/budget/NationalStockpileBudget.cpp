@@ -3,9 +3,9 @@
 #include <godot_cpp/core/error_macros.hpp>
 #include <godot_cpp/variant/callable_method_pointer.hpp>
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/country/CountryInstance.hpp>
 #include <openvic-simulation/economy/GoodInstance.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GUILabel.hpp"
 #include "openvic-extension/classes/GUINode.hpp"
