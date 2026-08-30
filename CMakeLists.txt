@@ -24,12 +24,15 @@ endif()
 
 option(OPENVIC_USE_PCH "Precompile openvic-extension/pch.hpp" ON)
 
+# godot-cpp requires at minimum GODOTCPP_DEFAULT_API_VERSION to be set
+set(GODOTCPP_DEFAULT_API_VERSION "4.7")
+
 # godot-cpp builds with its own flag setup; the OpenVic base flags apply only
 # to what follows, so this fetch stays BEFORE openvic_setup_base_flags().
 openvic_declare_dep(godotcpp
     REPO godotengine/godot-cpp
-    SHA 5ffd70e34d0ab87009a9f0ffa3361bc8f4b09731
-    SHA256 69ade893349e77b2dd0e2e538ba2f6c1dd09e1b1ddd0bb3003c5be57c3d5ab69
+    SHA 101ae38034304346a46ea9ea84ae156d3e860496
+    SHA256 1ad3aaf5640bdc53814c5ec920e21cbfd061158e6253491515f4dde92222c974
 )
 FetchContent_MakeAvailable(godotcpp)
 
