@@ -10,9 +10,9 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/string_name.hpp>
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/types/IdentifierRegistry.hpp>
 #include <openvic-simulation/types/OrderedContainers.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 namespace OpenVic {
 

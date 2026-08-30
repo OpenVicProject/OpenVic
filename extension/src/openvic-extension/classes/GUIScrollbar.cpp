@@ -8,8 +8,8 @@
 #include <godot_cpp/classes/input_event_mouse_motion.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/types/ClampedValue.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 #include <openvic-simulation/utility/Logger.hpp>
 
 #include "openvic-extension/core/Bind.hpp"

@@ -5,9 +5,9 @@
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/input_event.hpp>
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
 #include <openvic-simulation/interface/GUI.hpp>
 #include <openvic-simulation/types/Signal.hpp>
-#include <openvic-simulation/types/fixed_point/FixedPoint.hpp>
 
 #include "openvic-extension/classes/GFXSpriteTexture.hpp"
 #include "openvic-extension/classes/GUIHasTooltip.hpp"
