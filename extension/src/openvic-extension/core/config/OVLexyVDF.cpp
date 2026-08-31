@@ -117,7 +117,7 @@ Dictionary OVLexyVDF::get_version_info() {
 		}
 	} else {
 		major = 0;
-		minor = 2;
+		minor = 0;
 		patch = 0;
 		prerelease_type = "unknown";
 		prerelease_count = 0;
