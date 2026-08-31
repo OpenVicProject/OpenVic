@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <class name="OVDataloader" inherits="Object" api_type="extension" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
 	<brief_description>
+		Provides access to OpenVic-Dataloader library properties.
 	</brief_description>
 	<description>
+		The [OVDataloader] singleton allows you to query and modify the dataloader's global run-time parameters. It also stores information about the current build of the OpenVic-Dataloader library, such as the current version.
 	</description>
 	<tutorials>
 	</tutorials>
@@ -10,26 +12,66 @@
 		<method name="get_author_info" qualifiers="const">
 			<return type="Dictionary[String, PackedStringArray]" />
 			<description>
+				Returns the library author information as a [Dictionary], where each entry is an [Array] of strings with the names of notable contributors to the OpenVic Dataloader: [code]senior_developers[/code], [code]contributors[/code], and [code]consultants[/code].
 			</description>
 		</method>
 		<method name="get_copyright_info" qualifiers="const">
 			<return type="Dictionary[]" />
 			<description>
+				Returns an [Array] of dictionaries with copyright information for every component of OpenVic-Dataloader's source code.
+				Every [Dictionary] contains a [code]name[/code] identifier, and a [code]parts[/code] array of dictionaries. It describes the component in detail with the following entries:
+				- [code]files[/code] - [Array] of file paths from the source code affected by this component;
+				- [code]copyright[/code] - [Array] of owners of this component;
+				- [code]license[/code] - The license applied to this component (such as "[url=https://en.wikipedia.org/wiki/MIT_License#Ambiguity_and_variants]MIT[/url]" or "[url=https://creativecommons.org/licenses/by/4.0/]CC-BY-4.0[/url]").
 			</description>
 		</method>
 		<method name="get_license_info" qualifiers="const">
 			<return type="Dictionary[String, String]" />
 			<description>
+				Returns a [Dictionary] of licenses used by OpenVic-Dataloader and included third party components. Each entry is a license name (such as "[url=https://en.wikipedia.org/wiki/MIT_License#Ambiguity_and_variants]MIT[/url]") and its associated text.
 			</description>
 		</method>
 		<method name="get_license_text" qualifiers="const">
 			<return type="String" />
 			<description>
+				Returns the full OpenVic-Dataloader license text.
 			</description>
 		</method>
 		<method name="get_version_info" qualifiers="const">
 			<return type="Dictionary" />
 			<description>
+				Returns the current OpenVic-Dataloader version information as a [Dictionary] containing the following entries:
+				- [code]tag[/code] - Full release tag as a String, "&lt;tag missing&gt;" if OpenVic-Dataloader has no tag;
+				- [code]major[/code] - Major version number as an int, 0 if OpenVic-Dataloader has no tag;
+				- [code]minor[/code] - Minor version number as an int, 0 if OpenVic-Dataloader has no tag;
+				- [code]patch[/code] - Patch version number as an int, 0 if OpenVic-Dataloader has no tag;
+				- [code]prerelease_type[/code] - Pre-release type (such as "snapshot", "snapshot.dev", "alpha", "beta", or "rc"), "" if regular release, "unknown" if OpenVic-Dataloader has no tag;
+				- [code]prerelease_count[/code] - Pre-release number as an int, 0 if regular release or if OpenVic-Dataloader has no tag;
+				- [code]prerelease_hash[/code] - Pre-release tag hash as a String, "" if regular release, "unknown" if OpenVic-Dataloader has no tag;
+				- [code]hex[/code] - Full version encoded as a hexadecimal int with one byte (2 hex digits) per number (see example below);
+				- [code]release[/code] - Human-readable Release name as a String, same as [code]tag[/code] if release name unknown;
+				- [code]hash[/code] - Full Git commit hash as a String;
+				- [code]timestamp[/code] - Holds the Git commit date UNIX timestamp in seconds as an int, or [code]0[/code] if unavailable;
+				The [code]hex[/code] value is encoded as follows, from left to right: one byte for the major, one byte for the minor, one byte for the patch version. For example, "3.1.12" would be [code]0x03010C[/code].
+				[b]Note:[/b] The [code]hex[/code] value is still an [int] internally, and printing it will give you its decimal representation, which is not particularly meaningful. Use hexadecimal literals for quick version comparisons from code:
+				[codeblocks]
+				[gdscript]
+				if OVDataloader.get_version_info().hex &gt;= 0x040100:
+					pass # Do things specific to version 4.1 or later.
+				else:
+					pass # Do things specific to versions before 4.1.
+				[/gdscript]
+				[csharp]
+				if ((int)OVDataloader.GetVersionInfo()["hex"] &gt;= 0x040100)
+				{
+					// Do things specific to version 4.1 or later.
+				}
+				else
+				{
+					// Do things specific to versions before 4.1.
+				}
+				[/csharp]
+				[/codeblocks]
 			</description>
 		</method>
 	</methods>
