@@ -1,19 +1,11 @@
 [
 	{
-		"name": "Godot Engine",
-		"source": "https://godotengine.org"
-	},
-	{
-		"name": "Quick Licenses Godot Plugin",
-		"source": "https://github.com/ProgrammerOnCoffee/Quick-Licenses"
-	},
-	{
 		"name": "OpenVic Game",
 		"source": "https://openvic.com"
 	},
 	{
 		"name": "OpenVic Game logo",
-		"source": ""
+		"source": "https://openvic.com"
 	},
 	{
 		"name": "gli",
@@ -44,32 +36,60 @@
 		"source": "https://github.com/NovaDC/Godot-MusicMetadata"
 	},
 	{
+		"name": "Quick Licenses Godot Plugin",
+		"source": "https://github.com/ProgrammerOnCoffee/Quick-Licenses"
+	},
+	{
+		"name": "gdUnit4 Godot Plugin",
+		"source": "https://github.com/godot-gdunit-labs/gdUnit4"
+	},
+	{
 		"name": "OpenVic Game music",
-		"source": ""
+		"source": "https://openvic.com"
 	},
 	{
 		"name": "OpenVic Game sound effects",
-		"source": ""
+		"source": "https://openvic.com"
 	},
 	{
 		"name": "OpenVic Game graphical assets",
-		"source": ""
+		"source": "https://openvic.com"
 	},
 	{
-		"name": "function2",
-		"source": "naios.github.io/function2"
+		"name": "OpenVic Dataloader",
+		"source": "https://github.com/OpenVicProject/OpenVic-Dataloader"
+	},
+	{
+		"name": "dryad",
+		"source": "https://github.com/foonathan/dryad"
+	},
+	{
+		"name": "fmt",
+		"source": "https://github.com/fmtlib/fmt"
+	},
+	{
+		"name": "lexy",
+		"source": "https://github.com/foonathan/lexy"
+	},
+	{
+		"name": "range-v3",
+		"source": "https://github.com/ericniebler/range-v3"
+	},
+	{
+		"name": "vmcontainer",
+		"source": "https://github.com/Spartan322/vmcontainer"
 	},
 	{
 		"name": "Lexy-based VDF Parser",
 		"source": "https://github.com/OpenVicProject/lexy-vdf"
 	},
 	{
-		"name": "foonathan/memory",
-		"source": "https://memory.foonathan.net"
+		"name": "function2",
+		"source": "https://github.com/Naios/function2"
 	},
 	{
-		"name": "OpenVic Dataloader",
-		"source": "https://github.com/OpenVicProject/OpenVic-Dataloader"
+		"name": "foonathan/memory",
+		"source": "https://github.com/foonathan/memory"
 	},
 	{
 		"name": "ordered-map",
@@ -77,7 +97,7 @@
 	},
 	{
 		"name": "plf::colony",
-		"source": "https://plflib.org/colony.htm"
+		"source": "https://github.com/mattreecebentley/plf_colony"
 	},
 	{
 		"name": "spdlog",
@@ -85,7 +105,7 @@
 	},
 	{
 		"name": "type_safe",
-		"source": "https://type_safe.foonathan.net"
+		"source": "https://github.com/foonathan/type_safe"
 	},
 	{
 		"name": "Xoshiro-cpp",
@@ -93,7 +113,7 @@
 	},
 	{
 		"name": "sigslot",
-		"source": "https://github.com/palacaze/sigslot/"
+		"source": "https://github.com/palacaze/sigslot"
 	},
 	{
 		"name": "snitch",
@@ -101,31 +121,35 @@
 	},
 	{
 		"name": "nanobench",
-		"source": "https://nanobench.ankerl.com"
+		"source": "https://github.com/martinus/nanobench"
+	},
+	{
+		"name": "Godot Engine",
+		"source": "https://godotengine.org"
 	},
 	{
 		"name": "Bullet Continuous Collision Detection and Physics Library",
-		"source": ""
+		"source": "https://github.com/bulletphysics/bullet3"
 	},
 	{
 		"name": "Linux AppStream Metadata File",
-		"source": ""
+		"source": "https://github.com/godotengine/godot/blob/master/misc/dist/linux/org.godotengine.Godot.appdata.xml"
 	},
 	{
 		"name": "Godot Engine logo",
-		"source": ""
+		"source": "https://godotengine.org"
 	},
 	{
 		"name": "Betsy",
-		"source": ""
+		"source": "https://github.com/darksylinc/betsy"
 	},
 	{
 		"name": "Chipmunk2D Joint Constraints",
-		"source": ""
+		"source": "https://github.com/slembcke/Chipmunk2D"
 	},
 	{
 		"name": "Open Dynamics Engine",
-		"source": ""
+		"source": "https://github.com/odedevs/ode"
 	},
 	{
 		"name": "Jolt Physics",
@@ -133,378 +157,378 @@
 	},
 	{
 		"name": "Joint Non-Local Means (JNLM) denoiser",
-		"source": ""
+		"source": "https://github.com/godotengine/godot/blob/master/modules/lightmapper_rd/lm_compute.glsl"
 	},
 	{
 		"name": "The Android Open Source Project",
-		"source": ""
+		"source": "https://source.android.com/"
 	},
 	{
 		"name": "ProcessPhoenix",
-		"source": ""
+		"source": "https://github.com/JakeWharton/ProcessPhoenix"
 	},
 	{
 		"name": "Robert Penner's Easing Functions",
-		"source": ""
+		"source": "https://robertpenner.com/easing"
 	},
 	{
 		"name": "NVidia's FXAA 3.11, simplified by Simon Rodriguez",
-		"source": ""
+		"source": "https://github.com/godotengine/godot/blob/master/servers/rendering/renderer_rd/shaders/effects/tonemap.glsl"
 	},
 	{
 		"name": "Intel ASSAO and related files",
-		"source": ""
+		"source": "https://github.com/GameTechDev/ASSAO"
 	},
 	{
 		"name": "Temporal Anti-Aliasing resolve implementation",
-		"source": ""
+		"source": "https://github.com/godotengine/godot/blob/master/servers/rendering/renderer_rd/shaders/effects/taa_resolve.glsl"
 	},
 	{
 		"name": "Subpixel Morphological Antialiasing",
-		"source": ""
+		"source": "https://github.com/iryoku/smaa"
 	},
 	{
 		"name": "AccessKit",
-		"source": ""
+		"source": "https://github.com/AccessKit/accesskit-c"
 	},
 	{
 		"name": "AMD FidelityFX Super Resolution",
-		"source": ""
+		"source": "https://github.com/GPUOpen-Effects/FidelityFX-FSR"
 	},
 	{
 		"name": "AMD FidelityFX Super Resolution 2",
-		"source": ""
+		"source": "https://github.com/GPUOpen-Effects/FidelityFX-FSR2"
 	},
 	{
 		"name": "ANGLE",
-		"source": ""
+		"source": " https://chromium.googlesource.com/angle/angle"
 	},
 	{
 		"name": "Arm ASTC Encoder",
-		"source": ""
+		"source": "https://github.com/ARM-software/astc-encoder"
 	},
 	{
 		"name": "Basis Universal",
-		"source": ""
+		"source": "https://github.com/BinomialLLC/basis_universal"
 	},
 	{
 		"name": "Brotli",
-		"source": ""
+		"source": "https://github.com/google/brotli"
 	},
 	{
 		"name": "CA certificates",
-		"source": ""
+		"source": "https://github.com/bagder/ca-bundle"
 	},
 	{
 		"name": "Clipper2",
-		"source": ""
+		"source": "https://github.com/AngusJohnson/Clipper2"
 	},
 	{
 		"name": "Convection Texture Tools Stand-Alone Kernels",
-		"source": ""
+		"source": "https://github.com/elasota/ConvectionKernels"
 	},
 	{
 		"name": "D3D12 Memory Allocator",
-		"source": ""
+		"source": "https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator"
 	},
 	{
 		"name": "DirectX Headers",
-		"source": ""
+		"source": "https://github.com/microsoft/DirectX-Headers"
 	},
 	{
 		"name": "doctest",
-		"source": ""
+		"source": "https://github.com/onqtam/doctest"
 	},
 	{
 		"name": "dr_libs",
-		"source": ""
+		"source": "https://github.com/mackron/dr_libs"
 	},
 	{
 		"name": "Embree",
-		"source": ""
+		"source": "https://github.com/embree/embree"
 	},
 	{
 		"name": "ENet",
-		"source": ""
+		"source": "https://github.com/lsalzman/enet"
 	},
 	{
 		"name": "etcpak",
-		"source": ""
+		"source": "https://github.com/wolfpld/etcpak"
 	},
 	{
 		"name": "DroidSans font",
-		"source": ""
+		"source": "https://android.googlesource.com/platform/frameworks/base/+/master/data/fonts/"
 	},
 	{
 		"name": "Inter font",
-		"source": ""
+		"source": "https://github.com/rsms/inter"
 	},
 	{
 		"name": "JetBrains Mono font",
-		"source": ""
+		"source": "https://github.com/JetBrains/JetBrainsMono"
 	},
 	{
 		"name": "Noto Sans font",
-		"source": ""
+		"source": "https://github.com/notofonts"
 	},
 	{
 		"name": "Open Sans font",
-		"source": ""
+		"source": "https://github.com/googlefonts/opensans"
 	},
 	{
 		"name": "Vazirmatn font",
-		"source": ""
+		"source": "https://github.com/rastikerdar/vazirmatn"
 	},
 	{
 		"name": "The FreeType Project",
-		"source": ""
+		"source": "https://gitlab.freedesktop.org/freetype/freetype"
 	},
 	{
 		"name": "GamepadMotionHelpers",
-		"source": ""
+		"source": "https://github.com/JibbSmart/GamepadMotionHelpers"
 	},
 	{
 		"name": "glad",
-		"source": ""
+		"source": "https://github.com/Dav1dde/glad"
 	},
 	{
 		"name": "glslang",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/glslang"
 	},
 	{
 		"name": "Graphite engine",
-		"source": ""
+		"source": "https://github.com/silnrsi/graphite"
 	},
 	{
 		"name": "Grisu2 float serialization algorithm",
-		"source": ""
+		"source": "https://github.com/simdjson/simdjson/blob/master/src/to_chars.cpp"
 	},
 	{
 		"name": "HarfBuzz text shaping library",
-		"source": ""
+		"source": "https://github.com/harfbuzz/harfbuzz"
 	},
 	{
 		"name": "International Components for Unicode",
-		"source": ""
+		"source": "https://github.com/unicode-org/icu"
 	},
 	{
 		"name": "libbacktrace",
-		"source": ""
+		"source": "https://github.com/ianlancetaylor/libbacktrace"
 	},
 	{
 		"name": "libjpeg-turbo",
-		"source": ""
+		"source": "https://github.com/libjpeg-turbo/libjpeg-turbo"
 	},
 	{
 		"name": "KTX",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/KTX-Software"
 	},
 	{
 		"name": "OggVorbis",
-		"source": ""
+		"source": "https://www.xiph.org"
 	},
 	{
 		"name": "libpng",
-		"source": ""
+		"source": "https://libpng.org/pub/png/libpng.html"
 	},
 	{
 		"name": "OggTheora",
-		"source": ""
+		"source": "https://www.theora.org/"
 	},
 	{
 		"name": "WebP codec",
-		"source": ""
+		"source": "https://chromium.googlesource.com/webm/libwebp/"
 	},
 	{
 		"name": "Manifold",
-		"source": ""
+		"source": "https://github.com/elalish/manifold"
 	},
 	{
 		"name": "Mbed TLS",
-		"source": ""
+		"source": "https://github.com/Mbed-TLS/mbedtls"
 	},
 	{
 		"name": "meshoptimizer",
-		"source": ""
+		"source": "https://github.com/zeux/meshoptimizer"
 	},
 	{
 		"name": "metal-cpp",
-		"source": ""
+		"source": "https://developer.apple.com/metal/cpp/"
 	},
 	{
 		"name": "mingw-std-threads",
-		"source": ""
+		"source": "https://github.com/meganz/mingw-std-threads"
 	},
 	{
 		"name": "MiniUPnP Project",
-		"source": ""
+		"source": "https://github.com/miniupnp/miniupnp"
 	},
 	{
 		"name": "MiniZip",
-		"source": ""
+		"source": "https://github.com/madler/zlib"
 	},
 	{
 		"name": "bcdec",
-		"source": ""
+		"source": "https://github.com/iOrange/bcdec"
 	},
 	{
 		"name": "Fast Filtering of Reflection Probes",
-		"source": ""
+		"source": "https://research.activision.com/publications/archives/fast-filtering-of-reflection-probes"
 	},
 	{
 		"name": "FastLZ",
-		"source": ""
+		"source": "https://github.com/ariya/FastLZ"
 	},
 	{
 		"name": "FastNoise Lite",
-		"source": ""
+		"source": "https://github.com/Auburn/FastNoiseLite"
 	},
 	{
 		"name": "libjingle",
-		"source": ""
+		"source": "https://chromium.googlesource.com/external/webrtc/stable/talk/+/master/base/ifaddrs-android.h"
 	},
 	{
 		"name": "Tangent Space Normal Maps implementation",
-		"source": ""
+		"source": "https://archive.blender.org/wiki/index.php/Dev:Shading/Tangent_Space_Normal_Maps"
 	},
 	{
 		"name": "NVIDIA NVAPI (minimal excerpt)",
-		"source": ""
+		"source": "https://download.nvidia.com/XFree86/nvapi-open-source-sdk"
 	},
 	{
 		"name": "OK Lab color space",
-		"source": ""
+		"source": "https://github.com/bottosson/bottosson.github.io/blob/master/misc/ok_color.h"
 	},
 	{
 		"name": "Minimal PCG32 implementation",
-		"source": ""
+		"source": "https://www.pcg-random.org/"
 	},
 	{
 		"name": "PolyPartition / Triangulator",
-		"source": ""
+		"source": "https://github.com/ivanfratric/polypartition"
 	},
 	{
 		"name": "Quite OK Audio Format",
-		"source": ""
+		"source": "https://github.com/phoboslab/qoa"
 	},
 	{
 		"name": "r128 library",
-		"source": ""
+		"source": "https://github.com/fahickman/r128"
 	},
 	{
 		"name": "SMAZ",
-		"source": ""
+		"source": "https://github.com/antirez/smaz"
 	},
 	{
 		"name": "SMOL-V",
-		"source": ""
+		"source": "https://github.com/aras-p/smol-v"
 	},
 	{
 		"name": "stb libraries",
-		"source": ""
+		"source": "https://github.com/nothings/stb"
 	},
 	{
 		"name": "YUV2RGB",
-		"source": ""
+		"source": "https://wss.co.uk/pinknoise/yuv2rgb"
 	},
 	{
 		"name": "Multi-channel signed distance field generator",
-		"source": ""
+		"source": "https://github.com/Chlumsky/msdfgen"
 	},
 	{
 		"name": "OpenXR Loader",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/OpenXR-SDK"
 	},
 	{
 		"name": "PCRE2",
-		"source": ""
+		"source": "https://www.pcre.org/"
 	},
 	{
 		"name": "Recast",
-		"source": ""
+		"source": "https://github.com/recastnavigation/recastnavigation"
 	},
 	{
 		"name": "RVO2",
-		"source": ""
+		"source": "https://github.com/snape"
 	},
 	{
 		"name": "SDL",
-		"source": ""
+		"source": "https://github.com/libsdl-org/SDL"
 	},
 	{
 		"name": "hidapi",
-		"source": ""
+		"source": "https://github.com/libusb/hidapi"
 	},
 	{
 		"name": "SPIRV-Cross",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/SPIRV-Cross"
 	},
 	{
 		"name": "SPIRV-Headers",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/SPIRV-Headers"
 	},
 	{
 		"name": "SPIRV-Reflect",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/SPIRV-Reflect"
 	},
 	{
 		"name": "Swappy",
-		"source": ""
+		"source": "https://github.com/godotengine/godot-swappy"
 	},
 	{
 		"name": "ThorVG",
-		"source": ""
+		"source": "https://github.com/thorvg/thorvg"
 	},
 	{
 		"name": "TinyEXR",
-		"source": ""
+		"source": "https://github.com/syoyo/tinyexr"
 	},
 	{
 		"name": "ufbx",
-		"source": ""
+		"source": "https://github.com/ufbx/ufbx"
 	},
 	{
 		"name": "V-HACD",
-		"source": ""
+		"source": "https://github.com/kmammou/v-hacd"
 	},
 	{
 		"name": "volk",
-		"source": ""
+		"source": "https://github.com/zeux/volk"
 	},
 	{
 		"name": "Vulkan Headers",
-		"source": ""
+		"source": "https://github.com/KhronosGroup/Vulkan-Headers"
 	},
 	{
 		"name": "Vulkan Memory Allocator",
-		"source": ""
+		"source": "https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator"
 	},
 	{
 		"name": "Wayland core protocol",
-		"source": ""
+		"source": "https://gitlab.freedesktop.org/wayland/wayland"
 	},
 	{
 		"name": "Wayland protocols",
-		"source": ""
+		"source": "https://gitlab.freedesktop.org/wayland/wayland-protocols"
 	},
 	{
 		"name": "Mesa Wayland protocols",
-		"source": ""
+		"source": "https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/src/egl/wayland/wayland-drm/wayland-drm.xml"
 	},
 	{
 		"name": "Wslay",
-		"source": ""
+		"source": "https://github.com/tatsuhiro-t/wslay"
 	},
 	{
 		"name": "xatlas",
-		"source": ""
+		"source": "https://github.com/jpcy/xatlas"
 	},
 	{
 		"name": "zlib",
-		"source": ""
+		"source": "https://github.com/madler/zlib"
 	},
 	{
 		"name": "Zstandard",
-		"source": ""
+		"source": "https://github.com/facebook/zstd"
 	}
 ]
