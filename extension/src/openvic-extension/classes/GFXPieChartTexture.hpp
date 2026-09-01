@@ -142,11 +142,11 @@ namespace OpenVic {
 				godot::Dictionary sub_dict;
 
 				sub_dict[_slice_tooltip_key()] = make_tooltip(key, identifier, value, total_weight);
-				sub_dict[_slice_identifier_key()] = std::move(identifier);
+				sub_dict[_slice_identifier_key()] = identifier;
 				sub_dict[_slice_colour_key()] = convert_to<godot::Color>(key.get_colour());
 				sub_dict[_slice_weight_key()] = value;
 
-				array[index] = std::move(sub_dict);
+				array[index] = sub_dict;
 			}
 			return array;
 		}

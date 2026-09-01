@@ -1,5 +1,7 @@
 #include "BudgetExpenseComponent.hpp"
 
+#include <openvic-simulation/core/object/FixedPoint.hpp>
+
 #include "openvic-extension/utility/Utilities.hpp"
 
 using namespace OpenVic;

@@ -109,7 +109,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 		tooltip += leader_name_prefix + leader_name + leader_name_suffix;
 
-		leader_dict[military_info_leader_name_key] = std::move(leader_name);
+		leader_dict[military_info_leader_name_key] = leader_name;
 	}
 
 	{
@@ -157,7 +157,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 		        );
 
 		leader_dict[military_info_leader_prestige_key] = static_cast<real_t>(prestige);
-		leader_dict[military_info_leader_prestige_tooltip_key] = std::move(prestige_tooltip);
+		leader_dict[military_info_leader_prestige_tooltip_key] = prestige_tooltip;
 	}
 
 	{
@@ -177,7 +177,7 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 		tooltip += "\n" + tr(background_localisation_key).replace(background_replace_key, background);
 
-		leader_dict[military_info_leader_background_key] = std::move(background);
+		leader_dict[military_info_leader_background_key] = background;
 	}
 
 	{
@@ -197,12 +197,12 @@ Dictionary MenuSingleton::make_leader_dict(LeaderInstance const& leader) {
 
 		tooltip += "\n" + tr(personality_localisation_key).replace(personality_replace_key, personality);
 
-		leader_dict[military_info_leader_personality_key] = std::move(personality);
+		leader_dict[military_info_leader_personality_key] = personality;
 	}
 
 	tooltip += _make_modifier_effects_tooltip(modifier_value);
 
-	leader_dict[military_info_leader_tooltip_key] = std::move(tooltip);
+	leader_dict[military_info_leader_tooltip_key] = tooltip;
 
 	cached_leader_dicts.emplace(&leader, leader_dict);
 
@@ -438,7 +438,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		organisation_regain_tooltip += _make_modifier_effect_contributions_tooltip(
 		    *country, *modifier_effect_cache.get_org_regain()
 		);
-		ret[military_info_organisation_regain_tooltip_key] = std::move(organisation_regain_tooltip);
+		ret[military_info_organisation_regain_tooltip_key] = organisation_regain_tooltip;
 	}
 
 	ret[military_info_land_organisation_key] = static_cast<real_t>(country->get_land_organisation());
@@ -477,7 +477,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			unit_start_experience_tooltip += "\n";
 		}
 		unit_start_experience_tooltip += naval_unit_start_experience_tooltip;
-		ret[military_info_unit_start_experience_tooltip_key] = std::move(unit_start_experience_tooltip);
+		ret[military_info_unit_start_experience_tooltip_key] = unit_start_experience_tooltip;
 	}
 
 	ret[military_info_recruit_time_key] = static_cast<real_t>(country->get_recruit_time());
@@ -503,7 +503,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 			combat_width_tooltip += from_technology_tooltip + GUILabel::get_colour_marker() + "G" +
 			                        String::num_int64(combat_width.truncate<int64_t>());
 		}
-		ret[military_info_combat_width_tooltip_key] = std::move(combat_width_tooltip);
+		ret[military_info_combat_width_tooltip_key] = combat_width_tooltip;
 	}
 
 	ret[military_info_dig_in_cap_key] = country->get_dig_in_cap();
@@ -559,7 +559,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 		    *country, *modifier_effect_cache.get_mobilisation_size_country()
 		);
 
-		ret[military_info_mobilisation_size_tooltip_key] = std::move(military_info_mobilisation_size_tooltip);
+		ret[military_info_mobilisation_size_tooltip_key] = military_info_mobilisation_size_tooltip;
 	}
 
 	if (!country->is_mobilised()) {
@@ -637,7 +637,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 				leaders[general_count + index] = make_leader_dict(country->get_admirals()[index]);
 			}
 
-			ret[military_info_leaders_list_key] = std::move(leaders);
+			ret[military_info_leaders_list_key] = leaders;
 		} else {
 			UtilityFunctions::push_error(
 			    "Failed to resize military menu leaders array to the correct size (",
@@ -668,7 +668,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 				armies[index] = make_unit_group_dict(country->get_armies()[index].get());
 			}
 
-			ret[military_info_armies_key] = std::move(armies);
+			ret[military_info_armies_key] = armies;
 		} else {
 			UtilityFunctions::push_error(
 			    "Failed to resize military menu armies array to the correct size (",
@@ -698,7 +698,7 @@ Dictionary MenuSingleton::get_military_menu_info() {
 				navies[index] = make_unit_group_dict(country->get_navies()[index].get());
 			}
 
-			ret[military_info_navies_key] = std::move(navies);
+			ret[military_info_navies_key] = navies;
 		} else {
 			UtilityFunctions::push_error(
 			    "Failed to resize military menu navies array to the correct size (",

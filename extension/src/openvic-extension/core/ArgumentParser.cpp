@@ -729,7 +729,7 @@ Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_er
 		}
 
 		key = arg.substr(1);
-		if (key.length() > 1 && key[0] != U'-' and key[1] != U'=') {
+		if (key.length() > 1 && key[0] != U'-' && key[1] != U'=') {
 			for (const Ref<ArgumentOption> opt : _parse_argument_bool_list(key)) {
 				arguments[opt->get_name()] = true;
 			}
