@@ -1,19 +1,28 @@
 Checks:
   - -*
+  - bugprone-use-after-move
   - cppcoreguidelines-pro-type-member-init
+  - modernize-deprecated-headers
   - modernize-redundant-void-arg
   - modernize-use-bool-literals
   - modernize-use-default-member-init
   - modernize-use-nullptr
+  - performance-move-const-arg
   - readability-braces-around-statements
+  - readability-identifier-naming
+  - readability-operators-representation
   - readability-redundant-member-init
-HeaderFileExtensions: ['', h, hh, hpp, hxx, inc]
+HeaderFileExtensions: ["", h, hh, hpp, hxx, inc]
 ImplementationFileExtensions: [c, cc, cpp, cxx]
 HeaderFilterRegex: (extension/src/openvic-extension)/
 FormatStyle: file
 CheckOptions:
   cppcoreguidelines-pro-type-member-init.IgnoreArrays: true
   cppcoreguidelines-pro-type-member-init.UseAssignment: true
+  modernize-deprecated-headers.CheckHeaderFile: true
   modernize-use-bool-literals.IgnoreMacros: false
   modernize-use-default-member-init.IgnoreMacros: false
   modernize-use-default-member-init.UseAssignment: true
+  readability-identifier-naming.ParameterCase: lower_case
+  readability-operators-representation.BinaryOperators: "&&;&=;&;|;~;!;!=;||;|=;^;^="
+  readability-operators-representation.OverloadedOperators: "&&;&=;&;|;~;!;!=;||;|=;^;^="

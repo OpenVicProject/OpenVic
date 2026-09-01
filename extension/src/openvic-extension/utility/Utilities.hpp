@@ -1,24 +1,33 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 
 #include <godot_cpp/classes/file_access.hpp>
-#include <godot_cpp/classes/font_file.hpp>
-#include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/classes/image.hpp>
+#include <godot_cpp/classes/ref.hpp>
+#include <godot_cpp/core/math_defs.hpp>
+#include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/variant.hpp>
 
 #include <openvic-simulation/core/memory/Vector.hpp>
-#include <openvic-simulation/core/object/Colour.hpp>
-#include <openvic-simulation/core/object/Date.hpp>
-#include <openvic-simulation/core/object/Vector.hpp>
+
+#include <fmt/base.h>
 
 #define ERR(x) ((x) ? OK : FAILED)
 
 namespace godot {
-	struct Object;
+	class Object;
+	class StringName;
+	class Color;
+	class Resource;
+	class ImageTexture;
+	class FontFile;
 }
 
 namespace OpenVic {
+	class fixed_point_t;
+	class Date;
 	struct CountryInstance;
 	struct ModifierEffect;
 	struct State;
@@ -51,8 +60,8 @@ namespace OpenVic::Utilities {
 	godot::String cash_to_string_dp_dynamic(fixed_point_t val);
 	godot::String format_with_currency(godot::String const& text);
 
-	constexpr real_t to_real_t(std::floating_point auto val) {
-		return static_cast<real_t>(val);
+	constexpr godot::real_t to_real_t(std::floating_point auto val) {
+		return static_cast<godot::real_t>(val);
 	}
 
 	godot::String date_to_string(Date date);
@@ -168,7 +177,7 @@ namespace OpenVic::Utilities {
 	}
 
 	namespace literals {
-		constexpr real_t operator""_real(long double val) {
+		constexpr godot::real_t operator""_real(long double val) {
 			return to_real_t(val);
 		}
 	}

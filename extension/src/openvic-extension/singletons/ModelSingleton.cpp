@@ -180,11 +180,11 @@ Dictionary ModelSingleton::get_model_dict(GFX::Actor const& actor) {
 				attachment_dict[attachment_node_key] = convert_to<String>(attachment.get_attach_node());
 				attachment_dict[attachment_model_key] = get_model_dict(*attachment_actor);
 
-				attachments_array[idx] = std::move(attachment_dict);
+				attachments_array[idx] = attachment_dict;
 			}
 
 			if (!attachments_array.is_empty()) {
-				dict[attachments_key] = std::move(attachments_array);
+				dict[attachments_key] = attachments_array;
 			}
 
 		} else {
