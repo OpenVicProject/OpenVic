@@ -180,7 +180,7 @@ TypedArray<Dictionary> GameSingleton::get_mod_info() const {
 		}();
 
 		mod_info_dictionary[is_loaded_key] = ranges::contains(loaded_mods, mod);
-		results.push_back(std::move(mod_info_dictionary));
+		results.push_back(mod_info_dictionary);
 	}
 
 	return results;
@@ -201,7 +201,7 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 		bookmark_info[bookmark_info_name_key] = convert_to<String>(bookmark.get_name());
 		bookmark_info[bookmark_info_date_key] = Utilities::date_to_formatted_string(bookmark.date, false);
 
-		results.push_back(std::move(bookmark_info));
+		results.push_back(bookmark_info);
 	}
 
 	return results;
@@ -440,7 +440,7 @@ TypedArray<Dictionary> GameSingleton::get_province_names() const {
 			province_dict[scale_key] = scale;
 		}
 
-		ret[static_cast<uint64_t>(type_safe::get(province.index))] = std::move(province_dict);
+		ret[static_cast<uint64_t>(type_safe::get(province.index))] = province_dict;
 	}
 
 	return ret;

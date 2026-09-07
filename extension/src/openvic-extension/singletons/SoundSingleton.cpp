@@ -80,7 +80,7 @@ Ref<AudioStreamMP3> SoundSingleton::get_song(String const& path) {
 	const Ref<AudioStreamMP3> song = AudioStreamMP3::load_from_file(path);
 
 	ERR_FAIL_NULL_V_MSG(song, Ref<AudioStreamMP3>(), Utilities::format("Failed to load music file: %s", path));
-	tracks.insert(std::move(name), song);
+	tracks.insert(name, song);
 
 	return song;
 }
@@ -177,7 +177,7 @@ Ref<AudioStreamWAV> SoundSingleton::get_sound(String const& path) {
 	    sound, Ref<AudioStreamMP3>(), Utilities::format("Failed to load sound file %s", path) // named %s, path
 	);
 
-	sfx.insert(std::move(name), sound);
+	sfx.insert(name, sound);
 	return sound;
 }
 

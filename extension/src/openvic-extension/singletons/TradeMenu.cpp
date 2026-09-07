@@ -110,7 +110,7 @@ Dictionary MenuSingleton::get_trade_menu_good_categories_info() const {
 			array.push_back(good_dict);
 		}
 
-		ret[convert_to<String>(good_category.get_identifier())] = std::move(array);
+		ret[convert_to<String>(good_category.get_identifier())] = array;
 	}
 
 	return ret;
@@ -159,7 +159,7 @@ Dictionary MenuSingleton::get_trade_menu_trade_details_info(
 				price_history[idx] = static_cast<real_t>(good_price_history[idx]);
 			}
 
-			ret[trade_detail_price_history_key] = std::move(price_history);
+			ret[trade_detail_price_history_key] = price_history;
 		} else {
 			UtilityFunctions::push_error(
 			    "Failed to resize price history array to the correct size (",
@@ -238,7 +238,7 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 
 		good_producers_tooltips.push_back(tooltip);
 	}
-	ret[good_producers_tooltips_key] = std::move(good_producers_tooltips);
+	ret[good_producers_tooltips_key] = good_producers_tooltips;
 
 	CountryInstance const* country_ptr = PlayerSingleton::get_singleton()->get_player_country();
 	if (unlikely(country_ptr == nullptr)) {
@@ -311,13 +311,13 @@ Dictionary MenuSingleton::get_trade_menu_tables_info() const {
 		common_market.push_back({ good_index, good_index * 100, -good_index, good_index * 10 });
 	}
 
-	ret[good_trading_yesterday_tooltips_key] = std::move(good_trading_yesterday_tooltips);
-	ret[government_needs_key] = std::move(government_needs);
-	ret[factory_needs_key] = std::move(factory_needs);
-	ret[pop_needs_key] = std::move(pop_needs);
-	ret[market_activity_key] = std::move(market_activity);
-	ret[stockpile_key] = std::move(stockpile);
-	ret[common_market_key] = std::move(common_market);
+	ret[good_trading_yesterday_tooltips_key] = good_trading_yesterday_tooltips;
+	ret[government_needs_key] = government_needs;
+	ret[factory_needs_key] = factory_needs;
+	ret[pop_needs_key] = pop_needs;
+	ret[market_activity_key] = market_activity;
+	ret[stockpile_key] = stockpile;
+	ret[common_market_key] = common_market;
 
 	return ret;
 }
