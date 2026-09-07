@@ -17,7 +17,7 @@ void GUIMaskedFlagButton::_bind_methods() {
 	OV_BIND_METHOD(GUIMaskedFlagButton::get_flag_type);
 }
 
-Error GUIMaskedFlagButton::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked_flag) {
+godot::Error GUIMaskedFlagButton::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked_flag) {
 	const bool needs_setting = gfx_masked_flag_texture.is_null();
 
 	if (needs_setting) {
@@ -25,7 +25,7 @@ Error GUIMaskedFlagButton::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked
 		ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 	}
 
-	Error err = gfx_masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag);
+	godot::Error err = gfx_masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag);
 
 	if (needs_setting && set_gfx_button_state_having_texture(gfx_masked_flag_texture) != OK) {
 		err = FAILED;
@@ -40,7 +40,7 @@ Ref<GFXMaskedFlagTexture> GUIMaskedFlagButton::get_gfx_masked_flag_texture() con
 	return gfx_masked_flag_texture;
 }
 
-Error GUIMaskedFlagButton::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
+godot::Error GUIMaskedFlagButton::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
 	const bool needs_setting = gfx_masked_flag_texture.is_null();
 
 	if (needs_setting) {
@@ -48,7 +48,7 @@ Error GUIMaskedFlagButton::set_gfx_masked_flag_name(String const& gfx_masked_fla
 		ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 	}
 
-	Error err = gfx_masked_flag_texture->set_gfx_masked_flag_name(gfx_masked_flag_name);
+	godot::Error err = gfx_masked_flag_texture->set_gfx_masked_flag_name(gfx_masked_flag_name);
 
 	if (needs_setting && set_gfx_button_state_having_texture(gfx_masked_flag_texture) != OK) {
 		err = FAILED;
@@ -63,18 +63,20 @@ String GUIMaskedFlagButton::get_gfx_masked_flag_name() const {
 	return gfx_masked_flag_texture->get_gfx_masked_flag_name();
 }
 
-Error GUIMaskedFlagButton::set_flag_country_name_and_type(String const& flag_country_name, StringName const& flag_type) const {
+godot::Error GUIMaskedFlagButton::set_flag_country_name_and_type(
+    String const& flag_country_name, StringName const& flag_type
+) const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 
 	return gfx_masked_flag_texture->set_flag_country_name_and_type(flag_country_name, flag_type);
 }
 
-Error GUIMaskedFlagButton::set_flag_country_name(String const& flag_country_name) const {
+godot::Error GUIMaskedFlagButton::set_flag_country_name(String const& flag_country_name) const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 
 	return gfx_masked_flag_texture->set_flag_country_name(flag_country_name);
 }
-Error GUIMaskedFlagButton::set_flag_country(CountryInstance* flag_country) const {
+godot::Error GUIMaskedFlagButton::set_flag_country(CountryInstance* flag_country) const {
 	return gfx_masked_flag_texture->set_flag_country(flag_country);
 }
 

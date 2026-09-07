@@ -17,7 +17,7 @@ void GUIIcon::_bind_methods() {
 	OV_BIND_METHOD(GUIIcon::set_toggled_icon, { "toggled" });
 }
 
-Error GUIIcon::set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
+godot::Error GUIIcon::set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_sprite, GFX::frame_t icon) {
 	const bool needs_setting = gfx_sprite_texture.is_null();
 
 	if (needs_setting) {
@@ -25,7 +25,7 @@ Error GUIIcon::set_gfx_texture_sprite(GFX::TextureSprite const* gfx_texture_spri
 		ERR_FAIL_NULL_V(gfx_sprite_texture, FAILED);
 	}
 
-	const Error err = gfx_sprite_texture->set_gfx_texture_sprite(gfx_texture_sprite, icon);
+	const godot::Error err = gfx_sprite_texture->set_gfx_texture_sprite(gfx_texture_sprite, icon);
 
 	if (needs_setting) {
 		set_texture(gfx_sprite_texture);
@@ -40,7 +40,7 @@ Ref<GFXSpriteTexture> GUIIcon::get_gfx_sprite_texture() const {
 	return gfx_sprite_texture;
 }
 
-Error GUIIcon::set_gfx_texture_sprite_name(String const& gfx_texture_sprite_name, GFX::frame_t icon) {
+godot::Error GUIIcon::set_gfx_texture_sprite_name(String const& gfx_texture_sprite_name, GFX::frame_t icon) {
 	const bool needs_setting = gfx_sprite_texture.is_null();
 
 	if (needs_setting) {
@@ -48,7 +48,7 @@ Error GUIIcon::set_gfx_texture_sprite_name(String const& gfx_texture_sprite_name
 		ERR_FAIL_NULL_V(gfx_sprite_texture, FAILED);
 	}
 
-	const Error err = gfx_sprite_texture->set_gfx_texture_sprite_name(gfx_texture_sprite_name, icon);
+	const godot::Error err = gfx_sprite_texture->set_gfx_texture_sprite_name(gfx_texture_sprite_name, icon);
 
 	if (needs_setting) {
 		set_texture(gfx_sprite_texture);
@@ -63,7 +63,7 @@ String GUIIcon::get_gfx_texture_sprite_name() const {
 	return gfx_sprite_texture->get_gfx_texture_sprite_name();
 }
 
-Error GUIIcon::set_icon_index(GFX::frame_t icon_index) const {
+godot::Error GUIIcon::set_icon_index(GFX::frame_t icon_index) const {
 	ERR_FAIL_NULL_V(gfx_sprite_texture, FAILED);
 
 	return gfx_sprite_texture->set_icon_index(icon_index);
@@ -75,7 +75,7 @@ GFX::frame_t GUIIcon::get_icon_index() const {
 	return gfx_sprite_texture->get_icon_index();
 }
 
-Error GUIIcon::set_toggled_icon(bool toggled) const {
+godot::Error GUIIcon::set_toggled_icon(bool toggled) const {
 	ERR_FAIL_NULL_V(gfx_sprite_texture, FAILED);
 
 	return gfx_sprite_texture->set_toggled_icon(toggled);

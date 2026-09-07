@@ -145,7 +145,7 @@ static Array get_events_from_shortcut_key(String const& key) {
 	return events;
 }
 
-static Error try_create_shortcut_action_for_button(
+static godot::Error try_create_shortcut_action_for_button(
     GUIButton* gui_button, String const& shortcut_key_name, String const& shortcut_hotkey_name = ""
 ) {
 	if (shortcut_key_name.is_empty()) {

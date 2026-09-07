@@ -73,7 +73,7 @@ void GFXButtonStateTexture::set_button_state(ButtonState new_button_state) {
 	button_state = new_button_state;
 }
 
-Error GFXButtonStateTexture::generate_state_image(
+godot::Error GFXButtonStateTexture::generate_state_image(
     Ref<Image> const& source_image, Rect2i const& region, Vector2i const& new_cornered_tile_border_size
 ) {
 	ERR_FAIL_COND_V(source_image.is_null() || source_image->is_empty(), FAILED);

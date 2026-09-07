@@ -31,9 +31,9 @@ LoadLocalisation::~LoadLocalisation() {
 	_singleton = nullptr;
 }
 
-Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> const& translation) const {
+godot::Error LoadLocalisation::_load_file(String const& file_path, Ref<Translation> const& translation) const {
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
-	Error err = FileAccess::get_open_error();
+	godot::Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
 	    err != OK || file.is_null(),
 	    err == OK ? FAILED : err,
@@ -75,14 +75,14 @@ Ref<Translation> LoadLocalisation::_get_translation(String const& locale) const 
 	return translation;
 }
 
-Error LoadLocalisation::load_file(String const& file_path, String const& locale) const {
+godot::Error LoadLocalisation::load_file(String const& file_path, String const& locale) const {
 	return _load_file(file_path, _get_translation(locale));
 }
 
 /* REQUIREMENTS
  * FS-18, FS-24, FS-25
  */
-Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) const {
+godot::Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) const {
 	ERR_FAIL_COND_V_MSG(
 	    !DirAccess::dir_exists_absolute(dir_path), FAILED, Utilities::format("Locale directory does not exist: %s", dir_path)
 	);
@@ -98,7 +98,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 	ERR_FAIL_COND_V_MSG(
 	    files.size() < 1, FAILED, Utilities::format("Locale directory does not contain any files: %s", dir_path)
 	);
-	Error err = OK;
+	godot::Error err = OK;
 	for (String const& file_name : files) {
 		if (file_name.get_extension().to_lower() == "csv") {
 			if (_load_file(dir_path.path_join(file_name), translation) != OK) {
@@ -112,7 +112,7 @@ Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& lo
 /* REQUIREMENTS
  * FS-23
  */
-Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
+godot::Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	ERR_FAIL_COND_V_MSG(
 	    !DirAccess::dir_exists_absolute(dir_path),
 	    FAILED,
@@ -124,7 +124,7 @@ Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	);
 	TranslationServer* server = TranslationServer::get_singleton();
 	ERR_FAIL_NULL_V(server, FAILED);
-	Error err = OK;
+	godot::Error err = OK;
 	for (String const& locale_name : dirs) {
 		if (locale_name != server->standardize_locale(locale_name)) {
 			UtilityFunctions::push_error("Invalid locale directory name: ", locale_name);

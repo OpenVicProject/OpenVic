@@ -48,7 +48,7 @@ void GFXSpriteTexture::clear() {
 	cornered_tile_border_size = {};
 }
 
-Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon) {
+godot::Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx_texture_sprite, GFX::frame_t icon) {
 	if (gfx_texture_sprite != new_gfx_texture_sprite) {
 		if (new_gfx_texture_sprite == nullptr) {
 			clear();
@@ -89,7 +89,7 @@ Error GFXSpriteTexture::set_gfx_texture_sprite(GFX::TextureSprite const* new_gfx
 	return set_icon_index(icon);
 }
 
-Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sprite_name, GFX::frame_t icon) {
+godot::Error GFXSpriteTexture::set_gfx_texture_sprite_name(String const& gfx_texture_sprite_name, GFX::frame_t icon) {
 	if (gfx_texture_sprite_name.is_empty()) {
 		return set_gfx_texture_sprite(nullptr);
 	}
@@ -113,7 +113,7 @@ String GFXSpriteTexture::get_gfx_texture_sprite_name() const {
 	return gfx_texture_sprite != nullptr ? convert_to<String>(gfx_texture_sprite->get_name()) : String {};
 }
 
-Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
+godot::Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
 	const Ref<Texture2D> atlas_texture = get_atlas();
 	ERR_FAIL_NULL_V(atlas_texture, FAILED);
 	const Vector2 size = atlas_texture->get_size();
@@ -140,6 +140,6 @@ Error GFXSpriteTexture::set_icon_index(int32_t new_icon_index) {
 	return OK;
 }
 
-Error GFXSpriteTexture::set_toggled_icon(bool toggled) {
+godot::Error GFXSpriteTexture::set_toggled_icon(bool toggled) {
 	return set_icon_index(toggled ? 2 : 1);
 }

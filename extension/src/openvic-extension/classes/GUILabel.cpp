@@ -245,7 +245,7 @@ String GUILabel::get_gui_text_name() const {
 	return gui_text != nullptr ? convert_to<godot::String>(gui_text->get_name()) : String {};
 }
 
-Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
+godot::Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_codes_t const* override_colour_codes) {
 	if (gui_text == new_gui_text) {
 		return OK;
 	}
@@ -280,7 +280,7 @@ Error GUILabel::set_gui_text(GUI::Text const* new_gui_text, GFX::Font::colour_co
 	currency_texture.unref();
 	background.unref();
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	const StringName font_filepath = convert_to<String>(gui_text->get_font()->get_fontname());
 
@@ -399,7 +399,7 @@ void GUILabel::set_font(Ref<Font> const& new_font) {
 	_queue_line_update();
 }
 
-Error GUILabel::set_font_file(Ref<FontFile> const& new_font_file) {
+godot::Error GUILabel::set_font_file(Ref<FontFile> const& new_font_file) {
 	ERR_FAIL_NULL_V(new_font_file, FAILED);
 
 	set_font(new_font_file);
@@ -407,7 +407,7 @@ Error GUILabel::set_font_file(Ref<FontFile> const& new_font_file) {
 	return set_font_size(new_font_file->get_fixed_size());
 }
 
-Error GUILabel::set_font_size(int32_t new_font_size) {
+godot::Error GUILabel::set_font_size(int32_t new_font_size) {
 	font_size = new_font_size;
 
 	_queue_line_update();

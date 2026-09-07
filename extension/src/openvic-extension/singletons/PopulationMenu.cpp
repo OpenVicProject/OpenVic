@@ -29,7 +29,7 @@ using namespace OpenVic;
 
 /* POPULATION MENU */
 
-Error MenuSingleton::_population_menu_update_provinces() {
+godot::Error MenuSingleton::_population_menu_update_provinces() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -186,7 +186,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_province_list_rows(int
 	return entry_visitor.array;
 }
 
-Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index) {
+godot::Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_index, bool set_scroll_index) {
 	ERR_FAIL_INDEX_V(select_index, population_menu.province_list_entries.size(), FAILED);
 
 	struct entry_visitor_t {
@@ -265,7 +265,7 @@ Error MenuSingleton::population_menu_select_province_list_entry(int32_t select_i
 	return _population_menu_update_pops();
 }
 
-Error MenuSingleton::population_menu_select_province(int32_t province_number) {
+godot::Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 	const province_index_t province_index = ProvinceDefinition::get_index_from_province_number(province_number);
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
@@ -333,7 +333,7 @@ Error MenuSingleton::population_menu_select_province(int32_t province_number) {
 	return ERR(entry_visitor.ret);
 }
 
-Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool emit_selected_changed) {
+godot::Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool emit_selected_changed) {
 	ERR_FAIL_INDEX_V(toggle_index, population_menu.province_list_entries.size(), FAILED);
 
 	population_menu_t::state_entry_t* state_entry = std::get_if<population_menu_t::state_entry_t>(
@@ -368,7 +368,7 @@ Error MenuSingleton::population_menu_toggle_expanded(int32_t toggle_index, bool 
 	return OK;
 }
 
-Error MenuSingleton::_population_menu_update_pops() {
+godot::Error MenuSingleton::_population_menu_update_pops() {
 	for (auto [pop_type, filter] : mutable_iterator(population_menu.pop_filters)) {
 		filter.count = 0;
 		filter.promotion_demotion_change = 0;
@@ -394,7 +394,7 @@ Error MenuSingleton::_population_menu_update_pops() {
 	return _population_menu_update_filtered_pops();
 }
 
-Error MenuSingleton::_population_menu_update_filtered_pops() {
+godot::Error MenuSingleton::_population_menu_update_filtered_pops() {
 	population_menu.filtered_pops.clear();
 
 	fixed_point_t workforce_distribution_running_total = 0;
@@ -642,7 +642,7 @@ MenuSingleton::sort_func_t MenuSingleton::_get_population_menu_sort_func(PopSort
 	}
 }
 
-Error MenuSingleton::_population_menu_sort_pops() {
+godot::Error MenuSingleton::_population_menu_sort_pops() {
 	if (population_menu.sort_key != SORT_NONE) {
 		if (population_menu.pop_type_sort_cache.get_keys().empty() || population_menu.culture_sort_cache.empty() ||
 		    population_menu.religion_sort_cache.empty() || population_menu.province_sort_cache.get_keys().empty() ||
@@ -665,7 +665,7 @@ Error MenuSingleton::_population_menu_sort_pops() {
 	return OK;
 }
 
-Error MenuSingleton::population_menu_update_locale_sort_cache() {
+godot::Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
@@ -749,7 +749,7 @@ Error MenuSingleton::population_menu_update_locale_sort_cache() {
 	return OK;
 }
 
-Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
+godot::Error MenuSingleton::population_menu_select_sort_key(PopSortKey sort_key) {
 	/* sort_key must be cast here to avoid causing clang to segfault during compilation. */
 	ERR_FAIL_INDEX_V_MSG(
 	    static_cast<int32_t>(sort_key),
@@ -973,7 +973,7 @@ int32_t MenuSingleton::get_population_menu_pop_row_count() const {
 	return population_menu.filtered_pops.size();
 }
 
-Error MenuSingleton::_population_menu_generate_pop_filters() {
+godot::Error MenuSingleton::_population_menu_generate_pop_filters() {
 	if (population_menu.pop_filters.empty()) {
 		GameSingleton const* game_singleton = GameSingleton::get_singleton();
 		ERR_FAIL_NULL_V(game_singleton, FAILED);
@@ -1024,7 +1024,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 	return array;
 }
 
-Error MenuSingleton::population_menu_toggle_pop_filter(int32_t index) {
+godot::Error MenuSingleton::population_menu_toggle_pop_filter(int32_t index) {
 	ERR_FAIL_COND_V_MSG(
 	    index < 0 || index >= population_menu.pop_filters.size(),
 	    FAILED,
@@ -1037,7 +1037,7 @@ Error MenuSingleton::population_menu_toggle_pop_filter(int32_t index) {
 	return _population_menu_update_filtered_pops();
 }
 
-Error MenuSingleton::population_menu_select_all_pop_filters() {
+godot::Error MenuSingleton::population_menu_select_all_pop_filters() {
 	bool changed = false;
 
 	for (auto [pop_type, filter] : mutable_iterator(population_menu.pop_filters)) {
@@ -1054,7 +1054,7 @@ Error MenuSingleton::population_menu_select_all_pop_filters() {
 	return OK;
 }
 
-Error MenuSingleton::population_menu_deselect_all_pop_filters() {
+godot::Error MenuSingleton::population_menu_deselect_all_pop_filters() {
 	bool changed = false;
 	for (auto [pop_type, filter] : mutable_iterator(population_menu.pop_filters)) {
 		if (filter.selected) {

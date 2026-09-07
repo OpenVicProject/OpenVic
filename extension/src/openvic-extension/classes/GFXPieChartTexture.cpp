@@ -58,7 +58,7 @@ GFXPieChartTexture::slice_t const* GFXPieChartTexture::get_slice(Vector2 const& 
 	return &slices.front();
 }
 
-Error GFXPieChartTexture::_generate_pie_chart_image() {
+godot::Error GFXPieChartTexture::_generate_pie_chart_image() {
 	ERR_FAIL_NULL_V(gfx_pie_chart, FAILED);
 	ERR_FAIL_COND_V_MSG(
 	    gfx_pie_chart->get_size() <= 0,
@@ -112,7 +112,7 @@ Error GFXPieChartTexture::_generate_pie_chart_image() {
 	return OK;
 }
 
-Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_slices) {
+godot::Error GFXPieChartTexture::set_slices_array(godot_pie_chart_data_t const& new_slices) {
 	slices.clear();
 	total_weight = 0.0f;
 	for (int32_t i = 0; i < new_slices.size(); ++i) {
@@ -163,7 +163,7 @@ void GFXPieChartTexture::clear() {
 	pie_chart_image.unref();
 }
 
-Error GFXPieChartTexture::set_gfx_pie_chart(GFX::PieChart const* new_gfx_pie_chart) {
+godot::Error GFXPieChartTexture::set_gfx_pie_chart(GFX::PieChart const* new_gfx_pie_chart) {
 	if (gfx_pie_chart == new_gfx_pie_chart) {
 		return OK;
 	}
@@ -177,7 +177,7 @@ Error GFXPieChartTexture::set_gfx_pie_chart(GFX::PieChart const* new_gfx_pie_cha
 	return _generate_pie_chart_image();
 }
 
-Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_name) {
+godot::Error GFXPieChartTexture::set_gfx_pie_chart_name(String const& gfx_pie_chart_name) {
 	if (gfx_pie_chart_name.is_empty()) {
 		return set_gfx_pie_chart(nullptr);
 	}

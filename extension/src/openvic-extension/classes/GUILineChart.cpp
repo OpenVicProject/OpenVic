@@ -60,7 +60,7 @@ void GUILineChart::clear_lines() {
 	max_value = 0.0f;
 }
 
-Error GUILineChart::set_gfx_line_chart(GFX::LineChart const* new_gfx_line_chart) {
+godot::Error GUILineChart::set_gfx_line_chart(GFX::LineChart const* new_gfx_line_chart) {
 	if (gfx_line_chart == new_gfx_line_chart) {
 		return OK;
 	}
@@ -77,7 +77,7 @@ Error GUILineChart::set_gfx_line_chart(GFX::LineChart const* new_gfx_line_chart)
 	return OK;
 }
 
-Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_name) {
+godot::Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_chart_name) {
 	if (new_gfx_line_chart_name.is_empty()) {
 		return set_gfx_line_chart(nullptr);
 	}
@@ -104,7 +104,9 @@ String GUILineChart::get_gfx_line_chart_name() const {
 	return gfx_line_chart != nullptr ? convert_to<String>(gfx_line_chart->get_name()) : String {};
 }
 
-Error GUILineChart::set_gradient_line(PackedFloat32Array const& line_values, float central_value, float min_value_range) {
+godot::Error GUILineChart::set_gradient_line(
+    PackedFloat32Array const& line_values, float central_value, float min_value_range
+) {
 	ERR_FAIL_COND_V(line_values.size() < 2, FAILED);
 	ERR_FAIL_COND_V(min_value_range < 0.0f, FAILED);
 
@@ -187,7 +189,7 @@ Error GUILineChart::set_gradient_line(PackedFloat32Array const& line_values, flo
 	return OK;
 }
 
-Error GUILineChart::add_coloured_line(PackedFloat32Array const& line_values, Color const& line_colour) {
+godot::Error GUILineChart::add_coloured_line(PackedFloat32Array const& line_values, Color const& line_colour) {
 	ERR_FAIL_COND_V(line_values.size() < 2, FAILED);
 
 	if (point_count <= 0) {

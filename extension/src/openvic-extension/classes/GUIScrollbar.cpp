@@ -347,7 +347,7 @@ void GUIScrollbar::clear() {
 	reset();
 }
 
-Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
+godot::Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	if (gui_scrollbar == new_gui_scrollbar) {
 		return OK;
 	}
@@ -479,7 +479,7 @@ Error GUIScrollbar::set_gui_scrollbar(GUI::Scrollbar const* new_gui_scrollbar) {
 	return ERR(ret);
 }
 
-Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const& gui_scrollbar_name) {
+godot::Error GUIScrollbar::set_gui_scrollbar_name(String const& gui_scene, String const& gui_scrollbar_name) {
 	if (gui_scene.is_empty() && gui_scrollbar_name.is_empty()) {
 		return set_gui_scrollbar(nullptr);
 	}
