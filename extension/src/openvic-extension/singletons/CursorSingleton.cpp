@@ -158,7 +158,7 @@ static String _to_define_file_name(String const& path) {
 	return path.replace(backslash, forwardslash).get_slice(cursor_directory_forwardslash, 1).get_slice(dot, 0);
 }
 
-Error CursorSingleton::load_cursors() {
+godot::Error CursorSingleton::load_cursors() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V_MSG(game_singleton, FAILED, "Error retrieving GameSingleton");
 
@@ -181,7 +181,7 @@ Error CursorSingleton::load_cursors() {
 
 	ERR_FAIL_COND_V_MSG(cursor_files.empty() && animated_cursor_files.empty(), FAILED, "No files in cursors directory");
 
-	Error ret = OK;
+	godot::Error ret = OK;
 
 	for (fs::path const& file_name : cursor_files) {
 		String file = convert_to<String>(file_name.string());
@@ -451,7 +451,7 @@ static CursorSingleton::image_hotspot_pair_asset_t _load_pair(Ref<FileAccess> co
 bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& path) {
 	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
 
-	const Error err = FileAccess::get_open_error();
+	const godot::Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(err != OK || file.is_null(), false, Utilities::format("Failed to open ani file: \"%s\"", path));
 
 	// read the RIFF container
@@ -579,7 +579,7 @@ bool CursorSingleton::_load_cursor_ani(StringName const& name, String const& pat
 
 bool CursorSingleton::_load_cursor_cur(StringName const& name, String const& path) {
 	const Ref<FileAccess> file = FileAccess::open(path, FileAccess::ModeFlags::READ);
-	const Error err = FileAccess::get_open_error();
+	const godot::Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(err != OK || file.is_null(), false, Utilities::format("Failed to open cur file: \"%s\"", path));
 
 	image_hotspot_pair_asset_t pair = _load_pair(file);

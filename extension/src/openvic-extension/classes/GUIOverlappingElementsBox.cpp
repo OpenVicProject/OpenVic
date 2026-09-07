@@ -12,7 +12,7 @@
 using namespace OpenVic;
 using namespace godot;
 
-Error GUIOverlappingElementsBox::_update_child_positions() {
+godot::Error GUIOverlappingElementsBox::_update_child_positions() {
 	ERR_FAIL_NULL_V(gui_overlapping_elements_box, FAILED);
 	const int32_t child_count = get_child_count();
 	if (child_count <= 0) {
@@ -34,7 +34,7 @@ Error GUIOverlappingElementsBox::_update_child_positions() {
 	const float total_width = spacing * (child_count - 1) + child_width;
 
 	float starting_x = 0.0f;
-	Error err = OK;
+	godot::Error err = OK;
 	using enum text_format_t;
 	switch (gui_overlapping_elements_box->get_format()) {
 	case left:   break;
@@ -85,7 +85,7 @@ void GUIOverlappingElementsBox::clear_children() {
 	set_child_count(0);
 }
 
-Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
+godot::Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 	ERR_FAIL_COND_V_MSG(new_count < 0, FAILED, "Child count must be non-negative");
 	int32_t child_count = get_child_count();
 	if (child_count == new_count) {
@@ -105,7 +105,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 		        "GUIOverlappingElementsBox child element is null (child_count = %d, new_count = %d)", child_count, new_count
 		    )
 		);
-		Error err = OK;
+		godot::Error err = OK;
 		const String gui_child_element_name = convert_to<String>(gui_child_element->get_name()) + "_";
 		do {
 			Control* child = nullptr;
@@ -140,7 +140,7 @@ Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 	}
 }
 
-Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
+godot::Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
     GUI::OverlappingElementsBox const* new_gui_overlapping_elements_box
 ) {
 	if (gui_overlapping_elements_box == new_gui_overlapping_elements_box) {
@@ -160,13 +160,13 @@ String GUIOverlappingElementsBox::get_gui_overlapping_elements_box_name() const 
 	return gui_overlapping_elements_box != nullptr ? convert_to<String>(gui_overlapping_elements_box->get_name()) : String {};
 }
 
-Error GUIOverlappingElementsBox::set_gui_child_element(GUI::Element const* new_gui_child_element) {
+godot::Error GUIOverlappingElementsBox::set_gui_child_element(GUI::Element const* new_gui_child_element) {
 	clear_children();
 	gui_child_element = new_gui_child_element;
 	return OK;
 }
 
-Error GUIOverlappingElementsBox::set_gui_child_element_name(
+godot::Error GUIOverlappingElementsBox::set_gui_child_element_name(
     String const& gui_child_element_file, String const& gui_child_element_name
 ) {
 	if (gui_child_element_file.is_empty() && gui_child_element_name.is_empty()) {

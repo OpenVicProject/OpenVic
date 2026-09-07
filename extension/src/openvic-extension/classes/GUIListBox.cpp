@@ -19,7 +19,7 @@ StringName const& GUIListBox::_signal_scroll_index_changed() {
 	return signal_scroll_index_changed;
 }
 
-Error GUIListBox::_calculate_max_scroll_index(bool signal) {
+godot::Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 	if (fixed) {
 		if (fixed_item_count <= 0) {
 			max_scroll_index = 0;
@@ -76,7 +76,7 @@ Error GUIListBox::_calculate_max_scroll_index(bool signal) {
 	return OK;
 }
 
-Error GUIListBox::_update_child_positions() {
+godot::Error GUIListBox::_update_child_positions() {
 	const int32_t child_count = get_child_count();
 	const real_t max_height = get_size().height;
 	const Vector2 offset = gui_listbox != nullptr ? convert_to<Vector2>(gui_listbox->get_items_offset()) : Vector2 {};
@@ -227,7 +227,7 @@ void GUIListBox::set_scroll_index(int32_t new_scroll_index, bool signal) {
 	_update_child_positions();
 }
 
-Error GUIListBox::set_fixed(int32_t item_count, real_t item_height, bool signal) {
+godot::Error GUIListBox::set_fixed(int32_t item_count, real_t item_height, bool signal) {
 	fixed = true;
 
 	fixed_item_count = item_count;
@@ -236,7 +236,7 @@ Error GUIListBox::set_fixed(int32_t item_count, real_t item_height, bool signal)
 	return _calculate_max_scroll_index(signal);
 }
 
-Error GUIListBox::unset_fixed(bool signal) {
+godot::Error GUIListBox::unset_fixed(bool signal) {
 	ERR_FAIL_COND_V(!fixed, FAILED);
 
 	fixed = false;
@@ -246,7 +246,7 @@ Error GUIListBox::unset_fixed(bool signal) {
 	return _calculate_max_scroll_index(signal);
 }
 
-Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
+godot::Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 	if (gui_listbox == new_gui_listbox) {
 		return OK;
 	}
@@ -260,7 +260,7 @@ Error GUIListBox::set_gui_listbox(GUI::ListBox const* new_gui_listbox) {
 
 	const String scrollbar_name = convert_to<String>(gui_listbox->get_scrollbar_name());
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	if (scrollbar_name.is_empty()) {
 		UtilityFunctions::push_error("GUIListBox ", get_name(), " has no scrollbar name!");
@@ -313,7 +313,7 @@ GUIScrollbar* GUIListBox::get_scrollbar() const {
 	return scrollbar;
 }
 
-Error GUIListBox::sort_children(Callable const& callable) {
+godot::Error GUIListBox::sort_children(Callable const& callable) {
 	TypedArray<Node> children;
 	ERR_FAIL_COND_V(children.resize(get_child_count()) != OK, FAILED);
 

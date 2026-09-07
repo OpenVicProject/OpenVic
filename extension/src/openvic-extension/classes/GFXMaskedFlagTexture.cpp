@@ -10,7 +10,7 @@
 using namespace godot;
 using namespace OpenVic;
 
-Error GFXMaskedFlagTexture::_generate_combined_image() {
+godot::Error GFXMaskedFlagTexture::_generate_combined_image() {
 	ERR_FAIL_NULL_V(overlay_image, FAILED);
 	/* Whether we've already set the ImageTexture to an image of the right dimensions and format,
 	 * and so can update it without creating and setting a new image, or not. */
@@ -108,7 +108,7 @@ void GFXMaskedFlagTexture::clear() {
 	flag_image.unref();
 }
 
-Error GFXMaskedFlagTexture::set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_masked_flag) {
+godot::Error GFXMaskedFlagTexture::set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_masked_flag) {
 	if (gfx_masked_flag == new_gfx_masked_flag) {
 		return OK;
 	}
@@ -136,7 +136,7 @@ Error GFXMaskedFlagTexture::set_gfx_masked_flag(GFX::MaskedFlag const* new_gfx_m
 	return _generate_combined_image();
 }
 
-Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
+godot::Error GFXMaskedFlagTexture::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
 	if (gfx_masked_flag_name.is_empty()) {
 		return set_gfx_masked_flag(nullptr);
 	}
@@ -163,7 +163,7 @@ String GFXMaskedFlagTexture::get_gfx_masked_flag_name() const {
 	return gfx_masked_flag != nullptr ? convert_to<String>(gfx_masked_flag->get_name()) : String {};
 }
 
-Error GFXMaskedFlagTexture::set_flag_country_and_type(
+godot::Error GFXMaskedFlagTexture::set_flag_country_and_type(
     CountryDefinition const* new_flag_country, StringName const& new_flag_type
 ) {
 	if (flag_country == new_flag_country && flag_type == new_flag_type) {
@@ -190,7 +190,7 @@ Error GFXMaskedFlagTexture::set_flag_country_and_type(
 	return _generate_combined_image();
 }
 
-Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
+godot::Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
     String const& new_flag_country_name, StringName const& new_flag_type
 ) {
 	if (new_flag_country_name.is_empty()) {
@@ -209,7 +209,7 @@ Error GFXMaskedFlagTexture::set_flag_country_name_and_type(
 	return set_flag_country_and_type(new_flag_country, new_flag_type);
 }
 
-Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) {
+godot::Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) {
 	if (new_flag_country == nullptr) {
 		return set_flag_country_and_type(nullptr, {});
 	}
@@ -222,7 +222,7 @@ Error GFXMaskedFlagTexture::set_flag_country(CountryInstance* new_flag_country) 
 	return set_flag_country_and_type(&new_flag_country->country_definition, new_flag_type);
 }
 
-Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country_name) {
+godot::Error GFXMaskedFlagTexture::set_flag_country_name(String const& new_flag_country_name) {
 	if (new_flag_country_name.is_empty()) {
 		return set_flag_country(nullptr);
 	}

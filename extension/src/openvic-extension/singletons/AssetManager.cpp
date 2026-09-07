@@ -189,7 +189,7 @@ Ref<FontFile> AssetManager::get_font(StringName const& name) {
 	return font;
 }
 
-Error AssetManager::preload_textures() {
+godot::Error AssetManager::preload_textures() {
 	static const String currency_sprite_big = "GFX_tooltip_money_big";
 	static const String currency_sprite_medium = "GFX_tooltip_money_small";
 	static const String currency_sprite_small = "GFX_tooltip_money";

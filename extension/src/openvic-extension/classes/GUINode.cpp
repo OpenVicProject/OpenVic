@@ -106,8 +106,8 @@ Control* GUINode::generate_gui_element(String const& gui_scene, String const& gu
 	return result;
 }
 
-Error GUINode::add_gui_element(String const& gui_scene, String const& gui_element, String const& name) {
-	Error err = OK;
+godot::Error GUINode::add_gui_element(String const& gui_scene, String const& gui_element, String const& name) {
+	godot::Error err = OK;
 	Control* result = nullptr;
 	if (!UITools::generate_gui_element(gui_scene, gui_element, name, result)) {
 		UtilityFunctions::push_error("Error generating GUI element ", gui_element, " from GUI scene ", gui_scene);
@@ -202,7 +202,7 @@ Ref<Texture2D> GUINode::get_texture_from_nodepath(NodePath const& path) const {
 	return get_texture_from_node(get_node_internal(path));
 }
 
-Error GUINode::hide_node(NodePath const& path) const {
+godot::Error GUINode::hide_node(NodePath const& path) const {
 	CanvasItem* node = _cast_node<CanvasItem>(get_node_internal(path));
 	ERR_FAIL_NULL_V(node, FAILED);
 
@@ -211,8 +211,8 @@ Error GUINode::hide_node(NodePath const& path) const {
 	return OK;
 }
 
-Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
-	Error ret = OK;
+godot::Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
+	godot::Error ret = OK;
 
 	for (int32_t i = 0; i < paths.size(); ++i) {
 		if (hide_node(paths[i]) != OK) {
@@ -223,7 +223,7 @@ Error GUINode::hide_nodes(TypedArray<NodePath> const& paths) const {
 	return ret;
 }
 
-Error GUINode::remove_node(NodePath const& path) const {
+godot::Error GUINode::remove_node(NodePath const& path) const {
 	Node* node = get_node_internal(path);
 	ERR_FAIL_NULL_V(node, FAILED);
 
@@ -236,8 +236,8 @@ Error GUINode::remove_node(NodePath const& path) const {
 	return OK;
 }
 
-Error GUINode::remove_nodes(TypedArray<NodePath> const& paths) const {
-	Error ret = OK;
+godot::Error GUINode::remove_nodes(TypedArray<NodePath> const& paths) const {
+	godot::Error ret = OK;
 
 	for (int32_t i = 0; i < paths.size(); ++i) {
 		if (remove_node(paths[i]) != OK) {

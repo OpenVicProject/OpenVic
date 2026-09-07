@@ -21,13 +21,13 @@ void GUIProgressBar::_notification(int what) {
 
 GUIProgressBar::GUIProgressBar() {}
 
-Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar) {
+godot::Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progress_bar) {
 	ERR_FAIL_NULL_V(progress_bar, FAILED);
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	static constexpr double MIN_VALUE = 0.0, MAX_VALUE = 1.0;
 	static constexpr uint32_t STEPS = 100;

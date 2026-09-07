@@ -58,7 +58,7 @@ void GUIPieChart::_gui_input(Ref<InputEvent> const& event) {
 
 GUIPieChart::GUIPieChart() : tooltip_position { disabled_tooltip_position } {}
 
-Error GUIPieChart::set_gfx_pie_chart(GFX::PieChart const* gfx_pie_chart) {
+godot::Error GUIPieChart::set_gfx_pie_chart(GFX::PieChart const* gfx_pie_chart) {
 	const bool needs_setting = gfx_pie_chart_texture.is_null();
 
 	if (needs_setting) {
@@ -66,7 +66,7 @@ Error GUIPieChart::set_gfx_pie_chart(GFX::PieChart const* gfx_pie_chart) {
 		ERR_FAIL_NULL_V(gfx_pie_chart_texture, FAILED);
 	}
 
-	const Error err = gfx_pie_chart_texture->set_gfx_pie_chart(gfx_pie_chart);
+	const godot::Error err = gfx_pie_chart_texture->set_gfx_pie_chart(gfx_pie_chart);
 
 	if (needs_setting) {
 		set_texture(gfx_pie_chart_texture);
@@ -85,7 +85,7 @@ Ref<GFXPieChartTexture> GUIPieChart::get_gfx_pie_chart_texture() const {
 	return gfx_pie_chart_texture;
 }
 
-Error GUIPieChart::set_gfx_pie_chart_name(String const& gfx_pie_chart_name) {
+godot::Error GUIPieChart::set_gfx_pie_chart_name(String const& gfx_pie_chart_name) {
 	const bool needs_setting = gfx_pie_chart_texture.is_null();
 
 	if (needs_setting) {
@@ -93,7 +93,7 @@ Error GUIPieChart::set_gfx_pie_chart_name(String const& gfx_pie_chart_name) {
 		ERR_FAIL_NULL_V(gfx_pie_chart_texture, FAILED);
 	}
 
-	const Error err = gfx_pie_chart_texture->set_gfx_pie_chart_name(gfx_pie_chart_name);
+	const godot::Error err = gfx_pie_chart_texture->set_gfx_pie_chart_name(gfx_pie_chart_name);
 
 	if (needs_setting) {
 		set_texture(gfx_pie_chart_texture);
@@ -112,10 +112,10 @@ String GUIPieChart::get_gfx_pie_chart_name() const {
 	return gfx_pie_chart_texture->get_gfx_pie_chart_name();
 }
 
-Error GUIPieChart::set_slices_array(GFXPieChartTexture::godot_pie_chart_data_t const& new_slices) {
+godot::Error GUIPieChart::set_slices_array(GFXPieChartTexture::godot_pie_chart_data_t const& new_slices) {
 	ERR_FAIL_NULL_V(gfx_pie_chart_texture, FAILED);
 
-	const Error err = gfx_pie_chart_texture->set_slices_array(new_slices);
+	const godot::Error err = gfx_pie_chart_texture->set_slices_array(new_slices);
 
 	if (tooltip_active) {
 		_update_tooltip();

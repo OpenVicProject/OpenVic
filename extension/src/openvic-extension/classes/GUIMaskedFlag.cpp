@@ -17,7 +17,7 @@ void GUIMaskedFlag::_bind_methods() {
 	OV_BIND_METHOD(GUIMaskedFlag::get_flag_type);
 }
 
-Error GUIMaskedFlag::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked_flag) {
+godot::Error GUIMaskedFlag::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked_flag) {
 	const bool needs_setting = gfx_masked_flag_texture.is_null();
 
 	if (needs_setting) {
@@ -25,7 +25,7 @@ Error GUIMaskedFlag::set_gfx_masked_flag(GFX::MaskedFlag const* gfx_masked_flag)
 		ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 	}
 
-	const Error err = gfx_masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag);
+	const godot::Error err = gfx_masked_flag_texture->set_gfx_masked_flag(gfx_masked_flag);
 
 	if (needs_setting) {
 		set_texture(gfx_masked_flag_texture);
@@ -40,7 +40,7 @@ Ref<GFXMaskedFlagTexture> GUIMaskedFlag::get_gfx_masked_flag_texture() const {
 	return gfx_masked_flag_texture;
 }
 
-Error GUIMaskedFlag::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
+godot::Error GUIMaskedFlag::set_gfx_masked_flag_name(String const& gfx_masked_flag_name) {
 	const bool needs_setting = gfx_masked_flag_texture.is_null();
 
 	if (needs_setting) {
@@ -48,7 +48,7 @@ Error GUIMaskedFlag::set_gfx_masked_flag_name(String const& gfx_masked_flag_name
 		ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 	}
 
-	const Error err = gfx_masked_flag_texture->set_gfx_masked_flag_name(gfx_masked_flag_name);
+	const godot::Error err = gfx_masked_flag_texture->set_gfx_masked_flag_name(gfx_masked_flag_name);
 
 	if (needs_setting) {
 		set_texture(gfx_masked_flag_texture);
@@ -63,13 +63,13 @@ String GUIMaskedFlag::get_gfx_masked_flag_name() const {
 	return gfx_masked_flag_texture->get_gfx_masked_flag_name();
 }
 
-Error GUIMaskedFlag::set_flag_country_name_and_type(String const& flag_country_name, StringName const& flag_type) const {
+godot::Error GUIMaskedFlag::set_flag_country_name_and_type(String const& flag_country_name, StringName const& flag_type) const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 
 	return gfx_masked_flag_texture->set_flag_country_name_and_type(flag_country_name, flag_type);
 }
 
-Error GUIMaskedFlag::set_flag_country_name(String const& flag_country_name) const {
+godot::Error GUIMaskedFlag::set_flag_country_name(String const& flag_country_name) const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 
 	return gfx_masked_flag_texture->set_flag_country_name(flag_country_name);

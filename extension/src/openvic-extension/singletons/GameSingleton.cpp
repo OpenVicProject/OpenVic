@@ -207,7 +207,7 @@ TypedArray<Dictionary> GameSingleton::get_bookmark_info() const {
 	return results;
 }
 
-Error GameSingleton::setup_game(int32_t bookmark_index) {
+godot::Error GameSingleton::setup_game(int32_t bookmark_index) {
 	DefinitionManager const& definition_manager = game_manager.get_definition_manager();
 	Bookmark const* bookmark = definition_manager.get_history_manager().get_bookmark_manager().get_bookmark_by_index(
 	    bookmark_index_t(bookmark_index)
@@ -258,11 +258,11 @@ bool GameSingleton::is_bookmark_loaded() const {
 	return game_manager.is_bookmark_loaded();
 }
 
-Error GameSingleton::start_game_session() {
+godot::Error GameSingleton::start_game_session() {
 	return ERR(game_manager.start_game_session());
 }
 
-Error GameSingleton::end_game_session() {
+godot::Error GameSingleton::end_game_session() {
 	PlayerSingleton::get_singleton()->reset_player_singleton();
 	return ERR(game_manager.end_game_session());
 }
@@ -362,7 +362,7 @@ Ref<ImageTexture> GameSingleton::get_province_colour_texture() const {
 	return province_colour_texture;
 }
 
-Error GameSingleton::_update_colour_image() {
+godot::Error GameSingleton::_update_colour_image() {
 	MapDefinition const& map_definition = get_definition_manager().get_map_definition();
 	ERR_FAIL_COND_V_MSG(
 	    !map_definition.province_definitions_are_locked(),
@@ -382,7 +382,7 @@ Error GameSingleton::_update_colour_image() {
 	const int64_t colour_data_array_size = colour_image_width * colour_image_height * sizeof(colour_argb_t);
 	ERR_FAIL_COND_V(colour_data_array.resize(colour_data_array_size) != OK, FAILED);
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	InstanceManager const* instance_manager = get_instance_manager();
 	PlayerSingleton const& player_singleton = *PlayerSingleton::get_singleton();
@@ -474,11 +474,11 @@ int32_t GameSingleton::get_current_mapmode_index() const {
 	return type_safe::get(mapmode->index);
 }
 
-Error GameSingleton::set_mapmode(int32_t index) {
+godot::Error GameSingleton::set_mapmode(int32_t index) {
 	Mapmode const* new_mapmode = get_definition_manager().get_mapmode_manager().get_mapmode_by_index(map_mode_index_t(index));
 	ERR_FAIL_NULL_V_MSG(new_mapmode, FAILED, Utilities::format("Failed to find mapmode with index: %d", index));
 	mapmode = new_mapmode;
-	const Error err = _update_colour_image();
+	const godot::Error err = _update_colour_image();
 	emit_signal(_signal_mapmode_changed(), static_cast<uint64_t>(type_safe::get(mapmode->index)));
 	return err;
 }
@@ -488,14 +488,14 @@ bool GameSingleton::is_parchment_mapmode_allowed() const {
 	return mapmode->is_parchment_mapmode_allowed;
 }
 
-Error GameSingleton::update_clock() {
+godot::Error GameSingleton::update_clock() {
 	return ERR(game_manager.update_clock());
 }
 
-Error GameSingleton::_load_map_images() {
+godot::Error GameSingleton::_load_map_images() {
 	ERR_FAIL_COND_V_MSG(province_shape_texture.is_valid(), FAILED, "Map images have already been loaded!");
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	const Vector2i map_dims = get_map_dims();
 
@@ -556,7 +556,7 @@ Error GameSingleton::_load_map_images() {
 	return err;
 }
 
-Error GameSingleton::_load_terrain_variants() {
+godot::Error GameSingleton::_load_terrain_variants() {
 	ERR_FAIL_COND_V_MSG(terrain_texture.is_valid(), FAILED, "Terrain variants have already been loaded!");
 
 	static const StringName terrain_texturesheet_path = "map/terrain/texturesheet.tga";
@@ -616,7 +616,7 @@ Error GameSingleton::_load_terrain_variants() {
 	return OK;
 }
 
-Error GameSingleton::_load_flag_sheet() {
+godot::Error GameSingleton::_load_flag_sheet() {
 	ERR_FAIL_COND_V_MSG(
 	    flag_sheet_image.is_valid() || flag_sheet_texture.is_valid(),
 	    FAILED,
@@ -653,7 +653,7 @@ Error GameSingleton::_load_flag_sheet() {
 
 	static constexpr Image::Format flag_format = Image::FORMAT_RGB8;
 
-	Error ret = OK;
+	godot::Error ret = OK;
 	for (CountryDefinition const& country : country_definition_manager.get_country_definitions()) {
 		const String country_name = convert_to<String>(country.get_identifier());
 
@@ -736,14 +736,14 @@ Error GameSingleton::_load_flag_sheet() {
 	return ret;
 }
 
-Error GameSingleton::set_compatibility_mode_roots(String const& path) {
+godot::Error GameSingleton::set_compatibility_mode_roots(String const& path) {
 	Dataloader::path_vector_t roots { convert_to<std::string>(path) };
 	ERR_FAIL_COND_V_MSG(!game_manager.set_base_path(roots), FAILED, "Failed to set dataloader roots!");
 	return OK;
 }
 
-Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& mods) {
-	Error err = OK;
+godot::Error GameSingleton::load_defines_compatibility_mode(PackedStringArray const& mods) {
+	godot::Error err = OK;
 	auto add_message = std::bind_front(&LoadLocalisation::add_message, LoadLocalisation::get_singleton());
 
 	ERR_FAIL_COND_V_MSG(!game_manager.load_mod_descriptors(), FAILED, "Failed to load mod descriptors!");

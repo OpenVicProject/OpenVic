@@ -691,7 +691,7 @@ Pair<const Ref<ArgumentOption>, Variant> ArgumentParser::_parse_argument(
 	return { option, {} };
 }
 
-Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_error_unknown, bool p_skip_conflict_args) {
+godot::Error ArgumentParser::parse_arguments(PackedStringArray const& p_args, bool p_error_unknown, bool p_skip_conflict_args) {
 	String key;
 	Ref<ArgumentOption> option;
 	for (String const& arg : p_args) {

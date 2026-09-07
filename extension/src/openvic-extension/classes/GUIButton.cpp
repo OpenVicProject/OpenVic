@@ -22,10 +22,10 @@ void GUIButton::_notification(int what) {
 
 GUIButton::GUIButton() {}
 
-Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTexture> const& texture) {
+godot::Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTexture> const& texture) {
 	ERR_FAIL_NULL_V(texture, FAILED);
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	set_custom_minimum_size(texture->get_size());
 
@@ -78,13 +78,13 @@ Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHavingTex
 	return err;
 }
 
-Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
+godot::Error GUIButton::set_gfx_font(GFX::Font const* gfx_font) {
 	ERR_FAIL_NULL_V(gfx_font, FAILED);
 
 	AssetManager* asset_manager = AssetManager::get_singleton();
 	ERR_FAIL_NULL_V(asset_manager, FAILED);
 
-	Error err = OK;
+	godot::Error err = OK;
 
 	const StringName font_file = convert_to<String>(gfx_font->get_fontname());
 	const Ref<Font> font = asset_manager->get_font(font_file);

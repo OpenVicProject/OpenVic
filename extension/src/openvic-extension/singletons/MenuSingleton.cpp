@@ -1406,7 +1406,7 @@ void MenuSingleton::unlink_budget_menu_from_cpp() {
 
 /* Find/Search Panel */
 
-Error MenuSingleton::generate_search_cache() {
+godot::Error MenuSingleton::generate_search_cache() {
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, FAILED);
 	InstanceManager const* instance_manager = game_singleton->get_instance_manager();
