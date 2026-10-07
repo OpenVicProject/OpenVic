@@ -30,7 +30,7 @@ static func read_quat(file: FileAccess, int16: bool = false) -> Quaternion:
 
 static func read_f16(file: FileAccess) -> float:
 	# 32767 or 0x7FFF is the max magnitude of a signed int16
-	return float(read_int16(file)) / 32767.0
+	return float(read_int16(file)) / 32_767.0
 
 
 static func replace_chars(string: String) -> String:
