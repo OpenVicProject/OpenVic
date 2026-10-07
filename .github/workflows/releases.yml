@@ -105,7 +105,7 @@ jobs:
           - identifier: linux-release
             os: ubuntu-latest
             name: 🐧 Build Linux
-            runner: ubuntu-22.04
+            runner: ubuntu-24.04
             preset: linux-x64-template_release
             configuration: Release
             cmake-args: -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
