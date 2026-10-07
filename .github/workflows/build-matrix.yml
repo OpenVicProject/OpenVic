@@ -51,19 +51,19 @@ jobs:
             configuration: RelWithDebInfo
 
           - identifier: linux-debug
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             name: 🐧 Linux Debug
             preset: linux-x64-template_debug
             configuration: Debug
 
           - identifier: linux-release
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             name: 🐧 Linux Release
             preset: linux-x64-template_release
             configuration: Release
 
           - identifier: linux-editor
-            os: ubuntu-22.04
+            os: ubuntu-24.04
             name: 🐧 Linux Editor
             preset: linux-x64-editor
             configuration: RelWithDebInfo
