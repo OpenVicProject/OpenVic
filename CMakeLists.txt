@@ -15,8 +15,8 @@ if(NOT COMMAND openvic_setup_base_flags)
     include(FetchContent)
     FetchContent_Declare(
         openvic_scripts
-        URL "https://github.com/OpenVicProject/scripts/archive/8f83cabf147de7d8a511b4aaefd137777c4eb9c8.tar.gz"
-        URL_HASH SHA256=5f9b1ff9e985e63be1b11fe8ba573023afb26c8e2811961f88c5ad2b8ac283da
+        URL "https://github.com/OpenVicProject/scripts/archive/d69599daf44db68977a90ac74f44d31af8f4b3ca.tar.gz"
+        URL_HASH SHA256=ff0936ae04beb737e545230cdae260958cc0f7c8d490221bcbfd86068650f9e8
     )
     FetchContent_MakeAvailable(openvic_scripts)
     include("${openvic_scripts_SOURCE_DIR}/cmake/OpenVicScripts.cmake")
