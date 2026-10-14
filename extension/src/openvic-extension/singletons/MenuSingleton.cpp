@@ -417,7 +417,7 @@ static TypedArray<Dictionary> _make_buildings_dict_array(ProvinceInstance const*
 			building_dict[building_info_end_date_key] = Utilities::date_to_string(building.get_end_date());
 			building_dict[building_info_expansion_progress_key] = static_cast<real_t>(building.get_expansion_progress());
 
-			buildings_array[idx] = std::move(building_dict);
+			buildings_array[idx] = building_dict;
 		}
 	} else {
 		UtilityFunctions::push_error(
@@ -498,7 +498,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 		    _make_modifier_effects_tooltip(*terrain_type)
 		);
 
-		ret[province_info_terrain_type_key] = std::move(terrain_type_string);
+		ret[province_info_terrain_type_key] = terrain_type_string;
 	}
 
 	ret[province_info_life_rating_key] = type_safe::get(province->get_life_rating());
@@ -913,7 +913,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	        GameSingleton::get_singleton()->get_pop_types(), province->get_population_by_type(), make_pie_chart_tooltip
 	    );
 	if (!pop_types.is_empty()) {
-		ret[province_info_pop_types_key] = std::move(pop_types);
+		ret[province_info_pop_types_key] = pop_types;
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t ideologies =
@@ -923,14 +923,14 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 	        make_pie_chart_tooltip
 	    );
 	if (!ideologies.is_empty()) {
-		ret[province_info_pop_ideologies_key] = std::move(ideologies);
+		ret[province_info_pop_ideologies_key] = ideologies;
 	}
 
 	GFXPieChartTexture::godot_pie_chart_data_t cultures = GFXPieChartTexture::distribution_to_slices_array(
 	    province->get_population_by_culture(), make_pie_chart_tooltip
 	);
 	if (!cultures.is_empty()) {
-		ret[province_info_pop_cultures_key] = std::move(cultures);
+		ret[province_info_pop_cultures_key] = cultures;
 	}
 
 	ordered_set<CountryInstance*> const& cores = province->get_cores();
@@ -940,7 +940,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 			for (size_t idx = 0; idx < cores.size(); ++idx) {
 				cores_array[idx] = convert_to<String>(cores.data()[idx]->get_identifier());
 			}
-			ret[province_info_cores_key] = std::move(cores_array);
+			ret[province_info_cores_key] = cores_array;
 		} else {
 			UtilityFunctions::push_error(
 			    "Failed to resize cores array to the correct size (",
@@ -953,7 +953,7 @@ Dictionary MenuSingleton::get_province_info_from_number(int32_t province_number)
 
 	TypedArray<Dictionary> building_dict_array = _make_buildings_dict_array(province);
 	if (!building_dict_array.is_empty()) {
-		ret[province_info_buildings_key] = std::move(building_dict_array);
+		ret[province_info_buildings_key] = building_dict_array;
 	}
 
 	return ret;
@@ -1080,7 +1080,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			            cost_replace_key, String::num_uint64(country.get_current_research_cost_untracked().truncate<int64_t>())
 			        );
 
-			ret[research_key] = std::move(current_tech_localised);
+			ret[research_key] = current_tech_localised;
 
 			ret[research_progress_key] = static_cast<real_t>(country.research_progress.get_untracked());
 		} else if (country.is_civilised()) {
@@ -1188,7 +1188,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 		            Utilities::fixed_point_to_string_dp(country.get_research_point_stockpile_untracked(), 1)
 		        );
 
-		ret[research_points_tooltip_key] = std::move(research_points_tooltip);
+		ret[research_points_tooltip_key] = research_points_tooltip;
 	}
 
 	// Politics
@@ -1297,7 +1297,7 @@ Dictionary MenuSingleton::get_topbar_info() const {
 			        .replace(max_replace_key, Utilities::fixed_point_to_string_dp(max_leadership_point_stockpile, 1));
 		}
 
-		ret[leadership_tooltip_key] = std::move(leadership_tooltip);
+		ret[leadership_tooltip_key] = leadership_tooltip;
 	}
 
 	return ret;

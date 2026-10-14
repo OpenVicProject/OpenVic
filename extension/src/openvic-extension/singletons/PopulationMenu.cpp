@@ -963,7 +963,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_rows(int32_t start
 		pop_dict[pop_size_change_key] = type_safe::get(pop.get_total_change());
 		pop_dict[pop_literacy_key] = static_cast<real_t>(pop.get_literacy());
 
-		array[idx] = std::move(pop_dict);
+		array[idx] = pop_dict;
 	}
 
 	return array;
@@ -1018,7 +1018,7 @@ TypedArray<Dictionary> MenuSingleton::get_population_menu_pop_filter_info() cons
 		filter_dict[pop_filter_change_key] = type_safe::get(filter.promotion_demotion_change);
 		filter_dict[pop_filter_selected_key] = filter.selected;
 
-		array[idx] = std::move(filter_dict);
+		array[idx] = filter_dict;
 	}
 
 	return array;

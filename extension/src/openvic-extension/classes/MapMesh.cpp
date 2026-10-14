@@ -151,11 +151,11 @@ Array MapMesh::_create_mesh_array() const {
 		thisrow = point_index;
 	}
 
-	arr[Mesh::ARRAY_VERTEX] = std::move(points);
-	arr[Mesh::ARRAY_NORMAL] = std::move(normals);
-	arr[Mesh::ARRAY_TANGENT] = std::move(tangents);
-	arr[Mesh::ARRAY_TEX_UV] = std::move(uvs);
-	arr[Mesh::ARRAY_INDEX] = std::move(indices);
+	arr[Mesh::ARRAY_VERTEX] = points;
+	arr[Mesh::ARRAY_NORMAL] = normals;
+	arr[Mesh::ARRAY_TANGENT] = tangents;
+	arr[Mesh::ARRAY_TEX_UV] = uvs;
+	arr[Mesh::ARRAY_INDEX] = indices;
 
 	return arr;
 }

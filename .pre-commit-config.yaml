@@ -29,9 +29,8 @@ repos:
             --fix,
             --quiet,
             --use-color,
-            -p=compile_commands.json,
+            -p=out/build,
             -extra-arg=-Wno-unknown-warning-option,
-            -checks=-modernize-use-bool-literals,
           ]
         types_or: [text]
         additional_dependencies: [clang-tidy==22.1.8]
