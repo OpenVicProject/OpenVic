@@ -7,6 +7,8 @@
 #include <string_view>
 #include <type_traits>
 
+#include <openvic-simulation/core/Typedefs.hpp>
+
 namespace OpenVic {
 	template<std::size_t N>
 	struct StringLiteral {
@@ -15,7 +17,9 @@ namespace OpenVic {
 		}
 
 		consteval StringLiteral(std::string_view string) {
-			assert(string.size() == N);
+			if (string.size() != N) {
+				unreachable();
+			}
 			std::copy_n(string.begin(), N, value);
 		}
 
@@ -88,19 +92,19 @@ namespace OpenVic {
 		};
 
 		constexpr iterator begin() const {
-			return iterator { &value };
+			return iterator { value };
 		}
 
 		constexpr iterator end() const {
-			return iterator { &value + N };
+			return iterator { value + N };
 		}
 
 		constexpr operator std::string_view() const {
 			return std::string_view { value, N };
 		}
 
-		constexpr decltype(auto) data() const {
-			return static_cast<std::string_view>(*this).data();
+		constexpr auto data() const {
+			return value;
 		}
 	};
 }
