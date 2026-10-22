@@ -34,9 +34,8 @@ class GitFetcher:
         if additional_cwd is None:
             additional_cwd = self.repo_name
         return subprocess.call(
-            " ".join(["git", *args]),
+            ["git", *args],
             cwd=os.path.join(self.cache_path, additional_cwd),
-            shell=True,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
         )
@@ -44,9 +43,7 @@ class GitFetcher:
     def _check_git_output(self, *args: str, additional_cwd: str | None = None) -> Any:
         if additional_cwd is None:
             additional_cwd = self.repo_name
-        return subprocess.check_output(
-            " ".join(["git", *args]), cwd=os.path.join(self.cache_path, additional_cwd), shell=True
-        )
+        return subprocess.check_output(["git", *args], cwd=os.path.join(self.cache_path, additional_cwd))
 
     def setup_sparse_checkout(
         self,
@@ -72,7 +69,7 @@ class GitFetcher:
                     if ref_file.read() == self.ref:
                         return True
 
-            if self._call_git("fetch --depth=1", "origin", self.ref) != 0:
+            if self._call_git("fetch", "--depth=1", "origin", self.ref) != 0:
                 print(f"Could not fetch {self.ref} of {self.git_repo}")
                 return False
 
@@ -84,7 +81,7 @@ class GitFetcher:
                 print(f"Could not clone {self.git_repo}")
                 return False
 
-            if self._call_git("fetch --depth=1", "origin", self.ref) != 0:
+            if self._call_git("fetch", "--depth=1", "origin", self.ref) != 0:
                 print(f"Could not fetch {self.ref} of {self.git_repo}")
                 return False
 
