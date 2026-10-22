@@ -108,13 +108,16 @@ func start_song_by_index(id: int) -> void:
 
 
 func select_next_song() -> void:
-	#_selected_track = (_selected_track + 1) % len(_available_songs)
+	if _available_songs.is_empty():
+		return
 	if playlist_index >= preferred_playlist_len or playlist_index >= len(playlist):
 		generate_playlist()
 		playlist_index = 0
+	if playlist.is_empty():
+		return
 	_selected_track = playlist[playlist_index]
 	playlist_index += 1
-	last_played = playlist_index
+	last_played = _selected_track
 	_audio_stream_paused = false
 	start_current_song()
 
@@ -162,33 +165,31 @@ func add_ootb_music() -> void:
 
 
 func generate_playlist() -> void:
-	var song_names = MusicManager.get_all_song_paths()
-	var possible_indices = range(len(song_names) - 1)
+	var song_names: PackedStringArray = get_all_song_paths()
+	var possible_indices: Array = range(song_names.size())
 
-	var title_index = song_names.find(SoundSingleton.title_theme)
-	possible_indices.remove_at(title_index)
+	# The title theme is handled separately; do not remove anything if it is absent.
+	var title_index: int = song_names.find(SoundSingleton.title_theme)
+	if title_index >= 0:
+		possible_indices.erase(title_index)
 
-	var actual_playlist_len = min(preferred_playlist_len, len(possible_indices))
+	if possible_indices.is_empty():
+		playlist.clear()
+		playlist_index = 0
+		return
 
-	#if the playlist size is too large or small, make it the same size as what we
-	#need to support
-	if len(playlist) != actual_playlist_len:
-		playlist.resize(actual_playlist_len)
-		playlist.fill(0)
+	var actual_playlist_len: int = mini(preferred_playlist_len, possible_indices.size())
+	playlist.resize(actual_playlist_len)
 
-	#The song we just played can be in the playlist, just not the first one
-	if last_played != -1:
-		possible_indices.remove_at(last_played)
-
-	#essentially shuffle-bag randomness, picking from a list of song indices
+	# Shuffle without repeats. Avoid the previous track in the first two slots when
+	# there are alternatives, but allow it when the playlist is too short to do so.
 	for i in range(actual_playlist_len):
-		var ind = randi_range(0, len(possible_indices) - 1)
-		#add back the last song we just played as an option
-		if i == 2:
-			possible_indices.append(last_played)
-
-		playlist[i] = possible_indices[ind]
-		possible_indices.remove_at(ind)
+		var candidates: Array = possible_indices.duplicate()
+		if i < 2 and candidates.size() > 1 and candidates.has(last_played):
+			candidates.erase(last_played)
+		var selected_index: int = candidates[randi_range(0, candidates.size() - 1)]
+		playlist[i] = selected_index
+		possible_indices.erase(selected_index)
 
 
 func set_startup_music(play: bool) -> void:
@@ -199,4 +200,3 @@ func _on_audio_stream_player_finished() -> void:
 	song_finished.emit(_selected_track)
 	if _auto_play_next_song:
 		select_next_song()
-		start_current_song()
