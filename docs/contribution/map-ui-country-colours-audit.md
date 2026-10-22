@@ -40,6 +40,22 @@ The current implementation already has a colour pipeline. Avoid adding a paralle
 
 This means the likely implementation point for country colours is the existing map-mode/colour-generation path, not a second overlay in GDScript. A second overlay could disagree with map modes, stripe masks, selection highlighting, or zoom-dependent terrain blending.
 
+## Confirmed implementation detail: political map mode already uses ownership colours
+
+The simulation's `src/openvic-simulation/map/Mapmode.cpp` currently registers `mapmode_political` using the two-item colour helper with `ProvinceInstance::get_owner` and `ProvinceInstance::get_controller`. That is a significant finding: the political map mode already has a path intended to display owner colour as the base and controller colour as the stripe.
+
+The same file's `MapmodeManager::generate_mapmode_colours()` iterates province instances and writes the selected map mode's base/stripe pair into the province-indexed output buffer. In the extension, `GameSingleton::_update_colour_image()` calls this generator and updates the image texture consumed by the map shader.
+
+Consequently, a new country-colour feature should **not** simply duplicate the existing political map mode. The next debugging question is narrower:
+
+1. Are country definition colours being parsed and assigned correctly from the source game data?
+2. Does each country instance expose the expected colour at runtime?
+3. Does the owner/controller pair resolve to the expected countries for the selected province?
+4. Does the generated base/stripe buffer contain the expected RGBA values for that province index?
+5. Does the shader display those values as expected after alpha blending with terrain and parchment?
+
+A useful reproduction should include the country identifier, province identifier/number, owner, controller, configured country colour, expected base/stripe colour, actual screenshot, and current map mode. This lets maintainers locate whether the problem is in data loading, simulation state, colour generation, texture upload, or shader presentation.
+
 ## Important distinction: country colour vs. province colour
 
 Victoria II-style political maps normally colour provinces according to the country that owns them. A country colour is therefore a source value; a province's displayed colour is the result of applying the active map mode and its ownership/other game-state rules.
