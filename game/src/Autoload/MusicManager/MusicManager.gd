@@ -58,6 +58,8 @@ func get_current_song_index() -> int:
 
 
 func get_current_song_name() -> String:
+	if _selected_track < 0 or _selected_track >= _available_songs.size():
+		return ""
 	return _available_songs[_selected_track].song_name
 
 
@@ -87,6 +89,9 @@ func toggle_play_pause() -> void:
 
 
 func start_current_song() -> void:
+	if _selected_track < 0 or _selected_track >= _available_songs.size():
+		push_warning("Cannot start music: selected track index is out of range.")
+		return
 	_audio_stream_player.stream = _available_songs[_selected_track].song_stream
 	_audio_stream_player.play()
 	song_started.emit(_selected_track)
@@ -123,7 +128,10 @@ func select_next_song() -> void:
 
 
 func select_previous_song() -> void:
-	_selected_track = (len(_available_songs) - 1) if (_selected_track == 0) else (_selected_track - 1)
+	if _available_songs.is_empty():
+		return
+	_selected_track = (_available_songs.size() - 1) if _selected_track == 0 else (_selected_track - 1)
+	last_played = _selected_track
 	_audio_stream_paused = false
 	start_current_song()
 
@@ -154,6 +162,9 @@ func add_compat_songs() -> void:
 
 func add_ootb_music() -> void:
 	var dir := DirAccess.open(music_directory)
+	if dir == null:
+		push_error("Failed to open music directory: %s" % music_directory)
+		return
 	for fname: String in dir.get_files():
 		if fname.ends_with(".import"):
 			fname = fname.get_basename()
