@@ -2,6 +2,7 @@ class_name GameDebug
 extends RefCounted
 
 static var _singleton: GameDebug
+
 static var debug_mode: bool:
 	get = is_debug_mode, set = set_debug_mode
 

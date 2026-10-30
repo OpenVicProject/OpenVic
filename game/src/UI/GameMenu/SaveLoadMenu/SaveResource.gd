@@ -14,17 +14,20 @@ var save_name: StringName:
 		save_name = v
 		file.set_value("Save", "name", save_name)
 		emit_changed()
+
 var session_tag: StringName:
 	get: return session_tag
 	set(v):
 		session_tag = v
 		file.set_value("Save", "session_tag", v)
 		emit_changed()
+
 var file_path: String:
 	get: return file_path
 	set(v):
 		file_path = v
 		emit_changed()
+
 var file: ConfigFile = ConfigFile.new()
 
 

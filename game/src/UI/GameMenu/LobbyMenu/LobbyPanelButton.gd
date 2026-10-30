@@ -14,9 +14,11 @@ signal toggled(button_pressed: bool)
 
 var is_start_date: bool:
 	get = _is_start_date
+
 var name_text: String:
 	get = get_name_text,
 	set = set_name_text
+
 var date_text: String:
 	get = get_date_text,
 	set = set_date_text

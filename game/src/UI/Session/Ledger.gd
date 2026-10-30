@@ -37,6 +37,7 @@ var _current_page: Page = Page.NATION_RANKING:
 			_current_page += Page.NUMBER_OF_PAGES
 		_current_page %= Page.NUMBER_OF_PAGES
 		_update_info()
+
 var _page_title_label: GUILabel
 var _page_number_label: GUILabel
 # TODO - add variables to store any nodes you'll need to refer in more than one function call
