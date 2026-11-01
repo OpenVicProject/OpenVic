@@ -792,6 +792,19 @@ def main() -> None:
 
             file_list.append(path)
 
+    # Windows paths are case-insensitive and may reach the same file through
+    # different path spellings. Deduplicate physical files before checking class
+    # names, while still reporting genuinely distinct XML files defining a class.
+    unique_file_list: list[str] = []
+    seen_file_paths: set[str] = set()
+    for file_path in file_list:
+        canonical_path = os.path.normcase(os.path.realpath(file_path))
+        if canonical_path in seen_file_paths:
+            continue
+        seen_file_paths.add(canonical_path)
+        unique_file_list.append(file_path)
+    file_list = unique_file_list
+
     classes: dict[str, tuple[ET.Element, str]] = {}
     state = State()
 
@@ -820,8 +833,9 @@ def main() -> None:
 
     pattern = re.compile(args.filter)
 
-    # Create the output folder recursively if it doesn't already exist.
-    os.makedirs(args.output, exist_ok=True)
+    # A dry run validates the XML without changing the filesystem.
+    if not args.dry_run:
+        os.makedirs(args.output, exist_ok=True)
 
     print("Generating the RST class reference...")
 
