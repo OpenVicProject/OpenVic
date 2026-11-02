@@ -16,12 +16,14 @@ var meshes: Array[MeshInstance3D]
 		_set_shader_parameter(&"colour_primary", primary_colour)
 		for unit: UnitModel in sub_units:
 			unit.primary_colour = col_in
+
 @export var secondary_colour: Color:
 	set(col_in):
 		secondary_colour = col_in
 		_set_shader_parameter(&"colour_secondary", secondary_colour)
 		for unit: UnitModel in sub_units:
 			unit.secondary_colour = col_in
+
 @export var tertiary_colour: Color:
 	set(col_in):
 		tertiary_colour = col_in
@@ -89,6 +91,7 @@ const ANIMATION_LIBRARY: StringName = &"default_lib"
 
 		_set_tex_scroll(0.0)
 		current_anim = Anim.NONE
+
 #
 # TEXTURE SCROLL SPEEDS (TANKS TRACKS AND SMOKE)
 @export_subgroup("Texture_Scroll")
@@ -97,11 +100,13 @@ const ANIMATION_LIBRARY: StringName = &"default_lib"
 		scroll_speed_idle = speed_in
 		for unit: UnitModel in sub_units:
 			unit.scroll_speed_idle = speed_in
+
 @export var scroll_speed_move: float:
 	set(speed_in):
 		scroll_speed_move = speed_in
 		for unit: UnitModel in sub_units:
 			unit.scroll_speed_move = speed_in
+
 @export var scroll_speed_attack: float:
 	set(speed_in):
 		scroll_speed_attack = speed_in

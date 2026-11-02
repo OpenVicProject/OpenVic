@@ -40,11 +40,13 @@ var _cores_overlapping_elements_box: GUIOverlappingElementsBox
 # Buildings
 var _buildings_panel: Panel
 var _building_slots: Array[BuildingSlot]
+
 var _selected_province_number: int:
 	get: return _selected_province_number
 	set(v):
 		_selected_province_number = v
 		_update_info()
+
 var _province_info: Dictionary
 
 
@@ -380,7 +382,12 @@ func _on_close_button_pressed() -> void:
 
 
 class BuildingSlot:
-	enum ExpansionState { CannotExpand, CanExpand, Preparing, Expanding }
+	enum ExpansionState {
+		CannotExpand,
+		CanExpand,
+		Preparing,
+		Expanding,
+	}
 
 
 	var _slot_index: int
