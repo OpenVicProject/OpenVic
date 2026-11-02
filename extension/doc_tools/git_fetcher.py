@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import subprocess
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 REPO_OWNER_DEFAULT: str = "godotengine"
 REPO_NAME_DEFAULT: str = "godot"
@@ -50,12 +50,15 @@ class GitFetcher:
 
     def setup_sparse_checkout(
         self,
-        dirs: List[str] = [
-            "doc/classes/*.xml",
-            "modules/*/doc_classes/*.xml",
-            "platform/*/doc_classes/*.xml",
-        ],
+        dirs: list[str] | None = None,
     ) -> bool:
+        if dirs is None:
+            dirs = [
+                "doc/classes/*.xml",
+                "modules/*/doc_classes/*.xml",
+                "platform/*/doc_classes/*.xml",
+            ]
+
         print(f"Downloading {self.repo_name.capitalize()} {self.ref} XML class references via Git...")
 
         cache_dir_path = Path(self.cache_path)
