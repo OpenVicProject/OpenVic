@@ -464,7 +464,7 @@ func _sort_table(table: Table) -> void:
 
 	var sort_key: StringName = TABLE_COLUMN_KEYS[column]
 
-	_table_listboxes[table].sort_children(
+	_table_listboxes[table].sort_gui_children(
 		(func(a: Node, b: Node) -> bool: return a.get_meta(sort_key) > b.get_meta(sort_key))
 		if _table_sort_directions[table] == SORT_DESCENDING else
 		(func(a: Node, b: Node) -> bool: return a.get_meta(sort_key) < b.get_meta(sort_key))

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dva3tonxsxrlk"]
 
-[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorProgressBar.gd" id="1"]
+[ext_resource type="Script" uid="uid://b65ug4mw4237g" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorProgressBar.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ayfir"]
 bg_color = Color(1, 1, 1, 0)
@@ -22,6 +22,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 9
 theme_override_styles/fill = SubResource("StyleBoxFlat_ayfir")
+max_value = 0.0
 allow_greater = true
 show_percentage = false
 script = ExtResource("1")
@@ -42,6 +43,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 6
 size_flags_vertical = 6
+text = "0:0"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_trim_flags = 0

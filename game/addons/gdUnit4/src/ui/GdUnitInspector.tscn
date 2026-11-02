@@ -1,18 +1,19 @@
 [gd_scene format=3 uid="uid://mpo5o6d4uybu"]
 
-[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorToolBar.tscn" id="1"]
-[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/GdUnitInspector.gd" id="1_j37cs"]
-[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorProgressBar.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorStatusBar.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorTreeMainPanel.tscn" id="7"]
-[ext_resource type="PackedScene" path="res://addons/gdUnit4/src/network/GdUnitServer.tscn" id="7_721no"]
+[ext_resource type="PackedScene" uid="uid://dx7xy4dgi3wwb" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorToolBar.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ch1mlph0qb8eu" path="res://addons/gdUnit4/src/ui/GdUnitInspector.gd" id="1_j37cs"]
+[ext_resource type="PackedScene" uid="uid://dva3tonxsxrlk" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorProgressBar.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://c22l4odk7qesc" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorStatusBar.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bqfpidewtpeg0" path="res://addons/gdUnit4/src/ui/parts/GdUnitInspectorTreeMainPanel.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://cn5mp3tmi2gb1" path="res://addons/gdUnit4/src/network/GdUnitServer.tscn" id="7_721no"]
 
 [node name="GdUnit" type="Control" unique_id=272268338]
-clip_contents = true
 custom_minimum_size = Vector2(360, 440)
+clip_contents = true
 layout_mode = 3
 anchors_preset = 9
 anchor_bottom = 1.0
+offset_right = 360.0
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

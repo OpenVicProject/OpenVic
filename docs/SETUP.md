@@ -33,7 +33,7 @@
 - Verify with `cmake --version` and `ninja --version` in Powershell
 
 ## 4. [Godot](https://github.com/godotengine/godot/releases/latest)
-- Download Godot 4.7 The current version for the project will be on the [main README](../README.md) page.
+- Download Godot 4.8 The current version for the project will be on the [main README](../README.md) page.
 
 ![](images/installation/godot-dl-page.png)
 
