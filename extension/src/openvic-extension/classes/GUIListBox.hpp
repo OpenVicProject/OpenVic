@@ -58,6 +58,6 @@ namespace OpenVic {
 
 		GUIScrollbar* get_scrollbar() const;
 
-		godot::Error sort_children(godot::Callable const& callable);
+		godot::Error sort_gui_children(godot::Callable const& callable);
 	};
 }

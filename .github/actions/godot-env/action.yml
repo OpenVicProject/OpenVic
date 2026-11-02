@@ -4,13 +4,13 @@ description: Setup Godot variables for OpenVic
 inputs:
   godot-src-url:
     description: Source URL to create Linux and Template URLs from
-    default: https://github.com/godotengine/godot
+    default: https://github.com/godotengine/godot-builds
   godot-version:
     description: Version of Godot
-    default: "4.7.2"
+    default: "4.8"
   godot-version-type:
     description: Type of Version of Godot
-    default: stable
+    default: beta2
 
 outputs:
   godot-linux-url:
@@ -138,6 +138,9 @@ runs:
             ;;
           4.7*)
             echo "godot-api-version=4.7" >> $GITHUB_OUTPUT
+            ;;
+          4.8*)
+            echo "godot-api-version=4.8" >> $GITHUB_OUTPUT
             ;;
           *)
             echo "::error::Could not generate godot-api-version from $INPUTS_GODOT_VERSION."
