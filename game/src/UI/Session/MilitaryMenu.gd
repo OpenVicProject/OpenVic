@@ -811,7 +811,7 @@ func _sort_table(table: Table) -> void:
 
 	var sort_key: StringName = TABLE_COLUMN_KEYS[column]
 
-	table_listbox.sort_children(_make_unsortable_check(
+	table_listbox.sort_gui_children(_make_unsortable_check(
 		(func(a: Node, b: Node) -> bool: return a.get_meta(sort_key) > b.get_meta(sort_key))
 		if _table_sort_directions[table] == SORT_DESCENDING else
 		(func(a: Node, b: Node) -> bool: return a.get_meta(sort_key) < b.get_meta(sort_key))

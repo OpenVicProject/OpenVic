@@ -10,7 +10,7 @@ from typing import Any, List
 
 REPO_OWNER_DEFAULT: str = "godotengine"
 REPO_NAME_DEFAULT: str = "godot"
-REF_DEFAULT: str = "4.7-stable"
+REF_DEFAULT: str = "cafc17a192acf67903910a68aeb3c076c0907a4b"  # "4.8-stable"
 GIT_REPO_TEMPLATE_DEFAULT: str = "https://github.com/{repo_owner}/{repo_name}"
 CACHE_PATH_DEFAULT: str = "extension/doc_tools/cache/engine"
 

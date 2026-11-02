@@ -121,7 +121,7 @@ void GUIListBox::_bind_methods() {
 
 	OV_BIND_METHOD(GUIListBox::get_gui_listbox_name);
 	OV_BIND_METHOD(GUIListBox::get_scrollbar);
-	OV_BIND_METHOD(GUIListBox::sort_children, { "callable" });
+	OV_BIND_METHOD(GUIListBox::sort_gui_children, { "callable" });
 
 	ADD_SIGNAL(MethodInfo(_signal_scroll_index_changed(), PropertyInfo(Variant::INT, "value")));
 }
@@ -313,7 +313,7 @@ GUIScrollbar* GUIListBox::get_scrollbar() const {
 	return scrollbar;
 }
 
-godot::Error GUIListBox::sort_children(Callable const& callable) {
+godot::Error GUIListBox::sort_gui_children(Callable const& callable) {
 	TypedArray<Node> children;
 	ERR_FAIL_COND_V(children.resize(get_child_count()) != OK, FAILED);
 

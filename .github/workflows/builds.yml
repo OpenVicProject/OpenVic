@@ -129,10 +129,13 @@ jobs:
           merge-multiple: true
 
       - name: Run unit tests
-        uses: godot-gdunit-labs/gdUnit4-action@17eeffa988f9732fdc3dba3067405d16b55809de # v1.3.2
+        uses: godot-gdunit-labs/gdUnit4-action@36c3372a562280b9d80dce8790db5941d29c422f # v1.4.0
         with:
           version: installed
-          godot-version: ${{ needs.static-checks-builds.outputs.godot-version }}
+          # TODO: separate version and status
+          # godot-version: ${{ needs.static-checks-builds.outputs.godot-version }}
+          godot-version: 4.8
+          godot-status: beta2
           paths: 'res://tests'
           project_dir: './game/'
           arguments: ${{ runner.debug && '--verbose' || '' }}
