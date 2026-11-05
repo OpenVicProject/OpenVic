@@ -295,6 +295,8 @@ func get_game_resolution() -> Vector2i:
 	assert(window != null)
 	match window.mode:
 		Window.MODE_EXCLUSIVE_FULLSCREEN, Window.MODE_FULLSCREEN:
+			if window.content_scale_size == Vector2i.ZERO:
+				return window.size
 			return window.content_scale_size
 		_:
 			return window.size
