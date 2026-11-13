@@ -45,7 +45,7 @@ godot::Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progre
 		back_texture = asset_manager->get_texture(back_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 		if (back_texture.is_null()) {
 			UtilityFunctions::push_error(
-			    "Failed to load sprite back texture ", back_texture_file, " for GUIProgressBar ", get_name()
+				"Failed to load sprite back texture ", back_texture_file, " for GUIProgressBar ", get_name()
 			);
 			err = FAILED;
 		}
@@ -53,11 +53,11 @@ godot::Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progre
 	if (back_texture.is_null()) {
 		const Color back_colour = convert_to<Color>(progress_bar->get_back_colour());
 		back_texture = Utilities::make_solid_colour_texture(
-		    back_colour, progress_bar->get_size().x, progress_bar->get_size().y
+			back_colour, progress_bar->get_size().x, progress_bar->get_size().y
 		);
 		if (back_texture.is_null()) {
 			UtilityFunctions::push_error(
-			    "Failed to generate sprite ", back_colour, " back texture for GUIProgressBar ", get_name()
+				"Failed to generate sprite ", back_colour, " back texture for GUIProgressBar ", get_name()
 			);
 			err = FAILED;
 		}
@@ -75,7 +75,7 @@ godot::Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progre
 		progress_texture = asset_manager->get_texture(progress_texture_file, LOAD_FLAG_CACHE_TEXTURE | LOAD_FLAG_FLIP_Y);
 		if (progress_texture.is_null()) {
 			UtilityFunctions::push_error(
-			    "Failed to load sprite progress texture ", progress_texture_file, " for GUIProgressBar ", get_name()
+				"Failed to load sprite progress texture ", progress_texture_file, " for GUIProgressBar ", get_name()
 			);
 			err = FAILED;
 		}
@@ -83,11 +83,11 @@ godot::Error GUIProgressBar::set_gfx_progress_bar(GFX::ProgressBar const* progre
 	if (progress_texture.is_null()) {
 		const Color progress_colour = convert_to<Color>(progress_bar->get_progress_colour());
 		progress_texture = Utilities::make_solid_colour_texture(
-		    progress_colour, progress_bar->get_size().x, progress_bar->get_size().y
+			progress_colour, progress_bar->get_size().x, progress_bar->get_size().y
 		);
 		if (progress_texture.is_null()) {
 			UtilityFunctions::push_error(
-			    "Failed to generate sprite ", progress_colour, " progress texture for GUIProgressBar ", get_name()
+				"Failed to generate sprite ", progress_colour, " progress texture for GUIProgressBar ", get_name()
 			);
 			err = FAILED;
 		}

@@ -27,13 +27,13 @@ namespace OpenVic {
 
 	template<typename MapType>
 	concept IsPieChartDistribution =
-	    (
-	        /* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
-	        specialization_of<MapType, tsl::ordered_map>
-	        /* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
-	        || specialization_of<MapType, IndexedFlatMap>
-	    ) &&
-	    IsPieChartKey<map_key_t<MapType>> && IsPieChartValue<map_value_t<MapType>>;
+		(
+			/* tsl::ordered_map<KeyType const*, ValueType>, KeyType derived from HasIdentifierAndColour */
+			specialization_of<MapType, tsl::ordered_map> ||
+			/* IndexedFlatMap<KeyType, ValueType>, KeyType derived from HasIdentifierAndColour */
+			specialization_of<MapType, IndexedFlatMap>
+		) &&
+		IsPieChartKey<map_key_t<MapType>> && IsPieChartValue<map_value_t<MapType>>;
 
 	class GFXPieChartTexture : public godot::ImageTexture {
 		GDCLASS(GFXPieChartTexture, godot::ImageTexture)
@@ -65,16 +65,16 @@ namespace OpenVic {
 		 * The resulting Array of Dictionaries can be used as an argument for set_slices_array. */
 		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
 		static godot_pie_chart_data_t distribution_to_slices_array(
-		    std::span<std::add_const_t<KeyType>> keys,
-		    std::span<std::add_const_t<ValueType>> values,
-		    NodeTools::Functor<
-		        // return tooltip; args: key const*, identifier, weight, total weight
-		        godot::String,
-		        std::add_const_t<std::remove_pointer_t<KeyType>>&,
-		        godot::String const&,
-		        float,
-		        float> auto make_tooltip,
-		    godot::String const& identifier_suffix = {}
+			std::span<std::add_const_t<KeyType>> keys,
+			std::span<std::add_const_t<ValueType>> values,
+			NodeTools::Functor<
+				// return tooltip; args: key const*, identifier, weight, total weight
+				godot::String,
+				std::add_const_t<std::remove_pointer_t<KeyType>>&,
+				godot::String const&,
+				float,
+				float> auto make_tooltip,
+			godot::String const& identifier_suffix = {}
 		) {
 			assert(keys.size() == values.size());
 			using key_t = std::add_const_t<std::remove_pointer_t<KeyType>>;
@@ -114,19 +114,19 @@ namespace OpenVic {
 			}
 
 			std::sort(
-			    sorted_distribution.begin(), sorted_distribution.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
-				    if constexpr (requires { lhs.first.get() < rhs.first.get(); }) {
-					    return lhs.first.get() < rhs.first.get();
-				    } else if constexpr (requires { lhs.first.get().index < rhs.first.get().index; }) {
-					    return lhs.first.get().index < rhs.first.get().index;
-				    } else if constexpr (requires { lhs.first.get().get_identifier() < rhs.first.get().get_identifier(); }) {
-					    return lhs.first.get().get_identifier() < rhs.first.get().get_identifier();
-				    } else {
-					    static_assert(
-					        !std::is_same_v<KeyType, KeyType>, "distribution_to_slices_array's sorting does not support KeyType"
-					    );
-				    }
-			    }
+				sorted_distribution.begin(), sorted_distribution.end(), [](entry_t const& lhs, entry_t const& rhs) -> bool {
+					if constexpr (requires { lhs.first.get() < rhs.first.get(); }) {
+						return lhs.first.get() < rhs.first.get();
+					} else if constexpr (requires { lhs.first.get().index < rhs.first.get().index; }) {
+						return lhs.first.get().index < rhs.first.get().index;
+					} else if constexpr (requires { lhs.first.get().get_identifier() < rhs.first.get().get_identifier(); }) {
+						return lhs.first.get().get_identifier() < rhs.first.get().get_identifier();
+					} else {
+						static_assert(
+							!std::is_same_v<KeyType, KeyType>, "distribution_to_slices_array's sorting does not support KeyType"
+						);
+					}
+				}
 			);
 
 			godot_pie_chart_data_t array;
@@ -153,15 +153,15 @@ namespace OpenVic {
 
 		template<IsPieChartDistribution MapType>
 		static godot_pie_chart_data_t distribution_to_slices_array(
-		    MapType const& distribution,
-		    NodeTools::Functor<
-		        // return tooltip; args: key const*, identifier, weight, total weight
-		        godot::String,
-		        std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&,
-		        godot::String const&,
-		        float,
-		        float> auto make_tooltip,
-		    godot::String const& identifier_suffix = {}
+			MapType const& distribution,
+			NodeTools::Functor<
+				// return tooltip; args: key const*, identifier, weight, total weight
+				godot::String,
+				std::add_const_t<std::remove_pointer_t<map_key_t<MapType>>>&,
+				godot::String const&,
+				float,
+				float> auto make_tooltip,
+			godot::String const& identifier_suffix = {}
 		) {
 			memory::FixedVector<map_key_t<MapType>> keys { create_empty, distribution.size() };
 			memory::FixedVector<map_value_t<MapType>> values { create_empty, distribution.size() };
@@ -170,7 +170,7 @@ namespace OpenVic {
 				values.emplace_back(v);
 			}
 			return distribution_to_slices_array<map_key_t<MapType>, map_value_t<MapType>>(
-			    keys, values, make_tooltip, identifier_suffix
+				keys, values, make_tooltip, identifier_suffix
 			);
 		}
 

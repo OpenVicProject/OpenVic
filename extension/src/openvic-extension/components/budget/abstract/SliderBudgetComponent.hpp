@@ -31,19 +31,19 @@ namespace OpenVic {
 		GUILabel* const budget_label;
 
 		SliderBudgetComponent(
-		    GUINode const& parent,
-		    godot::String&& new_slider_tooltip_localisation_key,
-		    const BudgetType new_budget_type,
-		    godot::NodePath const& slider_path,
-		    godot::NodePath const& budget_label_path = {},
-		    godot::NodePath const& percent_label_path = {}
+			GUINode const& parent,
+			godot::String&& new_slider_tooltip_localisation_key,
+			const BudgetType new_budget_type,
+			godot::NodePath const& slider_path,
+			godot::NodePath const& budget_label_path = {},
+			godot::NodePath const& percent_label_path = {}
 		);
 
 		virtual bool was_budget_cut(CountryInstance const& country) const {
 			return false;
 		}
 		virtual fixed_point_t calculate_budget_and_update_custom(
-		    CountryInstance& country, const fixed_point_t scaled_value
+			CountryInstance& country, const fixed_point_t scaled_value
 		) = 0;
 		virtual ReadOnlyClampedValue& get_clamped_value(CountryInstance& country) const = 0;
 		virtual void on_slider_value_changed(const fixed_point_t scaled_value) = 0;

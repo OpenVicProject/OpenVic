@@ -42,7 +42,7 @@ godot::Error GUIOverlappingElementsBox::_update_child_positions() {
 	case right:  starting_x = box_width - total_width; break;
 	default:
 		UtilityFunctions::push_error(
-		    "Invalid GUIOverlappingElementsBox alignment: ", static_cast<int32_t>(gui_overlapping_elements_box->get_format())
+			"Invalid GUIOverlappingElementsBox alignment: ", static_cast<int32_t>(gui_overlapping_elements_box->get_format())
 		);
 		err = FAILED;
 	}
@@ -62,7 +62,7 @@ void GUIOverlappingElementsBox::_bind_methods() {
 	OV_BIND_METHOD(GUIOverlappingElementsBox::get_gui_overlapping_elements_box_name);
 
 	OV_BIND_METHOD(
-	    GUIOverlappingElementsBox::set_gui_child_element_name, { "gui_child_element_file", "gui_child_element_name" }
+		GUIOverlappingElementsBox::set_gui_child_element_name, { "gui_child_element_file", "gui_child_element_name" }
 	);
 	OV_BIND_METHOD(GUIOverlappingElementsBox::get_gui_child_element_name);
 }
@@ -99,11 +99,11 @@ godot::Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 		return OK;
 	} else {
 		ERR_FAIL_NULL_V_MSG(
-		    gui_child_element,
-		    FAILED,
-		    Utilities::format(
-		        "GUIOverlappingElementsBox child element is null (child_count = %d, new_count = %d)", child_count, new_count
-		    )
+			gui_child_element,
+			FAILED,
+			Utilities::format(
+				"GUIOverlappingElementsBox child element is null (child_count = %d, new_count = %d)", child_count, new_count
+			)
 		);
 		godot::Error err = OK;
 		const String gui_child_element_name = convert_to<String>(gui_child_element->get_name()) + "_";
@@ -115,14 +115,14 @@ godot::Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 				err = FAILED;
 			}
 			ERR_FAIL_NULL_V_MSG(
-			    child,
-			    FAILED,
-			    Utilities::format(
-			        "Failed to generate GUIOverlappingElementsBox child element %s (child_count = %d, new_count = %d)",
-			        name,
-			        child_count,
-			        new_count
-			    )
+				child,
+				FAILED,
+				Utilities::format(
+					"Failed to generate GUIOverlappingElementsBox child element %s (child_count = %d, new_count = %d)",
+					name,
+					child_count,
+					new_count
+				)
 			);
 
 			static const StringName set_z_index_func_name = "set_z_index";
@@ -141,7 +141,7 @@ godot::Error GUIOverlappingElementsBox::set_child_count(int32_t new_count) {
 }
 
 godot::Error GUIOverlappingElementsBox::set_gui_overlapping_elements_box(
-    GUI::OverlappingElementsBox const* new_gui_overlapping_elements_box
+	GUI::OverlappingElementsBox const* new_gui_overlapping_elements_box
 ) {
 	if (gui_overlapping_elements_box == new_gui_overlapping_elements_box) {
 		return OK;
@@ -167,20 +167,20 @@ godot::Error GUIOverlappingElementsBox::set_gui_child_element(GUI::Element const
 }
 
 godot::Error GUIOverlappingElementsBox::set_gui_child_element_name(
-    String const& gui_child_element_file, String const& gui_child_element_name
+	String const& gui_child_element_file, String const& gui_child_element_name
 ) {
 	if (gui_child_element_file.is_empty() && gui_child_element_name.is_empty()) {
 		return set_gui_child_element(nullptr);
 	}
 	ERR_FAIL_COND_V_MSG(
-	    gui_child_element_file.is_empty(),
-	    FAILED,
-	    Utilities::format("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
+		gui_child_element_file.is_empty(),
+		FAILED,
+		Utilities::format("GUI child element file name is empty but element name is not: %s", gui_child_element_name)
 	);
 	ERR_FAIL_COND_V_MSG(
-	    gui_child_element_name.is_empty(),
-	    FAILED,
-	    Utilities::format("GUI child element name is empty but file name is not: %s", gui_child_element_file)
+		gui_child_element_name.is_empty(),
+		FAILED,
+		Utilities::format("GUI child element name is empty but file name is not: %s", gui_child_element_file)
 	);
 	GUI::Element const* const new_gui_child_element = UITools::get_gui_element(gui_child_element_file, gui_child_element_name);
 	ERR_FAIL_NULL_V(new_gui_child_element, FAILED);

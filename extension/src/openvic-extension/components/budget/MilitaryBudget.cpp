@@ -10,10 +10,10 @@
 using namespace OpenVic;
 
 MilitaryBudget::MilitaryBudget(GUINode const& parent) :
-    SliderBudgetComponent(
-        parent, "BUDGET_SLIDER_MILITARY_SPENDING", EXPENSES, "./country_budget/exp_3_slider", "./country_budget/exp_val_3"
-    ),
-    BudgetExpenseComponent("BUDGET_SLIDER_MILITARY_SPENDING") {
+	SliderBudgetComponent(
+		parent, "BUDGET_SLIDER_MILITARY_SPENDING", EXPENSES, "./country_budget/exp_3_slider", "./country_budget/exp_val_3"
+	),
+	BudgetExpenseComponent("BUDGET_SLIDER_MILITARY_SPENDING") {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -33,21 +33,21 @@ bool MilitaryBudget::was_budget_cut(CountryInstance const& country) const {
 fixed_point_t MilitaryBudget::calculate_budget_and_update_custom(CountryInstance& country, const fixed_point_t scaled_value) {
 	if (budget_label != nullptr) {
 		budget_label->set_tooltip_string(
-		    Utilities::format(
-		        "%s\n--------------\n%s%s",
-		        budget_label->tr("DIST_DEFENCE"),
-		        was_budget_cut(country)
-		            ? budget_label->tr("EXPENSE_NO_AFFORD")
-		                      .replace(
-		                          Utilities::get_short_value_placeholder(),
-		                          Utilities::float_to_string_dp_dynamic(
-		                              static_cast<float>(country.get_actual_military_spending().load())
-		                          )
-		                      ) +
-		                  "\n"
-		            : "",
-		        budget_label->tr("DEFENCE_DESC")
-		    )
+			Utilities::format(
+				"%s\n--------------\n%s%s",
+				budget_label->tr("DIST_DEFENCE"),
+				was_budget_cut(country)
+					? budget_label->tr("EXPENSE_NO_AFFORD")
+							  .replace(
+								  Utilities::get_short_value_placeholder(),
+								  Utilities::float_to_string_dp_dynamic(
+									  static_cast<float>(country.get_actual_military_spending().load())
+								  )
+							  ) +
+						  "\n"
+					: "",
+				budget_label->tr("DEFENCE_DESC")
+			)
 		);
 	}
 

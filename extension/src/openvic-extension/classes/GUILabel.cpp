@@ -24,10 +24,10 @@ using namespace godot;
 using namespace OpenVic::Utilities::literals;
 
 GUILabel::string_segment_t::string_segment_t(String&& new_text, Color const& new_colour, real_t new_width) :
-    text { std::move(new_text) }, colour { new_colour }, width { new_width } {}
+	text { std::move(new_text) }, colour { new_colour }, width { new_width } {}
 
 GUILabel::string_segment_t::string_segment_t(String const& new_text, Color const& new_colour, real_t new_width) :
-    text { new_text }, colour { new_colour }, width { new_width } {}
+	text { new_text }, colour { new_colour }, width { new_width } {}
 
 static constexpr int32_t DEFAULT_FONT_SIZE = 16;
 static const Vector2 FLAG_DRAW_DIMS { 23.0_real, 11.0_real };
@@ -56,10 +56,10 @@ String const& GUILabel::get_flag_marker() {
 }
 
 void GUILabel::set_text_and_tooltip(
-    GUINode const& parent,
-    godot::NodePath const& path,
-    godot::StringName const& text_localisation_key,
-    godot::StringName const& tooltip_localisation_key
+	GUINode const& parent,
+	godot::NodePath const& path,
+	godot::StringName const& text_localisation_key,
+	godot::StringName const& tooltip_localisation_key
 ) {
 	GUILabel* label_nullable = parent.get_gui_label_from_nodepath(path);
 	if (label_nullable != nullptr) {
@@ -117,31 +117,31 @@ void GUILabel::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "substitution_dict"), "set_substitution_dict", "get_substitution_dict");
 	ADD_PROPERTY(
-	    PropertyInfo(Variant::INT, "horizontal_alignment", PROPERTY_HINT_ENUM, "Left,Center,Right,Fill"),
-	    "set_horizontal_alignment",
-	    "get_horizontal_alignment"
+		PropertyInfo(Variant::INT, "horizontal_alignment", PROPERTY_HINT_ENUM, "Left,Center,Right,Fill"),
+		"set_horizontal_alignment",
+		"get_horizontal_alignment"
 	);
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "max_size", PROPERTY_HINT_NONE, "suffix:px"), "set_max_size", "get_max_size");
 	ADD_PROPERTY(
-	    PropertyInfo(Variant::VECTOR2, "border_size", PROPERTY_HINT_NONE, "suffix:px"), "set_border_size", "get_border_size"
+		PropertyInfo(Variant::VECTOR2, "border_size", PROPERTY_HINT_NONE, "suffix:px"), "set_border_size", "get_border_size"
 	);
 	ADD_PROPERTY(PropertyInfo(Variant::RECT2, "adjusted_rect", PROPERTY_HINT_NONE, "suffix:px"), "", "get_adjusted_rect");
 	ADD_PROPERTY(
-	    PropertyInfo(Variant::BOOL, "auto_adjust_to_content_size"),
-	    "set_auto_adjust_to_content_size",
-	    "will_auto_adjust_to_content_size"
+		PropertyInfo(Variant::BOOL, "auto_adjust_to_content_size"),
+		"set_auto_adjust_to_content_size",
+		"will_auto_adjust_to_content_size"
 	);
 
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "font", PROPERTY_HINT_RESOURCE_TYPE, "Font"), "set_font", "get_font");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "font_size", PROPERTY_HINT_NONE, "suffix:px"), "set_font_size", "get_font_size");
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "default_colour"), "set_default_colour", "get_default_colour");
 	ADD_PROPERTY(
-	    PropertyInfo(Variant::OBJECT, "currency_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "", "get_currency_texture"
+		PropertyInfo(Variant::OBJECT, "currency_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "", "get_currency_texture"
 	);
 	ADD_PROPERTY(
-	    PropertyInfo(Variant::OBJECT, "background", PROPERTY_HINT_RESOURCE_TYPE, "StyleBoxTexture"),
-	    "set_background_stylebox",
-	    "get_background"
+		PropertyInfo(Variant::OBJECT, "background", PROPERTY_HINT_RESOURCE_TYPE, "StyleBoxTexture"),
+		"set_background_stylebox",
+		"get_background"
 	);
 }
 
@@ -189,18 +189,18 @@ void GUILabel::_notification(int what) {
 			for (segment_t const& segment : line.segments) {
 				if (string_segment_t const* string_segment = std::get_if<string_segment_t>(&segment)) {
 					font->draw_string(
-					    ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, string_segment->colour
+						ci, position, string_segment->text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, string_segment->colour
 					);
 
 					position.x += string_segment->width;
 				} else if (flag_segment_t const* flag_segment = std::get_if<flag_segment_t>(&segment)) {
 					(*flag_segment)
-					    ->draw_rect(ci, Rect2 { position - Vector2 { 1.0_real, ascent - 4.0_real }, FLAG_DRAW_DIMS }, false);
+						->draw_rect(ci, Rect2 { position - Vector2 { 1.0_real, ascent - 4.0_real }, FLAG_DRAW_DIMS }, false);
 
 					position.x += FLAG_SEGMENT_WIDTH;
 				} else if (currency_texture.is_valid()) {
 					currency_texture->draw(
-					    ci, position - Vector2 { 1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real }
+						ci, position - Vector2 { 1.0_real, static_cast<real_t>(currency_texture->get_height()) * 0.75_real }
 					);
 
 					position.x += currency_texture->get_width();
@@ -525,15 +525,15 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 		result += base_text.substr(start_pos, marker_start_pos - start_pos);
 
 		int64_t marker_end_pos = base_text.find(
-		    get_substitution_marker(), marker_start_pos + get_substitution_marker().length()
+			get_substitution_marker(), marker_start_pos + get_substitution_marker().length()
 		);
 		if (marker_end_pos == -1) {
 			marker_end_pos = base_text.length();
 		}
 
 		String key = base_text.substr(
-		    marker_start_pos + get_substitution_marker().length(),
-		    marker_end_pos - marker_start_pos - get_substitution_marker().length()
+			marker_start_pos + get_substitution_marker().length(),
+			marker_end_pos - marker_start_pos - get_substitution_marker().length()
 		);
 		String value = substitution_dict.get(key, String {});
 
@@ -560,7 +560,7 @@ String GUILabel::generate_substituted_text(String const& base_text) const {
 }
 
 std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_text_and_colour_instructions(
-    String const& substituted_text
+	String const& substituted_text
 ) const {
 	String result;
 	colour_instructions_t colour_instructions;
@@ -590,7 +590,7 @@ std::pair<String, GUILabel::colour_instructions_t> GUILabel::generate_display_te
 }
 
 std::vector<GUILabel::line_t> GUILabel::generate_lines_and_segments(
-    String const& display_text, colour_instructions_t const& colour_instructions
+	String const& display_text, colour_instructions_t const& colour_instructions
 ) const {
 	static constexpr char RESET_COLOUR_CODE = '!';
 
@@ -687,7 +687,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 
 	if (instance_manager != nullptr) {
 		CountryInstance* country_instance = instance_manager->get_country_instance_manager().get_country_instance_by_identifier(
-		    convert_to<std::string>(identifier)
+			convert_to<std::string>(identifier)
 		);
 
 		if (country_instance != nullptr) {
@@ -700,9 +700,9 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 		}
 	} else {
 		CountryDefinition const* country_definition =
-		    game_singleton.get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
-		        convert_to<std::string>(identifier)
-		    );
+			game_singleton.get_definition_manager().get_country_definition_manager().get_country_definition_by_identifier(
+				convert_to<std::string>(identifier)
+			);
 
 		if (country_definition != nullptr) {
 			country_index = country_definition->index;
@@ -712,7 +712,7 @@ GUILabel::flag_segment_t GUILabel::make_flag_segment(String const& identifier) {
 	// If no country with the given identifier can be found, fallback to country index 0 (usually REB) and empty flag type
 	if (!country_index.has_value()) {
 		UtilityFunctions::push_warning(
-		    "Failed to find country with identifier \"", identifier, "\" for GUILabel flag segment, falling back to index 0"
+			"Failed to find country with identifier \"", identifier, "\" for GUILabel flag segment, falling back to index 0"
 		);
 		country_index = country_index_t(0);
 	}
@@ -754,11 +754,11 @@ void GUILabel::separate_flag_segments(String const& string, Color const& colour,
 
 		if (start_pos >= string.length()) {
 			UtilityFunctions::push_warning(
-			    "Incomplete flag identifier \"",
-			    string.substr(marker_pos),
-			    "\" at end of line \"",
-			    string,
-			    "\" in GUILabel text - discarding!"
+				"Incomplete flag identifier \"",
+				string.substr(marker_pos),
+				"\" at end of line \"",
+				string,
+				"\" in GUILabel text - discarding!"
 			);
 			return;
 		}
@@ -828,11 +828,11 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 							if (last_marker_pos != 0 || !current_line->segments.empty()) {
 								if (!new_segment_string.is_empty()) {
 									current_line->segments.emplace_back(
-									    string_segment_t {
-									        std::move(new_segment_string),
-									        string_segment->colour,
-									        new_segment_width,
-									    }
+										string_segment_t {
+											std::move(new_segment_string),
+											string_segment->colour,
+											new_segment_width,
+										}
 									);
 									current_line->width += new_segment_width;
 								}
@@ -845,7 +845,7 @@ std::vector<GUILabel::line_t> GUILabel::wrap_lines(std::vector<line_t>& unwrappe
 							}
 						}
 						current_line->segments.emplace_back(
-						    string_segment_t { std::move(whole_segment_string), string_segment->colour, whole_segment_width }
+							string_segment_t { std::move(whole_segment_string), string_segment->colour, whole_segment_width }
 						);
 						current_line->width += whole_segment_width;
 						break;

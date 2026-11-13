@@ -55,7 +55,7 @@ namespace OpenVic {
 		 * flip y load flag is set then the image will be flipped vertically before being returned (if the image is already
 		 * in the cache then no flipping will occur, regardless of whether it was originally flipped or not). */
 		godot::Ref<godot::Image> get_image(
-		    godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_IMAGE
+			godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_IMAGE
 		);
 
 		/* Create a texture from an image found at the specified path relative to the game defines, fist checking the
@@ -66,11 +66,11 @@ namespace OpenVic {
 		 * vertically before being used to create the texture (if the image is already in the cache then no flipping will
 		 * occur, regardless of whether it was originally flipped or not). */
 		godot::Ref<godot::ImageTexture> get_texture(
-		    godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_TEXTURE
+			godot::StringName const& path, godot::BitField<LoadFlags> load_flags = LOAD_FLAG_CACHE_TEXTURE
 		);
 
 		static godot::Ref<godot::StyleBoxTexture> make_stylebox_texture(
-		    godot::Ref<godot::Texture2D> const& texture, godot::Vector2 const& border = {}
+			godot::Ref<godot::Texture2D> const& texture, godot::Vector2 const& border = {}
 		);
 
 		/* Search for and load a font with the specified name from the game defines' font directory, first checking the

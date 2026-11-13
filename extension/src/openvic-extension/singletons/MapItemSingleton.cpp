@@ -94,7 +94,7 @@ TypedArray<Dictionary> MapItemSingleton::get_billboards() const {
 }
 
 void MapItemSingleton::add_projection_dict(
-    GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array
+	GFX::Projection const& projection, TypedArray<Dictionary>& projection_dict_array
 ) const {
 	static const StringName name_key = "name";
 	static const StringName texture_key = "texture";
@@ -158,7 +158,7 @@ PackedVector2Array MapItemSingleton::get_province_positions() const {
 // includes non-existent countries, used for setting the billboard buffer size
 int32_t MapItemSingleton::get_max_capital_count() const {
 	CountryDefinitionManager const& manager =
-	    GameSingleton::get_singleton()->get_definition_manager().get_country_definition_manager();
+		GameSingleton::get_singleton()->get_definition_manager().get_country_definition_manager();
 	return manager.get_country_definition_count();
 }
 
@@ -281,9 +281,9 @@ Vector2 MapItemSingleton::get_unit_position_by_province_number(int32_t province_
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province =
-	    game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
 	ERR_FAIL_NULL_V_MSG(
-	    province, {}, Utilities::format("Cannot get unit position - invalid province number: %d", province_number)
+		province, {}, Utilities::format("Cannot get unit position - invalid province number: %d", province_number)
 	);
 
 	return game_singleton->normalise_map_position(province->get_unit_position());
@@ -293,18 +293,18 @@ Vector2 MapItemSingleton::get_port_position_by_province_number(int32_t province_
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 
 	ProvinceDefinition const* province =
-	    game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(province_number);
 	ERR_FAIL_NULL_V_MSG(
-	    province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number)
+		province, {}, Utilities::format("Cannot get port position - invalid province number: %d", province_number)
 	);
 	ERR_FAIL_COND_V_MSG(
-	    !province->has_port(),
-	    {},
-	    Utilities::format("Cannot get port position, province has no port, number: %d", province_number)
+		!province->has_port(),
+		{},
+		Utilities::format("Cannot get port position, province has no port, number: %d", province_number)
 	);
 
 	BuildingType const* port_building_type =
-	    game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+		game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 	fvec2_t const* port_position = province->get_building_position(port_building_type);
 
 	// no null check because province->has_port() condition passed, already verifying that this isn't null
@@ -320,15 +320,15 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 	int32_t initial_province_number = game_singleton->get_province_number_from_uv_coords(click_position);
 
 	ProvinceDefinition const* province =
-	    game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(
-	        initial_province_number
-	    );
+		game_singleton->get_definition_manager().get_map_definition().get_province_definition_from_number(
+			initial_province_number
+		);
 	ERR_FAIL_NULL_V_MSG(
-	    province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number)
+		province, {}, Utilities::format("Cannot get port position - invalid province number: %d", initial_province_number)
 	);
 
 	BuildingType const* port_building_type =
-	    game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
+		game_singleton->get_definition_manager().get_economy_manager().get_building_type_manager().get_port_building_type();
 
 	if (province->has_port()) {
 		Vector2 port_position = game_singleton->normalise_map_position(*province->get_building_position(port_building_type));
@@ -343,7 +343,7 @@ int32_t MapItemSingleton::get_clicked_port_province_number(Vector2 click_positio
 				continue; // skip provinces without ports (ie. other water provinces)
 			}
 			Vector2 port_position = game_singleton->normalise_map_position(
-			    *adjacent_province.get_building_position(port_building_type)
+				*adjacent_province.get_building_position(port_building_type)
 			);
 			if (click_position.distance_to(port_position) <= port_radius) {
 				return adjacent_province.get_province_number();

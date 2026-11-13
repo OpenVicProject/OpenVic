@@ -16,16 +16,16 @@
 using namespace OpenVic;
 
 NationalStockpileBudget::NationalStockpileBudget(GUINode const& parent) :
-    BudgetExpenseComponent("BUDGET_IMPORTS"),
-    military_costs_label { *parent.get_gui_label_from_nodepath("./country_budget/mil_cost_val") },
-    todays_actual_stockpile_spending_label { *parent.get_gui_label_from_nodepath("./country_budget/nat_stock_val") },
-    overseas_costs_label { *parent.get_gui_label_from_nodepath("./country_budget/overseas_cost_val") },
-    expenses_label { *parent.get_gui_label_from_nodepath("./country_budget/nat_stock_est") }, army_stockpile_budget { parent },
-    navy_stockpile_budget { parent }, construction_stockpile_budget { parent } {
+	BudgetExpenseComponent("BUDGET_IMPORTS"),
+	military_costs_label { *parent.get_gui_label_from_nodepath("./country_budget/mil_cost_val") },
+	todays_actual_stockpile_spending_label { *parent.get_gui_label_from_nodepath("./country_budget/nat_stock_val") },
+	overseas_costs_label { *parent.get_gui_label_from_nodepath("./country_budget/overseas_cost_val") },
+	expenses_label { *parent.get_gui_label_from_nodepath("./country_budget/nat_stock_est") }, army_stockpile_budget { parent },
+	navy_stockpile_budget { parent }, construction_stockpile_budget { parent } {
 	connections[0] = army_stockpile_budget.balance_changed.connect(&NationalStockpileBudget::on_slider_value_changed, this);
 	connections[1] = navy_stockpile_budget.balance_changed.connect(&NationalStockpileBudget::on_slider_value_changed, this);
 	connections[2] = construction_stockpile_budget.balance_changed.connect(
-	    &NationalStockpileBudget::on_slider_value_changed, this
+		&NationalStockpileBudget::on_slider_value_changed, this
 	);
 
 	GUILabel::set_text_and_tooltip(parent, "./country_budget/nat_stock_desc", "BUDGET_NATIONAL_STOCKPILE", "NAT_STOCK_DESC");
@@ -83,10 +83,10 @@ void NationalStockpileBudget::update_labels(CountryInstance& country) {
 			GoodInstance const& good_instance = *good_instance_ptr;
 			CountryInstance::good_data_t const& good_data = *good_data_ptr;
 			todays_actual_stockpile_spending_tooltip += Utilities::format(
-			    godot::String::utf8("\n %s: §R%s§! (%s)"),
-			    todays_actual_stockpile_spending_label.tr(convert_to<godot::String>(good_instance.get_identifier())),
-			    Utilities::cash_to_string_dp_dynamic(-good_data.money_traded_yesterday),
-			    Utilities::float_to_string_dp_dynamic(static_cast<float>(good_data.quantity_traded_yesterday))
+				godot::String::utf8("\n %s: §R%s§! (%s)"),
+				todays_actual_stockpile_spending_label.tr(convert_to<godot::String>(good_instance.get_identifier())),
+				Utilities::cash_to_string_dp_dynamic(-good_data.money_traded_yesterday),
+				Utilities::float_to_string_dp_dynamic(static_cast<float>(good_data.quantity_traded_yesterday))
 			);
 		}
 	}
@@ -94,7 +94,7 @@ void NationalStockpileBudget::update_labels(CountryInstance& country) {
 	todays_actual_stockpile_spending_label.set_tooltip_string(todays_actual_stockpile_spending_tooltip);
 
 	overseas_costs_label.set_text(
-	    Utilities::cash_to_string_dp_dynamic(0) // TODO
+		Utilities::cash_to_string_dp_dynamic(0) // TODO
 	);
 	expenses_label.set_text(Utilities::cash_to_string_dp_dynamic(-balance));
 

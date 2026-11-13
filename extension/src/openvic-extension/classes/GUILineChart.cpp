@@ -26,7 +26,7 @@ void GUILineChart::_bind_methods() {
 	OV_BIND_METHOD(GUILineChart::get_gfx_line_chart_name);
 
 	OV_BIND_METHOD(
-	    GUILineChart::set_gradient_line, { "line_values", "central_value", "min_value_range" }, DEFVAL(0.0f), DEFVAL(0.0f)
+		GUILineChart::set_gradient_line, { "line_values", "central_value", "min_value_range" }, DEFVAL(0.0f), DEFVAL(0.0f)
 	);
 	OV_BIND_METHOD(GUILineChart::add_coloured_line, { "line_values", "line_colour" });
 	OV_BIND_METHOD(GUILineChart::scale_coloured_lines);
@@ -87,14 +87,14 @@ godot::Error GUILineChart::set_gfx_line_chart_name(String const& new_gfx_line_ch
 
 	GFX::LineChart const* new_gfx_line_chart = sprite->cast_to<GFX::LineChart>();
 	ERR_FAIL_NULL_V_MSG(
-	    new_gfx_line_chart,
-	    FAILED,
-	    Utilities::format(
-	        "Invalid type for GFX sprite %s: %s (expected %s)",
-	        new_gfx_line_chart_name,
-	        convert_to<String>(sprite->get_type()),
-	        convert_to<String>(GFX::LineChart::get_type_static())
-	    )
+		new_gfx_line_chart,
+		FAILED,
+		Utilities::format(
+			"Invalid type for GFX sprite %s: %s (expected %s)",
+			new_gfx_line_chart_name,
+			convert_to<String>(sprite->get_type()),
+			convert_to<String>(GFX::LineChart::get_type_static())
+		)
 	);
 
 	return set_gfx_line_chart(new_gfx_line_chart);
@@ -105,7 +105,7 @@ String GUILineChart::get_gfx_line_chart_name() const {
 }
 
 godot::Error GUILineChart::set_gradient_line(
-    PackedFloat32Array const& line_values, float central_value, float min_value_range
+	PackedFloat32Array const& line_values, float central_value, float min_value_range
 ) {
 	ERR_FAIL_COND_V(line_values.size() < 2, FAILED);
 	ERR_FAIL_COND_V(min_value_range < 0.0f, FAILED);
@@ -196,13 +196,13 @@ godot::Error GUILineChart::add_coloured_line(PackedFloat32Array const& line_valu
 		point_count = line_values.size();
 	} else {
 		ERR_FAIL_COND_V_MSG(
-		    point_count != line_values.size(),
-		    FAILED,
-		    Utilities::format(
-		        "Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d",
-		        line_values.size(),
-		        point_count
-		    )
+			point_count != line_values.size(),
+			FAILED,
+			Utilities::format(
+				"Mismatch between number of points in GUILineChart lines: new line %d != existing lines %d",
+				line_values.size(),
+				point_count
+			)
 		);
 	}
 

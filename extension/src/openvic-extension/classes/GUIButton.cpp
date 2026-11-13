@@ -55,20 +55,20 @@ godot::Error GUIButton::set_gfx_button_state_having_texture(Ref<GFXButtonStateHa
 				add_theme_stylebox_override(button_state_texture->get_button_state_name(), stylebox);
 			} else {
 				UtilityFunctions::push_error(
-				    "Failed to make ",
-				    GFXButtonStateTexture::button_state_to_name(button_state),
-				    " StyleBoxTexture for GUIButton ",
-				    get_name()
+					"Failed to make ",
+					GFXButtonStateTexture::button_state_to_name(button_state),
+					" StyleBoxTexture for GUIButton ",
+					get_name()
 				);
 
 				err = FAILED;
 			}
 		} else {
 			UtilityFunctions::push_error(
-			    "Failed to make ",
-			    GFXButtonStateTexture::button_state_to_name(button_state),
-			    " GFXButtonStateTexture for GUIButton ",
-			    get_name()
+				"Failed to make ",
+				GFXButtonStateTexture::button_state_to_name(button_state),
+				" GFXButtonStateTexture for GUIButton ",
+				get_name()
 			);
 
 			err = FAILED;

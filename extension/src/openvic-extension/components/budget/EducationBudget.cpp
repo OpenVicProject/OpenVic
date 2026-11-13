@@ -10,10 +10,10 @@
 using namespace OpenVic;
 
 EducationBudget::EducationBudget(GUINode const& parent) :
-    SliderBudgetComponent(
-        parent, "BUDGET_EXPENSE_SLIDER_EDUCATION", EXPENSES, "./country_budget/exp_0_slider", "./country_budget/exp_val_0"
-    ),
-    BudgetExpenseComponent("BUDGET_EXPENSE_SLIDER_EDUCATION") {
+	SliderBudgetComponent(
+		parent, "BUDGET_EXPENSE_SLIDER_EDUCATION", EXPENSES, "./country_budget/exp_0_slider", "./country_budget/exp_val_0"
+	),
+	BudgetExpenseComponent("BUDGET_EXPENSE_SLIDER_EDUCATION") {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -33,21 +33,21 @@ bool EducationBudget::was_budget_cut(CountryInstance const& country) const {
 fixed_point_t EducationBudget::calculate_budget_and_update_custom(CountryInstance& country, const fixed_point_t scaled_value) {
 	if (budget_label != nullptr) {
 		budget_label->set_tooltip_string(
-		    Utilities::format(
-		        "%s\n--------------\n%s%s",
-		        budget_label->tr("DIST_EDUCATION"),
-		        was_budget_cut(country)
-		            ? budget_label->tr("EXPENSE_NO_AFFORD")
-		                      .replace(
-		                          Utilities::get_short_value_placeholder(),
-		                          Utilities::float_to_string_dp_dynamic(
-		                              static_cast<float>(country.get_actual_education_spending().load())
-		                          )
-		                      ) +
-		                  "\n"
-		            : "",
-		        budget_label->tr("EDU_DESC")
-		    )
+			Utilities::format(
+				"%s\n--------------\n%s%s",
+				budget_label->tr("DIST_EDUCATION"),
+				was_budget_cut(country)
+					? budget_label->tr("EXPENSE_NO_AFFORD")
+							  .replace(
+								  Utilities::get_short_value_placeholder(),
+								  Utilities::float_to_string_dp_dynamic(
+									  static_cast<float>(country.get_actual_education_spending().load())
+								  )
+							  ) +
+						  "\n"
+					: "",
+				budget_label->tr("EDU_DESC")
+			)
 		);
 	}
 

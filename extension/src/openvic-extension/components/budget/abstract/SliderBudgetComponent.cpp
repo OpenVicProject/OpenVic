@@ -13,17 +13,17 @@
 using namespace OpenVic;
 
 SliderBudgetComponent::SliderBudgetComponent(
-    GUINode const& parent,
-    godot::String&& new_slider_tooltip_localisation_key,
-    const BudgetType new_budget_type,
-    godot::NodePath const& slider_path,
-    godot::NodePath const& budget_label_path,
-    godot::NodePath const& percent_label_path
+	GUINode const& parent,
+	godot::String&& new_slider_tooltip_localisation_key,
+	const BudgetType new_budget_type,
+	godot::NodePath const& slider_path,
+	godot::NodePath const& budget_label_path,
+	godot::NodePath const& percent_label_path
 ) :
-    budget_type { new_budget_type }, slider_tooltip_localisation_key { std::move(new_slider_tooltip_localisation_key) },
-    budget_label { budget_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(budget_label_path) },
-    percent_label { percent_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(percent_label_path) },
-    slider { *parent.get_gui_scrollbar_from_nodepath(slider_path) } {
+	budget_type { new_budget_type }, slider_tooltip_localisation_key { std::move(new_slider_tooltip_localisation_key) },
+	budget_label { budget_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(budget_label_path) },
+	percent_label { percent_label_path.is_empty() ? nullptr : parent.get_gui_label_from_nodepath(percent_label_path) },
+	slider { *parent.get_gui_scrollbar_from_nodepath(slider_path) } {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -53,7 +53,7 @@ void SliderBudgetComponent::update_labels(CountryInstance& country, const fixed_
 	if (budget_label != nullptr) {
 		const godot::String budget_text = Utilities::cash_to_string_dp_dynamic(budget);
 		budget_label->set_text(
-		    was_budget_cut(country) ? Utilities::format(godot::String::utf8("§R%s§W"), budget_text) : budget_text
+			was_budget_cut(country) ? Utilities::format(godot::String::utf8("§R%s§W"), budget_text) : budget_text
 		);
 	};
 
