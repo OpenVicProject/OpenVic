@@ -129,7 +129,7 @@ jobs:
           merge-multiple: true
 
       - name: Run unit tests
-        uses: godot-gdunit-labs/gdUnit4-action@57987b6319ac6800c229a15e29be99112c1dffec # v1.4.2
+        uses: godot-gdunit-labs/gdUnit4-action@379a0b1e41f07246c3d58b7e253bc4f1b90094c9 # v1.4.3
         with:
           version: installed
           godot-version: ${{ needs.static-checks-builds.outputs.godot-version }}
