@@ -19,7 +19,7 @@
 #define GUI_TOOLTIP_DEFINITIONS \
 public: \
 	void set_tooltip_string_and_substitution_dict( \
-	    godot::String const& new_tooltip_string, godot::Dictionary const& new_tooltip_substitution_dict \
+		godot::String const& new_tooltip_string, godot::Dictionary const& new_tooltip_substitution_dict \
 	); \
 	void set_tooltip_string(godot::String const& new_tooltip_string); \
 	void set_tooltip_substitution_dict(godot::Dictionary const& new_tooltip_substitution_dict); \
@@ -35,7 +35,7 @@ private: \
 
 #define GUI_TOOLTIP_IMPLEMENTATIONS(CLASS) \
 	void CLASS::set_tooltip_string_and_substitution_dict( \
-	    String const& new_tooltip_string, Dictionary const& new_tooltip_substitution_dict \
+		String const& new_tooltip_string, Dictionary const& new_tooltip_substitution_dict \
 	) { \
 		if (get_mouse_filter() == MOUSE_FILTER_IGNORE) { \
 			set_mouse_filter(MOUSE_FILTER_PASS); \
@@ -104,18 +104,18 @@ private: \
 	OV_BIND_METHOD(CLASS::get_tooltip_substitution_dict); \
 	OV_BIND_METHOD(CLASS::set_tooltip_substitution_dict, { "new_tooltip_substitution_dict" }); \
 	OV_BIND_METHOD( \
-	    CLASS::set_tooltip_string_and_substitution_dict, { "new_tooltip_string", "new_tooltip_substitution_dict" } \
+		CLASS::set_tooltip_string_and_substitution_dict, { "new_tooltip_string", "new_tooltip_substitution_dict" } \
 	); \
 	OV_BIND_METHOD(CLASS::clear_tooltip); \
 	OV_BIND_METHOD(CLASS::is_tooltip_active); \
 	ADD_PROPERTY( \
-	    PropertyInfo(Variant::STRING, "tooltip_string", PROPERTY_HINT_MULTILINE_TEXT), \
-	    "set_tooltip_string", \
-	    "get_tooltip_string" \
+		PropertyInfo(Variant::STRING, "tooltip_string", PROPERTY_HINT_MULTILINE_TEXT), \
+		"set_tooltip_string", \
+		"get_tooltip_string" \
 	); \
 	ADD_PROPERTY( \
-	    PropertyInfo(Variant::DICTIONARY, "tooltip_substitution_dict"), \
-	    "set_tooltip_substitution_dict", \
-	    "get_tooltip_substitution_dict" \
+		PropertyInfo(Variant::DICTIONARY, "tooltip_substitution_dict"), \
+		"set_tooltip_substitution_dict", \
+		"get_tooltip_substitution_dict" \
 	); \
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "tooltip_active"), "", "is_tooltip_active");

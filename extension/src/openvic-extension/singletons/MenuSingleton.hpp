@@ -164,11 +164,11 @@ namespace OpenVic {
 		static godot::StringName const& _signal_update_tooltip();
 
 		godot::String _make_modifier_effect_value(
-		    ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 		) const;
 
 		godot::String _make_modifier_effect_value_coloured(
-		    ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
+			ModifierEffect const& format_effect, fixed_point_t value, bool plus_for_non_negative
 		) const;
 
 		godot::String _make_modifier_effects_tooltip(ModifierValue const& modifier) const;
@@ -176,11 +176,11 @@ namespace OpenVic {
 		template<typename T>
 		requires std::same_as<T, CountryInstance> || std::same_as<T, ProvinceInstance>
 		godot::String _make_modifier_effect_contributions_tooltip(
-		    T const& modifier_sum,
-		    ModifierEffect const& effect,
-		    fixed_point_t* effect_value = nullptr,
-		    godot::String const& prefix = "\n",
-		    godot::String const& suffix = {}
+			T const& modifier_sum,
+			ModifierEffect const& effect,
+			fixed_point_t* effect_value = nullptr,
+			godot::String const& prefix = "\n",
+			godot::String const& suffix = {}
 		) const;
 
 		godot::String _make_rules_tooltip(RuleSet const& rules) const;
@@ -205,10 +205,10 @@ namespace OpenVic {
 
 		/* TOOLTIP */
 		void show_tooltip(
-		    godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
+			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Vector2 const& position
 		);
 		void show_control_tooltip(
-		    godot::String const& text, godot::Dictionary const& substitution_dict, godot::Control const* control
+			godot::String const& text, godot::Dictionary const& substitution_dict, godot::Control const* control
 		);
 		void hide_tooltip();
 
@@ -250,13 +250,13 @@ namespace OpenVic {
 		godot::Error population_menu_select_sort_key(PopSortKey sort_key);
 		template<IsPieChartKey KeyType, IsPieChartValue ValueType>
 		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
-		    std::span<std::add_const_t<KeyType>> keys,
-		    std::span<std::add_const_t<ValueType>> values,
-		    godot::String const& identifier_suffix = {}
+			std::span<std::add_const_t<KeyType>> keys,
+			std::span<std::add_const_t<ValueType>> values,
+			godot::String const& identifier_suffix = {}
 		) const;
 		template<IsPieChartDistribution Container>
 		GFXPieChartTexture::godot_pie_chart_data_t generate_population_menu_pop_row_pie_chart_data(
-		    Container const& distribution, godot::String const& identifier_suffix = {}
+			Container const& distribution, godot::String const& identifier_suffix = {}
 		) const;
 		godot::TypedArray<godot::Dictionary> get_population_menu_pop_rows(int32_t start, int32_t count) const;
 		int32_t get_population_menu_pop_row_count() const;
@@ -275,12 +275,12 @@ namespace OpenVic {
 		/* TRADE MENU */
 		godot::Dictionary get_trade_menu_good_categories_info() const;
 		godot::Dictionary get_trade_menu_trade_details_info(
-		    int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
+			int32_t trade_detail_good_index, GUIScrollbar* stockpile_cutoff_slider
 		) const;
 		godot::Dictionary get_trade_menu_tables_info() const;
 
 		static int32_t calculate_slider_value_from_trade_menu_stockpile_cutoff(
-		    const fixed_point_t stockpile_cutoff, const int32_t max_slider_value
+			const fixed_point_t stockpile_cutoff, const int32_t max_slider_value
 		) {
 			// Math.log(2)/Math.log(Math.exp(Math.log(2001)/2000)) = 182.37...
 			constexpr fixed_point_t DOUBLES_AFTER_STEPS = fixed_point_t::parse_raw(11952029);

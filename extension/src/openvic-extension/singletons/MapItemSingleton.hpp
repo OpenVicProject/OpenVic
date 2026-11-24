@@ -25,12 +25,12 @@ namespace OpenVic {
 
 	private:
 		void add_billboard_dict(
-		    GFX::Billboard const& billboard, godot::TypedArray<godot::Dictionary>& billboard_dict_array
+			GFX::Billboard const& billboard, godot::TypedArray<godot::Dictionary>& billboard_dict_array
 		) const;
 		godot::TypedArray<godot::Dictionary> get_billboards() const;
 
 		void add_projection_dict(
-		    GFX::Projection const& projection, godot::TypedArray<godot::Dictionary>& projection_dict_array
+			GFX::Projection const& projection, godot::TypedArray<godot::Dictionary>& projection_dict_array
 		) const;
 		godot::TypedArray<godot::Dictionary> get_projections() const;
 

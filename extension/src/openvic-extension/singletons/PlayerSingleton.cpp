@@ -117,7 +117,7 @@ void PlayerSingleton::set_player_country_by_province_number(int32_t province_num
 	ERR_FAIL_NULL(instance_manager);
 
 	ProvinceInstance* province_instance = instance_manager->get_map_instance().get_province_instance_from_number(
-	    province_number
+		province_number
 	);
 	ERR_FAIL_NULL(province_instance);
 
@@ -160,9 +160,9 @@ void PlayerSingleton::set_selected_province_by_number(int32_t province_number) {
 
 		if (selected_province == nullptr) {
 			spdlog::error_s(
-			    "Trying to set selected province to an invalid number {} (max number is {})",
-			    map_instance.get_province_instance_by_definition().get_count(),
-			    province_number
+				"Trying to set selected province to an invalid number {} (max number is {})",
+				map_instance.get_province_instance_by_definition().get_count(),
+				province_number
 			);
 		}
 	}
@@ -191,7 +191,7 @@ void PlayerSingleton::increase_speed() const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action<set_speed_argument_t>(
-	    instance_manager->get_simulation_clock().get_simulation_speed() + 1
+		instance_manager->get_simulation_clock().get_simulation_speed() + 1
 	);
 }
 
@@ -200,7 +200,7 @@ void PlayerSingleton::decrease_speed() const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action<set_speed_argument_t>(
-	    instance_manager->get_simulation_clock().get_simulation_speed() - 1
+		instance_manager->get_simulation_clock().get_simulation_speed() - 1
 	);
 }
 
@@ -213,7 +213,7 @@ void PlayerSingleton::expand_selected_province_building(int32_t province_buildin
 	ERR_FAIL_NULL(player_country);
 
 	instance_manager->queue_game_action<expand_province_building_argument_t>(
-	    player_country->index, selected_province->index, province_building_index_t(province_building_index)
+		player_country->index, selected_province->index, province_building_index_t(province_building_index)
 	);
 }
 
@@ -224,7 +224,7 @@ void PlayerSingleton::expand_selected_province_building(int32_t province_buildin
 			return; \
 		} \
 		GameSingleton::get_singleton()->get_instance_manager()->queue_game_action<set_##argument_name##_argument_t>( \
-		    player_country->index, value \
+			player_country->index, value \
 		); \
 	}
 #define SET_SLIDER_GAME_ACTION(value_name) SET_SLIDER_GAME_ACTION_EXPLICIT(value_name, value_name)
@@ -245,7 +245,7 @@ void PlayerSingleton::set_strata_tax_rate_slider_value(Strata const& strata, fix
 		return;
 	}
 	GameSingleton::get_singleton()->get_instance_manager()->queue_game_action<set_strata_tax_argument_t>(
-	    player_country->index, strata.index, value
+		player_country->index, strata.index, value
 	);
 }
 
@@ -263,7 +263,7 @@ void PlayerSingleton::set_good_automated(int32_t good_index, bool is_automated) 
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action<set_good_automated_argument_t>(
-	    player_country->index, good_index_t(good_index), is_automated
+		player_country->index, good_index_t(good_index), is_automated
 	);
 }
 
@@ -275,10 +275,10 @@ void PlayerSingleton::set_good_trade_order(int32_t good_index, bool is_selling, 
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action<set_good_trade_order_argument_t>(
-	    player_country->index,
-	    good_index_t(good_index),
-	    is_selling,
-	    MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
+		player_country->index,
+		good_index_t(good_index),
+		is_selling,
+		MenuSingleton::calculate_trade_menu_stockpile_cutoff_amount_fp(amount_slider->get_value_scaled_fp())
 	);
 }
 
@@ -292,7 +292,7 @@ void PlayerSingleton::create_leader(bool is_general) const {
 	ERR_FAIL_NULL(instance_manager);
 
 	instance_manager->queue_game_action<create_leader_argument_t>(
-	    player_country->index, is_general ? unit_branch_t::LAND : unit_branch_t::NAVAL
+		player_country->index, is_general ? unit_branch_t::LAND : unit_branch_t::NAVAL
 	);
 }
 

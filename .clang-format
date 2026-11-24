@@ -1,7 +1,7 @@
 ---
 Language: Cpp
 Standard: c++20
-UseTab: ForIndentation
+UseTab: AlignWithSpaces
 TabWidth: 4
 IndentWidth: 4
 ColumnLimit: 128

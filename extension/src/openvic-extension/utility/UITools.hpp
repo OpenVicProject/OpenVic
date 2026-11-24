@@ -12,6 +12,6 @@ namespace OpenVic::UITools {
 
 	bool generate_gui_element(GUI::Element const* element, godot::String const& name, godot::Control*& result);
 	bool generate_gui_element(
-	    godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name, godot::Control*& result
+		godot::String const& gui_scene, godot::String const& gui_element, godot::String const& name, godot::Control*& result
 	);
 }

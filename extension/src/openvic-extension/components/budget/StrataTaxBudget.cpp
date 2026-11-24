@@ -18,27 +18,27 @@
 using namespace OpenVic;
 
 StrataTaxBudget::StrataTaxBudget(
-    GUINode const& parent, Strata const& new_strata, ModifierEffectCache const& new_modifier_effect_cache
+	GUINode const& parent, Strata const& new_strata, ModifierEffectCache const& new_modifier_effect_cache
 ) :
-    SliderBudgetComponent(
-        parent,
-        generate_slider_tooltip_localisation_key(new_strata),
-        BALANCE,
-        Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(type_safe::get(new_strata.index))),
-        Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(type_safe::get(new_strata.index)))
-    ),
-    BudgetIncomeComponent(generate_summary_localisation_key(new_strata), 1), strata { new_strata },
-    modifier_effect_cache { new_modifier_effect_cache } {
+	SliderBudgetComponent(
+		parent,
+		generate_slider_tooltip_localisation_key(new_strata),
+		BALANCE,
+		Utilities::format("./country_budget/tax_%d_slider", static_cast<uint64_t>(type_safe::get(new_strata.index))),
+		Utilities::format("./country_budget/tax_%d_inc", static_cast<uint64_t>(type_safe::get(new_strata.index)))
+	),
+	BudgetIncomeComponent(generate_summary_localisation_key(new_strata), 1), strata { new_strata },
+	modifier_effect_cache { new_modifier_effect_cache } {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
 	slider.set_block_signals(false);
 
 	GUILabel::set_text_and_tooltip(
-	    parent,
-	    Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(type_safe::get(new_strata.index))),
-	    generate_slider_tooltip_localisation_key(new_strata),
-	    Utilities::format("TAX_%s_DESC", convert_to<godot::String>(strata.get_identifier()).to_upper())
+		parent,
+		Utilities::format("./country_budget/tax_%d_desc", static_cast<uint64_t>(type_safe::get(new_strata.index))),
+		generate_slider_tooltip_localisation_key(new_strata),
+		Utilities::format("TAX_%s_DESC", convert_to<godot::String>(strata.get_identifier()).to_upper())
 	);
 }
 
@@ -78,41 +78,41 @@ void StrataTaxBudget::update_slider_tooltip(CountryInstance& country, const fixe
 
 	const fixed_point_t tax_efficiency = country.get_tax_efficiency_untracked();
 	const godot::String tax_efficiency_text =
-	    slider.tr(tax_efficiency_localisation_key)
-	        .replace(
-	            Utilities::get_long_value_placeholder(),
-	            Utilities::float_to_string_dp(100 * static_cast<float>(tax_efficiency), 2)
-	        );
+		slider.tr(tax_efficiency_localisation_key)
+			.replace(
+				Utilities::get_long_value_placeholder(),
+				Utilities::float_to_string_dp(100 * static_cast<float>(tax_efficiency), 2)
+			);
 
 	const fixed_point_t tax_efficiency_from_tech = country.get_modifier_effect_value(*modifier_effect_cache.get_tax_eff());
 	const godot::String tax_efficiency_from_tech_text =
-	    slider.tr(tax_efficiency_from_tech_localisation_key)
-	        .replace(
-	            Utilities::get_short_value_placeholder(),
-	            Utilities::format(
-	                "%s%%",
-	                Utilities::float_to_string_dp(
-	                    static_cast<float>(tax_efficiency_from_tech), // tax_efficiency_from_tech is already * 100
-	                    2
-	                )
-	            )
-	        );
+		slider.tr(tax_efficiency_from_tech_localisation_key)
+			.replace(
+				Utilities::get_short_value_placeholder(),
+				Utilities::format(
+					"%s%%",
+					Utilities::float_to_string_dp(
+						static_cast<float>(tax_efficiency_from_tech), // tax_efficiency_from_tech is already * 100
+						2
+					)
+				)
+			);
 
 	const fixed_point_t effective_tax_rate = tax_efficiency * scaled_value;
 	const godot::String effective_tax_rate_text =
-	    slider.tr(effective_tax_rate_localisation_key)
-	        .replace(
-	            Utilities::get_long_value_placeholder(),
-	            Utilities::float_to_string_dp(100 * static_cast<float>(effective_tax_rate), 2)
-	        );
+		slider.tr(effective_tax_rate_localisation_key)
+			.replace(
+				Utilities::get_long_value_placeholder(),
+				Utilities::float_to_string_dp(100 * static_cast<float>(effective_tax_rate), 2)
+			);
 
 	const godot::String tooltip = Utilities::format(
-	    godot::String::utf8("%s: §Y%s§!\n%s\n%s\n%s"),
-	    localised_strata_tax,
-	    Utilities::percentage_to_string_dp(scaled_value, 1),
-	    tax_efficiency_text,
-	    tax_efficiency_from_tech_text,
-	    effective_tax_rate_text
+		godot::String::utf8("%s: §Y%s§!\n%s\n%s\n%s"),
+		localised_strata_tax,
+		Utilities::percentage_to_string_dp(scaled_value, 1),
+		tax_efficiency_text,
+		tax_efficiency_from_tech_text,
+		effective_tax_rate_text
 	);
 	slider.set_tooltip_string(tooltip);
 }

@@ -50,10 +50,10 @@ namespace OpenVic {
 
 	public:
 		BudgetMenu(
-		    GUINode const& parent,
-		    forwardable_span<const Strata> strata_keys,
-		    ModifierEffectCache const& modifier_effect_cache,
-		    CountryDefines const& country_defines
+			GUINode const& parent,
+			forwardable_span<const Strata> strata_keys,
+			ModifierEffectCache const& modifier_effect_cache,
+			CountryDefines const& country_defines
 		);
 		void update();
 	};

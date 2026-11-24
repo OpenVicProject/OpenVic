@@ -8,8 +8,8 @@
 using namespace OpenVic;
 
 ConstructionStockpileBudget::ConstructionStockpileBudget(GUINode const& parent) :
-    SliderBudgetComponent(parent, "MILITARY_SPENDINGS_PROJECTS", EXPENSES, "./country_budget/projects_stockpile_slider"),
-    BudgetExpenseComponent("MILITARY_SPENDINGS_PROJECTS") {
+	SliderBudgetComponent(parent, "MILITARY_SPENDINGS_PROJECTS", EXPENSES, "./country_budget/projects_stockpile_slider"),
+	BudgetExpenseComponent("MILITARY_SPENDINGS_PROJECTS") {
 	slider.set_block_signals(true);
 	slider.set_step_count(100);
 	slider.set_scale(0, 1, 100);
@@ -21,7 +21,7 @@ fixed_point_t ConstructionStockpileBudget::get_expenses() const {
 }
 
 fixed_point_t ConstructionStockpileBudget::calculate_budget_and_update_custom(
-    CountryInstance& country, const fixed_point_t scaled_value
+	CountryInstance& country, const fixed_point_t scaled_value
 ) {
 	return scaled_value * 3; // TODO connect with sim once sim has this
 }

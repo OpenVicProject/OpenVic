@@ -64,7 +64,7 @@ String GUIMaskedFlagButton::get_gfx_masked_flag_name() const {
 }
 
 godot::Error GUIMaskedFlagButton::set_flag_country_name_and_type(
-    String const& flag_country_name, StringName const& flag_type
+	String const& flag_country_name, StringName const& flag_type
 ) const {
 	ERR_FAIL_NULL_V(gfx_masked_flag_texture, FAILED);
 

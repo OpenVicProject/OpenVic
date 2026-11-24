@@ -80,17 +80,17 @@ namespace OpenVic::Utilities {
 	godot::Ref<godot::FontFile> load_godot_font(godot::String const& fnt_path, godot::Ref<godot::Image> const& image);
 
 	godot::Ref<godot::Image> make_solid_colour_image(
-	    godot::Color const& colour,
-	    int32_t width,
-	    int32_t height,
-	    godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
+		godot::Color const& colour,
+		int32_t width,
+		int32_t height,
+		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
 
 	godot::Ref<godot::ImageTexture> make_solid_colour_texture(
-	    godot::Color const& colour,
-	    int32_t width,
-	    int32_t height,
-	    godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
+		godot::Color const& colour,
+		int32_t width,
+		int32_t height,
+		godot::Image::Format format = godot::Image::Format::FORMAT_RGBA8
 	);
 
 	godot::Variant get_project_setting(godot::StringName const& p_path, godot::Variant const& p_default_value);
@@ -100,16 +100,16 @@ namespace OpenVic::Utilities {
 	godot::String get_country_adjective(godot::Object const& translation_object, CountryInstance const& country);
 
 	godot::String make_modifier_effect_value(
-	    godot::Object const& translation_object,
-	    ModifierEffect const& format_effect,
-	    fixed_point_t value,
-	    bool plus_for_non_negative
+		godot::Object const& translation_object,
+		ModifierEffect const& format_effect,
+		fixed_point_t value,
+		bool plus_for_non_negative
 	);
 	godot::String make_modifier_effect_value_coloured(
-	    godot::Object const& translation_object,
-	    ModifierEffect const& format_effect,
-	    fixed_point_t value,
-	    bool plus_for_non_negative
+		godot::Object const& translation_object,
+		ModifierEffect const& format_effect,
+		fixed_point_t value,
+		bool plus_for_non_negative
 	);
 
 #define OPTIMISED_FORMAT_CONCAT(a, b) a##b

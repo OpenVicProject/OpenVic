@@ -19,17 +19,17 @@
 using namespace OpenVic;
 
 ScoreOverview::ScoreOverview(GUINode const& parent) :
-    flag_button { *parent.get_gui_masked_flag_button_from_nodepath("./topbar/player_flag") },
-    flag_icon { *parent.get_gui_icon_from_nodepath("./topbar/topbar_flag_overlay") },
-    name_label { *parent.get_gui_label_from_nodepath("./topbar/CountryName") },
-    rank_label { *parent.get_gui_label_from_nodepath("./topbar/nation_totalrank") },
-    prestige_label { *parent.get_gui_label_from_nodepath("./topbar/country_prestige") },
-    prestige_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_prestige_rank") },
-    industrial_score_label { *parent.get_gui_label_from_nodepath("./topbar/country_economic") },
-    industrial_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_industry_rank") },
-    military_score_label { *parent.get_gui_label_from_nodepath("./topbar/country_military") },
-    military_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_military_rank") },
-    colonial_power_label { *parent.get_gui_label_from_nodepath("./topbar/country_colonial_power") } {}
+	flag_button { *parent.get_gui_masked_flag_button_from_nodepath("./topbar/player_flag") },
+	flag_icon { *parent.get_gui_icon_from_nodepath("./topbar/topbar_flag_overlay") },
+	name_label { *parent.get_gui_label_from_nodepath("./topbar/CountryName") },
+	rank_label { *parent.get_gui_label_from_nodepath("./topbar/nation_totalrank") },
+	prestige_label { *parent.get_gui_label_from_nodepath("./topbar/country_prestige") },
+	prestige_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_prestige_rank") },
+	industrial_score_label { *parent.get_gui_label_from_nodepath("./topbar/country_economic") },
+	industrial_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_industry_rank") },
+	military_score_label { *parent.get_gui_label_from_nodepath("./topbar/country_military") },
+	military_rank_label { *parent.get_gui_label_from_nodepath("./topbar/selected_military_rank") },
+	colonial_power_label { *parent.get_gui_label_from_nodepath("./topbar/country_colonial_power") } {}
 
 void ScoreOverview::update() {
 	disconnect_all();
@@ -75,12 +75,12 @@ void ScoreOverview::update() {
 	}
 	const godot::String country_name = Utilities::get_country_name(name_label, country);
 	const godot::String country_name_rank_tooltip = Utilities::format(
-	    "%s%s%s",
-	    flag_button.tr("PLAYER_COUNTRY_TOPBAR_RANK")
-	        .replace("NAME", country_name)
-	        .replace("RANK", flag_button.tr(country_status_translation_key)),
-	    MenuSingleton::get_tooltip_separator(),
-	    flag_button.tr("RANK_TOTAL_D")
+		"%s%s%s",
+		flag_button.tr("PLAYER_COUNTRY_TOPBAR_RANK")
+			.replace("NAME", country_name)
+			.replace("RANK", flag_button.tr(country_status_translation_key)),
+		MenuSingleton::get_tooltip_separator(),
+		flag_button.tr("RANK_TOTAL_D")
 	);
 
 	flag_button.set_flag_country(country_ptr);
@@ -103,9 +103,9 @@ void ScoreOverview::update() {
 	industrial_rank_label.set_tooltip_string(industrial_tooltip);
 	industrial_score_label.set_tooltip_string(industrial_tooltip);
 	on_industrial_score_changed(
-	    country.get_industrial_power([this](signal<fixed_point_t>& industrial_score_changed) mutable -> void {
-		    industrial_score_changed.connect(&ScoreOverview::on_industrial_score_changed, this);
-	    })
+		country.get_industrial_power([this](signal<fixed_point_t>& industrial_score_changed) mutable -> void {
+			industrial_score_changed.connect(&ScoreOverview::on_industrial_score_changed, this);
+		})
 	);
 
 	military_rank_label.set_text(godot::String::num_int64(country.get_military_rank()));
@@ -120,10 +120,10 @@ void ScoreOverview::update() {
 	godot::String colonial_power_tooltip;
 	if (!country.can_colonise()) {
 		colonial_power_tooltip = Utilities::format(
-		    "%s%s%s",
-		    colonial_power_label.tr("COLONIAL_POINTS"),
-		    MenuSingleton::get_tooltip_separator(),
-		    colonial_power_label.tr("NON_COLONIAL_POWER")
+			"%s%s%s",
+			colonial_power_label.tr("COLONIAL_POINTS"),
+			MenuSingleton::get_tooltip_separator(),
+			colonial_power_label.tr("NON_COLONIAL_POWER")
 		);
 	} else {
 		// TODO get data from sim
@@ -134,44 +134,44 @@ void ScoreOverview::update() {
 		const fixed_point_t colonial_power_maintenance = 40;
 
 		const godot::String available_part =
-		    colonial_power_label.tr("AVAILABLE_COLONIAL_POWER")
-		        .replace(Utilities::get_long_value_placeholder(), godot::String::num_int64(available_colonial_power));
+			colonial_power_label.tr("AVAILABLE_COLONIAL_POWER")
+				.replace(Utilities::get_long_value_placeholder(), godot::String::num_int64(available_colonial_power));
 
 		InstanceManager const& instance_manager = *game_singleton.get_instance_manager();
 		ModifierEffect const* const colonial_points_modifier =
-		    instance_manager.definition_manager.get_modifier_manager().get_modifier_effect_cache().get_colonial_points();
+			instance_manager.definition_manager.get_modifier_manager().get_modifier_effect_cache().get_colonial_points();
 		const godot::String from_tech_part =
-		    colonial_power_label.tr("FROM_TECHNOLOGY") + ": " +
-		    Utilities::make_modifier_effect_value_coloured(
-		        colonial_power_label, *colonial_points_modifier, colonial_power_from_technology, false
-		    );
+			colonial_power_label.tr("FROM_TECHNOLOGY") + ": " +
+			Utilities::make_modifier_effect_value_coloured(
+				colonial_power_label, *colonial_points_modifier, colonial_power_from_technology, false
+			);
 
 		const godot::String investment_part =
-		    colonial_power_invested == 0
-		        ? ""
-		        : "\n" + colonial_power_label.tr("COLONIAL_INVESTMENT")
-		                     .replace(
-		                         Utilities::get_long_value_placeholder(),
-		                         Utilities::fixed_point_to_string_dp(colonial_power_invested, 1)
-		                     );
+			colonial_power_invested == 0
+				? ""
+				: "\n" + colonial_power_label.tr("COLONIAL_INVESTMENT")
+				             .replace(
+								 Utilities::get_long_value_placeholder(),
+								 Utilities::fixed_point_to_string_dp(colonial_power_invested, 1)
+							 );
 
 		const godot::String maintenance_part =
-		    colonial_power_maintenance == 0
-		        ? ""
-		        : "\n" + colonial_power_label.tr("COLONIAL_MAINTENANCE")
-		                     .replace(
-		                         Utilities::get_long_value_placeholder(),
-		                         Utilities::fixed_point_to_string_dp(colonial_power_maintenance, 1)
-		                     );
+			colonial_power_maintenance == 0
+				? ""
+				: "\n" + colonial_power_label.tr("COLONIAL_MAINTENANCE")
+				             .replace(
+								 Utilities::get_long_value_placeholder(),
+								 Utilities::fixed_point_to_string_dp(colonial_power_maintenance, 1)
+							 );
 
 		colonial_power_tooltip = Utilities::format(
-		    "%s%s%s\n%s%s%s",
-		    colonial_power_label.tr("COLONIAL_POINTS"),
-		    MenuSingleton::get_tooltip_separator(),
-		    available_part,
-		    from_tech_part,
-		    investment_part,
-		    maintenance_part
+			"%s%s%s\n%s%s%s",
+			colonial_power_label.tr("COLONIAL_POINTS"),
+			MenuSingleton::get_tooltip_separator(),
+			available_part,
+			from_tech_part,
+			investment_part,
+			maintenance_part
 		);
 	}
 	colonial_power_label.set_tooltip_string(colonial_power_tooltip);
@@ -209,10 +209,10 @@ godot::String ScoreOverview::generate_industrial_tooltip(CountryInstance& countr
 	});
 	for (auto const& [state_name, power] : industrial_power_states) {
 		static const godot::String state_power_template_string =
-		    "\n%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
+			"\n%s: " + GUILabel::get_colour_marker() + "Y%s" + GUILabel::get_colour_marker() + "!";
 
 		industrial_power_tooltip += Utilities::format(
-		    state_power_template_string, state_name, Utilities::fixed_point_to_string_dp(power, 3)
+			state_power_template_string, state_name, Utilities::fixed_point_to_string_dp(power, 3)
 		);
 	}
 
@@ -221,26 +221,26 @@ godot::String ScoreOverview::generate_industrial_tooltip(CountryInstance& countr
 	for (auto const& [investor_ref, power] : country.get_industrial_power_from_investments()) {
 		CountryInstance const& investor = investor_ref.get();
 		industrial_power_from_investments.emplace_back(
-		    convert_to<godot::String>(investor.get_identifier()),
-		    Utilities::get_country_name(industrial_score_label, investor),
-		    power
+			convert_to<godot::String>(investor.get_identifier()),
+			Utilities::get_country_name(industrial_score_label, investor),
+			power
 		);
 	}
 	std::sort(
-	    industrial_power_from_investments.begin(),
-	    industrial_power_from_investments.end(),
-	    [](auto const& a, auto const& b) -> bool {
-		    // Sort by greatest power, then by country name alphabetically
-		    return std::get<2>(a) != std::get<2>(b) ? std::get<2>(a) > std::get<2>(b) : std::get<1>(a) < std::get<1>(b);
-	    }
+		industrial_power_from_investments.begin(),
+		industrial_power_from_investments.end(),
+		[](auto const& a, auto const& b) -> bool {
+			// Sort by greatest power, then by country name alphabetically
+			return std::get<2>(a) != std::get<2>(b) ? std::get<2>(a) > std::get<2>(b) : std::get<1>(a) < std::get<1>(b);
+		}
 	);
 	for (auto const& [country_identifier, country_name, power] : industrial_power_from_investments) {
 		static const godot::String investment_power_template_string =
-		    "\n" + GUILabel::get_flag_marker() + "%s %s: " + GUILabel::get_colour_marker() + "Y%s" +
-		    GUILabel::get_colour_marker() + "!";
+			"\n" + GUILabel::get_flag_marker() + "%s %s: " + GUILabel::get_colour_marker() + "Y%s" +
+			GUILabel::get_colour_marker() + "!";
 
 		industrial_power_tooltip += Utilities::format(
-		    investment_power_template_string, country_identifier, country_name, Utilities::fixed_point_to_string_dp(power, 3)
+			investment_power_template_string, country_identifier, country_name, Utilities::fixed_point_to_string_dp(power, 3)
 		);
 	}
 

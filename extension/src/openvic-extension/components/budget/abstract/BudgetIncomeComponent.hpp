@@ -17,7 +17,7 @@ namespace OpenVic {
 		int32_t income_summary_decimal_places;
 
 		BudgetIncomeComponent(
-		    godot::StringName&& new_income_summary_localisation_key, const int32_t new_income_summary_decimal_places = -1
+			godot::StringName&& new_income_summary_localisation_key, const int32_t new_income_summary_decimal_places = -1
 		);
 
 	public:

@@ -54,7 +54,7 @@ GFX::Sprite const* UITools::get_gfx_sprite(String const& gfx_sprite) {
 	GameSingleton* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GFX::Sprite const* sprite = game_singleton->get_definition_manager().get_ui_manager().get_sprite_by_identifier(
-	    convert_to<std::string>(gfx_sprite)
+		convert_to<std::string>(gfx_sprite)
 	);
 	ERR_FAIL_NULL_V_MSG(sprite, nullptr, Utilities::format("GFX sprite not found: %s", gfx_sprite));
 	return sprite;
@@ -64,12 +64,12 @@ GUI::Element const* UITools::get_gui_element(String const& gui_scene, String con
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene = game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(
-	    convert_to<std::string>(gui_scene)
+		convert_to<std::string>(gui_scene)
 	);
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, Utilities::format("Failed to find GUI scene %s", gui_scene));
 	GUI::Element const* element = scene->get_scene_element_by_identifier(convert_to<std::string>(gui_element));
 	ERR_FAIL_NULL_V_MSG(
-	    element, nullptr, Utilities::format("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene)
+		element, nullptr, Utilities::format("Failed to find GUI element %s in GUI scene %s", gui_element, gui_scene)
 	);
 	return element;
 }
@@ -78,12 +78,12 @@ GUI::Position const* UITools::get_gui_position(String const& gui_scene, String c
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	ERR_FAIL_NULL_V(game_singleton, nullptr);
 	GUI::Scene const* scene = game_singleton->get_definition_manager().get_ui_manager().get_scene_by_identifier(
-	    convert_to<std::string>(gui_scene)
+		convert_to<std::string>(gui_scene)
 	);
 	ERR_FAIL_NULL_V_MSG(scene, nullptr, Utilities::format("Failed to find GUI scene %s", gui_scene));
 	GUI::Position const* position = scene->get_scene_position_by_identifier(convert_to<std::string>(gui_position));
 	ERR_FAIL_NULL_V_MSG(
-	    position, nullptr, Utilities::format("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene)
+		position, nullptr, Utilities::format("Failed to find GUI position %s in GUI scene %s", gui_position, gui_scene)
 	);
 	return position;
 }
@@ -146,7 +146,7 @@ static Array get_events_from_shortcut_key(String const& key) {
 }
 
 static godot::Error try_create_shortcut_action_for_button(
-    GUIButton* gui_button, String const& shortcut_key_name, String const& shortcut_hotkey_name = ""
+	GUIButton* gui_button, String const& shortcut_key_name, String const& shortcut_hotkey_name = ""
 ) {
 	if (shortcut_key_name.is_empty()) {
 		return OK;
@@ -155,17 +155,17 @@ static godot::Error try_create_shortcut_action_for_button(
 	Array event_array = get_events_from_shortcut_key(shortcut_key_name);
 
 	ERR_FAIL_COND_V_MSG(
-	    event_array.is_empty(),
-	    ERR_INVALID_PARAMETER,
-	    Utilities::format("Unknown shortcut key '%s' for GUI button %s", shortcut_key_name, gui_button->get_name())
+		event_array.is_empty(),
+		ERR_INVALID_PARAMETER,
+		Utilities::format("Unknown shortcut key '%s' for GUI button %s", shortcut_key_name, gui_button->get_name())
 	);
 
 	InputMap* const im = InputMap::get_singleton();
 	String action_name;
 	if (shortcut_hotkey_name.is_empty()) {
 		action_name =
-		    Utilities::format("button_%s_hotkey", gui_button->get_name().to_lower().replace("button", "").replace("hotkey", ""))
-		        .replace("__", "_");
+			Utilities::format("button_%s_hotkey", gui_button->get_name().to_lower().replace("button", "").replace("hotkey", ""))
+				.replace("__", "_");
 	} else {
 		action_name = Utilities::format("button_%s_hotkey", shortcut_hotkey_name);
 	}
@@ -219,7 +219,7 @@ namespace OpenVic {
 		Control*& result;
 
 		constexpr generate_gui_args_t(
-		    GUI::Element const& new_element, String const& new_name, AssetManager& new_asset_manager, Control*& new_result
+			GUI::Element const& new_element, String const& new_name, AssetManager& new_asset_manager, Control*& new_result
 		) : element { new_element }, name { new_name }, asset_manager { new_asset_manager }, result { new_result } {}
 	};
 }
@@ -292,7 +292,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			GUIMaskedFlag* gui_masked_flag = nullptr;
 			ret &= new_control(gui_masked_flag, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
-			    gui_masked_flag, false, Utilities::format("Failed to create GUIMaskedFlag for GUI icon %s", icon_name)
+				gui_masked_flag, false, Utilities::format("Failed to create GUIMaskedFlag for GUI icon %s", icon_name)
 			);
 
 			if (gui_masked_flag->set_gfx_masked_flag(masked_flag) != OK) {
@@ -305,7 +305,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			GUIProgressBar* gui_progress_bar = nullptr;
 			ret &= new_control(gui_progress_bar, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
-			    gui_progress_bar, false, Utilities::format("Failed to create GUIProgressBar for GUI icon %s", icon_name)
+				gui_progress_bar, false, Utilities::format("Failed to create GUIProgressBar for GUI icon %s", icon_name)
 			);
 
 			if (gui_progress_bar->set_gfx_progress_bar(progress_bar) != OK) {
@@ -318,7 +318,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			GUIPieChart* gui_pie_chart = nullptr;
 			ret &= new_control(gui_pie_chart, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
-			    gui_pie_chart, false, Utilities::format("Failed to create GUIPieChart for GUI icon %s", icon_name)
+				gui_pie_chart, false, Utilities::format("Failed to create GUIPieChart for GUI icon %s", icon_name)
 			);
 
 			if (gui_pie_chart->set_gfx_pie_chart(pie_chart) == OK) {
@@ -337,7 +337,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			GUILineChart* gui_line_chart = nullptr;
 			ret &= new_control(gui_line_chart, icon, args.name);
 			ERR_FAIL_NULL_V_MSG(
-			    gui_line_chart, false, Utilities::format("Failed to create GUILineChart for GUI icon %s", icon_name)
+				gui_line_chart, false, Utilities::format("Failed to create GUILineChart for GUI icon %s", icon_name)
 			);
 
 			if (gui_line_chart->set_gfx_line_chart(line_chart) != OK) {
@@ -348,7 +348,7 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			args.result = gui_line_chart;
 		} else {
 			UtilityFunctions::push_error(
-			    "Invalid sprite type ", convert_to<String>(icon.get_sprite()->get_type()), " for GUI icon ", icon_name
+				"Invalid sprite type ", convert_to<String>(icon.get_sprite()->get_type()), " for GUI icon ", icon_name
 			);
 			ret = false;
 		}
@@ -357,9 +357,9 @@ static bool generate_icon(generate_gui_args_t&& args) {
 			const real_t rotation = static_cast<real_t>(icon.get_rotation());
 			if (rotation != 0.0_real) {
 				args.result->set_position(
-				    args.result->get_position() -
-				    args.result->get_custom_minimum_size().height *
-				        Vector2 { Math::sin(rotation), Math::cos(rotation) - 1.0_real }
+					args.result->get_position() -
+					args.result->get_custom_minimum_size().height *
+						Vector2 { Math::sin(rotation), Math::cos(rotation) - 1.0_real }
 				);
 				args.result->set_rotation(-rotation);
 			}
@@ -388,7 +388,7 @@ static bool generate_button(generate_gui_args_t&& args) {
 		GUIIconButton* gui_icon_button = nullptr;
 		ret &= new_control(gui_icon_button, button, args.name);
 		ERR_FAIL_NULL_V_MSG(
-		    gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI button %s", button_name)
+			gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI button %s", button_name)
 		);
 
 		if (gui_icon_button->set_gfx_texture_sprite(texture_sprite) != OK) {
@@ -401,9 +401,9 @@ static bool generate_button(generate_gui_args_t&& args) {
 		GUIMaskedFlagButton* gui_masked_flag_button = nullptr;
 		ret &= new_control(gui_masked_flag_button, button, args.name);
 		ERR_FAIL_NULL_V_MSG(
-		    gui_masked_flag_button,
-		    false,
-		    Utilities::format("Failed to create GUIMaskedFlagButton for GUI button %s", button_name)
+			gui_masked_flag_button,
+			false,
+			Utilities::format("Failed to create GUIMaskedFlagButton for GUI button %s", button_name)
 		);
 
 		if (gui_masked_flag_button->set_gfx_masked_flag(masked_flag) != OK) {
@@ -414,10 +414,10 @@ static bool generate_button(generate_gui_args_t&& args) {
 		gui_button = gui_masked_flag_button;
 	} else {
 		ERR_FAIL_V_MSG(
-		    false,
-		    Utilities::format(
-		        "Invalid sprite type %s for GUI button %s", convert_to<String>(button.get_sprite()->get_type()), button_name
-		    )
+			false,
+			Utilities::format(
+				"Invalid sprite type %s for GUI button %s", convert_to<String>(button.get_sprite()->get_type()), button_name
+			)
 		);
 	}
 
@@ -458,13 +458,13 @@ static bool generate_button(generate_gui_args_t&& args) {
 		};
 
 		gui_button->connect(
-		    "pressed",
-		    callable_mp_static(+gui_pressed)
-		        .bind(
-		            gui_button,
-		            convert_to<String>(clicksound->get_file().string()),
-		            static_cast<real_t>(clicksound->get_volume())
-		        )
+			"pressed",
+			callable_mp_static(+gui_pressed)
+				.bind(
+					gui_button,
+					convert_to<String>(clicksound->get_file().string()),
+					static_cast<real_t>(clicksound->get_volume())
+				)
 		);
 	}
 
@@ -483,17 +483,17 @@ static bool generate_checkbox(generate_gui_args_t&& args) {
 	GFX::IconTextureSprite const* texture_sprite = checkbox.get_sprite()->cast_to<GFX::IconTextureSprite>();
 
 	ERR_FAIL_NULL_V_MSG(
-	    texture_sprite,
-	    false,
-	    Utilities::format(
-	        "Invalid sprite type %s for GUI checkbox %s", convert_to<String>(checkbox.get_sprite()->get_type()), checkbox_name
-	    )
+		texture_sprite,
+		false,
+		Utilities::format(
+			"Invalid sprite type %s for GUI checkbox %s", convert_to<String>(checkbox.get_sprite()->get_type()), checkbox_name
+		)
 	);
 
 	GUIIconButton* gui_icon_button = nullptr;
 	bool ret = new_control(gui_icon_button, checkbox, args.name);
 	ERR_FAIL_NULL_V_MSG(
-	    gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI checkbox %s", checkbox_name)
+		gui_icon_button, false, Utilities::format("Failed to create GUIIconButton for GUI checkbox %s", checkbox_name)
 	);
 
 	gui_icon_button->set_toggle_mode(true);
@@ -533,9 +533,9 @@ static bool generate_text(generate_gui_args_t&& args) {
 
 	GameSingleton const* game_singleton = GameSingleton::get_singleton();
 	GFX::Font::colour_codes_t const* override_colour_codes =
-	    game_singleton != nullptr
-	        ? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes()
-	        : nullptr;
+		game_singleton != nullptr
+			? &game_singleton->get_definition_manager().get_ui_manager().get_universal_colour_codes()
+			: nullptr;
 
 	if (gui_label->set_gui_text(&text, override_colour_codes) != OK) {
 		UtilityFunctions::push_error("Error initializing GUILabel for GUI text ", text_name);
@@ -554,17 +554,17 @@ static bool generate_overlapping_elements(generate_gui_args_t&& args) {
 	GUIOverlappingElementsBox* box = nullptr;
 	bool ret = new_control(box, overlapping_elements, args.name);
 	ERR_FAIL_NULL_V_MSG(
-	    box,
-	    false,
-	    Utilities::format(
-	        "Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name
-	    )
+		box,
+		false,
+		Utilities::format(
+			"Failed to create GUIOverlappingElementsBox for GUI overlapping elements %s", overlapping_elements_name
+		)
 	);
 	box->set_mouse_filter(Control::MOUSE_FILTER_IGNORE);
 
 	if (box->set_gui_overlapping_elements_box(&overlapping_elements) != OK) {
 		UtilityFunctions::push_error(
-		    "Error initializing GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
+			"Error initializing GUIOverlappingElementsBox for GUI overlapping elements ", overlapping_elements_name
 		);
 		ret = false;
 	}
@@ -601,7 +601,7 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 	LineEdit* godot_line_edit = nullptr;
 	bool ret = new_control(godot_line_edit, text_edit_box, args.name);
 	ERR_FAIL_NULL_V_MSG(
-	    godot_line_edit, false, Utilities::format("Failed to create LineEdit for GUI text edit box %s", text_edit_box_name)
+		godot_line_edit, false, Utilities::format("Failed to create LineEdit for GUI text edit box %s", text_edit_box_name)
 	);
 
 	godot_line_edit->set_context_menu_enabled(false);
@@ -651,7 +651,7 @@ static bool generate_texteditbox(generate_gui_args_t&& args) {
 			}
 		} else {
 			UtilityFunctions::push_error(
-			    "Failed to load texture \"", texture_file, "\" for text edit box \"", text_edit_box_name, "\""
+				"Failed to load texture \"", texture_file, "\" for text edit box \"", text_edit_box_name, "\""
 			);
 			ret = false;
 		}
@@ -679,7 +679,7 @@ static bool generate_scrollbar(generate_gui_args_t&& args) {
 	GUIScrollbar* gui_scrollbar = nullptr;
 	bool ret = new_control(gui_scrollbar, scrollbar, args.name);
 	ERR_FAIL_NULL_V_MSG(
-	    gui_scrollbar, false, Utilities::format("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name)
+		gui_scrollbar, false, Utilities::format("Failed to create GUIScrollbar for GUI scrollbar %s", scrollbar_name)
 	);
 
 	if (gui_scrollbar->set_gui_scrollbar(&scrollbar) != OK) {
@@ -754,7 +754,7 @@ static bool generate_element(GUI::Element const* element, String const& name, As
 	};
 	const decltype(type_map)::const_iterator it = type_map.find(element->get_type());
 	ERR_FAIL_COND_V_MSG(
-	    it == type_map.end(), false, Utilities::format("Invalid GUI element type: %s", convert_to<String>(element->get_type()))
+		it == type_map.end(), false, Utilities::format("Invalid GUI element type: %s", convert_to<String>(element->get_type()))
 	);
 	return it->second({ *element, name, asset_manager, result });
 }

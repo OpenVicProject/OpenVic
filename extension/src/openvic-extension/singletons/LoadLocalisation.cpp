@@ -35,9 +35,9 @@ godot::Error LoadLocalisation::_load_file(String const& file_path, Ref<Translati
 	const Ref<FileAccess> file = FileAccess::open(file_path, FileAccess::ModeFlags::READ);
 	godot::Error err = FileAccess::get_open_error();
 	ERR_FAIL_COND_V_MSG(
-	    err != OK || file.is_null(),
-	    err == OK ? FAILED : err,
-	    Utilities::format("Failed to open localisation file: %s", file_path)
+		err != OK || file.is_null(),
+		err == OK ? FAILED : err,
+		Utilities::format("Failed to open localisation file: %s", file_path)
 	);
 	int line_number = 0;
 	while (!file->eof_reached()) {
@@ -47,12 +47,12 @@ godot::Error LoadLocalisation::_load_file(String const& file_path, Ref<Translati
 		if (line.size() < 2 || line[0].is_empty() || line[1].is_empty()) {
 			if (!line[0].is_empty()) {
 				UtilityFunctions::push_warning(
-				    "Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path
+					"Key \"", line[0], "\" missing value on line ", line_number, " in file: ", file_path
 				);
 				err = FAILED;
 			} else if (line.size() >= 2 && !line[1].is_empty()) {
 				UtilityFunctions::push_warning(
-				    "Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path
+					"Value \"", line[1], "\" missing key on line ", line_number, " in file: ", file_path
 				);
 				err = FAILED;
 			}
@@ -84,7 +84,7 @@ godot::Error LoadLocalisation::load_file(String const& file_path, String const& 
  */
 godot::Error LoadLocalisation::load_locale_dir(String const& dir_path, String const& locale) const {
 	ERR_FAIL_COND_V_MSG(
-	    !DirAccess::dir_exists_absolute(dir_path), FAILED, Utilities::format("Locale directory does not exist: %s", dir_path)
+		!DirAccess::dir_exists_absolute(dir_path), FAILED, Utilities::format("Locale directory does not exist: %s", dir_path)
 	);
 
 	/* This will add the locale to the list of loaded locales even if it has no
@@ -96,7 +96,7 @@ godot::Error LoadLocalisation::load_locale_dir(String const& dir_path, String co
 	const Ref<Translation> translation = _get_translation(locale);
 	const PackedStringArray files = DirAccess::get_files_at(dir_path);
 	ERR_FAIL_COND_V_MSG(
-	    files.size() < 1, FAILED, Utilities::format("Locale directory does not contain any files: %s", dir_path)
+		files.size() < 1, FAILED, Utilities::format("Locale directory does not contain any files: %s", dir_path)
 	);
 	godot::Error err = OK;
 	for (String const& file_name : files) {
@@ -114,13 +114,13 @@ godot::Error LoadLocalisation::load_locale_dir(String const& dir_path, String co
  */
 godot::Error LoadLocalisation::load_localisation_dir(String const& dir_path) const {
 	ERR_FAIL_COND_V_MSG(
-	    !DirAccess::dir_exists_absolute(dir_path),
-	    FAILED,
-	    Utilities::format("Localisation directory does not exist: %s", dir_path)
+		!DirAccess::dir_exists_absolute(dir_path),
+		FAILED,
+		Utilities::format("Localisation directory does not exist: %s", dir_path)
 	);
 	const PackedStringArray dirs = DirAccess::get_directories_at(dir_path);
 	ERR_FAIL_COND_V_MSG(
-	    dirs.size() < 1, FAILED, Utilities::format("Localisation directory does not contain any sub-directories: %s", dir_path)
+		dirs.size() < 1, FAILED, Utilities::format("Localisation directory does not contain any sub-directories: %s", dir_path)
 	);
 	TranslationServer* server = TranslationServer::get_singleton();
 	ERR_FAIL_NULL_V(server, FAILED);
@@ -140,7 +140,7 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 	if (translation.is_null()) {
 		translation = _singleton->_get_translation(Dataloader::locale_names[locale]);
 		ERR_FAIL_NULL_V_MSG(
-		    translation, false, Utilities::format("Failed to get translation object: %s", Dataloader::locale_names[locale])
+			translation, false, Utilities::format("Failed to get translation object: %s", Dataloader::locale_names[locale])
 		);
 	}
 	const StringName godot_key = convert_to<String>(key);
@@ -149,15 +149,15 @@ bool LoadLocalisation::add_message(std::string_view key, Dataloader::locale_t lo
 		const StringName old_localisation = translation->get_message(godot_key);
 		if (!old_localisation.is_empty()) {
 			UtilityFunctions::push_warning(
-			    "Changing translation ",
-			    godot_key,
-			    " (",
-			    Dataloader::locale_names[locale],
-			    ") from \"",
-			    old_localisation,
-			    "\" to \"",
-			    godot_localisation,
-			    "\""
+				"Changing translation ",
+				godot_key,
+				" (",
+				Dataloader::locale_names[locale],
+				") from \"",
+				old_localisation,
+				"\" to \"",
+				godot_localisation,
+				"\""
 			);
 		}
 	}
