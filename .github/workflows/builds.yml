@@ -28,7 +28,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          submodules: recursive
+          submodules: true
           fetch-depth: 0 # Treeless clone. Slightly less performant than a shallow clone, but makes finding diffs instantaneous.
           filter: tree:0 # See: https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
           persist-credentials: false
@@ -49,6 +49,7 @@ jobs:
           safe_output: false # Output passed to environment variable to avoid command injection.
           separator: '" "' # To account for paths with spaces, ensure our items are split by quotes internally.
           skip_initial_fetch: true
+          fetch_additional_submodule_history: true
           files_yaml_from_source_file: .github/changed-files.yml
 
       - name: Style checks via prek
