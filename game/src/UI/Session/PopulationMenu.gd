@@ -201,23 +201,23 @@ func _setup_province_list() -> void:
 func _setup_sort_buttons() -> void:
 	# button_path : NodePath, clear_text : bool, sort_key : GameSingleton.PopSortKey
 	const sort_button_info: Array[Array] = [
-		[^"./country_pop/sortby_size_button",         false, MenuSingleton.SORT_SIZE],
-		[^"./country_pop/sortby_type_button",         false, MenuSingleton.SORT_TYPE],
-		[^"./country_pop/sortby_nationality_button",  false, MenuSingleton.SORT_CULTURE],
-		[^"./country_pop/sortby_religion_button",     false, MenuSingleton.SORT_RELIGION],
-		[^"./country_pop/sortby_location_button",     false, MenuSingleton.SORT_LOCATION],
-		[^"./country_pop/sortby_mil_button",          true,  MenuSingleton.SORT_MILITANCY],
-		[^"./country_pop/sortby_con_button",          true,  MenuSingleton.SORT_CONSCIOUSNESS],
-		[^"./country_pop/sortby_ideology_button",     true,  MenuSingleton.SORT_IDEOLOGY],
-		[^"./country_pop/sortby_issues_button",       true,  MenuSingleton.SORT_ISSUES],
-		[^"./country_pop/sortby_unemployment_button", true,  MenuSingleton.SORT_UNEMPLOYMENT],
-		[^"./country_pop/sortby_cash_button",         true,  MenuSingleton.SORT_CASH],
-		[^"./country_pop/sortby_subsistence_button",  true,  MenuSingleton.SORT_LIFE_NEEDS],
-		[^"./country_pop/sortby_eve_button",          true,  MenuSingleton.SORT_EVERYDAY_NEEDS],
-		[^"./country_pop/sortby_luxury_button",       true,  MenuSingleton.SORT_LUXURY_NEEDS],
-		[^"./country_pop/sortby_revoltrisk_button",   true,  MenuSingleton.SORT_REBEL_FACTION],
-		[^"./country_pop/sortby_change_button",       true,  MenuSingleton.SORT_SIZE_CHANGE],
-		[^"./country_pop/sortby_literacy_button",     true,  MenuSingleton.SORT_LITERACY],
+		[^"./country_pop/sortby_size_button", false, MenuSingleton.SORT_SIZE],
+		[^"./country_pop/sortby_type_button", false, MenuSingleton.SORT_TYPE],
+		[^"./country_pop/sortby_nationality_button", false, MenuSingleton.SORT_CULTURE],
+		[^"./country_pop/sortby_religion_button", false, MenuSingleton.SORT_RELIGION],
+		[^"./country_pop/sortby_location_button", false, MenuSingleton.SORT_LOCATION],
+		[^"./country_pop/sortby_mil_button", true, MenuSingleton.SORT_MILITANCY],
+		[^"./country_pop/sortby_con_button", true, MenuSingleton.SORT_CONSCIOUSNESS],
+		[^"./country_pop/sortby_ideology_button", true, MenuSingleton.SORT_IDEOLOGY],
+		[^"./country_pop/sortby_issues_button", true, MenuSingleton.SORT_ISSUES],
+		[^"./country_pop/sortby_unemployment_button", true, MenuSingleton.SORT_UNEMPLOYMENT],
+		[^"./country_pop/sortby_cash_button", true, MenuSingleton.SORT_CASH],
+		[^"./country_pop/sortby_subsistence_button", true, MenuSingleton.SORT_LIFE_NEEDS],
+		[^"./country_pop/sortby_eve_button", true, MenuSingleton.SORT_EVERYDAY_NEEDS],
+		[^"./country_pop/sortby_luxury_button", true, MenuSingleton.SORT_LUXURY_NEEDS],
+		[^"./country_pop/sortby_revoltrisk_button", true, MenuSingleton.SORT_REBEL_FACTION],
+		[^"./country_pop/sortby_change_button", true, MenuSingleton.SORT_SIZE_CHANGE],
+		[^"./country_pop/sortby_literacy_button", true, MenuSingleton.SORT_LITERACY],
 	]
 
 	for button_info: Array in sort_button_info:
@@ -314,13 +314,13 @@ func _setup_pop_list() -> void:
 
 	if _pop_list_scrollbar:
 		_pop_list_scrollbar.value_changed.connect(
-			func (value: int) -> void:
+			func(value: int) -> void:
 				_pop_list_scroll_index = value
 				_update_pop_list()
 		)
 
 		pop_list_panel.gui_input.connect(
-			func (event: InputEvent) -> void:
+			func(event: InputEvent) -> void:
 				if event is InputEventMouseButton:
 					if event.is_pressed():
 						if event.get_button_index() == MOUSE_BUTTON_WHEEL_UP:
