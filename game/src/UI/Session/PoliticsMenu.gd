@@ -134,7 +134,7 @@ func _ready() -> void:
 		_rebels_listbox = GUINode.get_gui_listbox_from_node(movements_window.get_node(^"./rebel_listbox"))
 
 
-	var reforms_window: Panel  = GUINode.get_panel_from_node(politics_menu.get_node(^"./reforms_window"))
+	var reforms_window: Panel = GUINode.get_panel_from_node(politics_menu.get_node(^"./reforms_window"))
 
 	# Unciv Reforms
 	var unciv_reforms_window: Panel = GUINode.get_panel_from_node(politics_menu.get_node(^"./unciv_reforms_window"))

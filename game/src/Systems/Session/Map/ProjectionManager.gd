@@ -39,19 +39,19 @@ var loop_times: PackedFloat32Array = [0, 0, 0]
 
 
 func _ready() -> void:
-	const name_key: StringName  = &"name"
+	const name_key: StringName = &"name"
 
-	const texture_key: StringName  = &"texture"
+	const texture_key: StringName = &"texture"
 
-	const size_key: StringName  = &"size"
+	const size_key: StringName = &"size"
 
-	const spin_key: StringName  = &"spin"
+	const spin_key: StringName = &"spin"
 
-	const expanding_key: StringName  = &"expanding"
+	const expanding_key: StringName = &"expanding"
 
-	const duration_key: StringName  = &"duration"
+	const duration_key: StringName = &"duration"
 
-	const additative_key: StringName  = &"additative"
+	const additative_key: StringName = &"additative"
 
 
 	for projection: Dictionary in MapItemSingleton.get_projections():
