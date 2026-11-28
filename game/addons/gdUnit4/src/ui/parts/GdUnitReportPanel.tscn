@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://dga8nhaxnyr53"]
 
-[ext_resource type="Script" path="res://addons/gdUnit4/src/ui/parts/GdUnitReportPanel.gd" id="1_w8qy0"]
+[ext_resource type="Script" uid="uid://b2x0hqbclxv5c" path="res://addons/gdUnit4/src/ui/parts/GdUnitReportPanel.gd" id="1_w8qy0"]
 
 [node name="report" type="Panel" unique_id=1075065511]
-clip_contents = true
 custom_minimum_size = Vector2(120, 80)
+clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -39,8 +39,8 @@ size_flags_vertical = 3
 
 [node name="report_list" type="VBoxContainer" parent="ScrollContainer" unique_id=1467163528]
 unique_name_in_owner = true
-clip_contents = true
 custom_minimum_size = Vector2(120, 0)
+clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 2

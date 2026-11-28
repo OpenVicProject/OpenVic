@@ -73,7 +73,7 @@
 			<description>
 			</description>
 		</method>
-		<method name="sort_children">
+		<method name="sort_gui_children">
 			<return type="int" enum="Error" />
 			<param index="0" name="callable" type="Callable" />
 			<description>
